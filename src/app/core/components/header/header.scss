@@ -1,0 +1,56 @@
+header {
+  position: fixed;      // <-- hace que el header quede fijo arriba
+  top: 0;               // <-- se pega al borde superior
+  left: 0;
+  width: 100%;          // <-- ocupa todo el ancho de la pantalla
+  z-index: 1000;        // <-- se mantiene encima del contenido
+  height: 70px;           // <-- define una altura fija
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #fff;
+  padding: 10px 20px;
+  border-bottom: 1px solid #ddd;
+}
+
+.logo-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo {
+  height: 50px;
+}
+
+.separator {
+  border-left: 2px dotted #999;
+  height: 40px;
+  margin: 0 15px;
+}
+
+.title {
+  font-weight: bold;
+  color: #002060;
+  font-size: 1.2rem;
+}
+
+.header-right {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    margin-right: 30px;
+
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+}
+
+.icon-btn img {
+  height: 30px;
+  width: 30px;
+}

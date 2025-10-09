@@ -1,0 +1,81 @@
+.sidebar {
+  position: fixed;
+  top: 70px; /* ⚠️ debe coincidir exactamente con la altura real del header */
+  left: 0;
+  width: 250px;
+  height: calc(100vh - 70px); /* ⚠️ resta la misma altura */
+  background-color: #fff;
+  border-right: 1px solid #ddd;
+  padding-top: 60px;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 900; /* para que esté debajo del header */
+}
+
+/* Contenedor del grupo principal + submenú */
+.menu-container {
+  width: 100%;
+  text-align: center;
+  position: relative;
+}
+
+// Botones principales
+.menu-item {
+  width: 80%;
+  text-align: center;
+  font-weight: bold;
+  color: #002060;
+  padding: 10px;
+  margin: 5px auto;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.menu-item:hover {
+  border-color: #FFD700; /* amarillo brillante */
+}
+
+/* Submenú animado */
+.submenu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 80%;
+  overflow: hidden;
+  max-height: 0; /* empieza cerrado */
+  opacity: 0;
+  transform: translateY(-5px);
+  transition: all 0.9s cubic-bezier(0.4, 0, 0.2, 1);
+ //aqui manejo el tiempo de la transicion
+}
+
+
+/* Mostrar el submenú al pasar el cursor */
+.menu-container:hover .submenu {
+  max-height: 500px; /* suficiente para mostrar todo */
+  opacity: 1;
+  transform: translateY(0);
+}
+
+
+/* Estilo de los enlaces del submenú */
+.submenu li {
+  padding: 6px 0 0 45px;
+  border-bottom: 1px solid #eee;
+}
+
+.submenu a {
+  text-decoration: none;
+  color: black;
+  transition: color 0.3s;
+  font-size: 18px;
+
+}
+
+.submenu a:hover {
+  color: #FFD700;
+}

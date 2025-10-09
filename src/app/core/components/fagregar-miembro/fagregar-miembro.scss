@@ -1,0 +1,142 @@
+.modal-backdrop {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex; align-items: center; justify-content: center;
+}
+
+.modal {
+  border-radius: 10px;
+  padding: 20px 30px;
+  background: #fff;
+  box-shadow: 0 4px 25px rgba(0,0,0,0.2);
+  animation: aparecer 0.3s ease;
+}
+
+@keyframes aparecer {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+h2 {
+  color: #003087;
+  font-weight: bold;
+}
+
+
+.full-row {
+  grid-column: span 2;
+}
+
+input {
+  padding: 10px;
+  border: 1px solid #c3c7cf;
+  border-radius: 5px;
+  font-size: 14px;
+  transition: 0.3s;
+}
+
+input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0,123,255,0.4);
+}
+
+.acciones {
+  margin-top: 25px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+button {
+  padding: 8px 14px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+button:hover {
+  transform: translateY(-1px);
+}
+
+button:nth-child(1) {
+  background-color: #777;
+  color: white;
+}
+
+button:nth-child(2) {
+  background-color: #0d6efd;
+  color: white;
+}
+
+button:nth-child(3) {
+  background-color: #28a745;
+  color: white;
+}
+
+.btn-agregar {
+    margin-left: 10px;
+  width: 160px;   /* Ancho del botón */
+  height: 35px;   /* Alto del botón  */
+  font-size: 14px;
+  border-radius: 6px;
+}
+
+/* ==== Estilo moderno para inputs y selects ==== */
+.form-control select,
+.form-control input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  outline: none;
+  background-color: #fff;
+  transition: all 0.3s ease;
+}
+
+/* ==== Hover y focus ==== */
+.form-control select:hover,
+.form-control input:hover {
+  border-color: #007bff;
+}
+
+.form-control select:focus,
+.form-control input:focus {
+  border-color: #0056b3;
+  box-shadow: 0 0 4px rgba(0, 91, 187, 0.5);
+}
+
+/* ==== Estilo especial para SELECT ==== */
+.form-control select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: url("data:image/svg+xml;utf8,<svg fill='%230057c2' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>") no-repeat right 10px center;
+  background-size: 16px;
+  cursor: pointer;
+}
+
+/* ==== Errores ==== */
+.input-error {
+  border-color: #e74c3c !important;
+  background-color: #fdecea;
+}
+
+small {
+  color: #e74c3c;
+  font-size: 12px;
+  margin-top: 4px;
+  display: block;
+}
+
+/* ==== Grid ordenado ==== */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+

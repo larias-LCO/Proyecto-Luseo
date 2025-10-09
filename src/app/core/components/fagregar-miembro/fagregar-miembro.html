@@ -1,0 +1,118 @@
+<button class="btn-agregar" (click)="abrirModal()">+ Agregar miembro</button>
+
+<div class="modal-backdrop" *ngIf="mostrarModal">
+  <div class="modal">
+    <h2>Agregar Nuevo Miembro</h2>
+    <hr>
+
+    <form [formGroup]="form">
+
+    <!-- PASO 1 -->
+    <div *ngIf="paso === 1" class="form-grid">
+      <div class="form-control">
+        <input type="text" placeholder="Nombre" formControlName="nombre"
+          [ngClass]="{ 'input-error': form.get('nombre')?.invalid && form.get('nombre')?.touched }">
+        <small *ngIf="form.get('nombre')?.invalid && form.get('nombre')?.touched">
+          El nombre es obligatorio
+        </small>
+      </div>
+
+      <!-- DEPARTAMENTO -->
+<div class="form-control">
+  <select formControlName="departamento"
+    [ngClass]="{ 'input-error': form.get('departamento')?.invalid && form.get('departamento')?.touched }">
+    <option value="" disabled>Seleccione un departamento</option>
+    <option value="Electrica">Eléctrica</option>
+    <option value="Plomeria">Plomería</option>
+    <option value="BIM">BIM</option>
+    <option value="Mecanica">Mecánica</option>
+  </select>
+  <small *ngIf="form.get('departamento')?.invalid && form.get('departamento')?.touched">
+    Ingrese un departamento válido
+  </small>
+</div>
+
+<!-- OFICINA -->
+<div class="form-control">
+  <select formControlName="oficina"
+    [ngClass]="{ 'input-error': form.get('oficina')?.invalid && form.get('oficina')?.touched }">
+    <option value="" disabled >Seleccione una oficina</option>
+    <option value="Colombia/Medellin">Colombia / Medellín</option>
+    <option value="Colombia/Bogota">Colombia / Bogotá</option>
+    <option value="USA/Florida">Estados Unidos / Florida</option>
+  </select>
+  <small *ngIf="form.get('oficina')?.invalid && form.get('oficina')?.touched">
+    Ingrese una oficina válida
+  </small>
+</div>
+
+<!-- POSICIÓN -->
+<div class="form-control">
+  <select formControlName="posicion"
+    [ngClass]="{ 'input-error': form.get('posicion')?.invalid && form.get('posicion')?.touched }">
+    <option value="" disabled >Seleccione una posición</option>
+    <option value="Ingeniero">Ingeniero</option>
+    <option value="Modelador">Modelador</option>
+  </select>
+  <small *ngIf="form.get('posicion')?.invalid && form.get('posicion')?.touched">
+    Ingrese una posición válida
+  </small>
+</div>
+
+<!-- ROL -->
+<div class="form-control">
+  <select formControlName="rol"
+    [ngClass]="{ 'input-error': form.get('rol')?.invalid && form.get('rol')?.touched }">
+    <option value="" disabled >Seleccione un rol</option>
+    <option value="Usuario">Usuario</option>
+    <option value="Administrador">Administrador</option>
+  </select>
+  <small *ngIf="form.get('rol')?.invalid && form.get('rol')?.touched">
+    El rol es obligatorio
+  </small>
+</div>
+
+      <!-- FIN LISTAS -->
+
+      <div class="form-control">
+        <input type="number" placeholder="Tarifa facturable" formControlName="tarifa"
+          [ngClass]="{ 'input-error': form.get('tarifa')?.invalid && form.get('tarifa')?.touched }">
+        <small *ngIf="form.get('tarifa')?.invalid && form.get('tarifa')?.touched">
+          Ingrese una tarifa válida
+        </small>
+      </div>
+    </div>
+
+    <!-- PASO 2 -->
+    <div *ngIf="paso === 2" class="form-grid">
+      <div>
+        <input type="text" placeholder="Usuario" formControlName="usuario"
+          [ngClass]="{ 'input-error': form.get('usuario')?.invalid && form.get('usuario')?.touched }">
+        <small *ngIf="form.get('usuario')?.invalid && form.get('usuario')?.touched">Este campo es obligatorio</small>
+      </div>
+
+      <div class="form-control">
+        <input type="email" placeholder="Correo" formControlName="correo"
+          [ngClass]="{ 'input-error': form.get('correo')?.invalid && form.get('correo')?.touched }">
+        <small *ngIf="form.get('correo')?.invalid && form.get('correo')?.touched">
+          Ingrese un correo válido
+        </small>
+      </div>
+
+      <div>
+        <input type="password" placeholder="Contraseña" formControlName="password"
+          [ngClass]="{ 'input-error': form.get('password')?.invalid && form.get('password')?.touched }">
+        <small *ngIf="form.get('password')?.invalid && form.get('password')?.touched">Mínimo 6 caracteres</small>
+      </div>
+    </div>
+
+    <!-- BOTONES -->
+    <div class="acciones">
+      <button (click)="cerrarModal()">Cancelar</button>
+      <button *ngIf="paso === 2" (click)="atras()">Atrás</button>
+      <button *ngIf="paso === 1" (click)="siguiente()">Siguiente</button>
+      <button *ngIf="paso === 2" (click)="agregar()">Agregar</button>
+    </div>
+    </form>
+  </div>
+</div>
