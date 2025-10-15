@@ -2,7 +2,63 @@ body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-seri
 
 .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
 
-label { font-size: 12px; color: #333; display: block; margin-bottom: 4px; }
+// label { font-size: 12px; color: #333; display: block; margin-bottom: 4px; }
+
+.buscarname{
+  font-size: 12px;
+  color: #333;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.departamento{
+  font-size: 12px;
+  color: #333;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.puesto{
+       font-size: 12px;
+  color: #333;
+  display: block;
+  margin-bottom: 4px;
+
+}
+
+.oficina{
+       font-size: 12px;
+  color: #333;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.estado{
+font-size: 12px;
+  color: #333;
+  display: block;
+  margin-bottom: 4px;
+}
+
+button{
+margin-right: 5px;
+ color: white;
+  width: 160px;
+  height: 35px;
+  font-size: 14px;
+  border-radius: 5px;
+  border: none;
+  background-color: #6292fa;
+  cursor: pointer;
+   transition: background-color 0.3s ease, 
+              box-shadow 0.3s ease, 
+              transform 0.3s ease;
+}
+button:hover {
+  transform: translateY(-2px);
+  background-color: #4d95f3;
+   box-shadow: 0 6px 12px rgba(0,0,0,0.15); /* Sombra bonita */
+}
 
 input[type="text"], select { padding: 8px; font-size: 14px; }
 
@@ -26,7 +82,7 @@ li { border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin-bottom: 8
 
 .spacer { flex: 1 1 auto; }
 
-button { padding: 8px 10px; font-size: 13px; }
+// button { padding: 8px 10px; font-size: 13px; }
 
 /* Pagination */
 
@@ -35,4 +91,3 @@ button { padding: 8px 10px; font-size: 13px; }
 .pagination button { padding: 6px 10px; }
 
 .page-info { font-size: 12px; color: #444; }
-

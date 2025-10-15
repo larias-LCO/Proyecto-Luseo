@@ -8,6 +8,7 @@
     <form [formGroup]="form">
 
     <!-- PASO 1 -->
+     
     <div *ngIf="paso === 1" class="form-grid">
       <div class="form-control">
         <input type="text" placeholder="Nombre" formControlName="nombre"
@@ -18,7 +19,7 @@
       </div>
 
       <!-- DEPARTAMENTO -->
-<div class="form-control">
+      <div class="form-control">
   <select formControlName="departamento"
     [ngClass]="{ 'input-error': form.get('departamento')?.invalid && form.get('departamento')?.touched }">
     <option value="" disabled>Seleccione un departamento</option>
@@ -112,7 +113,7 @@
       <button *ngIf="paso === 2" (click)="atras()">Atrás</button>
       <button *ngIf="paso === 1" (click)="siguiente()">Siguiente</button>
       <button *ngIf="paso === 2" (click)="agregar()">Agregar</button>
-    </div>
-    </form>
-  </div>
-</div>
+        </div>
+      </form>
+
+
