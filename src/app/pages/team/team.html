@@ -26,7 +26,7 @@
       </select>
     </div>
     <div>
-      <label class="puesto">Puesto</label>
+      <label class="puesto">Cargo</label>
       <select id="jobFilter">
         <option value="">Todos</option>
       </select>
@@ -44,19 +44,21 @@
         <option value="">Todos</option>
       </select>
     </div>
-
-    <div class="spacer"></div>
-
+    <!-- NUEVO: Filtro por Rol -->
     <div>
-      <label>&nbsp;</label>
-      <button id="limpiarfiltros" type="button">Limpiar filtros</button>
+      <label class="rol">Rol</label>
+      <select id="roleFilter">
+        <option value="">Todos</option>
+      </select>
     </div>
 
-    <!-- NUEVO: Botón de actualización manual -->
-    <div>
-      <label>&nbsp;</label>
-      <button id="actualizardatos" type="button">Actualizar datos</button>
-      <app-fagregar-miembro></app-fagregar-miembro>
+    <div class="spacer"></div>
+    <div class="actions-toolbar">
+      <button id="actualizardatos" type="button" class="secondary">Actualizar datos</button>
+      <button id="limpiarfiltros" type="button" class="outline">Limpiar filtros</button>
+      <div id="addMemberHost" class="add-host">
+        <app-fagregar-miembro [catalogs]="catalogs" [allowedRoles]="allowedRoleOptions" (created)="refreshData()"></app-fagregar-miembro>
+      </div>
     </div>
   </div>
 

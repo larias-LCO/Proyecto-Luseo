@@ -20,27 +20,22 @@
 
       <!-- DEPARTAMENTO -->
       <div class="form-control">
-  <select formControlName="departamento"
-    [ngClass]="{ 'input-error': form.get('departamento')?.invalid && form.get('departamento')?.touched }">
-    <option value="" disabled>Seleccione un departamento</option>
-    <option value="Electrica">Eléctrica</option>
-    <option value="Plomeria">Plomería</option>
-    <option value="BIM">BIM</option>
-    <option value="Mecanica">Mecánica</option>
-  </select>
-  <small *ngIf="form.get('departamento')?.invalid && form.get('departamento')?.touched">
-    Ingrese un departamento válido
-  </small>
-</div>
+        <select formControlName="departamento"
+          [ngClass]="{ 'input-error': form.get('departamento')?.invalid && form.get('departamento')?.touched }">
+          <option value="" disabled>Seleccione un departamento</option>
+          <option *ngFor="let d of (catalogs?.departments || [])" [value]="d?.name || d?.label || d?.title || d?.descripcion">{{ d?.name || d?.label || d?.title || d?.descripcion }}</option>
+        </select>
+        <small *ngIf="form.get('departamento')?.invalid && form.get('departamento')?.touched">
+          Ingrese un departamento válido
+        </small>
+      </div>
 
 <!-- OFICINA -->
 <div class="form-control">
   <select formControlName="oficina"
     [ngClass]="{ 'input-error': form.get('oficina')?.invalid && form.get('oficina')?.touched }">
-    <option value="" disabled >Seleccione una oficina</option>
-    <option value="Colombia/Medellin">Colombia / Medellín</option>
-    <option value="Colombia/Bogota">Colombia / Bogotá</option>
-    <option value="USA/Florida">Estados Unidos / Florida</option>
+    <option value="" disabled>Seleccione una oficina</option>
+    <option *ngFor="let o of (catalogs?.offices || [])" [value]="o?.name || o?.label || o?.title || o?.descripcion">{{ o?.name || o?.label || o?.title || o?.descripcion }}</option>
   </select>
   <small *ngIf="form.get('oficina')?.invalid && form.get('oficina')?.touched">
     Ingrese una oficina válida
@@ -51,9 +46,8 @@
 <div class="form-control">
   <select formControlName="posicion"
     [ngClass]="{ 'input-error': form.get('posicion')?.invalid && form.get('posicion')?.touched }">
-    <option value="" disabled >Seleccione una posición</option>
-    <option value="Ingeniero">Ingeniero</option>
-    <option value="Modelador">Modelador</option>
+    <option value="" disabled>Seleccione una posición</option>
+    <option *ngFor="let j of (catalogs?.jobs || [])" [value]="j?.name || j?.label || j?.title || j?.descripcion">{{ j?.name || j?.label || j?.title || j?.descripcion }}</option>
   </select>
   <small *ngIf="form.get('posicion')?.invalid && form.get('posicion')?.touched">
     Ingrese una posición válida
@@ -64,9 +58,8 @@
 <div class="form-control">
   <select formControlName="rol"
     [ngClass]="{ 'input-error': form.get('rol')?.invalid && form.get('rol')?.touched }">
-    <option value="" disabled >Seleccione un rol</option>
-    <option value="Usuario">Usuario</option>
-    <option value="Administrador">Administrador</option>
+    <option value="" disabled>Seleccione un rol</option>
+  <option *ngFor="let r of filteredAllowedRoles" [value]="r">{{ r }}</option>
   </select>
   <small *ngIf="form.get('rol')?.invalid && form.get('rol')?.touched">
     El rol es obligatorio
