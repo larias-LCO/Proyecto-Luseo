@@ -1,17 +1,10 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet, RouterLink } from '@angular/router';
-import { FormsModule } from '@angular/forms';
-import { SubmenuComponent } from './core/components/submenu/submenu'; // 👈 agrega RouterLink
-import { ParteDeHorasComponent } from "./pages/parte-de-horas/parte-de-horas"; // 👈 importante
-import { HeaderComponent } from './core/components/header/header';
+import { Component } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, FormsModule, SubmenuComponent, HeaderComponent], //agregar aquí
-  templateUrl: './app.html', // ✅ coma antes de la siguiente propiedad
-  styleUrls: ['./app.scss']
+  imports: [RouterOutlet],
+  template: `<router-outlet></router-outlet>`,
 })
-export class App {
-  protected readonly title = signal('Proyecto-Luseo');
-}
+export class AppComponent {}

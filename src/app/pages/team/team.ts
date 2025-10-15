@@ -1,11 +1,13 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HeaderComponent } from '../../core/components/header/header';
+import { SubmenuComponent } from '../../core/components/submenu/submenu';
 import { FagregarMiembroComponent } from '../../core/components/fagregar-miembro/fagregar-miembro';
 
 @Component({
   selector: 'app-team',
   standalone: true, 
-  imports: [CommonModule, FagregarMiembroComponent],
+  imports: [CommonModule, HeaderComponent, SubmenuComponent, FagregarMiembroComponent],
   templateUrl: './team.html',
   styleUrls: ['./team.scss']
 })

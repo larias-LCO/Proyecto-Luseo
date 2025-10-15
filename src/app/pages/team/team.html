@@ -1,13 +1,11 @@
-<html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <title>Búsqueda de empleados (cliente)</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="team.scss" />
-</head>
-<body>
+<!-- ❌ No uses <html>, <head> ni <body> en un componente Angular -->
 
-  <div class="team-container">
+<!-- ✅ Coloca tus componentes de encabezado -->
+<app-header></app-header>
+<app-submenu></app-submenu>
+
+<!-- ✅ Contenedor principal del TEAM -->
+<div class="team-container">
   <h1>Equipo</h1>
 
   <!-- Búsqueda por nombre -->
@@ -46,11 +44,14 @@
         <option value="">Todos</option>
       </select>
     </div>
+
     <div class="spacer"></div>
+
     <div>
       <label>&nbsp;</label>
       <button id="limpiarfiltros" type="button">Limpiar filtros</button>
     </div>
+
     <!-- NUEVO: Botón de actualización manual -->
     <div>
       <label>&nbsp;</label>
@@ -77,8 +78,7 @@
     <div class="spacer"></div>
     <div id="pagination" class="pagination"></div>
   </div>
-  </div>
 
-  <ul id="results"></ul>
-</body>
-</html>
+  <!-- Resultados -->
+  <div id="results" class="results-grid"></div>
+</div>

@@ -1,16 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="utf-8" />
     <title>APP-LUSEO</title>
-</head>
-<body>
-    <app-header></app-header>
-    <app-submenu></app-submenu>
-
-    <main>
+    <base href="/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+  <body>
     <router-outlet></router-outlet>
-    </main>
-</body>
+    <app-root></app-root> <!-- 👈 Angular carga todo aquí -->
+  </body>
 </html>
