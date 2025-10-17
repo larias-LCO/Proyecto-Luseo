@@ -81,6 +81,29 @@
     <div id="pagination" class="pagination"></div>
   </div>
 
-  <!-- Resultados -->
-  <div id="results" class="results-grid"></div>
+  <!-- ✅ Resultados del equipo -->
+<div id="results" class="results-grid">
+  <div class="miembro-card" *ngFor="let miembro of empleados">
+  <h3>{{ miembro.nombre }}</h3>
+    <p><strong>Departamento:</strong> {{ miembro.departamento }}</p>
+    <p><strong>Oficina:</strong> {{ miembro.oficina }}</p>
+    <p><strong>Posición:</strong> {{ miembro.posicion }}</p>
+    <p><strong>Rol:</strong> {{ miembro.rol }}</p>
+    <p><strong>Tarifa:</strong> {{ miembro.tarifa }}</p>
+    <p><strong>Estado:</strong> {{ miembro.estado }}</p>
+
+   <!-- Botón editar -->
+<button type="button" (click)="abrirModal(miembro)">✏️ Editar</button>
+
+<!-- Modal -->
+<app-editar-miembro
+  *ngIf="mostrarModal"
+  [miembro]="miembroSeleccionado"
+  [catalogs]="catalogs"
+  [allowedRoles]="allowedRoleOptions"
+  (cerrar)="cerrarModal()"
+  (guardar)="guardarCambios($event)">
+</app-editar-miembro>
+
+  </div>
 </div>

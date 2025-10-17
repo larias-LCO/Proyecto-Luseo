@@ -7,6 +7,8 @@ import { EmployeeApi } from './team-api';
 import { filterEmployees } from './team-utils';
 import { VALID_PAGE_SIZES, getInitialPageSize, readFiltersFromUrl, syncFiltersToUrl } from './team-pagination';
 import { AuthService } from '../../core/services/auth.service';
+import { FormsModule } from '@angular/forms';
+
 
 type Employee = any;
 type Filters = { query: string; department: string; jobPosition: string; office: string; state: string; role: string };
@@ -14,12 +16,13 @@ type Filters = { query: string; department: string; jobPosition: string; office:
 @Component({
   selector: 'app-team',
   standalone: true,
-  imports: [CommonModule, HeaderComponent, SubmenuComponent, FagregarMiembroComponent],
+  imports: [CommonModule, FormsModule, HeaderComponent, SubmenuComponent, FagregarMiembroComponent],
   templateUrl: './team.html',
   styleUrls: ['./team.scss'],
   encapsulation: ViewEncapsulation.None
 })
 export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
+  
   private auth = inject(AuthService);
   private api!: EmployeeApi;
 
@@ -368,13 +371,15 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
               <span>Usuario: ${accountUsername || '-'}</span>
             </div>
             <div class="actions">
-              ${canEdit ? `<button class="btn btn-edit" data-action="edit" data-id="${e.id || ''}">Editar</button>` : ''}
+               ${canEdit ? `<button class="btn btn-edit" data-action="edit" data-id="${e.id || ''}">Editar</button>` : ''}
+            
               ${canDelete ? `<button class="btn btn-delete" data-action="delete" data-id="${e.id || ''}">Eliminar</button>` : ''}
               ${this.isAdmin && isTargetOwner ? `<span class="muted">Acciones restringidas (OWNER)</span>` : ''}
             </div>
           </div>
         </div>
       `;
+
     }).join('');
     this.elResults.innerHTML = html;
     this.elResults.querySelectorAll('button[data-action]').forEach(btn => {
@@ -386,6 +391,13 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
       });
     });
   }
+  private onEditEmployee(id: string) {
+  const miembro = this.state.all.find(e => String(e.id) === String(id));
+  if (miembro) {
+    this.abrirModal(miembro);
+  }
+}
+
 
   private renderPagination() {
     if (!this.elPagination) return;
@@ -478,5 +490,58 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
         this.elRole!.appendChild(o);
       });
     if (this.filters.role) this.elRole.value = this.filters.role;
+
+    
   }
+
+ 
+
+
+
+  // =========== MODAL PARA EDITAR MIEMBRO ===========
+
+// controla si el modal está visible o no
+mostrarModal = false;
+
+// guarda temporalmente el miembro que se va a editar
+miembroSeleccionado: any = null;
+
+/**
+ * Abre el modal al hacer clic en "Editar".
+ * Recibe el id del empleado y busca el objeto completo.
+ */
+abrirModal(miembro: any) {
+  this.miembroSeleccionado = { ...miembro };
+  this.mostrarModal = true;
+}
+
+/**
+ * Cierra el modal de edición.
+ */
+cerrarModal() {
+  this.mostrarModal = false;
+  this.miembroSeleccionado = null;
+}
+
+/**
+ * Guarda los cambios del miembro editado en la base de datos.
+ * Llama al API para actualizar y luego recarga la lista.
+ */
+async guardarCambios(miembroEditado: any) {
+  try {
+    if (typeof this.api.updateEmployee === 'function') {
+      await this.api.updateEmployee(miembroEditado.id, miembroEditado);
+    } else {
+      console.warn('No existe updateEmployee() en EmployeeApi');
+    }
+
+    await this.refreshData(); // recarga datos
+    this.cerrarModal();
+    this.render(); // vuelve a pintar la lista
+  } catch (error: any) {
+    alert('Error al guardar cambios: ' + (error?.message || error));
+  }
+}
+
+  
 }
