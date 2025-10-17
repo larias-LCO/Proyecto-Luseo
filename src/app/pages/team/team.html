@@ -1,109 +1,165 @@
-<!-- ❌ No uses <html>, <head> ni <body> en un componente Angular -->
-
 <!-- ✅ Coloca tus componentes de encabezado -->
 <app-header></app-header>
 <app-submenu></app-submenu>
 
 <!-- ✅ Contenedor principal del TEAM -->
 <div class="team-container">
-  <h1>Equipo</h1>
+  
+    <h1>Equipo</h1>
+  
 
-  <!-- Búsqueda por nombre -->
-  <div class="row">
-    <div style="flex: 1 1 520px; min-width: 260px;">
-      <label class="buscarname">Buscar por nombre</label>
-      <input id="searchInput" type="text" placeholder="Ej: Carlos, Carlos Herrera" />
-      <div class="muted">Búsqueda parcial, sin distinguir mayúsculas ni tildes. Filtra localmente.</div>
-    </div>
+  <!-- Filters form (Reactive) -->
+<form [formGroup]="filterForm" class="filters-form" (ngSubmit)="$event.preventDefault()">
+
+  <!-- Buscar por nombre -->
+  <div class="filter-search">
+    <label>Buscar por nombre</label>
+    <input id="searchInput" type="text" placeholder="Ej: Carlos, Herrera" />
+    <div class="muted">Búsqueda parcial, sin distinguir mayúsculas ni tildes. Filtra localmente.</div>
   </div>
 
-  <!-- Filtros combinables: Departamento, Puesto, Estado -->
-  <div class="row">
-    <div>
-      <label class="departamento">Departamento</label>
-      <select id="departmentFilter">
-        <option value="">Todos</option>
-      </select>
-    </div>
-    <div>
-      <label class="puesto">Cargo</label>
-      <select id="jobFilter">
-        <option value="">Todos</option>
-      </select>
-    </div>
-    <!-- NUEVO: Filtro por Oficina -->
-    <div>
-      <label class="oficina">Oficina</label>
-      <select id="officeFilter">
-        <option value="">Todas</option>
-      </select>
-    </div>
-    <div>
-      <label class="estado">Estado</label>
-      <select id="stateFilter">
-        <option value="">Todos</option>
-      </select>
-    </div>
-    <!-- NUEVO: Filtro por Rol -->
-    <div>
-      <label class="rol">Rol</label>
-      <select id="roleFilter">
-        <option value="">Todos</option>
-      </select>
-    </div>
-
-    <div class="spacer"></div>
-    <div class="actions-toolbar">
-      <button id="actualizardatos" type="button" class="secondary">Actualizar datos</button>
-      <button id="limpiarfiltros" type="button" class="outline">Limpiar filtros</button>
-      <div id="addMemberHost" class="add-host">
-        <app-fagregar-miembro [catalogs]="catalogs" [allowedRoles]="allowedRoleOptions" (created)="refreshData()"></app-fagregar-miembro>
-      </div>
-    </div>
+  <!-- Filtros horizontales -->
+ <div class="filters-row">
+  <div class="filter-item">
+    <label>Departamento</label>
+    <select formControlName="department">
+      <option value="">Todos</option>
+      <option *ngFor="let d of (catalogs.departments || [])" [value]="(d.name ?? d)">
+        {{ d.name ?? d }}
+      </option>
+    </select>
   </div>
 
-  <div class="row">
-    <span id="status" class="muted">Cargando empleados...</span>
-    <span id="error" class="error" style="display:none;"></span>
+  <div class="filter-item">
+    <label>Cargo</label>
+    <select formControlName="job">
+      <option value="">Todos</option>
+      <option *ngFor="let j of (catalogs.jobs || [])" [value]="(j.name ?? j)">
+        {{ j.name ?? j }}
+      </option>
+    </select>
   </div>
 
-  <!-- NUEVO: Controles de paginación (tamaño de página y navegación) -->
-  <div class="row">
-    <div>
-      <label class="mostrarpag">Mostrar por página</label>
-      <select id="pageSize">
-        <option value="10">10</option>
-        <option value="20">20</option>
-        <option value="30">30</option>
-      </select>
-    </div>
-    <div class="spacer"></div>
-    <div id="pagination" class="pagination"></div>
+  <div class="filter-item">
+    <label>Oficina</label>
+    <select formControlName="office">
+      <option value="">Todas</option>
+      <option *ngFor="let o of (catalogs.offices || [])" [value]="(o.name ?? o)">
+        {{ o.name ?? o }}
+      </option>
+    </select>
   </div>
 
-  <!-- ✅ Resultados del equipo -->
-<div id="results" class="results-grid">
-  <div class="miembro-card" *ngFor="let miembro of empleados">
-  <h3>{{ miembro.nombre }}</h3>
-    <p><strong>Departamento:</strong> {{ miembro.departamento }}</p>
-    <p><strong>Oficina:</strong> {{ miembro.oficina }}</p>
-    <p><strong>Posición:</strong> {{ miembro.posicion }}</p>
-    <p><strong>Rol:</strong> {{ miembro.rol }}</p>
-    <p><strong>Tarifa:</strong> {{ miembro.tarifa }}</p>
-    <p><strong>Estado:</strong> {{ miembro.estado }}</p>
+  <div class="filter-item">
+    <label>Rol</label>
+    <select formControlName="role">
+      <option value="">Todos</option>
+      <option *ngFor="let r of allowedRoleOptions" [value]="r">{{ r }}</option>
+    </select>
+  </div>
 
-   <!-- Botón editar -->
-<button type="button" (click)="abrirModal(miembro)">✏️ Editar</button>
-
-<!-- Modal -->
-<app-editar-miembro
-  *ngIf="mostrarModal"
-  [miembro]="miembroSeleccionado"
-  [catalogs]="catalogs"
-  [allowedRoles]="allowedRoleOptions"
-  (cerrar)="cerrarModal()"
-  (guardar)="guardarCambios($event)">
-</app-editar-miembro>
-
+  <div class="filter-item">
+    <label>Estado</label>
+    <select formControlName="state">
+      <option value="">Todos</option>
+      <option value="ACTIVE">Activo</option>
+      <option value="INACTIVE">Inactivo</option>
+    </select>
   </div>
 </div>
+
+
+  <!-- 🔽 botones dentro del form -->
+  <!-- 🔹 Fila inferior: Mostrar por página + Botones -->
+<div class="filters-row bottom-row">
+  <div class="filter-item small">
+    <label>Mostrar por página</label>
+    <select formControlName="size">
+      <option *ngFor="let s of pageSizes" [value]="s">{{ s }}</option>
+    </select>
+  </div>
+
+  <div class="buttons-group">
+    <button type="button" (click)="refreshData()" [disabled]="loading">Actualizar datos</button>
+    <button type="button" (click)="filterForm.reset({ q: '', department: '', job: '', office: '', state: '', role: '', size: pageSizes[0] })">
+      Limpiar filtros
+    </button>
+    <app-fagregar-miembro></app-fagregar-miembro>
+  </div>
+</div>
+
+</form>  <!-- ✅ ahora el form se cierra correctamente -->
+
+    
+
+    
+
+
+  <!-- Status / error -->
+  <div class="row status-row">
+    <span class="muted" *ngIf="!error && !loading">{{ filtered.length }} resultados</span>
+    <span class="muted" *ngIf="loading">Cargando empleados...</span>
+    <span class="error" *ngIf="error">{{ error }}</span>
+  </div>
+
+  <!-- Table -->
+  <div class="table-wrap">
+    <table class="team-table" *ngIf="!loading && filtered.length >= 0">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Departamento</th>
+          <th>Oficina</th>
+          <th>Posición</th>
+          <th>Tarifa (por hora)</th>
+          <th>Rol</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let m of pagedResults">
+          <td>{{ m.name ?? '(Sin nombre)' }}</td>
+          <td>{{ m.departmentName ?? '-' }}</td>
+          <td>{{ m.officeName ?? '-' }}</td>
+          <td>{{ m.jobPositionName ?? '-' }}</td>
+          <td>{{ m.billableRate != null ? m.billableRate : '-' }}</td>
+          <td>{{ (m.accountRole ?? (m.roles?.[0] || '-')) }}</td>
+          <td>{{ m.state ?? '-' }}</td>
+          <td>
+            <button class="btn-edit" (click)="abrirModal(m)">✏️ Editar</button>
+            <button class="btn-delete" (click)="eliminarEmpleado(m.id)">🗑️ Eliminar</button>
+          </td>
+        </tr>
+        <tr *ngIf="!pagedResults.length">
+          <td colspan="8" class="muted">No hay resultados</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination" *ngIf="totalPages > 1">
+    <button (click)="setPage(1)" [disabled]="page === 1">«</button>
+    <button (click)="setPage(page - 1)" [disabled]="page === 1">‹</button>
+
+    <button *ngFor="let p of [].constructor(totalPages) | slice:0:totalPages; let i = index"
+            (click)="setPage(i+1)"
+            [class.active]="page === (i+1)">
+      {{ i+1 }}
+    </button>
+
+    <button (click)="setPage(page + 1)" [disabled]="page === totalPages">›</button>
+    <button (click)="setPage(totalPages)" [disabled]="page === totalPages">»</button>
+  </div>
+
+  <!-- Modal editar -->
+  <app-editar-miembro
+    *ngIf="mostrarModal"
+    [miembro]="miembroSeleccionado"
+    [catalogs]="catalogs"
+    [allowedRoles]="allowedRoleOptions"
+    (cerrar)="cerrarModal()"
+    (guardar)="guardarCambios($event)">
+  </app-editar-miembro>
+

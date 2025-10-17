@@ -1,75 +1,64 @@
-<div class="editar-container">
-  <h2>Editar miembro</h2>
+<div class="editar-miembro-modal">
+  <div class="modal-backdrop" (click)="cerrarModal()"></div>
 
-  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div class="modal-container">
+    <div class="modal-content" (click)="$event.stopPropagation()">
 
-    <!-- Nombre -->
-    <div class="form-field">
-      <label>Nombre</label>
-      <input type="text" formControlName="nombre" />
+      <h2 class="modal-title">Editar Miembro</h2>
+
+      <form [formGroup]="form" (ngSubmit)="guardarCambios()" class="form-grid">
+
+        <!-- Columna izquierda / derecha (placeholders) -->
+        <input
+          type="text"
+          formControlName="nombre"
+          placeholder="Nombre"
+          class="form-input"
+          autocomplete="off"
+        />
+
+        <select formControlName="departamento" class="form-input">
+          <option value="">Departamento</option>
+          <option *ngFor="let d of catalogs.departments" [value]="d.name">{{ d.name }}</option>
+        </select>
+
+        <select formControlName="oficina" class="form-input">
+          <option value="">Oficina</option>
+          <option *ngFor="let o of catalogs.offices" [value]="o.name">{{ o.name }}</option>
+        </select>
+
+        <select formControlName="posicion" class="form-input">
+          <option value="">Posición</option>
+          <option *ngFor="let j of catalogs.jobs" [value]="j.name">{{ j.name }}</option>
+        </select>
+
+        <select formControlName="rol" class="form-input">
+          <option value="">Rol</option>
+          <option *ngFor="let r of allowedRoles" [value]="r">{{ r }}</option>
+        </select>
+
+        <input
+          type="number"
+          formControlName="tarifa"
+          placeholder="Tarifa facturable"
+          class="form-input"
+          min="0"
+        />
+
+        <!-- Estado ocupa toda la fila -->
+        <select formControlName="estado" class="form-input full-width">
+          <option value="">Estado</option>
+          <option value="ACTIVE">Activo</option>
+          <option value="INACTIVE">Inactivo</option>
+        </select>
+
+        <!-- Botones: full-width para alinear a la derecha -->
+        <div class="modal-buttons full-width">
+          <button type="button" class="btn-cancelar" (click)="cerrarModal()">Cancelar</button>
+          <button type="submit" class="btn-guardar">Guardar cambios</button>
+        </div>
+
+      </form>
     </div>
-
-    <!-- Departamento -->
-    <div class="form-field">
-      <label>Departamento</label>
-      <select formControlName="departamento">
-        <option value="">Seleccione...</option>
-        <option *ngFor="let d of catalogs?.departamentos" [value]="d.nombre">
-          {{ d.nombre }}
-        </option>
-      </select>
-    </div>
-
-    <!-- Oficina -->
-    <div class="form-field">
-      <label>Oficina</label>
-      <select formControlName="oficina">
-        <option value="">Seleccione...</option>
-        <option *ngFor="let o of catalogs?.oficinas" [value]="o.nombre">
-          {{ o.nombre }}
-        </option>
-      </select>
-    </div>
-
-    <!-- Posición -->
-    <div class="form-field">
-      <label>Posición</label>
-      <select formControlName="posicion">
-        <option value="">Seleccione...</option>
-        <option *ngFor="let p of catalogs?.posiciones" [value]="p.nombre">
-          {{ p.nombre }}
-        </option>
-      </select>
-    </div>
-
-    <!-- Rol -->
-    <div class="form-field">
-      <label>Rol</label>
-      <select formControlName="rol">
-        <option value="">Seleccione...</option>
-        <option *ngFor="let r of allowedRoles" [value]="r">{{ r }}</option>
-      </select>
-    </div>
-
-    <!-- Tarifa -->
-    <div class="form-field">
-      <label>Tarifa</label>
-      <input type="number" formControlName="tarifa" />
-    </div>
-
-    <!-- Estado -->
-    <div class="form-field">
-      <label>Estado</label>
-      <select formControlName="estado">
-        <option value="Activo">Activo</option>
-        <option value="Inactivo">Inactivo</option>
-      </select>
-    </div>
-
-    <!-- Botones -->
-    <div class="acciones">
-      <button type="submit" class="btn-guardar" [disabled]="form.invalid">Guardar cambios</button>
-      <button type="button" class="btn-cerrar" (click)="onCerrar()">Cancelar</button>
-    </div>
-  </form>
+  </div>
 </div>
