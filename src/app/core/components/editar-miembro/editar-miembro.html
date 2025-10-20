@@ -34,7 +34,8 @@
 
         <select formControlName="rol" class="form-input">
           <option value="">Rol</option>
-          <option *ngFor="let r of allowedRoles" [value]="r">{{ r }}</option>
+          <!-- Si el padre pasó allowedRoles ya filtrados, solo los mostramos; por seguridad, si ADMIN aparece OWNER lo deshabilitamos -->
+          <option *ngFor="let r of allowedRoles" [value]="r" [disabled]="(r === 'OWNER') && isAdmin()">{{ r }}</option>
         </select>
 
         <input

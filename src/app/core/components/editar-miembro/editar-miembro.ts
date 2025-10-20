@@ -107,6 +107,21 @@ export class EditarMiembroComponent implements OnInit, OnChanges {
     });
   }
 
+  private getEmployeeRoles(e: any): string[] {
+    const arr = (Array.isArray(e?.roles)
+      ? e.roles
+      : (Array.isArray(e?.account?.roles) ? e.account.roles
+        : (Array.isArray(e?.accountRoles) ? e.accountRoles
+          : (Array.isArray(e?.account?.authorities) ? e.account.authorities : []))));
+    const mapped = (arr as any[]).map((r: any) => typeof r === 'string' ? r : (r?.name || r?.role || r?.authority || r?.rol || r?.roleName || r?.label)).filter(Boolean) as string[];
+    const single = (e?.accountRole || e?.account?.role);
+    const singles = single ? [String(single)] : [];
+    return [...new Set([...mapped, ...singles].map(x => String(x).toUpperCase()))];
+  }
+
+  // Expose admin check for template
+  isAdmin(): boolean { return this.auth.hasRole('ADMIN'); }
+
   // Llamado desde el botón "Cancelar" del template
   cerrarModal() {
     this.cerrar.emit();
@@ -121,6 +136,17 @@ export class EditarMiembroComponent implements OnInit, OnChanges {
     }
 
     const v = this.form.value;
+    // Si ADMIN intenta editar OWNER o asignar OWNER, bloquear
+    const targetRoles = this.getEmployeeRoles(this.miembro);
+    if (this.auth.hasRole('ADMIN') && targetRoles.includes('OWNER')) {
+      alert('No autorizado: un ADMIN no puede editar a un OWNER.');
+      return;
+    }
+    const newRole = String(v.rol || '').toUpperCase();
+    if (this.auth.hasRole('ADMIN') && newRole === 'OWNER') {
+      alert('No autorizado: un ADMIN no puede asignar rol OWNER.');
+      return;
+    }
 
     // Construir payload consistente con lo que el backend espera
     const payload = {
@@ -129,7 +155,7 @@ export class EditarMiembroComponent implements OnInit, OnChanges {
       departmentName: v.departamento,
       officeName: v.oficina,
       jobPositionName: v.posicion,
-      accountRole: v.rol,
+  accountRole: newRole,
       billableRate: Number(v.tarifa),
       state: v.estado
     };

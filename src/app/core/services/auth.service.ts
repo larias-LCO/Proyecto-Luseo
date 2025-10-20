@@ -35,7 +35,24 @@ export class AuthService {
     const token = this.getStoredToken();
     const username = localStorage.getItem(this.usernameKey) || undefined;
     const rolesJson = localStorage.getItem(this.rolesKey);
-    const roles = rolesJson ? (JSON.parse(rolesJson) as string[]) : undefined;
+    let roles = rolesJson ? (JSON.parse(rolesJson) as string[]) : undefined;
+    // Fallback: try to decode roles from JWT if not explicitly stored
+    if ((!roles || roles.length === 0) && token) {
+      const decoded = this.decodeJwt(token);
+      const rawRoles = decoded?.roles
+        ?? decoded?.authorities
+        ?? decoded?.scopes
+        ?? decoded?.scope
+        ?? decoded?.role
+        ?? decoded?.claims?.roles;
+      if (Array.isArray(rawRoles)) {
+        roles = rawRoles.map((r: any) => typeof r === 'string' ? r : (r?.name || r?.role || r?.authority || r?.rol || r?.roleName || r?.label)).filter(Boolean);
+      } else if (typeof rawRoles === 'string') {
+        // could be comma/space separated
+        const parts = rawRoles.split(/[ ,]+/).map(s => s.trim()).filter(Boolean);
+        roles = parts.length ? parts : undefined;
+      }
+    }
     this.state.set({ authenticated: !!token, token: token || undefined, username, roles });
   }
 
@@ -59,6 +76,20 @@ export class AuthService {
   async bootstrap(options?: { apiBase?: string }) {
     if (options?.apiBase !== undefined) this.configure(options.apiBase);
     this.loadFromStorage();
+  }
+
+  private decodeJwt(token: string): any | undefined {
+    try {
+      const parts = token.split('.');
+      if (parts.length < 2) return undefined;
+      const base64Url = parts[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const padded = base64.padEnd(base64.length + (4 - (base64.length % 4)) % 4, '=');
+      const json = atob(padded);
+      return JSON.parse(json);
+    } catch {
+      return undefined;
+    }
   }
 
   private getCookie(name: string): string | null {

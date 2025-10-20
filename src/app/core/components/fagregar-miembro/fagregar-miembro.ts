@@ -38,6 +38,11 @@ export class FagregarMiembroComponent {
   }
 
   abrirModal() {
+    // Solo ADMIN u OWNER pueden abrir
+    if (!(this.auth.hasRole('ADMIN') || this.auth.hasRole('OWNER'))) {
+      alert('No autorizado: tu rol no permite agregar miembros.');
+      return;
+    }
     this.mostrarModal = true;
   }
 
@@ -97,6 +102,11 @@ export class FagregarMiembroComponent {
     const username = v.usuario?.trim();
     const password = v.password;
     const role = String(v.rol || '').toUpperCase();
+    // ADMIN no puede crear OWNER
+    if (this.auth.hasRole('ADMIN') && role === 'OWNER') {
+      alert('No autorizado: un ADMIN no puede crear usuarios con rol OWNER.');
+      return;
+    }
     try {
       // 1) Crear cuenta: backend espera username/passwordHash/role (role opcional)
       const accApi = `${this.auth.getApiBase()}/accounts`;

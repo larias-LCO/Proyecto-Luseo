@@ -14,7 +14,7 @@
   <!-- Buscar por nombre -->
   <div class="filter-search">
     <label>Buscar por nombre</label>
-    <input id="searchInput" type="text" placeholder="Ej: Carlos, Herrera" />
+  <input id="searchInput" type="text" placeholder="Ej: Carlos, Herrera" formControlName="q" />
     <div class="muted">Búsqueda parcial, sin distinguir mayúsculas ni tildes. Filtra localmente.</div>
   </div>
 
@@ -54,7 +54,7 @@
     <label>Rol</label>
     <select formControlName="role">
       <option value="">Todos</option>
-      <option *ngFor="let r of allowedRoleOptions" [value]="r">{{ r }}</option>
+      <option *ngFor="let r of roleFilterOptions" [value]="r">{{ r }}</option>
     </select>
   </div>
 
@@ -80,7 +80,13 @@
   </div>
 
   <div class="buttons-group">
-    <app-fagregar-miembro></app-fagregar-miembro>
+    <!-- Mostrar botón Agregar solo a ADMIN y OWNER -->
+    <app-fagregar-miembro
+      *ngIf="canAddMember"
+      [catalogs]="catalogs"
+      [allowedRoles]="allowedRoleOptions"
+      (created)="refreshData()"
+    ></app-fagregar-miembro>
     <button type="button" (click)="refreshData()" [disabled]="loading">Actualizar datos</button>
     <button type="button" (click)="filterForm.reset({ q: '', department: '', job: '', office: '', state: '', role: '', size: pageSizes[0] })">
       Limpiar filtros
@@ -150,11 +156,11 @@
             <span
               class="role-badge"
               [ngClass]="{
-                'role-admin': (m.accountRole ?? (m.roles?.[0] || '')) === 'ADMIN',
-                'role-owner': (m.accountRole ?? (m.roles?.[0] || '')) === 'OWNER',
-                'role-user': (m.accountRole ?? (m.roles?.[0] || '')) === 'USER'
+                'role-admin': getEmployeeRoles(m).includes('ADMIN'),
+                'role-owner': getEmployeeRoles(m).includes('OWNER'),
+                'role-user': getEmployeeRoles(m).includes('USER')
               }">
-              {{ (m.accountRole ?? (m.roles?.[0] || '-')) | uppercase }}
+              {{ (getEmployeeRoles(m)[0] || (m.accountRole ?? (m.roles?.[0] || '-'))) | uppercase }}
             </span>
           </td>
 
@@ -172,12 +178,28 @@
 
           <!-- Acciones (alineadas a la derecha) -->
           <td class="td-actions text-right">
-            <button class="btn-action btn-edit" (click)="abrirModal(m)" aria-label="Editar {{m.name}}">
-              ✏️ Editar
-            </button>
-            <button class="btn-action btn-delete" (click)="eliminarEmpleado(m.id)" aria-label="Eliminar {{m.name}}">
-              🗑️ Eliminar
-            </button>
+            <!-- Ocultar acciones para USER; ADMIN no puede tocar OWNER -->
+            <ng-container *ngIf="canEditDelete && !(isAdmin && getEmployeeRoles(m).includes('OWNER')); else noActions">
+              <button
+                class="btn-action btn-edit"
+                (click)="abrirModal(m)"
+                [title]="'Editar'"
+                aria-label="Editar {{m.name}}"
+              >
+                ✏️ Editar
+              </button>
+              <button
+                class="btn-action btn-delete"
+                (click)="eliminarEmpleado(m.id)"
+                [title]="'Eliminar'"
+                aria-label="Eliminar {{m.name}}"
+              >
+                🗑️ Eliminar
+              </button>
+            </ng-container>
+            <ng-template #noActions>
+              <span class="muted">—</span>
+            </ng-template>
           </td>
         </tr>
 

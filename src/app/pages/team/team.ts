@@ -34,9 +34,11 @@ export class TeamComponent implements OnInit, OnDestroy {
   private fb = new FormBuilder();
 
   // Permissions
-  private get isOwner() { return this.auth.hasRole?.('OWNER'); }
-  private get isAdmin() { return this.auth.hasRole?.('ADMIN'); }
-  get canAddMember() { return !!(this.isOwner || this.isAdmin); }
+  get isOwner() { return !!this.auth.hasRole?.('OWNER'); }
+  get isAdmin() { return !!this.auth.hasRole?.('ADMIN'); }
+  get isUser() { return !!this.auth.hasRole?.('USER'); }
+  get canAddMember() { return this.isOwner || this.isAdmin; }
+  get canEditDelete() { return this.isOwner || this.isAdmin; }
 
   // Reactive form for filters
   filterForm: FormGroup;
@@ -52,6 +54,8 @@ export class TeamComponent implements OnInit, OnDestroy {
   // catalogs & allowed roles
   catalogs: { departments: any[]; jobs: any[]; offices: any[] } = { departments: [], jobs: [], offices: [] };
   allowedRoleOptions: string[] = [];
+  // Filter options should always allow filtering by any role
+  roleFilterOptions: string[] = ['USER', 'ADMIN', 'OWNER'];
 
   // UI
   loading = false;
@@ -226,6 +230,14 @@ export class TeamComponent implements OnInit, OnDestroy {
 
   // ------------------ Table actions & helpers ------------------
   abrirModal(miembro: Employee) {
+    // Si es ADMIN, no puede editar a OWNER
+    if (this.isAdmin) {
+      const r = this.getEmployeeRoles(miembro);
+      if (r.includes('OWNER')) {
+        alert('No autorizado: un ADMIN no puede editar a un OWNER.');
+        return;
+      }
+    }
     this.miembroSeleccionado = { ...miembro };
     this.mostrarModal = true;
   }
@@ -261,6 +273,10 @@ export class TeamComponent implements OnInit, OnDestroy {
     if (!target) return;
     const roles = this.getEmployeeRoles(target);
     const isOwner = roles.includes('OWNER');
+    if (!this.canEditDelete) {
+      alert('No autorizado: tu rol no permite eliminar miembros.');
+      return;
+    }
     if (this.isAdmin && isOwner) {
       alert('No autorizado: un ADMIN no puede eliminar a un OWNER.');
       return;
