@@ -69,7 +69,7 @@
 </div>
 
 
-  <!-- 🔽 botones dentro del form -->
+  <!--  botones dentro del form -->
   <!-- 🔹 Fila inferior: Mostrar por página + Botones -->
 <div class="filters-row bottom-row">
   <div class="filter-item small">
@@ -80,15 +80,16 @@
   </div>
 
   <div class="buttons-group">
+    <app-fagregar-miembro></app-fagregar-miembro>
     <button type="button" (click)="refreshData()" [disabled]="loading">Actualizar datos</button>
     <button type="button" (click)="filterForm.reset({ q: '', department: '', job: '', office: '', state: '', role: '', size: pageSizes[0] })">
       Limpiar filtros
     </button>
-    <app-fagregar-miembro></app-fagregar-miembro>
+    
   </div>
 </div>
 
-</form>  <!-- ✅ ahora el form se cierra correctamente -->
+</form>  <!--  ahora el form se cierra correctamente -->
 
     
 
@@ -106,31 +107,80 @@
   <div class="table-wrap">
     <table class="team-table" *ngIf="!loading && filtered.length >= 0">
       <thead>
-        <tr>
-          <th>Nombre</th>
-          <th>Departamento</th>
-          <th>Oficina</th>
-          <th>Posición</th>
-          <th>Tarifa (por hora)</th>
-          <th>Rol</th>
-          <th>Estado</th>
-          <th>Acciones</th>
+       <tr>
+          <th class="col-name">Nombre</th>
+          <th class="col-dept">Departamento</th>
+          <th class="col-office">Oficina</th>
+          <th class="col-pos">Posición</th>
+          <th class="col-rate text-right">Tarifa (por hora)</th>
+          <th class="col-role text-center">ROL</th>
+          <th class="col-state text-center">ESTADO</th>
+          <th class="col-actions text-right">Acciones</th>
         </tr>
       </thead>
-      <tbody>
+        <tbody>
         <tr *ngFor="let m of pagedResults">
-          <td>{{ m.name ?? '(Sin nombre)' }}</td>
-          <td>{{ m.departmentName ?? '-' }}</td>
-          <td>{{ m.officeName ?? '-' }}</td>
-          <td>{{ m.jobPositionName ?? '-' }}</td>
-          <td>{{ m.billableRate != null ? m.billableRate : '-' }}</td>
-          <td>{{ (m.accountRole ?? (m.roles?.[0] || '-')) }}</td>
-          <td>{{ m.state ?? '-' }}</td>
-          <td>
-            <button class="btn-edit" (click)="abrirModal(m)">✏️ Editar</button>
-            <button class="btn-delete" (click)="eliminarEmpleado(m.id)">🗑️ Eliminar</button>
+          <!-- Nombre -->
+          <td class="td-name" title="{{ m.name }}">
+            {{ (m.name ?? '(Sin nombre)') }}
+          </td>
+
+          <!-- Departamento -->
+          <td class="td-dept" title="{{ m.departmentName }}">
+            {{ m.departmentName ?? '-' }}
+          </td>
+
+          <!-- Oficina -->
+          <td class="td-office" title="{{ m.officeName }}">
+            {{ m.officeName ?? '-' }}
+          </td>
+
+          <!-- Posición -->
+          <td class="td-pos" title="{{ m.jobPositionName }}">
+            {{ m.jobPositionName ?? '-' }}
+          </td>
+
+          <!-- Tarifa (alineada a la derecha, con formato si tienes uno) -->
+          <td class="td-rate text-right">
+            {{ m.billableRate != null ? (m.billableRate | number:'1.0-2') : '-' }}
+          </td>
+
+          <!-- Rol (badge, uppercase) -->
+          <td class="td-role text-center">
+            <span
+              class="role-badge"
+              [ngClass]="{
+                'role-admin': (m.accountRole ?? (m.roles?.[0] || '')) === 'ADMIN',
+                'role-owner': (m.accountRole ?? (m.roles?.[0] || '')) === 'OWNER',
+                'role-user': (m.accountRole ?? (m.roles?.[0] || '')) === 'USER'
+              }">
+              {{ (m.accountRole ?? (m.roles?.[0] || '-')) | uppercase }}
+            </span>
+          </td>
+
+          <!-- Estado (badge, uppercase) -->
+          <td class="td-state text-center">
+            <span
+              class="state-badge"
+              [ngClass]="{
+                'state-active': (m.state || '') === 'ACTIVE',
+                'state-inactive': (m.state || '') === 'INACTIVE'
+              }">
+              {{ (m.state ?? '-') | uppercase }}
+            </span>
+          </td>
+
+          <!-- Acciones (alineadas a la derecha) -->
+          <td class="td-actions text-right">
+            <button class="btn-action btn-edit" (click)="abrirModal(m)" aria-label="Editar {{m.name}}">
+              ✏️ Editar
+            </button>
+            <button class="btn-action btn-delete" (click)="eliminarEmpleado(m.id)" aria-label="Eliminar {{m.name}}">
+              🗑️ Eliminar
+            </button>
           </td>
         </tr>
+
         <tr *ngIf="!pagedResults.length">
           <td colspan="8" class="muted">No hay resultados</td>
         </tr>
@@ -162,4 +212,4 @@
     (cerrar)="cerrarModal()"
     (guardar)="guardarCambios($event)">
   </app-editar-miembro>
-
+</div>

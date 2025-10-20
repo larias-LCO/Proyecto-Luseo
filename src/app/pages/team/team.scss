@@ -1,35 +1,158 @@
+/* ====== TEAM PAGE STYLES ====== */
 .team-container, .team-container * { box-sizing: border-box; }
-.team-container { 
-  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; 
+.team-container {
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   /* Evitar superposición con header (70px) y sidebar (250px) */
   margin-top: 70px;
   margin-left: 250px;
   padding: 24px;
 }
 
-.team-container .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; margin-bottom: 12px; }
-.team-container .actions-toolbar { display: flex; gap: 10px; align-items: center; }
-.team-container .actions-toolbar .add-host { display: inline-flex; align-items: center; }
+.team-container h1 {
+  font-size: 38px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: #0b2a5b;
+}
 
-// label { font-size: 12px; color: #333; display: block; margin-bottom: 4px; }
-/* Responsive: cuando el sidebar se comporta como overlay, liberamos el margen izquierdo */
-@media (max-width: 992px) {
-  .team-container {
-    margin-left: 0;
-    padding: 16px;
+/* ====== TABLE ====== */
+.table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  margin-top: 15px;
+}
+
+.team-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 6px;
+  overflow: hidden;
+  font-size: 15px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+
+  thead {
+    background: #f4f6f8;
+    text-align: left;
+
+    th {
+      padding: 12px;
+      font-weight: 600;
+    }
+  }
+
+  tbody tr {
+    border-bottom: 1px solid #e6e6e6;
+    transition: background 0.2s;
+  }
+
+  tbody tr:hover {
+    background: #feffc8;
+  }
+
+  td {
+    padding: 12px;
+    vertical-align: middle;
+  }
+
+  .text-right {
+    text-align: right;
+  }
+
+  .text-center {
+    text-align: center;
   }
 }
 
-/* ----- FILTROS ----- */
-.filters-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1.2rem;
-  margin-bottom: 1rem;
-  width: 100%;
-
+/* ====== BADGES ====== */
+.role-badge,
+.state-badge {
+  padding: 4px 8px;
+  border-radius: 11px;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-block;
+  text-transform: uppercase;
 }
 
+/* Roles */
+.role-admin {
+  background-color: #4aa0fc;
+  color: white;
+}
+
+.role-owner {
+  background-color: #0056b3;
+  color: white;
+}
+
+.role-user {
+  background-color: #6c757d;
+  color: white;
+}
+
+/* Estados */
+.state-active {
+  background-color: #108d2e;
+  color: white;
+}
+
+.state-inactive {
+  background-color: #f04354;
+  color: white;
+}
+
+/* ====== ACCIONES ====== */
+.btn-action {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 13px;
+  padding: 6px 10px;
+  border-radius: 4px;
+  transition: 0.2s ease;
+  margin-left: 4px;
+}
+
+.btn-action:hover {
+  opacity: 0.8;
+}
+
+.btn-edit {
+  background-color: #e3f2fd;
+  color: #007bff;
+}
+
+.btn-delete {
+  background-color: #fdecea;
+  color: #d93025;
+}
+
+/* ====== PAGINATION ====== */
+.pagination {
+  text-align: center;
+  margin-top: 15px;
+
+  button {
+    border: 1px solid #d1d5db;
+    background: white;
+    padding: 6px 10px;
+    margin: 0 2px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  button.active {
+    background: #007bff;
+    color: white;
+    border-color: #007bff;
+  }
+
+  button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
 /* Buscar por nombre */
 .filter-search label,
 .filters-row label {
@@ -39,33 +162,34 @@
   color: #444;
   margin-bottom: 6px;
 }
-
+ 
 .filter-search input {
-  width: 100%;
+  width: 50%;
   padding: 10px;
   border: 1px solid #d1d5db;
   border-radius: 6px;
   font-size: 14px;
 }
-
+ 
 .muted {
   font-size: 12px;
   color: #777;
   margin-top: 3px;
 }
-
+ 
 /* Filtros en fila */
 .filters-row {
   display: flex;
   flex-wrap: nowrap;
   width: 100%;
+  margin-top: 30px;
 }
-
+ 
 .filter-item {
   flex: 1;
   min-width: 150px;
 }
-
+ 
 .filter-item select {
   width: 75%;
   padding: 10px;
@@ -75,7 +199,7 @@
   font-size: 14px;
   cursor: pointer;
 }
-
+ 
 /* Hover y enfoque */
 input:focus,
 select:focus {
@@ -84,23 +208,63 @@ select:focus {
   box-shadow: 0 0 4px rgba(37, 99, 235, 0.3);
   transition: all 0.2s ease-in-out;
 }
-
-
-.team-container button{
-  margin-right: 6px;
-  color: #fff;
-  min-width: 120px;
-  height: 36px;
-  padding: 0.5rem 1rem;
-  font-size: 14px;
-  border-radius: 6px;
-  border: none;
-  background: linear-gradient(180deg, #0d3d8c, #0b2a5b);
-  box-shadow: 0 4px 10px rgba(13,61,140,0.2);
-  cursor: pointer;
-  transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+ /* 🔹 Versión pequeña del filtro "Mostrar por página" */
+.bottom-row {
+  display: flex;
+  justify-content: space-between; /* Filtro izquierda, botones derecha */
+  align-items: flex-end;
+  margin-top: 10px;
 }
-.filter-buttons {
+ 
+/* 🔹 Filtro pequeño */
+.bottom-row .filter-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 120px;
+}
+/* ✅ Le damos separación al label */
+.bottom-row .filter-item label {
+  font-size: 14px;
+  margin-bottom: 4px; /* <- separación entre texto y select */
+  color: #333;
+}
+
+// .filter-buttons {
+//   display: flex;
+//   gap: 1rem;
+//   flex-basis: 100%; /* hace que bajen a la siguiente fila */
+//   justify-content: flex-end; /* los coloca a la derecha */
+//   margin-top: 0.5rem;
+//   color: #fff;
+//   min-width: 120px;
+//   height: 36px;
+//   padding: 0.5rem 1rem;
+//   font-size: 14px;
+//   border-radius: 6px;
+//   border: none;
+ 
+// }
+// .team-container button{
+//   margin-right: 6px;
+//   color: #fff;
+//   min-width: 120px;
+//   height: 36px;
+//   padding: 0.5rem 1rem;
+//   font-size: 14px;
+//   border-radius: 6px;
+//   border: none;
+//   background: linear-gradient(180deg, #0d3d8c, #0b2a5b);
+//   box-shadow: 0 4px 10px rgba(13,61,140,0.2);
+//   cursor: pointer;
+//   transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+// }
+
+
+
+
+//botones de actualizar datos y de limpiar filtros
+.buttons-group{
   display: flex;
   gap: 1rem;
   flex-basis: 100%; /* hace que bajen a la siguiente fila */
@@ -113,162 +277,19 @@ select:focus {
   font-size: 14px;
   border-radius: 6px;
   border: none;
- 
+  
 }
-/* 🔹 Versión pequeña del filtro "Mostrar por página" */
-.bottom-row {
-  display: flex;
-  justify-content: space-between; /* Filtro izquierda, botones derecha */
-  align-items: flex-end;
-  margin-top: 0.5rem;
-}
-
-/* 🔹 Filtro pequeño */
-.bottom-row .filter-item {
-  display: flex;
-  flex-direction: column;
+.buttons-group button{
+ margin-right: 6px;
+  color: #fff;
   min-width: 120px;
-  max-width: 150px;
-}
-
-
-
-
-.team-container button.outline { background: #fff; color: #0b2a5b; border: 1px solid #e0e6ef; box-shadow: 0 2px 8px rgba(2,18,46,0.05); }
-.team-container button.outline:hover { background: #f7faff; border-color: #cad6ec; }
-.team-container button.secondary { background: linear-gradient(180deg, #6f7cff, #4b5aff); }
-.team-container button:hover {
-  transform: translateY(-1px);
-  background: linear-gradient(180deg, #1350b6, #123a7a);
-  box-shadow: 0 8px 16px rgba(13,61,140,0.28);
-}
-.team-container h1{
-  color: #0b2a5b;
-}
-
-.team-container input[type="text"], .team-container select { padding: 10px 12px; font-size: 14px; border-radius: 8px; border: 1px solid #dfe3ea; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,0.03) inset; }
-
-.team-container input[type="text"] { width: 100%; max-width: 520px; }
-
-.team-container select { min-width: 160px; }
-
-.team-container label { font-weight: 600; color: #2d3a4a; }
-
-.team-container .muted { color: #5a5a5a; font-size: 12px; }
-
-.team-container .error { color: #b00020; }
-
-.team-container ul { list-style: none; padding: 0; }
-
-.team-container li { border: 1px solid #ddd; border-radius: 6px; padding: 10px; margin-bottom: 8px; }
-
-.team-container .name { font-weight: 600; }
-
-.team-container .meta { margin-top: 6px; color: #444; font-size: 13px; }
-
-.team-container .meta span { display: inline-block; margin-right: 12px; }
-
-.team-container .spacer { flex: 1 1 auto; }
-
-// button { padding: 8px 10px; font-size: 13px; }
-
-/* Pagination */
-
-.team-container .pagination { display: flex; align-items: center; gap: 8px; }
-
-.team-container .pagination button { padding: 6px 10px; }
-
-.team-container .page-info { font-size: 12px; color: #444; }
-
-/* Lista expandible de resultados */
-.team-container .results-grid { display: block; margin-top: 10px; }
-.team-container .emp-item {
-  background: #fff;
-  border: 1px solid #e9eef5;
-  border-radius: 14px;
-  box-shadow: 0 8px 24px rgba(2, 18, 46, 0.06);
-  overflow: hidden;
-}
-.team-container .emp-item + .emp-item { margin-top: 10px; }
-.team-container .emp-head {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 14px 16px;
-  flex-wrap: wrap;
-}
-.team-container .avatar {
-  width: 36px; height: 36px; border-radius: 50%;
-  background: linear-gradient(135deg, #4f67ff, #8a9bff);
-  color: #fff; display: inline-flex; align-items: center; justify-content: center;
-  font-size: 14px; font-weight: 800; letter-spacing: 0.5px;
-  box-shadow: 0 3px 8px rgba(79,103,255,0.3);
-}
-.team-container .emp-name { font-weight: 700; color: #0b2a5b; }
-.team-container .emp-tags { display: flex; gap: 8px; align-items: center; }
-.team-container .emp-tags em { color: #3a3a3a; font-style: normal; }
-.team-container .emp-right { margin-left: auto; display: flex; gap: 6px; align-items: center; }
-.team-container .emp-body { padding: 12px 16px 16px; border-top: 1px dashed #e6e6e6; background: #fbfcfe; }
-.team-container .meta span { margin-right: 10px; color: #3a3a3a; }
-.team-container .actions { margin-top: 10px; display: flex; align-items: center; gap: 8px; }
-.team-container .btn { border-radius: 6px; }
-.team-container .btn-edit { background: #0b2a5b; }
-.team-container .btn-delete { background: #c79500; /* mostaza */ }
-.team-container .btn-delete:hover { background: #a67e00; }
-
-/* Chips */
-.team-container .chip {
-  display: inline-flex;
-  align-items: center;
-  height: 22px;
-  padding: 0 8px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.2px;
-  box-shadow: 0 1px 0 rgba(0,0,0,0.04);
-}
-.team-container .chip-state { background: #eaf1ff; color: #0b2a5b; border: 1px solid #d3e0ff; }
-.team-container .chip-role { background: #fff6db; color: #8c6900; border: 1px solid #ffe39c; }
-
-/* Optional: specific variants (if you later map statuses) */
-.team-container .state-ACTIVO, .team-container .state-ACTIVE { background: #e8f8f0; color: #087443; border-color: #b8efd7; }
-.team-container .state-INACTIVO, .team-container .state-INACTIVE { background: #fff0da; color: #a25e00; border-color: #ffd9a3; }
-
-/* Role-specific variants */
-.team-container .role-OWNER { background: #fde8e8; color: #a12a2a; border-color: #f9caca; }
-.team-container .role-ADMIN { background: #e8f0fe; color: #1a53c7; border-color: #c8d6fd; }
-.team-container .role-PM { background: #e7f7ff; color: #0b6b8c; border-color: #c6ecff; }
-.team-container .role-USER { background: #eef7e8; color: #2d6b0b; border-color: #d4efc4; }
-
-/* Stack meta items one under another for readability */
-.team-container .emp-body .meta { display: grid; grid-template-columns: 1fr; row-gap: 6px; }
-
-/* Pagination polish */
-.team-container .pagination { display: flex; align-items: center; gap: 6px; }
-.team-container .pagination .page-btn { 
-  padding: 8px 12px; border-radius: 8px; border: 1px solid #e0e6ef; background: #fff; color: #0b2a5b;
-  cursor: pointer; transition: all .15s ease; box-shadow: 0 1px 2px rgba(0,0,0,0.03);
-}
-.team-container .pagination .page-btn:hover { background: #f2f6ff; border-color: #cdd9f0; }
-.team-container .pagination .page-btn.active { background: #0b2a5b; color: #fff; border-color: #0b2a5b; box-shadow: 0 4px 10px rgba(13,61,140,0.2); }
-.team-container .pagination .page-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-.modal-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.modal-content {
-  background: white;
-  padding: 2rem;
-  border-radius: 12px;
-  min-width: 400px;
-  max-width: 600px;
-  box-shadow: 0 0 20px rgba(0,0,0,0.2);
+  height: 36px;
+  padding: 0.5rem 1rem;
+  font-size: 14px;
+  border-radius: 6px;
+  border: none;
+  background: linear-gradient(180deg, #0d3d8c, #0b2a5b);
+  box-shadow: 0 4px 10px rgba(13,61,140,0.2);
+  cursor: pointer;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
