@@ -140,7 +140,7 @@ export class AuthService {
   }
 
   getApiBase(): string {
-    return this.apiBase || '';
+    return this.apiBase;
   }
 
   getRoles(): string[] {
