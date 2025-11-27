@@ -113,14 +113,15 @@ button {
   font-size: 14px;
   border-radius: 6px;
   border: none;
-  background: linear-gradient(180deg, #0d3d8c, #0b2a5b);
+  font-weight: 500;
+  background: linear-gradient(180deg, #2474f3, #1d3e74);
   box-shadow: 0 4px 10px rgba(13,61,140,0.2);
   cursor: pointer;
   // transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 button:hover {
-  background: linear-gradient(180deg,  #1555bb, #0b2a5b);
+  background: linear-gradient(180deg,  #2474f3, #1d3e74);
   box-shadow: 0 6px 12px rgba(11,42,91,0.3);
   transform: translateY(-2px);
 }

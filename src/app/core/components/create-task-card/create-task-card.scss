@@ -1,0 +1,304 @@
+/* Unificar tamaño de inputs, selects y textarea en el modal */
+.modal-card form input,
+.modal-card form select,
+.modal-card form textarea {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 15px;
+  margin-bottom: 8px;
+}
+
+.modal-card form textarea {
+  resize: vertical;
+}
+
+/* ============ MODAL OVERLAY ============ */
+.btn-create-task {
+  position: relative;
+  background: linear-gradient(180deg, #1e3a8a, #1e40af);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+}
+
+
+
+.modal-show {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.7); // fondo translúcido azul oscuro
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn .25s ease-out;
+    z-index: 1000;
+    padding: 24px;
+}
+
+ 
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* ============ MODAL CARD MODERNO ============ */
+.modal-card {
+  background: #fff;
+  border-radius: 16px; 
+  width: 100%;
+  max-width: 650px;               /* 1. tamaño razonable */
+  height: 800px;
+//   max-height: calc(100vh - 80px); /* 1. no salga de la pantalla */
+  box-shadow: 0 10px 35px rgba(0,0,0,0.25);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  position: relative;
+  z-index: 1100;                  /* 4. asegurar que esté encima de otros elementos */
+}
+
+@keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to   { transform: translateY(0);   opacity: 1; }
+}
+
+/* CUERPO con scroll independiente y padding interno (evita estar pegado) */
+.modal-body {
+  padding: 22px;                   /* 2. separacion interior del borde */
+  overflow: auto;                  /* 1. scroll interno si hace falta */
+  flex: 1 1 auto;
+  background: #fff;
+}
+
+/* ============ HEADER ============ */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.close-x {
+    background: transparent;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+    color: #64748b;
+}
+
+.close-x:hover {
+    color: black;
+    transform: scale(1.1);
+}
+
+/* ============ FORMULARIO ============ */
+.formulario label {
+    font-weight: 600;
+    color: #334155;
+}
+
+.formulario input,
+.formulario select,
+.formulario textarea {
+    width: 100%;
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    margin-top: 4px;
+}
+
+.botones-fin {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.modal-header {
+  background: linear-gradient(135deg, #1e3a8a, #2563eb);
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 22px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-top-left-radius: 16px; 
+  border-top-right-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(8px);
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+/* Título */
+.modal-header #createTaskTitle {
+  font-size: 23px;
+  font-weight: 700;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.15);
+}
+
+.modal-header #createClose {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.25s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 1px 2px rgba(255,255,255,0.2) inset;
+}
+.modal-header #createClose:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+
+.modal-header #createClose:active {
+  transform: scale(0.97);
+  background: rgba(255,255,255,0.3);
+}
+
+/* --- CONTENEDOR DEL FORMULARIO --- */
+#create-task-form {
+  display: flex;
+  flex-direction: column;
+  gap: 22px; /* Espaciado vertical entre cada grupo (label + input) */
+  padding: 5px 0;
+}
+
+/* --- CADA GRUPO DEL FORMULARIO --- */
+.formulario {
+  display: flex;
+  flex-direction: column;
+//   gap: 3px; /* Espacio entre label e input */
+}
+
+/* --- LABEL --- */
+.formulario label {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+/* --- INPUTS, SELECTS, TEXTAREA --- */
+.formulario input,
+.formulario select,
+.formulario textarea {
+  width: 90%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  background: #fff;
+  font-size: 15px;
+  transition: all 0.25s ease;
+}
+
+/* --- FOCUS MODERNO --- */
+.formulario input:focus,
+.formulario select:focus,
+.formulario textarea:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
+}
+
+/* --- SMALL TEXT --- */
+.formulario small {
+  margin-top: -2px;
+  color: #64748b;
+  font-size: 12px;
+}
+
+.modal-footer {
+  padding: 22px 28px;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* ============================================================
+   BUTTONS
+============================================================ */
+.botones-fin {
+    display: flex;
+    cursor: pointer;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+
+
+.btn-create {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 18px;
+  background-color: #e8f2ff;
+  color: #1371f5;
+  border: 1.5px solid #c6ddff;
+  border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: 0.2s ease;
+    padding: 8px 14px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.btn-create:hover {
+  background-color: #d9eaff;
+  transform: translateY(-2px);
+  
+}
+
+
+/* ===== BOTÓN CREATE (estilo rojo suave tipo "Delete") ===== */
+.btn-cerrar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 18px;
+    background: #ffe4e4;           /* rojo pastel */
+    color: #b91c1c;                /* rojo fuerte */
+    border: 1.5px solid #fecaca;     /* borde rojo suave */
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: 0.2s ease;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.btn-cerrar:hover {
+    background: #ffd5d5;
+    transform: translateY(-2px);
+}
+
+/* ===== ICONO ===== */
+.icon {
+    font-size: 16px;
+    line-height: 1;
+}

@@ -1,0 +1,603 @@
+
+    // /* Modal */
+/* CONTENEDOR OSCURO (backdrop) */
+
+.modal {
+  display: none;
+  position: fixed !important;
+  left: 0 !important;
+  top: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  min-width: 100vw !important;
+  min-height: 100vh !important;
+  max-width: 100vw !important;
+  max-height: 100vh !important;
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(4px);
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 24px;
+  overflow: hidden;
+}
+.modal.show { display: flex !important; }
+
+/* TARJETA (modal) - tamaño controlado y scroll interno */
+.modal-card {
+  background: #fff;
+  border-radius: 16px; 
+  width: 100%;
+  max-width: 980px;               /* 1. tamaño razonable */
+  max-height: calc(100vh - 80px); /* 1. no salga de la pantalla */
+  box-shadow: 0 10px 35px rgba(0,0,0,0.25);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  position: relative;
+  z-index: 1100;                  /* 4. asegurar que esté encima de otros elementos */
+}
+
+/* HEADER moderno con profundidad, blur y sutil brillo */
+.modal-header {
+  background: linear-gradient(135deg, #1e3a8a, #2563eb);
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 22px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-top-left-radius: 16px; 
+  border-top-right-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(8px);
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+/* Título */
+.modal-header #createTitle {
+  font-size: 1.15rem;
+  font-weight: 700;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.15);
+}
+
+/* Botón “Close” moderno */
+.modal-header #createClose {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.25s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 1px 2px rgba(255,255,255,0.2) inset;
+}
+.modal-header #createClose:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+
+.modal-header #createClose:active {
+  transform: scale(0.97);
+  background: rgba(255,255,255,0.3);
+}
+
+/* CUERPO con scroll independiente y padding interno (evita estar pegado) */
+.modal-body {
+  padding: 20px;                   /* 2. separacion interior del borde */
+  overflow: auto;                  /* 1. scroll interno si hace falta */
+  flex: 1 1 auto;
+  background: #fff;
+}
+
+/* GRID: controles con espacio respecto a los bordes y entre columnas */
+/* --- Etiquetas --- */
+label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #334155;
+  font-size: 0.9rem;
+}
+
+/* --- Inputs / selects / textarea --- */
+input,
+select,
+textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid #d0d7df;
+  border-radius: 8px;
+  background: #fbfdff;
+  font-size: 0.93rem;
+  transition: box-shadow 0.18s, border-color 0.18s, transform 0.12s;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.12);
+  transform: translateY(-1px);
+}
+
+/* --- Textarea (Notes) --- */
+textarea {
+  min-height: 96px;
+  resize: vertical;
+}
+
+/* --- Grid principal del modal --- */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); /* columnas iguales */
+  gap: 16px 20px;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden; /* evita scroll horizontal */
+}
+
+/* --- Filtros internos (PM / Team) --- */
+.filters {
+  display: flex;
+  flex-wrap: wrap; /* evita overflow horizontal */
+  gap: 12px;
+  align-items: flex-start;
+  margin-bottom: 8px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.filters > div {
+  flex: 1 1 220px; /* mismo ancho visual para cada filtro */
+  min-width: 200px;
+}
+
+/* --- Hint --- */
+.hint {
+  color: #64748b;
+  font-size: 0.83rem;
+  margin-top: 8px;
+}
+
+/* --- Modal body --- */
+.modal-body {
+  padding: 20px;                   /* separacion interior del borde */
+  overflow: auto;                  /* scroll interno si hace falta */
+  flex: 1 1 auto;                  /* permite que el body crezca y el footer quede fuera */
+  min-height: 0;                   /* necesario para que el overflow funcione en flex children */
+  background: #fff;
+}
+
+
+
+/* FOOTER / BOTONERA: siempre al final, alineada a la derecha y fuera de la zona scrolleable si quieres */
+.modal-footer {
+  display:flex;
+  gap: 12px;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 14px 18px;
+  border-top: 1px solid #eef2f6;
+  background: #fff;
+  flex: 0 0 auto;
+}
+
+/* Si tu HTML no tiene .modal-footer: aplicamos a .row para posicionar boton correctamente */
+.row {
+  display:flex;
+  justify-content:flex-end; /* 3. el boton ya no queda centrado */
+  gap: 12px;
+  align-items: center;
+  margin-top: auto; /* empuja el botón hacia el fondo del modal */
+}
+
+/* Estilos botones */
+.btn-primary {
+  background:#2563eb;
+  color:#fff;
+  border:none;
+  padding:10px 16px;
+  border-radius:8px;
+  font-weight:700;
+  cursor:pointer;
+  box-shadow: 0 6px 18px rgba(37,99,235,0.18);
+}
+.btn-primary:hover { background:#1e40af; transform: translateY(-2px); }
+
+.btn-secondary {
+  background:#eef2f6;
+  color:#1f2937;
+  border:1px solid #d1dbe6;
+  padding:8px 12px;
+  border-radius:8px;
+  cursor:pointer;
+}
+.btn-secondary:hover { background:#e2e8f0; }
+
+/* pequeños ajustes responsive */
+@media (max-width:720px) {
+  .modal-card { max-width: 96%; max-height: calc(100vh - 40px); }
+  .modal-body { padding: 14px; }
+  .grid { gap: 10px; }
+  .modal-header { padding: 12px; }
+  .modal-footer { padding: 12px; }
+}
+
+
+  /* Forzar las columnas para que Team quede a la izquierda y Assigned PM a la derecha
+     (Útil si no quieres cambiar el orden del HTML). */
+  .filter-team { grid-column: 1; }
+  .filtro-assigned { grid-column: 2; }
+
+  /* Estilos internos de filtros */
+  .filters {
+    display: flex;
+    gap: 12px;
+    flex-wrap: nowrap;
+    margin: 8px 0 12px 0;
+  }
+  .filters > div {
+    flex: 1 1 0; /* compartir espacio horizontal */
+    min-width: 0; /* para que inputs se contraigan correctamente en flex */
+  }
+  .filters label {
+    display: block;
+    font-size: 0.9rem;
+    margin-bottom: 6px;
+  }
+  .filters input,
+  .filters select {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid #d6dce1;
+    height: 38px;
+  }
+
+  /* Team: filtros apilados uno debajo del otro */
+  .filter-team .filters {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .filter-team .filters > div {
+    flex: 0 0 auto;
+    min-width: 100%;
+  }
+
+  /* listas (select multiple) */
+  select[multiple] {
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 6px;
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #d6dce1;
+    height: 200px; /* ajusta si quieres otro tamaño */
+    overflow: auto;
+  }
+
+  /* hint text */
+  .hint {
+    font-size: 0.82rem;
+    color: #6b7580;
+    margin-top: 10px;
+  }
+
+  /* Responsive: en pantallas pequeñas apila verticalmente */
+  @media (max-width: 900px) {
+    .two-column-grid {
+      grid-template-columns: 1fr;
+    }
+    .filters { flex-direction: column; gap: 10px; }
+  }
+
+
+
+
+//ASSIGNED TEAM 
+/* === TEAM ASSIGNMENT SECTION === */
+.two-column-grid {
+  display: grid;
+  /* force equal halves */
+  grid-template-columns: 50% 50%;
+  gap: 1rem;
+  // margin-top: 0;
+  background-color: #f9fafb;
+  padding: 1.5rem;
+  border-radius: 1rem;
+}
+
+/* === Each Card === */
+.filter-team,
+.filter-pm {
+  background: #ffffff;
+  border-radius: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.2s ease-in-out;
+  border: 1px solid #e5e7eb;
+}
+
+/* Title styling inside each card */
+.filter-team label:first-of-type,
+.filter-pm label:first-of-type {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1f2937;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.filter-team label:first-of-type::before,
+.filter-pm .titulopm::before {
+  content: "👥";
+  font-size: 1rem;
+}
+
+/* Selected members box (chips) */
+.selected-box {
+  min-height: 46px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+  align-items: center;
+}
+.selected-box .chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(90deg, #f0f9ff, #eef2ff);
+  border: 1px solid rgba(59,130,246,0.15);
+  padding: 8px 12px;
+  border-radius: 999px;
+  box-shadow: 0 4px 14px rgba(14, 60, 120, 0.06);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.selected-box .chip-label {
+  font-size: 0.9rem;
+  color: #0f172a;
+}
+.selected-box .chip-meta { color: #64748b; font-size: 0.8rem; margin-left: 6px; }
+.selected-box .chip-avatar {
+  display:inline-flex;align-items:center;justify-content:center;
+  width:32px;height:32px;border-radius:50%;font-weight:700;color:#0b2440;
+  background: linear-gradient(180deg,#dbeafe,#bfdbfe);box-shadow:0 2px 6px rgba(59,130,246,0.12);
+}
+.selected-box .chip:hover{ transform: translateY(-3px); box-shadow:0 8px 22px rgba(14,60,120,0.09);} 
+.selected-box .chip-remove{ background:#fff;border:1px solid rgba(0,0,0,0.06); padding:4px 6px; border-radius:6px; color:#ef4444; cursor:pointer}
+.selected-box .chip-remove {
+  background: transparent;
+  border: 0;
+  color: #ef4444;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+}
+.selected-box .empty-note {
+  color: #94a3b8;
+  font-size: 0.9rem;
+  padding: 6px 8px;
+}
+
+/* Visual feedback for selected options inside multi-selects */
+select[multiple] option:checked,
+select[multiple] option[selected] {
+  background-color: #bfdbfe; /* light blue */
+  color: #0b2240;
+}
+
+/* Fallback for some browsers: apply a stronger style when the option element is selected via attribute */
+select[multiple] option[selected] {
+  background-color: #bfdbfe;
+  color: #0b2240;
+}
+
+/* If the browser ignores option styling, add a subtle highlight for the chips (they show selection too) */
+.chip.selected {
+  background: #dbeafe;
+  border-color: #bfdbfe;
+}
+
+/* === Filter section === */
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin: 1rem 0;
+
+  div {
+    flex: 1;
+    min-width: 120px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+
+    label {
+      font-size: 1rem;
+      color: #6b7280;
+    }
+
+    input,
+    select {
+      border: 1px solid #d1d5db;
+      border-radius: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s ease;
+
+      &:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+      }
+    }
+  }
+}
+
+/* === Listboxes === */
+select[multiple] {
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  padding: 0.5rem;
+  /* allow flex growth so both columns align vertically */
+  flex: 1 1 auto;
+  height: auto;
+  min-height: 180px;
+  background: #f9fafb;
+  color: #111827;
+  font-size: 0.9rem;
+  overflow-y: auto;
+  transition: all 0.2s;
+
+  option {
+    padding: 6px 8px;
+    border-radius: 0.5rem;
+    margin-bottom: 2px;
+    cursor: pointer;
+
+    &:hover {
+      background: #eff6ff;
+    }
+  }
+
+  &:focus {
+    border-color: #2563eb;
+    background: #fff;
+  }
+}
+
+/* === Hint Text === */
+.hint {
+  margin-top: 0.75rem;
+  font-size: 0.8rem;
+  color: #6b7280;
+  line-height: 1.3;
+}
+
+/* === Footer === */
+.footer-row {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 1rem;
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: #2563eb;
+    color: #fff;
+    border: none;
+    padding: 0.6rem 1.4rem;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
+
+    &:hover {
+      background-color: #1e40af;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+    }
+
+    &:active {
+      transform: scale(0.98);
+    }
+  }
+
+  .muted {
+    font-size: 0.85rem;
+    color: #6b7280;
+  }
+}
+
+/* Ensure the two columns align and their inner listboxes stretch to match heights */
+.two-column-grid {
+  align-items: start; /* align both column cards to top */
+}
+
+.two-column-grid > .filter-team,
+.two-column-grid > .filter-pm {
+  display: flex;
+  flex-direction: column;
+  /* ensure both cards have identical height (the grid row height) */
+  height: 100%;
+  min-height: 220px; /* visual baseline */
+  overflow: hidden; /* hide overflow so inner area can scroll */
+}
+
+/* make the listbox inside the column expand to fill available space */
+.two-column-grid select[multiple] {
+  /* make the listbox expand to fill remaining card space and scroll internally */
+  flex: 1 1 auto;
+  min-height: 120px;
+  height: auto;
+  overflow: auto;
+}
+
+/* For the filter blocks: keep filters and hints fixed size, allow the select to absorb extra space */
+.two-column-grid .filters {
+  flex: 0 0 auto;
+}
+.two-column-grid .hint {
+  flex: 0 0 auto;
+}
+
+/* Ensure footer-row spans full grid columns of the parent .grid container */
+.grid > .footer-row {
+  grid-column: 1 / -1;
+}
+
+/* === Responsive === */
+@media (max-width: 900px) {
+  .two-column-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: #2c1d5a;
+  margin-bottom: 0; // más cerca de la sección inferior
+  position: relative;
+  padding-bottom: 6px;
+  margin-top: -9px;
+
+  i {
+    color: #5c2ca3;
+    font-size: 1.4rem;
+    margin-right: 10px;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%; // ocupa todo el ancho del contenedor
+    height: 2px;
+    background: linear-gradient(90deg, #0f189c 0%, #4f78ff 60%, transparent 80%);
+    border-radius: 4px;
+  }
+}

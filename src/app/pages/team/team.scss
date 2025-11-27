@@ -19,114 +19,170 @@
 .table-wrap {
   width: 100%;
   overflow-x: auto;
-  margin-top: 15px;
+  margin-top: 18px;
+  border-radius: 12px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
 }
 
+/* ===== TABLA ===== */
 .team-table {
   width: 100%;
-  border-collapse: collapse;
-  background: white;
-  border-radius: 6px;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #fff;
+  border-radius: 12px;
   overflow: hidden;
-  font-size: 15px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-
-  thead {
-    background: #f4f6f8;
-    text-align: left;
-
-    th {
-      padding: 12px;
-      font-weight: 600;
-    }
-  }
-
-  tbody tr {
-    border-bottom: 1px solid #e6e6e6;
-    transition: background 0.2s;
-  }
-
-  tbody tr:hover {
-    background: #c2deff;
-  }
-
-  td {
-    padding: 12px;
-    vertical-align: middle;
-  }
-
-  .text-right {
-    text-align: right;
-  }
-
-  .text-center {
-    text-align: center;
-  }
+  font-family: "Inter", "Segoe UI", sans-serif;
+  font-size: 14.5px;
 }
 
-/* ====== BADGES ====== */
+/* CABECERA */
+.team-table thead th {
+   background: #eaf2ff; /* 🔹 Azul muy suave */
+  color: #0b2a5b; /* 🔹 Azul oscuro para contraste */
+  text-align: left;
+  font-weight: 700;
+  font-size: 16px;
+  padding: 14px 16px;
+  letter-spacing: 0.2px;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  white-space: nowrap;
+  border-bottom: 2px solid #d6e4ff;
+}
+
+/* CUERPO */
+.team-table tbody td {
+  /* Match header padding so content aligns exactly under header text */
+  padding: 14px 16px;
+  border-bottom: 1px solid #edf1f6;
+  color: #222;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+/* Column width rules tied to the colgroup in the template */
+.team-table col.c-name { width: 36%; }
+.team-table col.c-dept { width: 14%; }
+.team-table col.c-office { width: 12%; }
+.team-table col.c-pos { width: 14%; }
+.team-table col.c-rate { width: 8%; }
+.team-table col.c-role { width: 6%; }
+.team-table col.c-state { width: 5%; }
+.team-table col.c-actions { width: 5%; }
+
+/* Ensure alignment for the special columns */
+.team-table thead th.col-rate, .team-table tbody td.td-rate { text-align: right; }
+.team-table thead th.col-actions, .team-table tbody td.td-actions { text-align: right; }
+.team-table thead th.col-role, .team-table tbody td.td-role,
+.team-table thead th.col-state, .team-table tbody td.td-state { text-align: center; }
+
+/* FILAS PARES */
+.team-table tbody tr:nth-child(even) {
+  background-color: #f9fbff;
+}
+
+/* HOVER */
+.team-table tbody tr:hover {
+  background: #e7f0ff;
+  transform: scale(1.005);
+}
+
+/* ULTIMA FILA SIN BORDE */
+.team-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* ===== ALINEACIÓN ===== */
+.text-right {
+  text-align: right;
+}
+
+.text-center {
+  text-align: center;
+}
+
+/* ===== BADGES (ETIQUETAS) ===== */
 .role-badge,
 .state-badge {
-  padding: 4px 8px;
-  border-radius: 11px;
+  padding: 5px 10px;
+  border-radius: 20px;
   font-size: 12px;
   font-weight: 600;
   display: inline-block;
   text-transform: uppercase;
+  letter-spacing: 0.4px;
 }
 
-/* Roles */
+/* ROLES */
 .role-admin {
-  background-color: #4aa0fc;
-  color: white;
+  background-color: #e8f2ff;
+  color: #1371f5;
 }
 
 .role-owner {
-  background-color: #0056b3;
-  color: white;
+  background-color: #e2e9ff;
+  color: #0047b3;
 }
 
 .role-user {
-  background-color: #6c757d;
-  color: white;
+  background-color: #eef0f3;
+  color: #444;
 }
 
-/* Estados */
+/* ESTADOS */
 .state-active {
-  background-color: #108d2e;
-  color: white;
+  background-color: #e7f9ee;
+  color: #1e9b50;
 }
 
 .state-inactive {
-  background-color: #f04354;
-  color: white;
+  background-color: #ffe8e8;
+  color: #d93025;
 }
 
-/* ====== ACCIONES ====== */
+/* ===== BOTONES DE ACCIÓN ===== */
 .btn-action {
   border: none;
-  background: none;
   cursor: pointer;
   font-size: 13px;
-  padding: 6px 10px;
-  border-radius: 4px;
-  transition: 0.2s ease;
-  margin-left: 4px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.25s ease-in-out;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .btn-action:hover {
-  opacity: 0.8;
+  transform: translateY(-2px);
 }
 
+/* EDITAR */
 .btn-edit {
-  background-color: #e3f2fd;
-  color: #007bff;
+  background-color: #e8f2ff;
+  color: #1371f5;
+  border: 1px solid #c6ddff;
 }
 
-.btn-delete {
-  background-color: #fdecea;
-  color: #d93025;
+.btn-edit:hover {
+  background-color: #d9eaff;
 }
+
+/* ELIMINAR */
+.btn-delete {
+  background-color: #ffe8e8;
+  color: #d93025;
+  border: 1px solid #ffbdbd;
+}
+
+.btn-delete:hover {
+  background-color: #ffdcdc;
+}
+
+
+
 
 /* ====== PAGINATION ====== */
 .pagination {
@@ -140,6 +196,8 @@
     margin: 0 2px;
     border-radius: 4px;
     cursor: pointer;
+    transition: transform 0.2s ease;
+    
   }
 
   button.active {
@@ -230,35 +288,6 @@ select:focus {
   color: #333;
 }
 
-// .filter-buttons {
-//   display: flex;
-//   gap: 1rem;
-//   flex-basis: 100%; /* hace que bajen a la siguiente fila */
-//   justify-content: flex-end; /* los coloca a la derecha */
-//   margin-top: 0.5rem;
-//   color: #fff;
-//   min-width: 120px;
-//   height: 36px;
-//   padding: 0.5rem 1rem;
-//   font-size: 14px;
-//   border-radius: 6px;
-//   border: none;
- 
-// }
-// .team-container button{
-//   margin-right: 6px;
-//   color: #fff;
-//   min-width: 120px;
-//   height: 36px;
-//   padding: 0.5rem 1rem;
-//   font-size: 14px;
-//   border-radius: 6px;
-//   border: none;
-//   background: linear-gradient(180deg, #0d3d8c, #0b2a5b);
-//   box-shadow: 0 4px 10px rgba(13,61,140,0.2);
-//   cursor: pointer;
-//   transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
-// }
 
 
 
@@ -292,4 +321,47 @@ select:focus {
   box-shadow: 0 4px 10px rgba(13,61,140,0.2);
   cursor: pointer;
   transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.buttons-group button:hover {
+  background: linear-gradient(180deg, #0e50bb, #09315a);
+  box-shadow: 0 6px 12px rgba(11,42,91,0.3);
+  transform: translateY(-2px);
+}
+
+/* Forzamos layout estable */
+.team-table {
+  table-layout: fixed;
+}
+
+/* Asegura que los botones no rompan la columna */
+.td-actions {
+  white-space: nowrap;
+}
+
+/* Efecto de acercamiento (zoom) */
+.btn-action:hover {
+  transform: scale(1.08);
+}
+
+/* Alineación vertical estable */
+.team-table td, .team-table th {
+  vertical-align: middle;
+}
+
+/* Centrar el header con los botones */
+.col-actions,
+.td-actions {
+  text-align: center !important;
+}
+
+/* Asegura que los botones ocupen un bloque centrado */
+.td-actions {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+.col-rate,
+.td-rate {
+  text-align: center !important;
 }

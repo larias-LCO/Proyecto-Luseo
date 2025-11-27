@@ -1,0 +1,105 @@
+:host ::ng-deep .fc .fc-daygrid-day {
+	background: transparent !important;
+}
+// :host ::ng-deep .fc .fc-day-today {
+// 	background: rgba(143, 219, 255, 0.45) !important; /* azul bebé traslúcido */
+// 	border-radius: 8px;
+// 	box-shadow: 0 0 0 2px #1976d233;
+// }
+
+:host ::ng-deep .fc .fc-col-header-cell, 
+:host ::ng-deep .fc .fc-daygrid-day-number {
+	min-height: 48px;
+	line-height: 48px;
+	font-size: 1.25rem;
+}
+/* QUITAR fondo amarillo del día actual y resaltar con borde azul */
+.fc .fc-day-today {
+	background: transparent !important;
+	border: 2px solid #0859d0 !important;
+	border-radius: 8px;
+	box-shadow: 0 0 0 2px #1976d233;
+}
+/* CONTENEDOR AZUL PRINCIPAL */
+.calendar-toolbar {
+    margin-top: 60px;
+	position: relative;
+	background: #0859d0;          /* azul idéntico al de la imagen */
+	color: white;
+	padding: 14px 20px;
+	border-radius: 12px;
+	margin-bottom: 5px;
+
+	display: flex;
+	justify-content: flex-end;     /* botones a la derecha */
+	align-items: center;
+}
+
+/* TÍTULO CENTRADO */
+.calendar-title {
+	position: absolute;
+	left: 50%;
+	transform: translateX(-50%);
+	font-size: 25px;
+	font-weight: 700;
+	color: #ffffff;
+	white-space: nowrap;           /* evita saltos de línea */
+}
+
+/* BOTONES GENERALES */
+.modern-btn {
+	background: rgba(255,255,255,0.18);
+	border: 1px solid rgba(255,255,255,0.28);
+	color: white;
+	padding: 6px 14px;
+	border-radius: 6px;
+	margin-left: 8px;
+	font-size: 15px;
+	font-weight: 500;
+	cursor: pointer;
+	transition: 0.2s ease-in-out;
+     transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+/* EFECTO HOVER */
+.modern-btn:hover {
+	background: rgba(255,255,255,0.30);
+     transform: translateY(-2px);
+}
+
+/* BOTÓN TODAY MÁS OSCURO */
+.today-btn {
+	background: rgba(0,0,0,0.35);
+	border-color: transparent;
+	font-weight: 600;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+/* HOVER DEL TODAY */
+.today-btn:hover {
+	background: rgba(0,0,0,0.50);
+    transform: translateY(-2px);
+}
+
+/* Header de días (Lun, Mar, Mié...) */
+.fc .fc-col-header-cell {
+    background: #0066cc;
+    color: white;
+    font-weight: 600;
+    padding: 10px 0;
+    border: none !important;
+    font-size: 14px;
+}
+
+/* Número del día (24, 25, 26...) */
+.fc-daygrid-day-number {
+    font-size: 16px;
+    font-weight: bold;
+    color: #1a1a1a;
+    padding: 4px 8px;
+}
+
+/* Hover cuando pasas el mouse */
+.fc-daygrid-day:hover {
+    background: #f0f7ff;
+}

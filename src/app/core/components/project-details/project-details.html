@@ -1,0 +1,277 @@
+<!-- Single, well-formed modal template for project details -->
+<div class="modal" (click)="closeModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+
+    <!-- ⚠️ Mostrar mensaje de error si algo falla -->
+<div *ngIf="errorMessage" class="error-message">
+  {{ errorMessage }}
+</div>
+
+  <!-- Loading state -->
+  <div *ngIf="isLoading" class="loading-box" role="status" aria-live="polite">
+    <div class="loader-wrap">
+      <div class="spinner" aria-hidden="true"></div>
+      <div class="spinner-glow" aria-hidden="true"></div>
+    </div>
+
+    <div class="loading-text">
+      <span class="loading-label">Loading</span>
+      <span class="loading-dots" aria-hidden="true"><span></span><span></span><span></span></span>
+      <div class="loading-subtext">Please wait — fetching project details</div>
+    </div>
+
+    <div class="skeleton shimmer">
+      <div class="s-line"></div>
+      <div class="s-line short"></div>
+      <div class="s-line"></div>
+    </div>
+  </div>
+
+  <!-- HEADER FIJO -->
+  <div *ngIf="!isLoading && project" class="modal-header">
+    <div id="detail-title" style="font-weight:600">Project Details</div>
+    <button class="btn-close" type="button" (click)="closeModal()">Close</button>
+  </div>
+
+  <div *ngIf="!isLoading && project" class="project-body">
+    <ng-container *ngIf="!errorMessage && !isLoading && project">
+
+      <!-- ABAJO DEL HEADER -->
+      <div class="section-header2">
+        <span class="title-head2">{{ project.projectCode }}</span>
+        <div class="head-name2" [title]="project.name">{{ project.name || '' }}</div>
+        <span class="status-head2" [ngClass]="getStatusClass(project.status)"> {{ project.status?.toLowerCase() }} </span>
+        </div>
+
+      <!-- META CHIPS -->
+ <div class="meta-grid">
+
+  <div class="meta-card">
+    <label>Office</label>
+    <span>{{ project.officeName || '-' }}</span>
+  </div>
+
+  <div class="meta-card">
+    <label>Client</label>
+    <span>{{ project.clientName || '-' }}</span>
+  </div>
+
+  <div class="meta-card">
+    <label>Software</label>
+    <span>{{ project.softwareName || '-' }}</span>
+  </div>
+
+  <div class="meta-card">
+    <label>Type</label>
+    <span>{{ project.projectType || '-' }}</span>
+  </div>
+
+  <div class="meta-card">
+    <label>Scope</label>
+    <span>{{ project.scope || '-' }}</span>
+  </div>
+
+  <div class="meta-card">
+    <label>Phase</label>
+    <span>{{ project.phase || '-' }}</span>
+  </div>
+
+  <div class="meta-card" *ngFor="let pm of pms">
+    <label>PM</label>
+    <span>{{ pm.name }}</span>
+  </div>
+
+</div>
+
+
+
+      <hr class="pd-divider" />
+
+      <!-- <div class="pd-section">
+        <h3>Team Members</h3>
+        <div class="chip-list">
+          <span *ngFor="let member of team" class="chip team">{{ member.name }}</span>
+        </div>
+      </div> -->
+
+      <!-- ============================= -->
+<!--  METRICS SECTION -->
+<!-- ============================= -->
+<div class="pd-section">
+  <h3 class="title-section">METRICS</h3>
+  <div class="pd-metrics">
+    <ng-container *ngIf="metricsList.length; else defaultMetrics">
+      <div class="metric" *ngFor="let m of metricsList">
+        <span class="dot" [ngClass]="m.dot"></span>
+        <span>{{ m.label }}:</span>
+        <strong>{{ m.value }}</strong>
+      </div>
+    </ng-container>
+    <ng-template #defaultMetrics>
+      <div class="metric" *ngIf="project.cost">
+        <span class="dot dot-cost"></span>
+        <span>Est. cost:</span>
+        <strong>{{ project.cost }}</strong>
+      </div>
+      <div class="metric" *ngIf="project.realCost">
+        <span class="dot dot-cost"></span>
+        <span>Real cost:</span>
+        <strong>{{ project.realCost }}</strong>
+      </div>
+      <div class="metric" *ngIf="project.trackedTime">
+        <span class="dot dot-time"></span>
+        <span>UI time (h):</span>
+        <strong>{{ project.trackedTime }}</strong>
+      </div>
+      <div class="metric" *ngIf="project.estimatedTime">
+        <span class="dot dot-time"></span>
+        <span>Est. time:</span>
+        <strong>{{ project.estimatedTime }}</strong>
+      </div>
+      <div class="metric" *ngIf="project.realTime">
+        <span class="dot dot-time"></span>
+        <span>Real time:</span>
+        <strong>{{ project.realTime }}</strong>
+      </div>
+    </ng-template>
+  </div>
+</div>
+<hr class="pd-divider" />
+
+<!-- ============================= -->
+<!--  DETAILS SECTION -->
+<!-- ============================= -->
+<div class="pd-section">
+  <h3 class="title-section">DETAILS</h3>
+
+  <div class="pd-details">
+
+    <div class="detail-card" *ngIf="project.projectCode">
+      <label>PROJECT CODE</label>
+      <span>{{ project.projectCode }}</span>
+    </div>
+
+    <div class="detail-card" *ngIf="project.projectArea">
+      <label>AREA</label>
+      <span>{{ project.projectArea }}</span>
+    </div>
+
+    <div class="detail-card" *ngIf="project.areaUnit">
+      <label>AREA UNIT</label>
+      <span>{{ project.areaUnit }}</span>
+    </div>
+
+    <div class="detail-card" *ngIf="project.startDate">
+      <label>PHASE START</label>
+      <span>{{ project.startDate | date }}</span>
+    </div>
+
+  </div>
+</div>
+
+<hr class="pd-divider" />
+<!-- ============================= -->
+<!--  PEOPLE SECTION -->
+<!-- ============================= -->
+<div class="pd-section">
+  <h3 class="title-section">PEOPLE</h3>
+
+  <div class="pd-grid">
+    <!-- Project Managers -->
+    <div class="pair">
+      <label>PROJECT MANAGER(S)</label>
+      <div class="val">
+  <ng-container *ngIf="pms.length; else noPMs">
+          <span *ngFor="let pm of pms" class="chip pm">{{ employeeOptionLabel(pm) }}</span>
+        </ng-container>
+        <ng-template #noPMs><span class="muted">-</span></ng-template>
+      </div>
+    </div>
+
+    <!-- Team -->
+    <div class="pair">
+      <label>TEAM</label>
+      <div class="val">
+  <ng-container *ngIf="team.length; else noTeam">
+          <span *ngFor="let member of team" class="chip team">{{ employeeOptionLabel(member) }}</span>
+        </ng-container>
+        <ng-template #noTeam><span class="muted">-</span></ng-template>
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr class="pd-divider" />
+
+<!-- ============================= -->
+<!-- DEPARTMENTS & ROLES -->
+<!-- ============================= -->
+<div class="pd-section">
+  <h3 class="title-section">DEPARTMENTS & ROLES</h3>
+  <div class="pd-grid">
+
+    <!-- Departments -->
+    <div class="pair">
+      <label>DEPARTMENTS PARTICIPATING</label>
+      <div class="val">
+        <ng-container *ngIf="assignedDeps.length; else noDeps">
+          <span *ngFor="let dep of assignedDeps" class="chip">{{ dep }}</span>
+        </ng-container>
+        <ng-template #noDeps>
+          <span class="muted">-</span>
+        </ng-template>
+      </div>
+    </div>
+
+    <!-- Roles -->
+    <div class="pair">
+      <label>ROLES PARTICIPATING</label>
+      <div class="val">
+        <ng-container *ngIf="assignedRoles.length; else noRoles">
+          <span *ngFor="let role of assignedRoles" class="chip">{{ role }}</span>
+        </ng-container>
+        <ng-template #noRoles>
+          <span class="muted">-</span>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================= -->
+<!--  NOTES SECTION -->
+<!-- ============================= -->
+<hr class="pd-divider" />
+
+<div class="pd-section">
+  <h3 class="title-section">NOTES</h3>
+  <div class="note-box">
+    {{ project.notes || 'No notes available.' }}
+  </div>
+</div>
+
+</ng-container>
+
+<!-- ============================= -->
+<!-- ACTIONS -->
+<!-- ============================= -->
+<div class="pd-actions row">
+
+<div class="pd-actions row">
+  <button *ngIf="isAdminOrOwner()" class="btn-soft edit" (click)="openEditModal()">
+    <span class="icon">✏️</span>
+    Edit
+  </button>
+
+  <button *ngIf="isAdminOrOwner()" class="btn-soft delete" (click)="deleteProject()">
+    <span class="icon">🗑️</span>
+    Delete
+  </button>
+</div>
+
+
+
+  </div>
+</div>
+
+

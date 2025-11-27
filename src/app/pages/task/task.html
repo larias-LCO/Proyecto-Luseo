@@ -1,0 +1,103 @@
+<app-header></app-header>
+<app-submenu></app-submenu>
+
+<div class="task-container">
+
+    <div class="header-with-button">
+      <h1>Tasks</h1>
+
+
+
+  <!-- Search -->
+  <div
+    class="filter-search"
+  >
+    <label>Search</label>
+
+    <input
+      type="text"
+      id="project-search"
+      class="search-input"
+      placeholder="🔍 Search tasks by project, code, client or task name..."
+    />
+  </div>
+
+  <!-- Project -->
+   <div class="filters-container">
+  <div class="filter-group" style="min-width: 150px;">
+    <label>Project</label>
+    <select id="project-filter" class="project-select" style="width: 100%;">modales, como create-project o edit-project
+    
+    Read editar-proyecto.html
+    
+    
+      <option value="">All</option>
+    </select>
+  </div>
+  <!-- Category -->
+  <div class="filter-group" style="min-width: 150px;">
+    <label>Category</label>
+    <select id="category-filter" class="project-select" style="width: 100%;">
+      <option value="">All</option>
+    </select>
+  </div>
+
+  <!-- Created by -->
+  <div class="filter-group" style="min-width: 150px;">
+    <label>Created by</label>
+
+    <select id="creator-filter" class="project-select" style="width: 100%;">
+      <option value="">All</option>
+    </select>
+  </div>
+
+
+
+  <!-- Week -->
+  <div class="filter-week" style="min-width: 150px;">
+    <label>Week</label>
+
+    <input
+      type="week"
+      id="week-filter"
+      class="search-input"
+
+    />
+  </div>
+  </div>
+
+  <div class="filter-show">
+<!-- Show only my assigned projects -->
+  <label class="checkbox-label" style="min-width: 220px;">
+  <input type="checkbox" id="filter-my-projects" />
+    <span>Show only my assigned projects</span>
+  </label>
+</div>
+
+<div class="top-right-buttons">
+  <button
+    id="clear-all-filters"
+    class="btn btn-secondary btn-sm">
+    Clear All Filters
+  </button>
+
+  <button
+    class="btn-open"
+    data-tooltip="Task management and reporting for projects"
+    (click)="showCreateTaskModal = true">
+    Create New Task
+  </button>
+</div>
+
+<app-create-task-card
+  *ngIf="showCreateTaskModal"
+  (close)="showCreateTaskModal = false">
+</app-create-task-card>
+
+
+<app-calendar-task [tasks]="tasks"></app-calendar-task>
+<!-- Mine only -->
+  <!-- <div class="by-me" ><label>Show created by me</label>
+    <input type="checkbox" id="mine-only-filter"/>
+  </div> -->
+  

@@ -1,227 +1,208 @@
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Projects | Create and list</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- Page header and submenu -->
+<app-header></app-header>
+<app-submenu></app-submenu>
 
-</head>
-<body> -->
-<!-- <header>
-  <div id="user-info">Loading user...</div>
-  <button id="logoutButton" type="button">Sign out</button>
-</header> -->
-
-<!-- Hidden helper so static analyzers detect dynamic '.kv' usage -->
+<!-- Hidden helper so static analyzers detect dynamic '.kv' usage  -->
 <div id="__util_classes" aria-hidden="true" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;">
   <span class="chip"></span>
   <div class="kv"><span>Key</span></div>
   <button class="btn btn-danger" type="button">X</button>
   <div class="grid-2"><div class="pair"><div class="val"></div></div></div>
   <button class="btn-xs"></button>
-  <div class="scroll"><div class="row-mini"></div></div>
-</div>
-<div class="page">
-  <h1 class="section-title">Projects</h1>
+  <div class="scroll"><div class="row-mini"></div></div> 
+</div> 
+<div class="project-container">
+    <h1 >Projects</h1>
 
-  <!-- Top buttons -->
-  <div class="row" style="margin-bottom:12px;">
-  <button id="openCreate" class="btn btn-primary" type="button" [style.display]="isAdminOrOwner ? '' : 'none'">New project</button>
-    <span class="muted">Create and manage projects with backend-paged filters.</span>
+
+  <!-- <div class="row" style="margin-bottom:12px;">
+  <button id="openCreate" class="btn btn-primary" type="button" [style.display]="isAdminOrOwner ? '' : 'none'">New project</button> -->
+    <!-- <span class="muted">Create and manage projects with backend-paged filters.</span> -->
+  <!-- </div> -->
+
+  <!-- FILTER SEARCH -->
+    <div class="filter-search">
+        <label for="f_q">Search</label>
+        <input id="f_q" placeholder="Name, code or client" [(ngModel)]="searchText" (ngModelChange)="onSearchChange($event)" (keyup.enter)="applySearchFromUI()" />
+      </div>
+
+
+
+      <!-- //filtros horizontales -->
+       <!-- FILTRO Office -->
+<div class="filters-container">
+  <!-- Fila 1 -->
+  <div class="filter-item">
+    <label>Office</label>
+    <select [(ngModel)]="selectedOffice" (ngModelChange)="onSimpleFilterChange()">
+      <option value="">All</option>
+      <option *ngFor="let office of offices" [value]="office.id">{{ office.name }}</option>
+    </select>
   </div>
 
-  <div class="card">
-    <div class="toolbar">
-      <div class="field">
-        <label for="f_q">Search</label>
-        <input id="f_q" placeholder="Name, code or client" />
-      </div>
-
-      <div class="field">
-        <label for="f_office">Office</label>
-        <select [(ngModel)]="selectedOffice">
-          <option value="">All</option>
-          <option *ngFor="let office of offices" [value]="office.id">{{ office.name }}</option>
-        </select>
-      </div>
-
-      <div class="field">
+      <!-- FILTRO CLIENTE -->
+      <div class="filter-item">
         <label>Client</label>
-        <select [(ngModel)]="selectedClient">
+        <select [(ngModel)]="selectedClient" (ngModelChange)="onSimpleFilterChange()">
           <option value="">All</option>
           <option *ngFor="let client of clients" [value]="client.id">{{ client.name }}</option>
         </select>
       </div>
 
-    <div class="field">
+      <!-- FILTRO SOFTWARE -->
+    <div class="filter-item">
       <label>Software</label>
-  <select [(ngModel)]="selectedSoftware">
+  <select [(ngModel)]="selectedSoftware" (ngModelChange)="onSimpleFilterChange()">
     <option value="">All</option>
     <option *ngFor="let s of software" [value]="s.id">{{ s.name }}</option>
   </select>
 </div>
 
-      <div class="field">
-        <label>Project Manager</label>
-  <select [(ngModel)]="selectedManager">
+<!-- PROJECT MANAGER FILTER -->
+  <div class="filter-item">
+  <label>Project Manager</label>
+  <select [(ngModel)]="selectedManager" (ngModelChange)="onSimpleFilterChange()">
     <option value="">All</option>
-    <option *ngFor="let m of projectManagers" [value]="m.id">
-      {{ m.name }} · {{ m.jobPositionName }} {{ m.departmentName ? '· ' + m.departmentName : '' }}
+    <option *ngFor="let m of projectManagers" [value]="m.id"> {{ m.name }} · {{ m.jobTitle }} {{ m.department ? '· ' + m.department : '' }}
     </option>
   </select>
       </div>
 
-
-      <div class="field">
+      <!-- DEPARTAMENT FILTER -->
+      <div class="filter-item">
          <label>Department</label>
-  <select [(ngModel)]="selectedDepartment">
+  <select [(ngModel)]="selectedDepartment" (ngModelChange)="onSimpleFilterChange()">
     <option value="">All</option>
     <option *ngFor="let d of departments" [value]="d.id">{{ d.name }}</option>
   </select>
+  </div>
 
 
-      <div class="field">
-        <label for="f_status">Status</label>
-        <select [(ngModel)]="selectedStatus">
+
+  <!-- ROW 2 FILTER STATUS-->
+  <div class="filter-item">
+    <label>Status</label>
+        <select [(ngModel)]="selectedStatus" (ngModelChange)="onSimpleFilterChange()">
           <option value="">All</option>
          <option *ngFor="let s of statusList" [value]="s.value">{{ s.label }}</option>
 
         </select>
       </div>
 
-
-      <div class="field">
-        <label for="f_type">Type</label>
-        <select [(ngModel)]="selectedType">
+      <!-- FILTRO TYPE -->
+      <div class="filter-item">
+         <label>Type</label>
+        <select [(ngModel)]="selectedType" (ngModelChange)="onSimpleFilterChange()">
           <option value="">All</option>
            <option *ngFor="let t of enums.type" [value]="t">{{ displayEnum(t) }}</option>
         </select>
       </div>
 
-      <div class="field">
-        <label for="f_scope">Scope</label>
-        <select [(ngModel)]="selectedScope">
+      <!-- FILTRO SCOPE -->
+      <div class="filter-item">
+        <label>Scope</label>
+        <select [(ngModel)]="selectedScope" (ngModelChange)="onSimpleFilterChange()">
           <option value="">All</option>
             <option *ngFor="let s of enums.scope" [value]="s">{{ displayEnum(s) }}</option>
         </select>
       </div>
 
-
-      <div class="field">
-        <label for="f_size">Page size</label>
-        <select [(ngModel)]="pageSize">
-          <option value="10">10</option>
-          <option value="20">20</option>
-          <option value="30">30</option>
-        </select>
-      </div>
-      <div class="field"><label>&nbsp;</label><button id="f_apply" class="btn btn-secondary" type="button">Search</button></div>
-      <div class="field"><label>&nbsp;</label><button id="refresh" class="btn" type="button">Clear</button></div>
-      <div class="spacer" style="flex:1 1 auto"></div>
+      <!-- FILTRO PAGE SIZE -->
+      <!-- Page Size + Botones en una sola fila -->
+  <div class="filter-actions-group">
+    <div class="filter-item">
+      <label>Page Size</label>
+      <select [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChange($event)">
+        <option value="10">10</option>
+        <option value="20">20</option>
+        <option value="30">30</option>
+      </select>
     </div>
+    
+ <div class="filters-actions">
+      <button id="openCreate" class="btn-create" type="button" [style.display]="isAdminOrOwner ? '' : 'none'" (click)="openCreateModal()">New Project</button>
+      <button id="refresh" class="btn btn-clear-filters" type="button" (click)="clearFilters()">Clean filters</button>
+    </div>
+  </div>
+</div>
 
+    <!-- Create Project Modal Component (rendered once, sin *ngIf) -->
+    <app-create-project></app-create-project>
+
+
+
+
+    
     <!-- New pager location: below filters and above the project list -->
-    <div class="pager-wrap">
-      <div id="pager" class="pager">
-        <button id="pg_prev" class="btn" type="button">Prev</button>
-        <span id="pg_info" class="muted">-</span>
-        <!-- Sort toggle lives with pager controls to reflect view behavior -->
-        <button id="sort_toggle" class="btn" type="button" title="Sort by project code">Code ↑</button>
-        <button id="pg_next" class="btn" type="button">Next</button>
-      </div>
-    </div>
+     <div class="pager-wrap">
+  <div id="pager" class="pager">
+    <button id="pg_prev" class="btn-pager" type="button" (click)="prevPage()">
+      ‹ Prev
+    </button>
 
-    <ul id="list" class="list"></ul>
+    <span id="pg_info" class="pager-info">{{ renderPagerInfo() }}</span>
+
+    <button id="sort_toggle" class="btn-pager sort-btn" type="button" title="Sort by project code" (click)="toggleSort()">
+      Code ↑
+    </button>
+
+    <button id="pg_next" class="btn-pager" type="button" (click)="nextPage()">
+      Next ›
+    </button>
   </div>
 </div>
 
-<!-- Project detail modal -->
-<div id="projectModal" class="modal-backdrop">
-  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-    <div class="modal-header">
-      <div id="modalTitle" style="font-weight:600">Project details</div>
-      <button id="modalClose" class="btn btn-secondary" type="button">Close</button>
-    </div>
-    <div id="modalBody" class="modal-body"></div>
-  </div>
-</div>
+   
 
-<!-- Create project modal -->
-<div id="createModal" class="modal-backdrop">
-  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="createTitle">
-    <div class="modal-header">
-      <div id="createTitle" style="font-weight:600">Create project</div>
-      <button id="createClose" class="btn btn-secondary" type="button">Close</button>
-    </div>
-    <div id="createBody" class="modal-body">
-      <div class="grid">
-        <div><label for="p_code">Code</label><input id="p_code" placeholder="PRJ-001" /></div>
-        <div><label for="p_name">Name</label><input id="p_name" placeholder="Project name" /></div>
-        <div><label for="p_area">Area</label><input id="p_area" type="number" step="0.01" placeholder="0.00" /></div>
-        <div><label for="p_areaUnit">Area unit</label>
-          <select id="p_areaUnit"></select>
-        </div>
-        <div><label for="p_type">Type</label>
-          <select id="p_type"></select>
-        </div>
-        <div><label for="p_status">Status</label>
-          <select id="p_status"></select>
-        </div>
-        <div><label for="p_scope">Scope</label>
-          <select id="p_scope"></select>
-        </div>
-        <div><label for="p_cost">Estimated cost</label><input id="p_cost" type="number" step="0.01" placeholder="0.00" /></div>
-        <div><label for="p_trackedTime">Time (h)</label><input id="p_trackedTime" type="number" step="1" placeholder="0" /></div>
-        <div><label for="p_office">Office</label>
-          <select id="p_office"></select>
-        </div>
-        <div><label for="p_client">Client</label>
-          <select id="p_client"></select>
-        </div>
-        <div><label for="p_software">Software</label>
-          <select id="p_software"></select>
-        </div>
-        <div style="grid-column:1/-1"><label for="p_notes">Notes</label><textarea id="p_notes" placeholder="Notes or comments"></textarea></div>
-      </div>
 
-      <div class="grid" style="margin-top:8px;">
-        <div>
-          <label for="p_pms">Assigned PM(s)</label>
-          <div class="filters" id="pmFilters">
-            <div>
-              <label for="pm_q">Search name (PM)</label>
-              <input id="pm_q" placeholder="E.g., Ana" />
-            </div>
-            <!-- PM job/department filters removed -->
-          </div>
-          <select id="p_pms" multiple size="8"></select>
-          <div class="hint">Only employees with the Project Manager position are listed. Filter by name if needed.</div>
-        </div>
-        <div>
-          <label for="p_team">Team</label>
-          <div class="filters" id="teamFilters">
-            <div>
-              <label for="team_q">Search name</label>
-              <input id="team_q" placeholder="E.g., Carlos" />
-            </div>
-            <div>
-              <label for="team_job">Job position</label>
-              <select id="team_job"></select>
-            </div>
-            <div>
-              <label for="team_dept">Department</label>
-              <select id="team_dept"></select>
-            </div>
-          </div>
-          <select id="p_team" multiple size="8"></select>
-          <div class="hint">Select multiple with Ctrl/Shift. You can combine filters by name, job position, and department.</div>
-        </div>
-      </div>
+    <div class="table-wrap">
+      <table class="project-table" aria-label="Projects list">
+        <thead>
+          <tr>
+            <th>Project Code</th>
+            <th>Project Name</th>
+            <th>Client</th>
+            <th>Type</th>
+            <th>Office</th>
+            <th>Scope</th>
+            <th>Software</th>
+            <th>Estado</th>
+            <th>PMs</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="projects.length === 0">
+            <td class="muted" colspan="7">No results</td>
+          </tr>
+  <tr *ngFor="let p of projects; trackBy: trackByProject"
+    (click)="openProjectDetails(p)"
+    class="clickable-row">
 
-      <div class="row" style="margin-top:12px;">
-  <button id="p_create" class="btn btn-primary" type="button" [style.display]="isAdminOrOwner ? '' : 'none'">Create project</button>
-        <span id="p_msg" class="muted"></span>
-      </div>
+            <td>{{ p.projectCode || '-' }}</td>
+            <td>{{ p.name || '-' }}</td>
+            <td>{{ p.clientName || '-' }}</td>
+            <td>{{ displayEnum(p.projectType) || '-' }}</td>
+            <td>{{ p.officeName || '-' }}</td>
+            <td>{{ displayEnum(p.scope) || '-' }}</td>
+            <td>{{ p.softwareName || '-' }}</td>
+            <td>
+              <span class="status-pill {{ statusToClass(p.status) }}">{{ p.status || '-' }}</span>
+            </td>
+            <td>{{ p.pmNames || '-' }}</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-  </div>
-</div>
+
+
+<app-project-details
+  *ngIf="selectedProjectId || selectedProject"
+  [projectId]="selectedProjectId ?? undefined"
+  [project]="selectedProject"
+  (close)="closeProjectDetails()">
+</app-project-details>
+
+
+
+
+

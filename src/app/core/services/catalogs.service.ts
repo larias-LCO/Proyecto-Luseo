@@ -9,11 +9,14 @@ export interface Software { id: number | string; name: string; }
 export interface Department { id: number | string; name: string; }
 export interface JobPosition { id: number | string; name: string; }
 export interface Employee {
-  id: number | string;
+  id: number;
   name: string;
-  jobPositionName?: string;
-  departmentName?: string;
+  jobTitle?: string;
+  department?: string;
+   roles?: string;       // por si viene role (ej. "Manager")
+  // ...otros campos si los tienes
 }
+
 
 @Injectable({ providedIn: 'root' })
 export class CatalogsService {

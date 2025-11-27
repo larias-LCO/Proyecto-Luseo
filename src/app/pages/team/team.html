@@ -5,7 +5,7 @@
 <!-- ✅ Contenedor principal del TEAM -->
 <div class="team-container">
   
-    <h1>Equipo</h1>
+    <h1>Team</h1>
   
 
   <!-- Filters form (Reactive) -->
@@ -13,17 +13,17 @@
 
   <!-- Buscar por nombre -->
   <div class="filter-search">
-    <label>Buscar por nombre</label>
+    <label>Search by name</label>
   <input id="searchInput" type="text" placeholder="Ej: Carlos, Herrera" formControlName="q" />
-    <div class="muted">Búsqueda parcial, sin distinguir mayúsculas ni tildes. Filtra localmente.</div>
+    <div class="muted">Partial search, case and accent insensitive. Filters locally.</div>
   </div>
 
   <!-- Filtros horizontales -->
  <div class="filters-row">
   <div class="filter-item">
-    <label>Departamento</label>
+    <label>Department</label>
     <select formControlName="department">
-      <option value="">Todos</option>
+      <option value="">All</option>
       <option *ngFor="let d of (catalogs.departments || [])" [value]="(d.name ?? d)">
         {{ d.name ?? d }}
       </option>
@@ -31,9 +31,9 @@
   </div>
 
   <div class="filter-item">
-    <label>Cargo</label>
+    <label>Position</label>
     <select formControlName="job">
-      <option value="">Todos</option>
+      <option value="">All</option>
       <option *ngFor="let j of (catalogs.jobs || [])" [value]="(j.name ?? j)">
         {{ j.name ?? j }}
       </option>
@@ -41,9 +41,9 @@
   </div>
 
   <div class="filter-item">
-    <label>Oficina</label>
+    <label>Office</label>
     <select formControlName="office">
-      <option value="">Todas</option>
+      <option value="">All</option>
       <option *ngFor="let o of (catalogs.offices || [])" [value]="(o.name ?? o)">
         {{ o.name ?? o }}
       </option>
@@ -51,19 +51,19 @@
   </div>
 
   <div class="filter-item">
-    <label>Rol</label>
+    <label>Role</label>
     <select formControlName="role">
-      <option value="">Todos</option>
+      <option value="">All</option>
       <option *ngFor="let r of roleFilterOptions" [value]="r">{{ r }}</option>
     </select>
   </div>
 
   <div class="filter-item">
-    <label>Estado</label>
+    <label>State</label>
     <select formControlName="state">
-      <option value="">Todos</option>
-      <option value="ACTIVE">Activo</option>
-      <option value="INACTIVE">Inactivo</option>
+      <option value="">All</option>
+      <option value="ACTIVE">Active</option>
+      <option value="INACTIVE">Inactive</option>
     </select>
   </div>
 </div>
@@ -73,7 +73,7 @@
   <!-- 🔹 Fila inferior: Mostrar por página + Botones -->
 <div class="filters-row bottom-row">
   <div class="filter-item small">
-    <label>Mostrar por página</label>
+    <label>Show per page</label>
     <select formControlName="size">
       <option *ngFor="let s of pageSizes" [value]="s">{{ s }}</option>
     </select>
@@ -87,9 +87,9 @@
       [allowedRoles]="allowedRoleOptions"
       (created)="refreshData()"
     ></app-fagregar-miembro>
-    <button type="button" (click)="refreshData()" [disabled]="loading">Actualizar datos</button>
+    <button type="button" (click)="refreshData()" [disabled]="loading">Update Data</button>
     <button type="button" (click)="filterForm.reset({ q: '', department: '', job: '', office: '', state: '', role: '', size: pageSizes[0] })">
-      Limpiar filtros
+      Clean filters
     </button>
     
   </div>
@@ -114,14 +114,14 @@
     <table class="team-table" *ngIf="!loading && filtered.length >= 0">
       <thead>
        <tr>
-          <th class="col-name">Nombre</th>
-          <th class="col-dept">Departamento</th>
-          <th class="col-office">Oficina</th>
-          <th class="col-pos">Posición</th>
-          <th class="col-rate text-right">Tarifa (por hora)</th>
-          <th class="col-role text-center">ROL</th>
-          <th class="col-state text-center">ESTADO</th>
-          <th class="col-actions text-right">Acciones</th>
+          <th class="col-name">Name</th>
+          <th class="col-dept">Department</th>
+          <th class="col-office">Office</th>
+          <th class="col-pos">Position</th>
+          <th class="col-rate text-right">Rate (per hour)</th>
+          <th class="col-role text-center">Role</th>
+          <th class="col-state text-center">State</th>
+          <th class="col-actions text-right">Actions</th>
         </tr>
       </thead>
         <tbody>
@@ -184,17 +184,17 @@
                 class="btn-action btn-edit"
                 (click)="abrirModal(m)"
                 [title]="'Editar'"
-                aria-label="Editar {{m.name}}"
+                aria-label="Edit {{m.name}}"
               >
-                ✏️ Editar
+                ✏️ Edit
               </button>
               <button
                 class="btn-action btn-delete"
                 (click)="eliminarEmpleado(m.id)"
-                [title]="'Eliminar'"
-                aria-label="Eliminar {{m.name}}"
+                [title]="'Delete'"
+                aria-label="Delete {{m.name}}"
               >
-                🗑️ Eliminar
+                🗑️ Delete
               </button>
             </ng-container>
             <ng-template #noActions>

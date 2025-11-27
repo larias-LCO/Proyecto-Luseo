@@ -1,0 +1,14 @@
+
+
+
+<div class="calendar-toolbar">
+	<button class="modern-btn" (click)="calendar?.getApi()?.prev()">
+		<span>&lt;</span>
+	</button>
+	<button class="modern-btn today-btn" (click)="calendar?.getApi()?.today()">Today</button>
+	<button class="modern-btn" (click)="calendar?.getApi()?.next()">
+		<span>&gt;</span>
+	</button>
+	<span class="calendar-title">{{ calendarTitle }}</span>
+</div>
+<full-calendar #calendar [options]="calendarOptions"></full-calendar>

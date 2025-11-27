@@ -12,7 +12,7 @@ export class AuthService {
   private storageTokenKeys = ['auth.token', 'token'];
   private usernameKey = 'auth.username';
   private rolesKey = 'auth.roles';
-  private apiBase = 'https://boracic-preboding-shelley.ngrok-free.dev';
+  private apiBase = 'https://e8092e3a973e.ngrok-free.app';
 
   state = signal<AuthState>({ authenticated: false });
 
@@ -152,13 +152,23 @@ export class AuthService {
     return roles.includes(role.toUpperCase());
   }
 
-  fetchWithAuth(input: RequestInfo | URL, init: RequestInit = {}) {
-    const token = this.getStoredToken();
-    const headers = new Headers(init.headers || {});
-    if (token && !headers.has('Authorization')) headers.set('Authorization', `Bearer ${token}`);
-    const xsrf = this.getCookie('XSRF-TOKEN') || this.getCookie('xsrf-token');
-    if (xsrf && !headers.has('X-XSRF-TOKEN')) headers.set('X-XSRF-TOKEN', xsrf);
-    if (!headers.has('X-Requested-With')) headers.set('X-Requested-With', 'XMLHttpRequest');
-    return fetch(input, { ...init, headers, credentials: 'include', mode: 'cors' });
+fetchWithAuth(input: RequestInfo | URL, init: RequestInit = {}) {
+  const token = this.getStoredToken();
+  const headers = new Headers(init.headers || {});
+  if (token && !headers.has('Authorization')) {
+    headers.set('Authorization', `Bearer ${token}`);
   }
+  const xsrf = this.getCookie('XSRF-TOKEN') || this.getCookie('xsrf-token');
+  if (xsrf && !headers.has('X-XSRF-TOKEN')) {
+    headers.set('X-XSRF-TOKEN', xsrf);
+  }
+  if (!headers.has('X-Requested-With')) {
+    headers.set('X-Requested-With', 'XMLHttpRequest');
+  }
+  // Log para depuración
+  console.log('[fetchWithAuth] URL:', input);
+  console.log('[fetchWithAuth] Headers:', Array.from(headers.entries()));
+  console.log('[fetchWithAuth] Credentials:', 'include');
+  return fetch(input, { ...init, headers, credentials: 'include', mode: 'cors' });
+}
 }

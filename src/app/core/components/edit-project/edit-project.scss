@@ -1,0 +1,419 @@
+/* ============================================================
+   MODAL BASE
+============================================================ */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 24, 39, 0.55);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .25s ease;
+}
+
+.modal.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* CARD */
+.modal-card {
+  background: #fff;
+  border-radius: 16px; 
+  width: 100%;
+  max-width: 980px;               /* 1. tamaño razonable */
+  max-height: calc(100vh - 80px); /* 1. no salga de la pantalla */
+  box-shadow: 0 10px 35px rgba(0,0,0,0.25);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  position: relative;
+  z-index: 1100;                  /* 4. asegurar que esté encima de otros elementos */
+}
+@keyframes modalZoom {
+  from { transform: scale(.92); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+/* ============================================================
+   HEADER
+============================================================ */
+.modal-header {
+  background: linear-gradient(135deg, #1e3a8a, #2563eb);
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 9px 22px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-top-left-radius: 16px; 
+  border-top-right-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(8px);
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.modal-header h2 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.15);
+}
+
+.modal-header button {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.25s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 1px 2px rgba(255,255,255,0.2) inset;
+}
+
+.modal-header button:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+/* ============================================================
+   BODY
+============================================================ */
+.modal-body {
+  padding: 20px;                   /* 2. separacion interior del borde */
+  overflow: auto;                  /* 1. scroll interno si hace falta */
+  flex: 1 1 auto;
+  background: #fff;
+}
+
+/* GRID */
+.modal-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); /* columnas iguales */
+  gap: 16px 20px;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden; /* evita scroll horizontal */
+}
+
+.modal-grid label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #334155;
+  font-size: 0.9rem;
+}
+
+/* Inputs */
+.modal-grid input,
+.modal-grid select,
+.modal-grid textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid #d0d7df;
+  border-radius: 8px;
+  background: #fbfdff;
+  font-size: 0.93rem;
+  transition: box-shadow 0.18s, border-color 0.18s, transform 0.12s;
+}
+
+.modal-grid input:focus,
+.modal-grid select:focus,
+.modal-grid textarea:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.12);
+  transform: translateY(-1px);
+}
+
+/* Textarea grande */
+textarea {
+  min-height: 96px;
+  resize: vertical;
+}
+
+/* ============================================================
+   SECTION TITLE
+============================================================ */
+.section-title {
+  display: flex;
+  align-items: center;
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: #2c1d5a;
+  margin-bottom: 0; // más cerca de la sección inferior
+  position: relative;
+  padding-bottom: 6px;
+  margin-top: -9px;
+
+  i {
+    color: #5c2ca3;
+    font-size: 1.4rem;
+    margin-right: 10px;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%; // ocupa todo el ancho del contenedor
+    height: 2px;
+    background: linear-gradient(90deg, #0f189c 0%, #4f78ff 60%, transparent 80%);
+    border-radius: 4px;
+  }
+}
+
+
+/* ============================================================
+   TEAM + PM layout
+============================================================ */
+.two-column-grid {
+  display: grid;
+  /* force equal halves */
+  grid-template-columns: 50% 50%;
+  gap: 24px;
+  margin-top: 20px;
+  background-color: #f9fafb;
+  padding: 1.5rem;
+  border-radius: 1rem;
+}
+
+/* Selected members box */
+.selected-box {
+  min-height: 46px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+  align-items: center;
+}
+.selected-box .chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(90deg, #f0f9ff, #eef2ff);
+  border: 1px solid rgba(59,130,246,0.15);
+  padding: 8px 12px;
+  border-radius: 999px;
+  box-shadow: 0 4px 14px rgba(14, 60, 120, 0.06);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.selected-box .chip-label {
+  font-size: 0.9rem;
+  color: #0f172a;
+}
+.selected-box .chip-meta { color: #64748b; font-size: 0.8rem; margin-left: 6px; }
+.selected-box .chip-avatar {
+  display:inline-flex;align-items:center;justify-content:center;
+  width:32px;height:32px;border-radius:50%;font-weight:700;color:#0b2440;
+  background: linear-gradient(180deg,#dbeafe,#bfdbfe);box-shadow:0 2px 6px rgba(59,130,246,0.12);
+}
+.selected-box .chip:hover{ transform: translateY(-3px); box-shadow:0 8px 22px rgba(14,60,120,0.09);} 
+.selected-box .chip-remove{ background:#fff;border:1px solid rgba(0,0,0,0.06); padding:4px 6px; border-radius:6px; color:#ef4444; cursor:pointer}
+.selected-box .chip-remove {
+  background: transparent;
+  border: 0;
+  color: #ef4444;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+}
+.selected-box .empty-note {
+  color: #94a3b8;
+  font-size: 0.9rem;
+  padding: 6px 8px;
+}
+
+/* Empty */
+// .empty-note {
+//   color: #94a3b8;
+//   font-size: 13px;
+//   padding: 6px 4px;
+// }
+
+/* Filters */
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.75rem 0;
+
+  div {
+    flex: 1;
+    min-width: 100px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+
+    label {
+      font-size: 0.85rem;
+      color: #6b7280;
+    }
+
+    input,
+    select {
+      border: 1px solid #d1d5db;
+      border-radius: 0.5rem;
+      padding: 0.4rem 0.6rem;
+      font-size: 0.85rem;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s ease;
+
+      &:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+      }
+    }
+  }
+}
+
+/* Listbox */
+// select[multiple] {
+//   padding: 6px;
+//   border-radius: 10px;
+//   border: 1px solid #cbd5e1;
+//   height: 200px;
+//   font-size: 13px;
+// }
+/* Visual feedback for selected options inside multi-selects */
+select[multiple] option:checked,
+select[multiple] option[selected] {
+  background-color: #bfdbfe; /* light blue */
+  color: #0b2240;
+}
+
+/* Fallback for some browsers: apply a stronger style when the option element is selected via attribute */
+select[multiple] option[selected] {
+  background-color: #bfdbfe;
+  color: #0b2240;
+}
+
+/* If the browser ignores option styling, add a subtle highlight for the chips (they show selection too) */
+.chip.selected {
+  background: #dbeafe;
+  border-color: #bfdbfe;
+}
+
+/* Ensure the two columns align and their inner listboxes stretch to match heights */
+.two-column-grid {
+  align-items: start; /* align both column cards to top */
+}
+
+.two-column-grid > .filter-team,
+.two-column-grid > .filter-pm {
+  display: flex;
+  flex-direction: column;
+  /* ensure both cards have identical height (the grid row height) */
+  height: 100%;
+  min-height: 220px; /* visual baseline */
+  overflow: hidden; /* hide overflow so inner area can scroll */
+}
+
+/* make the listbox inside the column expand to fill available space */
+.two-column-grid select[multiple] {
+  /* make the listbox expand to fill remaining card space and scroll internally */
+  flex: 1 1 auto;
+  min-height: 120px;
+  height: auto;
+  overflow: auto;
+}
+
+/* For the filter blocks: keep filters and hints fixed size, allow the select to absorb extra space */
+.two-column-grid .filters {
+  flex: 0 0 auto;
+}
+.two-column-grid .hint {
+  flex: 0 0 auto;
+}
+
+/* Ensure footer-row spans full grid columns of the parent .grid container */
+.grid > .footer-row {
+  grid-column: 1 / -1;
+}
+
+/* === Responsive === */
+@media (max-width: 900px) {
+  .two-column-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+
+/* ============================================================
+   FOOTER (BOTONES DERECHA)
+============================================================ */
+.modal-footer {
+  padding: 22px 28px;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* ============================================================
+   BUTTONS
+============================================================ */
+.btn {
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: transform .2s ease, background .2s ease;
+}
+
+.btn:hover {
+  transform: scale(1.05);
+}
+
+/* Primary */
+.btn-primary {
+  background: #2563eb;
+  border: none;
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: #1d4ed8;
+}
+
+/* Outline */
+.btn-outline {
+  border: 2px solid #94a3b8;
+  background: #fff;
+  color: #475569;
+}
+
+.btn-outline:hover {
+  background: #f1f5f9;
+}
+.btn-save {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #0d6efd;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+.material-icons,
+fa-icon,
+svg {
+  font-size: 18px;
+}

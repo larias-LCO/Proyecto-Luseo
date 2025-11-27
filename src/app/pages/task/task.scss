@@ -1,0 +1,224 @@
+.task-container {
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  /* Evitar superposición con header (70px) y sidebar (250px) */
+  margin-top: 70px;
+  margin-left: 250px;
+  padding: 24px;
+}
+.task-container h1 {
+  font-size: 38px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: #0b2a5b;
+}
+
+/* Buscar por nombre */
+.filter-search label{
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #444;
+  margin-bottom: 6px;
+  margin-top: 30px;
+}
+ 
+.filter-search input {
+  width: 40%;
+  padding: 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+/* Focus style specifically for the Search input */
+.filter-search input:focus,
+.filter-search input:focus-visible {
+  outline: none;
+  border-color: var(--primary, #0a5ce0);
+  box-shadow: 0 0 0 4px rgba(13,61,140,0.08);
+}
+
+
+/* GRID DE FILTROS */
+.filters-container {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(150px, 1fr)); /* más estrecho */
+  gap: 10px 16px;
+  align-items: end;
+  margin-right: 40px;       /* mueve los filtros a la derecha */
+  margin-top: 8px;
+  margin-bottom: 30px;     /* espacio antes de la tabla */
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+
+
+
+      label {
+        font-weight: 500;
+        font-size: 0.9rem;
+        margin-bottom: 4px;
+        color: #333;
+      }
+
+      select,
+      input {
+        padding: 6px 8px;
+        width: 230px;   
+        height: 36px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 0.9rem;
+      }
+      /* Focus/active state for filter controls: blue border and subtle ring on click/focus */
+      select:focus,
+      input:focus,
+      select:focus-visible,
+      input:focus-visible {
+        outline: none;
+        border-color: var(--primary, #0a5ce0);
+        box-shadow: 0 0 0 4px rgba(13,61,140,0.08);
+      }
+    }
+
+
+.filter-week {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 220px;
+
+  label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+  }
+
+  input[type="week"] {
+    width: 100%;
+    height: 20px;
+    padding: 8px 12px;
+
+    border: 1px solid #d0d7e2;
+    border-radius: 8px;
+
+    font-size: 15px;
+    color: #333;
+
+    background: #fff;
+
+    /* Quitamos el estilo nativo */
+    appearance: none;
+    -webkit-appearance: none;
+
+    /* Flechita como un select */
+    background-image: url("data:image/svg+xml;utf8,<svg fill='gray' height='24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 16px;
+
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+
+    cursor: pointer;
+
+    transition: all 0.2s ease;
+
+    &:focus {
+      border-color: #2c63ff;
+      box-shadow: 0 0 0 3px rgba(44, 99, 255, 0.15);
+      outline: none;
+    }
+  }
+}
+
+
+    
+
+/* BOTÓN CLEAR ALL */
+#clear-all-filters {
+ margin-right: 6px;
+  color: black;
+  min-width: 120px;
+  height: 36px;
+  font-weight: 500;
+  padding: 6px 14px;
+  font-size: 15px;
+  border-radius: 6px;
+  border: none;
+  background: linear-gradient(180deg, #c5d8f3, #acb8cc);
+  box-shadow: 0 4px 10px rgba(13,61,140,0.2);
+  cursor: pointer;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+
+}
+
+#clear-all-filters:hover {
+  border-color: #9ca3af;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  transform: translateY(-2px);
+}
+
+
+.top-right-buttons {
+  position: fixed;       /* Se mantiene en la pantalla al hacer scroll */
+  top: 360px;             /* Distancia desde la parte superior */
+  right: 20px;           /* Distancia desde la parte derecha */
+  display: flex;
+  gap: 12px;             /* Separación entre botones */
+  z-index: 9999;         /* Para que queden por encima del calendario */
+}
+
+.top-right-buttons button {
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.btn-open {
+margin-right: 6px;
+  color: #fff;
+  min-width: 120px;
+  height: 36px;
+  padding: 0.5rem 1rem;
+  font-size: 14px;
+  border-radius: 6px;
+  border: none;
+  background: linear-gradient(180deg, #0d3d8c, #0b2a5b);
+  box-shadow: 0 4px 10px rgba(13,61,140,0.2);
+  cursor: pointer;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+
+.btn-clear-filters:hover {
+  border-color: #9ca3af;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  transform: translateY(-2px);
+}
+
+.btn-open:hover {
+  background: linear-gradient(180deg, #0e50bb, #09315a);
+  box-shadow: 0 6px 12px rgba(11,42,91,0.3);
+  transform: translateY(-2px);
+}
+
+.btn-create-task {
+  position: relative;
+  background: linear-gradient(180deg, #1e3a8a, #1e40af);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+}
+
+

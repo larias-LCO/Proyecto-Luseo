@@ -1,0 +1,442 @@
+
+
+    .project-container {
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  /* Evitar superposición con header (70px) y sidebar (250px) */
+  margin-top: 70px;
+  margin-left: 250px;
+  padding: 24px;
+}
+
+.project-container h1 {
+  font-size: 38px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: #0b2a5b;
+}
+/* Buscar por nombre */
+.filter-search label,
+.filters-row label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #444;
+  margin-bottom: 6px;
+  margin-top: 30px;
+}
+ 
+.filter-search input {
+  width: 50%;
+  padding: 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+/* Focus style specifically for the Search input */
+.filter-search input:focus,
+.filter-search input:focus-visible {
+  outline: none;
+  border-color: var(--primary, #0a5ce0);
+  box-shadow: 0 0 0 4px rgba(13,61,140,0.08);
+}
+
+
+  /* ====== FILTROS ====== */
+.filters-container {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(150px, 1fr)); /* más estrecho */
+  gap: 10px 16px;
+  align-items: end;
+  margin-right: 40px;       /* mueve los filtros a la derecha */
+  margin-top: 8px;
+  margin-bottom: 30px;     /* espacio antes de la tabla */
+}
+
+/* Todos los filtros iguales */
+.filter-item {
+  display: flex;
+  flex-direction: column;
+
+
+
+      label {
+        font-weight: 500;
+        font-size: 0.9rem;
+        margin-bottom: 4px;
+        color: #333;
+      }
+
+      select,
+      input {
+        padding: 6px 8px;
+        width: 230px;   
+        height: 36px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 0.9rem;
+      }
+      /* Focus/active state for filter controls: blue border and subtle ring on click/focus */
+      select:focus,
+      input:focus,
+      select:focus-visible,
+      input:focus-visible {
+        outline: none;
+        border-color: var(--primary, #0a5ce0);
+        box-shadow: 0 0 0 4px rgba(13,61,140,0.08);
+      }
+    }
+    
+
+    /* Espaciador invisible si se requiere completar filas */
+    .empty {
+      visibility: hidden;
+    }
+
+    /* Botones Search y Clear alineados al final */
+    .field {
+      display: flex;
+      flex-direction: column;
+
+      button {
+        padding: 8px 12px;
+        border: none;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        cursor: pointer;
+      }
+
+      .btn-secondary {
+        background-color: #007bff;
+        color: white;
+      }
+
+      .btn { background-color: #e0e0e0; }
+    }
+
+    /* Clear button aligned to the right spanning full row */
+    .field.clear-action {
+      grid-column: 1 / -1;
+      justify-self: end;
+      align-self: end;
+      margin-top: 4px;
+      
+      .btn {
+        background: #ffffff; /* outline style */
+        color: var(--primary);
+        border: 1px solid var(--primary);
+        border-radius: 6px;
+        padding: 6px 8px; /* igual que select */
+        line-height: 1.2;
+        min-height: 34px; /* altura similar a selects en la mayoría de navegadores */
+        box-shadow: none;
+        font-weight: 600;
+        transition: background-color .15s ease, border-color .15s ease, color .15s ease;
+      }
+
+      .btn:hover { 
+        background: var(--primary); 
+        color: #ffffff;
+        border-color: var(--primary-700); 
+      }
+
+      .btn:focus-visible {
+        outline: 2px solid rgba(10,88,202,.35);
+        outline-offset: 2px;
+      }
+    }
+
+  /* Los botones se alinean al nivel de los filtros */
+.filters-actions {
+  display: flex;
+  gap: 10px;
+  // align-items: end;
+  margin-left: 150px;
+}
+ 
+  /* Responsivo: En pantallas pequeñas se apilan */
+  @media (max-width: 992px) {
+    .filters-container {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .filters-actions { grid-column: 1 / -1; justify-content: flex-end; margin-top: 6px; }
+  }
+
+  @media (max-width: 600px) {
+    .filters-container {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Estilo general para botones primarios */
+  .btn-primary {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 12px;
+    cursor: pointer;
+  }
+
+  .btn-primary:hover {
+    background-color: #0056b3;
+  }
+
+  /* Paginador */
+  // .pager-wrap {
+  //   margin-top: 16px;
+  //   display: flex;
+  //   justify-content: flex-end;
+  //   align-items: center;
+
+  //   .pager {
+  //     display: flex;
+  //     align-items: center;
+  //     gap: 8px;
+  //   }
+  // }
+/* Agrupar el page size + botones en la misma línea */
+.filter-actions-group {
+  display: flex;
+  align-items: end;
+  gap: 10px;
+}
+
+
+
+/* ====== LISTA DE PROYECTOS EN TABLA ====== */
+.table-wrap {
+  margin-top: 20px;
+  overflow-x: auto;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+}
+
+/* Tabla base */
+.project-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  font-family: "Inter", "Segoe UI", sans-serif;
+}
+
+/* Encabezado */
+.project-table thead th {
+ background: #eaf2ff; /* 🔹 Azul muy suave */
+  color: #0b2a5b; /* 🔹 Azul oscuro para contraste */
+  text-align: left;
+  font-weight: 700;
+  font-size: 16px;
+  padding: 14px 35px; /* Aumentado de 16px a 24px para mayor separación */
+  letter-spacing: 0.2px;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  white-space: nowrap;
+  border-bottom: 2px solid #d6e4ff;
+}
+
+/* Celdas */
+.project-table tbody td {
+  padding: 12px 35px; /* Aumentado de 16px a 24px para alinearse con los headers */
+  font-size: 14.5px;
+  color: #333;
+  border-bottom: 1px solid #edf0f6;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+/* Fila par */
+.project-table tbody tr:nth-child(even) {
+  background-color: #f9fbff;
+}
+
+/* Hover */
+.project-table tbody tr:hover {
+  background: #e7f0ff;
+  transform: scale(1.01);
+}
+
+/* Transición sutil al pasar el mouse */
+.project-table tbody tr {
+  transition: all 0.15s ease-in-out;
+}
+
+/* Última fila sin borde */
+.project-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Estilo para los “status pill” si los tienes */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* Ejemplo de colores de estado */
+.status-pill.in-progress {
+  background: #e8f0ff;
+  color: #0b63f6;
+}
+.status-pill.completed {
+  background: #e7f9ee;
+  color: #1e9b50;
+}
+
+.status-pill.delayed {
+  background: #ffecec;
+  color: #d93025;
+}
+
+
+//BOTONSITO NEW PROJECT 
+
+.btn-create {
+ margin-right: 6px;
+  color: #fff;
+  min-width: 120px;
+  height: 36px;
+  padding: 6px 14px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: none;
+  background: linear-gradient(180deg, #2474f3, #1d3e74);
+  box-shadow: 0 4px 10px rgba(13,61,140,0.2);
+  cursor: pointer;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  margin-top: 10px;
+}
+
+.btn-create:hover{
+ background: linear-gradient(180deg,  #2474f3, #1d3e74);
+  box-shadow: 0 6px 12px rgba(11,42,91,0.3);
+  transform: translateY(-2px);
+}
+/* ===== TOOLTIP ANIMADO ===== */
+.tooltip {
+  position: relative;
+  display: inline-block;
+  margin-right: 10px;
+}
+
+.tooltip .tooltip-text {
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%) translateY(8px);
+  background: rgba(15, 23, 42, 0.9); /* azul oscuro transparente */
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  pointer-events: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  z-index: 9999; /* o un valor alto para sobresalir del menú */ 
+}
+
+/* flechita del tooltip */
+.tooltip .tooltip-text::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -6px;
+  border-width: 6px;
+  border-style: solid;
+  border-color: rgba(15, 23, 42, 0.9) transparent transparent transparent;
+}
+
+/* Hover: animación suave */
+.tooltip:hover .tooltip-text {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+.btn-clear-filters {
+ margin-right: 6px;
+  color: black;
+  min-width: 120px;
+  height: 36px;
+  font-weight: 500;
+  padding: 6px 14px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: none;
+  background: linear-gradient(180deg, #c5d8f3, #acb8cc);
+  box-shadow: 0 4px 10px rgba(13,61,140,0.2);
+  cursor: pointer;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  margin-top: 10px;
+}
+
+.btn-clear-filters:hover {
+  border-color: #9ca3af;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  transform: translateY(-2px);
+}
+
+
+ /* Pager moved below toolbar: modern centered pager */
+    .pager-wrap{display: flex;justify-content: center;margin-top: 24px; margin-bottom: 50px;margin-top: 50px;}
+    .pager{ display: flex;align-items: center;gap: 10px;background: #fafafa;padding: 10px 20px;border-radius: 12px;box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);}
+    .pager-info {color: #5d5c63;font-size: 14px;font-weight: 500;}
+
+/* === BOTONES DE PÁGINA === */
+.btn-pager {
+  background: #ffffff;
+  color: #365aff;
+  border: 1px solid #e2dff8;
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+
+  &:hover {
+    background: linear-gradient(135deg, #f9f7fd, #f0eff3);
+    border-color: #99caf8;
+    color: #365aff;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(118, 159, 248, 0.973);
+  }
+
+  &:active {
+    transform: scale(0.97);
+  }
+}
+   /* === BOTÓN DE ORDEN === */
+.sort-btn {
+  background: #f5f3ff;
+  color: #365aff;
+  border: 1px solid #e2dff8;
+  font-weight: 600;
+
+  &:hover {
+    background: linear-gradient(135deg, #f9f7fd, #f0eff3);
+    color: #365aff;
+  }
+}
+
+
+
+.clickable-row {
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.clickable-row:hover {
+  background: #f4f6fa;
+}

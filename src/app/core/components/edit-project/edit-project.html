@@ -1,0 +1,201 @@
+<!-- MODAL -->
+<div class="modal show" id="teamModal">
+  <div class="modal-card">
+
+    <div class="modal-header">
+      <h2 id="editTitle">Edit Project</h2>
+       <button id="createClose" (click)="onCancel()" aria-label="Close modal">Close</button>
+    </div>
+
+
+<div class="modal-body">
+
+<form [formGroup]="form">
+   <!-- GRID DE 3 COLUMNAS -->
+      <div class="modal-grid">
+
+    <div>
+      <label>Code</label>
+      <input type="text" formControlName="projectCode">
+    </div>
+
+    <div>
+      <label>Name</label>
+      <input type="text" formControlName="name">
+    </div>
+
+    <div>
+      <label>Area</label>
+      <input type="number" formControlName="projectArea">
+    </div>
+
+    <div>
+      <label>Area Unit</label>
+      <select formControlName="areaUnit">
+        <option *ngFor="let unit of ['SQUARE_FEET','SQUARE_METER']" [value]="unit">
+          {{ unit.replace('_',' ') }}
+        </option>
+      </select>
+    </div>
+
+    <div>
+      <label>Type</label>
+      <select formControlName="projectType">
+        <option *ngFor="let t of ['COMMERCIAL','RESIDENTIAL']" [value]="t">
+          {{ t.replace('_',' ') }}
+        </option>
+      </select>
+    </div>
+
+    <div>
+      <label>Status</label>
+      <select formControlName="status">
+        <option *ngFor="let s of ['IN_PROGRESS','COMPLETED','ON_HOLD']" [value]="s">
+          {{ s.replace('_',' ') }}
+        </option>
+      </select>
+    </div>
+
+    <div>
+      <label>Scope</label>
+      <select formControlName="scope">
+        <option *ngFor="let sc of ['NEW_BUILD','RENOVATION']" [value]="sc">
+          {{ sc.replace('_',' ') }}
+        </option>
+      </select>
+    </div>
+
+    <div>
+      <label>Office</label>
+      <select formControlName="officeId">
+        <option *ngFor="let o of offices" [value]="o.id">{{ o.name }}</option>
+      </select>
+    </div>
+
+    <div>
+      <label>Client</label>
+      <select formControlName="clientId">
+        <option *ngFor="let c of clients" [value]="c.id">{{ c.name }}</option>
+      </select>
+    </div>
+
+    <div>
+      <label>Software</label>
+      <select formControlName="softwareId">
+        <option *ngFor="let s of software" [value]="s.id">{{ s.name }}</option>
+      </select>
+    </div>
+
+    <div style="grid-column: 1/-1;">
+      <label>Notes</label>
+      <textarea formControlName="notes"></textarea>
+    </div>
+
+  <!-- TEAM ASSIGNMENT SECTION -->
+  <div style="grid-column: 1 / -1;">
+    <h3 class="section-title">
+      <i class="bi bi-people-fill"></i> Team Assignment
+    </h3>
+
+    <!-- CONTENEDOR 2 COLUMNAS: 50% Team, 50% PM -->
+    <div class="two-column-grid">
+
+      <!-- LEFT: TEAM -->
+      <div class="filter-team">
+
+        <label>Team</label>
+
+        <div class="selected-box">
+          <div *ngIf="teamSelectedEmployees.length; else noTeam">
+            <div class="chip" *ngFor="let emp of teamSelectedEmployees">
+              <span class="chip-avatar">{{ getInitials(emp.name) }}</span>
+              <span class="chip-label">
+                {{ emp.name }}
+                <small class="chip-meta">· {{ emp.jobTitle }}{{ emp.department ? ' · '+emp.department : '' }}</small>
+              </span>
+              <button type="button" class="chip-remove" (click)="removeFromTeam(emp.id)">✕</button>
+            </div>
+          </div>
+          <ng-template #noTeam>
+            <div class="empty-note">No team members assigned yet.</div>
+          </ng-template>
+        </div>
+
+        <div class="filters">
+          <input [(ngModel)]="teamQuery" [ngModelOptions]="{standalone:true}" (input)="applyFilters()" placeholder="Search Name">
+          <select [(ngModel)]="teamJob" [ngModelOptions]="{standalone:true}" (change)="applyFilters()">
+            <option value="">Job position</option>
+            <option *ngFor="let job of teamJobs" [value]="job.name">{{ job.name }}</option>
+          </select>
+          <select [(ngModel)]="teamDept" [ngModelOptions]="{standalone:true}" (change)="applyFilters()">
+            <option value="">Department</option>
+            <option *ngFor="let dept of teamDepartments" [value]="dept.name">{{ dept.name }}</option>
+          </select>
+        </div>
+
+        <select multiple size="8" [(ngModel)]="teamSelection" [ngModelOptions]="{standalone:true}">
+          <option *ngFor="let emp of teamFiltered" [ngValue]="emp.id"
+            (mousedown)="$event.preventDefault(); toggleTeam(emp.id)">
+            {{ (teamSelection.includes(emp.id)?'✔ ':'') + emp.name + ' · ' + emp.jobTitle + (emp.department?' · '+emp.department:'') }}
+          </option>
+        </select>
+
+      </div>
+
+      <!-- RIGHT: ASSIGNED PM(s) -->
+      <div class="filter-pm">
+
+        <label>Assigned PM(s)</label>
+
+        <div class="selected-box">
+          <div *ngIf="pmSelectedEmployees.length; else noPM">
+            <div class="chip" *ngFor="let emp of pmSelectedEmployees">
+              <span class="chip-avatar">{{ getInitials(emp.name) }}</span>
+              <span class="chip-label">
+                {{ emp.name }}
+                <small class="chip-meta">· {{ emp.jobTitle }}{{ emp.department ? ' · '+emp.department : '' }}</small>
+              </span>
+              <button type="button" class="chip-remove" (click)="removeFromPM(emp.id)">✕</button>
+            </div>
+          </div>
+          <ng-template #noPM>
+            <div class="empty-note">No PMs assigned yet.</div>
+          </ng-template>
+        </div>
+
+        <div class="filters">
+          <input [(ngModel)]="pmQuery" [ngModelOptions]="{standalone:true}" (input)="applyFilters()" placeholder="Search name (PM)">
+        </div>
+
+        <select multiple size="8" [(ngModel)]="pmSelection" [ngModelOptions]="{standalone:true}">
+          <option *ngFor="let emp of pmFiltered" [ngValue]="emp.id"
+            (mousedown)="$event.preventDefault(); togglePM(emp.id)">
+            {{ (pmSelection.includes(emp.id)?'✔ ':'') + emp.name + ' · ' + emp.jobTitle + (emp.department?' · '+emp.department:'') }}
+          </option>
+        </select>
+
+      </div> <!-- end filter-pm -->
+
+    </div> <!-- end two-column-grid -->
+  </div> <!-- end team assignment section -->
+
+</div> <!-- end modal-grid -->
+
+</form>
+
+</div> <!-- end modal-body -->
+
+
+ <div class="modal-footer">
+  <!-- ACTION BUTTONS -->
+  <div class="actions" style="margin-top:18px; display:flex; gap:12px;">
+    <button type="button" class="btn btn-outline" (click)="onCancel()">
+     <span class="icon">❌</span> Cancel</button>
+    <button type="button" class="btn btn-primary" (click)="onSave()">
+      <span class="icon">📝</span> Save Changes</button>
+  </div>
+</div> <!-- end modal-footer -->
+
+</div> <!-- end modal-card -->
+</div> <!-- end modal -->
+

@@ -1,0 +1,83 @@
+
+
+<!-- MODAL -->
+<div class="modal-show" (click)="close.emit()">
+    <div class="modal-card" role="dialog" aria-modal="true"
+             aria-labelledby="createTaskTitle"
+             (click)="$event.stopPropagation()">
+
+        <div class="modal-header">
+            <div id="createTaskTitle">➕ Create New Task</div>
+            <button id="createClose" (click)="Cerrar()" aria-label="Close modal">✖</button>
+        </div>
+
+        <div class="modal-body">
+            <form [formGroup]="form" (ngSubmit)="onSubmit()" style="display: flex; flex-direction: column; gap: 16px;">
+                <div class="formulario">
+                    <label>Task Name *</label>
+                    <input type="text" formControlName="name" required style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px;">
+                </div>
+                <div class="formulario">
+                    <label>Description</label>
+                    <textarea formControlName="description" rows="3" style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px;"></textarea>
+                </div>
+                <div class="formulario">
+                    <label>Project</label>
+                    <select formControlName="projectId" style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px;">
+                        <option value="">None</option>
+                        <ng-container *ngFor="let p of projects">
+                            <option [value]="p.id">{{ p.name }}</option>
+                        </ng-container>
+                    </select>
+                </div>
+                <div class="formulario">
+                    <label>Phase</label>
+                    <select formControlName="projectPhaseId" style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px;">
+                        <option value="">None / Select project first</option>
+                        <ng-container *ngFor="let ph of phases">
+                            <option [value]="ph.id">{{ ph.phase || ('Phase ' + ph.id) }}</option>
+                        </ng-container>
+                    </select>
+                </div>
+                <div class="formulario">
+                    <label>Category *</label>
+                    <select formControlName="taskCategoryId" required style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px;">
+                        <option value="">Select Category</option>
+                        <ng-container *ngFor="let c of categories">
+                            <option [value]="c.id">{{ c.name }}</option>
+                        </ng-container>
+                    </select>
+                </div>
+                <div class="formulario">
+                    <label>Start Date (Issue Date)</label>
+                    <input type="date" formControlName="issuedDate" style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px;">
+                </div>
+                <div class="formulario" *ngIf="showEndDate">
+                    <label>End Date (Vacations Only)</label>
+                    <input type="date" formControlName="endDate" style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px;">
+                    <small style="color: #64748b; font-size: 12px;">Tasks will be created for each day in the range</small>
+                </div>
+                <div class="formulario">
+                    <label>Status *</label>
+                    <select formControlName="status" required style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px;">
+                        <ng-container *ngFor="let s of statuses">
+                            <option [value]="s">{{ s }}</option>
+                        </ng-container>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <div class="botones-fin">
+                        <button type="button" class="btn-cerrar" (click)="Cerrar()">
+                            <span class="icon">❌</span> Cancel
+                        </button>
+                        <button type="submit" class="btn-create" [disabled]="form.invalid">
+                            <span class="icon">📝</span> Create Task
+                        </button>
+                    </div>
+                    <div id="create-task-message" class="muted" [style.color]="messageColor" style="text-align:center; margin-top:8px;">{{ message }}</div>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>

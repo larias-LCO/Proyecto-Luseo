@@ -1,0 +1,300 @@
+import { Component, Inject, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { CatalogsService } from '../..//services/catalogs.service';
+import { ProjectFiltersService } from '../../services/project-filters.service';
+import { ProjectService } from '../../services/project.service';
+import { Project } from '../../components/project-details/project.model';
+import { MatSelectModule } from '@angular/material/select';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+
+
+@Component({
+  selector: 'app-edit-project',
+  standalone: true,
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatSelectModule, MatChipsModule, MatFormFieldModule, MatCheckboxModule],
+  templateUrl: './edit-project.html',
+  styleUrls: ['./edit-project.scss']
+})
+export class EditProjectComponent implements OnInit {
+  
+  form!: FormGroup;
+
+  // The project being edited (normalized from MAT_DIALOG_DATA)
+  project!: Project | any;
+
+  // Data from backend
+  offices: any[] = [];
+  clients: any[] = [];
+  software: any[] = [];
+  employees: any[] = [];
+  message = '';
+
+  // Team/PM selection helpers
+  employeesAll: any[] = [];
+  teamFiltered: any[] = [];
+  pmFiltered: any[] = [];
+  teamSelection: number[] = [];
+  pmSelection: number[] = [];
+  teamQuery = '';
+  teamJob = '';
+  teamDept = '';
+  pmQuery = '';
+  jobs: any[] = [];
+  departments: any[] = [];
+  teamJobs: any[] = [];
+  teamDepartments: any[] = [];
+  private readonly TEAM_ROLE_LIST = ['coordinator', 'designer', 'drafter', 'engineer', 'senior engineer'];
+  private readonly PM_ROLE_LIST = ['project manager', 'manager', 'coordinator', 'senior engineer'];
+  private pmIdSet: Set<number> = new Set();
+  private teamRoleMode = true;
+  private pmRoleMode = true;
+
+  constructor(
+    private fb: FormBuilder,
+    private catalogs: CatalogsService,
+    private projectService: ProjectService,
+    private dialogRef: MatDialogRef<EditProjectComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: any,
+    private filtersService: ProjectFiltersService
+  ) {}
+
+  ngOnInit(): void {
+
+
+  // Normalize incoming dialog data: some callers pass { project: {...} }
+  this.project = (this.data && this.data.project) ? this.data.project : this.data;
+
+    // 1️⃣ Build the form
+    this.form = this.fb.group({
+      projectCode: [''],
+      name: [''],
+      projectArea: [''],
+      areaUnit: [''],
+      projectType: [''],
+      status: [''],
+      scope: [''],
+      estimatedCost: [''],
+      trackedTime: [''],
+      officeId: [''],
+      clientId: [''],
+      softwareId: [''],
+      // legacy/template-friendly controls (the template binds to names)
+      officeName: [''],
+      clientName: [''],
+      softwareName: [''],
+      notes: [''],
+      pmIds: [[]],
+      employeeIds: [[]],
+    });
+
+    // 2️⃣ Patch form immediately with any provided project fields (so textarea shows notes
+    //    even if catalogs fail to load). We'll also reload catalogs and patch again to fill IDs.
+    this.patchForm();
+    this.loadBackendCatalogs();
+    // Ensure people/options are loaded and selections reflect current project
+    void this.loadPeopleOptions();
+  }
+
+  // ------------------ Team / PM helpers (adapted from create-project) ------------------
+  private async loadPeopleOptions() {
+    try {
+      const employeesRaw = await this.catalogs.getEmployees();
+
+      this.employeesAll = (employeesRaw as any[])
+        .map((e: any) => {
+          const id = Number(e.id ?? e.employeeId ?? e.personId ?? e.userId);
+          const name = (e.name ?? e.fullName ?? e.displayName ?? [e.firstName, e.lastName].filter(Boolean).join(' ') ?? '').toString();
+          const jobTitle = (e.jobTitle ?? e.position ?? e.positionName ?? e.job ?? e.jobName ?? e.jobPosition ?? e.jobPositionName ?? e.role ?? e.roles ?? '-').toString();
+          const department = (e.department ?? e.departmentName ?? e.dept ?? e.area ?? e.areaName ?? (e.department && e.department.name) ?? '-').toString();
+          const roles = (e.roles ?? e.role ?? '').toString();
+          return { id, name, jobTitle, department, roles } as any;
+        })
+        .sort((a, b) => (a.name || '').localeCompare(b.name || '', undefined, { sensitivity: 'base' }));
+
+      this.filtersService.setEmployees(this.employeesAll);
+
+      const pmByRoles = this.filtersService.filterEmployees({ roleList: this.PM_ROLE_LIST });
+      this.pmRoleMode = pmByRoles.length > 0;
+      const pmOptions = this.pmRoleMode ? pmByRoles : this.filtersService.filterEmployees({ onlyPM: true });
+      this.pmIdSet = new Set(pmOptions.map((p: any) => Number(p.id)));
+
+      const teamByRoles = this.filtersService.filterEmployees({ roleList: this.TEAM_ROLE_LIST });
+      this.teamRoleMode = teamByRoles.length > 0;
+      const teamOptions = this.teamRoleMode ? teamByRoles : this.employeesAll.filter(e => !this.pmIdSet.has(Number(e.id)));
+
+      const jobSet = new Set(this.employeesAll.map(e => (e.jobTitle || '').toString()).filter(Boolean));
+      this.jobs = Array.from(jobSet).map(j => ({ name: j }));
+      const deptSet = new Set(this.employeesAll.map(e => (e.department || '').toString()).filter(Boolean));
+      this.departments = Array.from(deptSet).map(d => ({ name: d }));
+
+      this.teamJobs = this.jobs.slice();
+      this.teamDepartments = this.departments.slice();
+
+      this.applyFilters();
+
+      const v = this.form.value || {};
+      this.teamSelection = Array.isArray(v.employeeIds) ? v.employeeIds.map(Number) : [];
+      this.pmSelection = Array.isArray(v.pmIds) ? v.pmIds.map(Number) : [];
+    } catch (e) {
+      console.error('Error cargando empleados/PMs en edit modal:', e);
+    }
+  }
+
+  applyFilters() {
+    const q = (this.teamQuery || '').trim();
+    const job = (this.teamJob || '').trim();
+    const dept = (this.teamDept || '').trim();
+    const teamBase = this.teamRoleMode
+      ? this.filtersService.filterEmployees({ q, job, dept, roleList: this.TEAM_ROLE_LIST })
+      : this.filtersService.filterEmployees({ q, job, dept });
+    if (this.teamRoleMode) {
+      this.teamFiltered = teamBase.slice();
+    } else {
+      this.teamFiltered = teamBase.filter((e: any) => !this.pmIdSet.has(Number(e.id)));
+    }
+
+    const pmq = (this.pmQuery || '').trim();
+    const pmBase = this.pmRoleMode
+      ? this.filtersService.filterEmployees({ q: pmq, roleList: this.PM_ROLE_LIST })
+      : this.filtersService.filterEmployees({ q: pmq });
+    this.pmFiltered = pmBase.filter((e: any) => this.pmIdSet.has(Number(e.id)));
+  }
+
+  getEmployeeById(id: number) {
+    return this.employeesAll.find(e => Number(e.id) === Number(id));
+  }
+
+  get teamSelectedEmployees() {
+    return (this.teamSelection || []).map((id: any) => this.getEmployeeById(Number(id))).filter(Boolean) as any[];
+  }
+
+  get pmSelectedEmployees() {
+    return (this.pmSelection || []).map((id: any) => this.getEmployeeById(Number(id))).filter(Boolean) as any[];
+  }
+
+  removeFromTeam(id: number) {
+    this.teamSelection = (this.teamSelection || []).filter(x => Number(x) !== Number(id));
+    this.form.patchValue({ employeeIds: this.teamSelection });
+  }
+
+  removeFromPM(id: number) {
+    this.pmSelection = (this.pmSelection || []).filter(x => Number(x) !== Number(id));
+    this.form.patchValue({ pmIds: this.pmSelection });
+  }
+
+  toggleTeam(id: number) {
+    const cur = Array.isArray(this.teamSelection) ? [...this.teamSelection.map(Number)] : [];
+    const nid = Number(id);
+    const idx = cur.findIndex(x => x === nid);
+    if (idx >= 0) cur.splice(idx, 1); else cur.push(nid);
+    this.teamSelection = cur;
+    this.form.patchValue({ employeeIds: this.teamSelection });
+  }
+
+  togglePM(id: number) {
+    const cur = Array.isArray(this.pmSelection) ? [...this.pmSelection.map(Number)] : [];
+    const nid = Number(id);
+    const idx = cur.findIndex(x => x === nid);
+    if (idx >= 0) cur.splice(idx, 1); else cur.push(nid);
+    this.pmSelection = cur;
+    this.form.patchValue({ pmIds: this.pmSelection });
+  }
+
+  getInitials(name?: string) {
+    if (!name) return '';
+    return name
+      .split(' ')
+      .filter(Boolean)
+      .map(n => n[0])
+      .slice(0, 2)
+      .join('')
+      .toUpperCase();
+  }
+
+  async loadBackendCatalogs() {
+    try {
+      const [off, cli, soft, emp] = await Promise.all([
+        this.catalogs.getOffices(),
+        this.catalogs.getClients(),
+        this.catalogs.getSoftware(),
+        this.catalogs.getEmployees(),
+      ]);
+
+      this.offices = off;
+      this.clients = cli;
+      this.software = soft;
+      this.employees = emp;
+
+      // 3️⃣ Preload form with original project values
+      this.patchForm();
+      
+    } catch (err) {
+      console.error('Error loading catalogs', err);
+    }
+  }
+
+  patchForm() {
+    // tolerant extraction of notes and other optional fields
+    const notes = (this.project && (this.project.notes ?? this.project.note ?? this.project.description ?? this.project.comment)) || '';
+
+    this.form.patchValue({
+      projectCode: this.project.projectCode,
+      name: this.project.name,
+      projectArea: this.project.projectArea,
+      areaUnit: this.project.areaUnit,
+      projectType: this.project.projectType,
+      status: this.project.status,
+      scope: this.project.scope,
+      estimatedCost: this.project.cost,
+      trackedTime: this.project.trackedTime,
+      officeId: this.getOfficeId(this.project.officeName),
+      officeName: this.project.officeName,
+      clientId: this.getClientId(this.project.clientName),
+      clientName: this.project.clientName,
+      softwareId: this.getSoftwareId(this.project.softwareName),
+      softwareName: this.project.softwareName,
+      notes: notes,
+      pmIds: this.project.pmIds || [],
+      employeeIds: this.project.employeeIds || [],
+    });
+  }
+
+  // Helpers to convert names → IDs
+  getOfficeId(name: string | undefined) {
+    return this.offices.find(o => o.name === name)?.id ?? '';
+  }
+
+  getClientId(name: string | undefined) {
+    return this.clients.find(c => c.name === name)?.id ?? '';
+  }
+
+  getSoftwareId(name: string | undefined) {
+    return this.software.find(s => s.name === name)?.id ?? '';
+  }
+
+  // Cancel button
+  onCancel() {
+    // signal the caller that the edit was cancelled so project-details can reopen if it wants
+    this.dialogRef.close('cancel');
+  }
+
+  // Save button
+  async onSave() {
+    if (this.form.invalid) return;
+
+    const payload = { ...this.form.value };
+
+    try {
+      await this.projectService.updateProject(this.project.id, payload);
+      // Close with 'saved' signal so project-details can reopen with fresh data
+      this.dialogRef.close({ action: 'saved', projectId: this.project.id });
+    } catch (err) {
+      console.error('Error saving project:', err);
+      this.message = 'Error saving project: ' + ((err as any)?.message || String(err));
+    }
+  }
+}

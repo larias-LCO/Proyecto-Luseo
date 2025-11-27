@@ -1,0 +1,150 @@
+<!-- Create project modal -->
+<div id="createModal" class="modal" [class.show]="visible" (click)="closeModal()">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="createTitle" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div id="createTitle" style="font-weight:600">Create project</div>
+      <button id="createClose" class="btn btn-secondary" type="button" (click)="closeModal()">Close</button>
+    </div>
+
+    <div id="createBody" class="modal-body">
+      <div class="grid">
+        <div><label for="p_code">Code</label><input id="p_code" name="p_code" [(ngModel)]="project.projectCode" placeholder="PRJ-001" /></div>
+        <div><label for="p_name">Name</label><input id="p_name" name="p_name" [(ngModel)]="project.name" placeholder="Project name" /></div>
+        <div><label for="p_area">Area</label><input id="p_area" name="p_area" [(ngModel)]="project.projectArea" type="number" step="0.01" placeholder="0.00" /></div>
+        <div><label for="p_areaUnit">Area unit</label>
+          <select id="p_areaUnit" name="p_areaUnit" [(ngModel)]="project.areaUnit">
+            <option *ngFor="let a of enums.areaUnit" [value]="a" >{{ a }}</option>
+          </select>
+        </div>
+        <div><label for="p_type">Type</label>
+          <select id="p_type" name="p_type" [(ngModel)]="project.projectType">
+            <option *ngFor="let t of enums.type" [value]="t">{{ displayEnum(t) }}</option>
+          </select>
+        </div>
+        <div><label for="p_status">Status</label>
+          <select id="p_status" name="p_status" [(ngModel)]="project.status">
+            <option *ngFor="let s of enums.status" [value]="s">{{ displayEnum(s) }}</option>
+          </select>
+        </div>
+        <div><label for="p_scope">Scope</label>
+          <select id="p_scope" name="p_scope" [(ngModel)]="project.scope">
+            <option *ngFor="let s of enums.scope" [value]="s">{{ displayEnum(s) }}</option>
+          </select>
+        </div>
+  <div><label for="p_trackedTime">Time (h)</label><input id="p_trackedTime" name="p_trackedTime" [(ngModel)]="project.trackedTime" type="number" step="1" placeholder="0" /></div>
+        <div><label for="p_office">Office</label>
+          <select id="p_office" name="p_office" [(ngModel)]="project.officeId">
+            <option *ngFor="let o of offices" [ngValue]="o.id">{{ o.name }}</option>
+          </select>
+        </div>
+        <div><label for="p_client">Client</label>
+          <select id="p_client" name="p_client" [(ngModel)]="project.clientId">
+            <option *ngFor="let c of clients" [ngValue]="c.id">{{ c.name }}</option>
+          </select>
+        </div>
+        <div><label for="p_software">Software</label>
+          <select id="p_software" name="p_software" [(ngModel)]="project.softwareId">
+            <option *ngFor="let s of software" [ngValue]="s.id">{{ s.name }}</option>
+          </select>
+        </div>
+        <div style="grid-column:1/-1"><label for="p_notes">Notes</label><textarea id="p_notes" name="p_notes" [(ngModel)]="project.notes" placeholder="Notes or comments"></textarea></div>
+
+        
+        <div class="two-column-grid" style="grid-column: 1 / -1;">
+
+          <h3 class="section-title">
+            <i class="bi bi-people-fill"></i>
+              Team Assignment</h3>
+
+          <!-- LEFT SIDE: Team -->
+          <div class="filter-team">
+            <label>Team</label>
+            <!-- selected team members box -->
+            <div class="selected-box">
+              <div *ngIf="teamSelectedEmployees.length; else noTeam">
+                <div class="chip" *ngFor="let emp of teamSelectedEmployees">
+                  <span class="chip-avatar">{{ getInitials(emp.name) }}</span>
+                  <span class="chip-label">{{ emp.name }} <small class="chip-meta">· {{ emp.jobTitle }}{{ emp.department ? ' · ' + emp.department : '' }}</small></span>
+                  <button type="button" class="chip-remove" (click)="removeFromTeam(emp.id)">✕</button>
+                </div>
+              </div>
+              <ng-template #noTeam>
+                <div class="empty-note">No team members assigned yet.</div>
+              </ng-template>
+            </div>
+            <div class="filters">
+              <div>
+                <input [(ngModel)]="teamQuery" (input)="applyFilters()" placeholder="Search Name" />
+              </div>
+              <div>
+                <select [(ngModel)]="teamJob" (change)="applyFilters()">
+                  <option value="">Job position</option>
+                  <option *ngFor="let job of teamJobs" [value]="job.name">{{ job.name }}</option>
+                </select>
+              </div>
+              <div>
+                <select [(ngModel)]="teamDept" (change)="applyFilters()">
+                  <option value="">Department</option>
+                  <option *ngFor="let dept of teamDepartments" [value]="dept.name">{{ dept.name }}</option>
+                </select>
+              </div>
+            </div>
+
+            <select multiple size="8" [(ngModel)]="teamSelection">
+              <option *ngFor="let emp of teamFiltered" [ngValue]="emp.id" (mousedown)="$event.preventDefault(); toggleTeam(emp.id)">
+                {{ (teamSelection.includes(emp.id) ? '✔ ' : '') + (emp.name || '') + ' · ' + (emp.jobTitle || '') + (emp.department ? ' · ' + emp.department : '') }}
+              </option>
+            </select>
+
+            <div class="hint">
+              Team shows only the following roles: Coordinator, Designer, Drafter, Engineer, and Senior Engineer.
+              Select multiple with Ctrl/Shift; combine filters by name, job position, and department.
+            </div>
+          </div>
+
+          <!-- RIGHT SIDE: Assigned PM(s) -->
+          <div class="filter-pm">
+            <label class="titulopm">Assigned PM(s)</label>
+            <!-- selected PMs box -->
+            <div class="selected-box">
+              <div *ngIf="pmSelectedEmployees.length; else noPM">
+                <div class="chip" *ngFor="let emp of pmSelectedEmployees">
+                  <span class="chip-avatar">{{ getInitials(emp.name) }}</span>
+                  <span class="chip-label">{{ emp.name }} <small class="chip-meta">· {{ emp.jobTitle }}{{ emp.department ? ' · ' + emp.department : '' }}</small></span>
+                  <button type="button" class="chip-remove" (click)="removeFromPM(emp.id)">✕</button>
+                </div>
+              </div>
+              <ng-template #noPM>
+                <div class="empty-note">No PMs assigned yet.</div>
+              </ng-template>
+            </div>
+            <div class="filters">
+              <div>
+
+                <input [(ngModel)]="pmQuery" (input)="applyFilters()" placeholder="Search name (PM)" />
+              </div>
+            </div>
+
+            <select multiple size="8" [(ngModel)]="pmSelection">
+              <option *ngFor="let emp of pmFiltered" [ngValue]="emp.id" (mousedown)="$event.preventDefault(); togglePM(emp.id)">
+                {{ (pmSelection.includes(emp.id) ? '✔ ' : '') + (emp.name || '') + ' · ' + (emp.jobTitle || '') + (emp.department ? ' · ' + emp.department : '') }}
+              </option>
+            </select>
+
+            <div class="hint">
+              Only employees with roles: Project Manager, Manager, Coordinator, or Senior Engineer are listed.
+              Use the name search to narrow down.
+            </div>
+          </div>
+        </div> <!-- end two-column-grid -->
+        <div class="footer-row" style="grid-column:1/-1; display:flex; justify-content:flex-end; gap:12px; margin-top:12px;">
+          <button id="p_create" class="btn btn-primary" type="button" (click)="onSubmit()">Create project</button>
+          <span id="p_msg" class="muted">{{ message }}</span>
+        </div>
+      </div> <!-- end .grid -->
+    </div> <!-- end .modal-body -->
+  </div> <!-- end .modal-card -->
+</div> <!-- end #createModal -->
+
+    
+
