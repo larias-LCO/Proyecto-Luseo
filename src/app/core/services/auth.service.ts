@@ -12,7 +12,7 @@ export class AuthService {
   private storageTokenKeys = ['auth.token', 'token'];
   private usernameKey = 'auth.username';
   private rolesKey = 'auth.roles';
-  private apiBase = 'https://e8092e3a973e.ngrok-free.app';
+  private apiBase = 'https://4bc34bb1b176.ngrok-free.app';
 
   state = signal<AuthState>({ authenticated: false });
 

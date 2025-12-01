@@ -78,181 +78,20 @@ function showGeneralTaskDetails(id: number, name: string) {
   alert(`Abrir detalles de la tarea: ${name} (ID: ${id})`);
 }
 
-// Función principal para crear la tarjeta visual de una tarea
-function createTaskCard(task: any, options: any = {}) {
-  const card = document.createElement('div');
-  card.className = 'gt-card gt-card-mini';
-  card.style.position = 'relative';
-  card.style.borderRadius = '10px';
-  card.style.overflow = 'hidden';
-  card.style.transition = 'transform 0.15s ease, box-shadow 0.15s ease, opacity 0.3s ease';
 
-  // Use category color as background, with fallback to white
-  const categoryColor = task.taskCategoryColorHex || '#ffffff';
-  card.style.background = categoryColor;
-  card.style.border = `2px solid ${darkenColor(categoryColor, 20)}`;
-
-  // Add visual separator for project type (top border with specific color - light tones)
-  if (task.projectType === 'COMMERCIAL') {
-    card.style.borderTop = '4px solid #7DD3FC';
-    card.setAttribute('data-project-type', 'COMMERCIAL');
-  } else if (task.projectType === 'RESIDENTIAL') {
-    card.style.borderTop = '4px solid #6EE7B7';
-    card.setAttribute('data-project-type', 'RESIDENTIAL');
-  }
-
-  // Calculate text color based on background brightness
-  const textColor = getContrastColor(categoryColor);
-  card.style.color = textColor;
-
-  // Reduce opacity if task is COMPLETED
-  if (task.status === 'COMPLETED') {
-    card.style.opacity = '0.45';
-  }
-
-  const statusConfig = {
-    'IN_PROGRESS': { text: 'In Progress', color: '#1e40af', bg: '#dbeafe', icon: '⏱️' },
-    'COMPLETED': { text: 'Completed', color: '#065f46', bg: '#d1fae5', icon: '✅' },
-    'PAUSED': { text: 'Paused', color: '#92400e', bg: '#fef3c7', icon: '⛔' }
-  };
-  const status = (task.status || 'IN_PROGRESS') as keyof typeof statusConfig;
-  const statusInfo = statusConfig[status] || statusConfig['IN_PROGRESS'];
-
-  const pmName = task.projectManagerName || '';
-  const creatorName = task.createdByEmployeeName || '';
-
-  // No per-card buttons (edit/delete) to reduce clicks; open edit modal on click
-  const actionsHtml = `
-    <div class="task-card-actions" style="position:absolute; top:6px; right:6px; display:flex; gap:6px; pointer-events:none; opacity:0; z-index:10;">
-    </div>
-  `;
-
-  if (options.compact) {
-    card.style.padding = '0';
-    card.style.fontSize = '12px';
-    card.style.cursor = 'pointer';
-
-    // Project type indicator (COMMERCIAL/RESIDENTIAL) - positioned at top right with lower z-index
-    const projectTypeIcon = task.projectType === 'COMMERCIAL' ? '🏢' : task.projectType === 'RESIDENTIAL' ? '🏠' : '';
-    const projectTypeColor = task.projectType === 'COMMERCIAL' ? 'background:#7DD3FC; color:#fff;' : task.projectType === 'RESIDENTIAL' ? 'background:#6EE7B7; color:#fff;' : '';
-    const projectTypeBadge = projectTypeIcon ? `<span style="position:absolute; top:2px; right:2px; font-size:14px; padding:3px 5px; ${projectTypeColor} border-radius:6px; font-weight:800; box-shadow:0 2px 4px rgba(0,0,0,0.3); z-index:1;">${projectTypeIcon}</span>` : '';
-
-    // Add padding-right if projectTypeBadge exists to avoid text overlap
-    const contentPaddingRight = projectTypeIcon ? 'padding-right: 30px;' : '';
-
-    // Show project info only if projectCode or projectName exists
-    const projectInfo = (task.projectCode || task.projectName) ? `
-      <div style="padding:0; margin:0;">
-        <div style="display:flex; gap:2px; align-items:center; margin:0; padding:0;">
-          <span style="font-size:12px; flex-shrink:0; line-height:1;">📦</span>
-          <div style="flex:1; margin:0; padding:0; ${contentPaddingRight}">
-            <div style="font-weight:700; font-size:11px; line-height:1; color: ${textColor}; text-shadow: 1px 1px 2px ${textColor === '#ffffff' ? 'rgba(0,0,0,0.3)' : 'rgba(255,255,255,0.3)'}; margin:0; padding:0;">${escapeHtml(task.projectCode || 'No Project')} ${task.projectName ? '- ' + escapeHtml(task.projectName) : ''}</div>
-          </div>
-        </div>
-      </div>
-    ` : '';
-
-    card.innerHTML = `
-      ${actionsHtml}
-      ${projectTypeBadge}
-      <div class="gt-body" style="display:flex; flex-direction:column; gap:2px; margin:0;">
-        ${projectInfo}
-        <div style="padding:0; margin:0; display:flex; flex-direction:column; gap:2px;">
-          <div style="display:flex; gap:2px; align-items:center; font-size:10px; margin:0; padding:0;">
-            <span style="line-height:1;">📝</span>
-            <div style="font-weight:700; flex:1; line-height:1; color: ${textColor}; text-shadow: 1px 1px 2px ${textColor === '#ffffff' ? 'rgba(0,0,0,0.3)' : 'rgba(255,255,255,0.3)'}; margin:0; padding:0; ${contentPaddingRight}">${escapeHtml(task.name || '')}</div>
-          </div>
-          <div style="display:flex; gap:4px; align-items:flex-start; font-size:10px; opacity:0.9;">
-            <span>📂</span>
-            <div style="flex:1; line-height:1.2; color: ${textColor}; text-shadow: 1px 1px 2px ${textColor === '#ffffff' ? 'rgba(0,0,0,0.3)' : 'rgba(255,255,255,0.3)'};">${escapeHtml(task.taskCategoryName || '-')}</div>
-          </div>
-          ${pmName ? `<div style="font-size:9px; padding:0; margin:0; font-weight:600; color: ${textColor}; line-height:1; text-shadow: 1px 1px 2px ${textColor === '#ffffff' ? 'rgba(0,0,0,0.3)' : 'rgba(255,255,255,0.3)'};">👤 PM: ${escapeHtml(pmName)}</div>` : ''}
-          <div style="display:flex; justify-content:flex-start; align-items:center; gap:2px; flex-wrap:wrap; margin:0; padding:0;">
-            <span style="display:inline-flex; align-items:center; gap:1px; padding:0 3px; background:${statusInfo.bg}; color:${statusInfo.color}; border-radius:999px; font-size:8px; font-weight:700; border: 1px solid ${statusInfo.color}; line-height:1.2;">${statusInfo.icon} ${statusInfo.text}</span>
-          </div>
-        </div>
-      </div>
-    `;
-  } else {
-    // Default mode with full info - NO white backgrounds, only category color
-    card.style.padding = '3px';
-    card.style.cursor = 'pointer';
-
-    // Project type indicator (COMMERCIAL/RESIDENTIAL) - positioned at top right with lower z-index
-    const projectTypeIcon = task.projectType === 'COMMERCIAL' ? '🏢' : task.projectType === 'RESIDENTIAL' ? '🏠' : '';
-    const projectTypeColor = task.projectType === 'COMMERCIAL' ? 'background:#7DD3FC; color:#fff;' : task.projectType === 'RESIDENTIAL' ? 'background:#6EE7B7; color:#fff;' : '';
-    const projectTypeBadge = projectTypeIcon ? `<span style="position:absolute; top:3px; right:3px; font-size:16px; padding:4px 7px; ${projectTypeColor} border-radius:8px; font-weight:800; box-shadow:0 2px 4px rgba(0,0,0,0.3); z-index:1;">${projectTypeIcon}</span>` : '';
-
-    // Show project info only if projectCode or projectName exists
-    const projectInfo = (task.projectCode || task.projectName) ? `
-      <div style="padding: 2px 4px; border-radius: 6px;">
-        <div style="display:flex; gap:5px; align-items:flex-start;">
-          <span style="font-size:14px; flex-shrink:0;">📦</span>
-          <div style="display:flex; flex-direction:column; gap:2px; flex:1; padding-right:40px;">
-            <div style="font-weight:800; font-size:12px; line-height:1.2; color: ${textColor}; text-shadow: 1px 1px 2px ${textColor === '#ffffff' ? 'rgba(0,0,0,0.3)' : 'rgba(255,255,255,0.3)'};">${escapeHtml(task.projectCode || 'No Project')} ${task.projectName ? '- ' + escapeHtml(task.projectName) : ''}</div>
-            ${task.projectPhaseName ? `<div style="font-size:9px; opacity:0.85; color: ${textColor}; text-shadow: 1px 1px 2px ${textColor === '#ffffff' ? 'rgba(0,0,0,0.3)' : 'rgba(255,255,255,0.3)'};">${escapeHtml(task.projectPhaseName)}</div>` : ''}
-          </div>
-        </div>
-      </div>
-    ` : '';
-
-    card.innerHTML = `
-      ${actionsHtml}
-      ${projectTypeBadge}
-      <div style="display:flex; flex-direction:column; gap:3px;">
-        ${projectInfo}
-        <div style="padding: 2px 4px; border-radius: 6px; display:flex; flex-direction:column; gap:3px;">
-          <div style="display:flex; gap:4px; align-items:flex-start; font-weight:700;">
-            <span>📝</span>
-            <div style="font-size:12px; flex:1; line-height:1.2; color: ${textColor}; text-shadow: 1px 1px 2px ${textColor === '#ffffff' ? 'rgba(0,0,0,0.3)' : 'rgba(255,255,255,0.3)'}; padding-right:40px;">${escapeHtml(task.name)}</div>
-          </div>
-          <div style="display:flex; gap:4px; align-items:flex-start; font-size:10px; opacity:0.9;">
-            <span>📂</span>
-            <div style="flex:1; line-height:1.2; color: ${textColor}; text-shadow: 1px 1px 2px ${textColor === '#ffffff' ? 'rgba(0,0,0,0.3)' : 'rgba(255,255,255,0.3)'};">${escapeHtml(task.taskCategoryName || '-')}</div>
-          </div>
-          <div style="display:flex; flex-wrap:wrap; gap:4px; font-size:9px;">
-            ${pmName ? `<span style="padding:2px 5px; border-radius:4px; font-weight:600; color: ${textColor}; text-shadow: 1px 1px 2px ${textColor === '#ffffff' ? 'rgba(0,0,0,0.3)' : 'rgba(255,255,255,0.3)'};">👤 PM: ${escapeHtml(pmName)}</span>` : ''}
-            ${creatorName ? `<span style="padding:2px 5px; border-radius:4px; font-weight:600; color: ${textColor}; text-shadow: 1px 1px 2px ${textColor === '#ffffff' ? 'rgba(0,0,0,0.3)' : 'rgba(255,255,255,0.3)'};">✍️ Created by: ${escapeHtml(creatorName)}</span>` : ''}
-          </div>
-          <div style="display:flex; flex-wrap:wrap; gap:3px; align-items:center; margin-top:1px;">
-            ${task.personalTask ? `<span style="font-size:10px; padding:2px 5px; border-radius:6px; font-weight:600; color: ${textColor}; text-shadow: 1px 1px 2px ${textColor === '#ffffff' ? 'rgba(0,0,0,0.3)' : 'rgba(255,255,255,0.3)'};">👤 Personal</span>` : ''}
-            <span style="display:inline-flex; align-items:center; gap:3px; padding:2px 6px; background:${statusInfo.bg}; color:${statusInfo.color}; border-radius:999px; font-size:10px; font-weight:700; border: 1px solid ${statusInfo.color};">${statusInfo.icon} ${statusInfo.text}</span>
-          </div>
-        </div>
-      </div>
-    `;
-  }
-
-  // Subtle hover without actions overlay
-  card.addEventListener('mouseenter', () => {
-    card.style.transform = 'translateY(-1px)';
-    card.style.boxShadow = '0 4px 10px rgba(0,0,0,0.12)';
-  });
-  card.addEventListener('mouseleave', () => {
-    card.style.transform = 'translateY(0)';
-    card.style.boxShadow = 'none';
-  });
-
-  // Click on card opens editable modal
-  if (!options.skipHandlers) {
-    card.style.cursor = 'pointer';
-    card.addEventListener('click', () => {
-      showGeneralTaskDetails(task.id, task.name);
-    });
-  }
-
-  return card;
-}
+// Usa el helper global para renderizar la tarjeta de tarea
+import { createTaskCard } from '../../shared/task-card.helper';
 
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CreateTaskCard } from '../../core/components/create-task-card/create-task-card';
+import { EditTask } from '../../core/components/edit-task/edit-task';
 import { HeaderComponent } from "../../core/components/header/header";
 import { SubmenuComponent } from "../../core/components/submenu/submenu";
 import { RouterOutlet } from '@angular/router';
 import { FullCalendarModule } from '@fullcalendar/angular';
 import { CalendarTask } from '../../core/components/calendar-task/calendar-task';
-import { CalendarOptions } from '@fullcalendar/core'; // useful for typechecking
+import { CalendarOptions } from '@fullcalendar/core'; 
 import dayGridPlugin from '@fullcalendar/daygrid';
 
 
@@ -264,19 +103,59 @@ import { ProjectService } from '../../core/services/project.service';
 @Component({
   selector: 'app-task',
   standalone: true,
-  imports: [HeaderComponent, SubmenuComponent, CommonModule, CreateTaskCard, FullCalendarModule, CalendarTask],
+  imports: [HeaderComponent, SubmenuComponent, CommonModule, CreateTaskCard, FullCalendarModule, CalendarTask, EditTask],
   templateUrl: './task.html',
   styleUrls: ['./task.scss']
 })
 export class TasksPage implements OnInit {
+  tareaSeleccionada: any = null;
+  ngAfterViewInit(): void {
+    const clearBtn = document.getElementById('clear-all-filters');
+    if (clearBtn) {
+      clearBtn.addEventListener('click', () => this.clearAllFilters());
+    }
+    // Escuchar evento global para abrir modal de edición
+    window.addEventListener('open-edit-task-modal', (e: any) => {
+      this.tareaSeleccionada = e.detail.task;
+      // Forzar actualización si es necesario
+      setTimeout(() => {}, 0);
+    });
+  }
+
+  clearAllFilters(): void {
+    // Limpiar selects
+    const projectSelect = document.getElementById('project-filter') as HTMLSelectElement | null;
+    const categorySelect = document.getElementById('category-filter') as HTMLSelectElement | null;
+    const creatorSelect = document.getElementById('creator-filter') as HTMLSelectElement | null;
+    if (projectSelect) projectSelect.value = '';
+    if (categorySelect) categorySelect.value = '';
+    if (creatorSelect) creatorSelect.value = '';
+    // Limpiar filtros en el modelo
+    this.currentFilters.project = '';
+    this.currentFilters.category = '';
+    this.currentFilters.creator = '';
+    // Mostrar todas las tareas
+    this.tasks = this.allTasks;
+  }
 
   calendarOptions: CalendarOptions = {
     initialView: 'dayGridMonth',
-    plugins: [dayGridPlugin]
+    plugins: [dayGridPlugin],
+    eventContent: (arg: any) => {
+      const t = arg.event.extendedProps && arg.event.extendedProps.task ? arg.event.extendedProps.task : arg.event;
+      if (!t) return { domNodes: [document.createTextNode(arg.event.title || '')] };
+      try {
+        const card = createTaskCard(t, { compact: true });
+        return { domNodes: [card] };
+      } catch {
+        return { domNodes: [document.createTextNode(arg.event.title || '')] };
+      }
+    }
   };
   showCreateTaskModal = false;
   ngOnInit(): void {
     this.init();
+    setTimeout(() => this.ngAfterViewInit(), 0);
   }
   currentFilters: {
     searchText: string;
@@ -296,6 +175,7 @@ export class TasksPage implements OnInit {
     week: null
   };
   tasks: any[] = [];
+  allTasks: any[] = [];
   allProjects: any[] = [];
   creators: any[] = [];
   generalTaskEnums = { statuses: [] as string[] };
@@ -377,27 +257,16 @@ export class TasksPage implements OnInit {
     if (projectSelect) this.currentFilters.project = projectSelect.value;
     if (categorySelect) this.currentFilters.category = categorySelect.value;
     if (creatorSelect) this.currentFilters.creator = creatorSelect.value;
-    this.filterAndRenderTasks();
-  }
 
-  filterAndRenderTasks(): void {
-    let filtered = this.tasks;
+    // Filtrar tareas y actualizar el array mostrado en el calendario
+    let filtered = this.allTasks;
     if (this.currentFilters.project) filtered = filtered.filter(t => String(t.projectId) === this.currentFilters.project);
     if (this.currentFilters.category) filtered = filtered.filter(t => String(t.taskCategoryId) === this.currentFilters.category);
     if (this.currentFilters.creator) filtered = filtered.filter(t => String(t.createdByEmployeeId) === this.currentFilters.creator);
-    // ...otros filtros según sea necesario
-    console.log('Tareas filtradas:', filtered);
-
-    // Renderizar tarjetas en el contenedor #task-list
-    const container = document.getElementById('task-list');
-    if (container) {
-      container.innerHTML = '';
-      filtered.forEach(task => {
-        const card = createTaskCard(task);
-        container.appendChild(card);
-      });
-    }
+    this.tasks = filtered;
   }
+
+
 
   async loadCategories(): Promise<any[]> {
     if (this.cachedCategories !== null) return this.cachedCategories;
@@ -421,6 +290,7 @@ export class TasksPage implements OnInit {
       this.populateCategorySelect();
       this.populateCreatorSelect();
       await this.fetchTasks();
+      // Ya no se renderiza la lista, solo en el calendario
       this.setupFilterListeners();
     } catch (err) {
       console.error('Initialization error:', err);
@@ -507,10 +377,12 @@ export class TasksPage implements OnInit {
     const base = this.auth.getApiBase();
     const url = `${base.replace(/\/$/, '')}/general-tasks`;
     try {
-      this.tasks = await firstValueFrom(this.http.get<any[]>(url));
+      this.allTasks = await firstValueFrom(this.http.get<any[]>(url));
+      this.tasks = this.allTasks;
       console.log('Tareas cargadas:', this.tasks);
     } catch (error) {
       console.error('Error al cargar tareas:', error);
     }
   }
+
 }

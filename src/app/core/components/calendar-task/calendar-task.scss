@@ -1,3 +1,129 @@
+/* Botones de vista personalizados */
+.calendar-view-buttons {
+	display: inline-flex;
+	gap: 6px;
+	margin-left: 18px;
+	vertical-align: middle;
+}
+.calendar-view-buttons .view-btn.active,
+.calendar-view-buttons .view-btn:active {
+	background: #222c3a;
+	color: #fff;
+	font-weight: 700;
+	box-shadow: 0 2px 8px rgba(13,61,140,0.10);
+}
+:host ::ng-deep .fc .fc-event {
+	width: 100% !important;
+	margin: 0 0 8px 0 !important;
+	padding: 0 !important;
+	background: none !important;
+	border: none !important;
+	box-shadow: none !important;
+	display: block !important;
+}
+
+:host ::ng-deep .gt-card {
+	width: 100% !important;
+	min-width: 0 !important;
+	max-width: 100% !important;
+	box-sizing: border-box !important;
+	margin-bottom: 8px;
+	border-radius: 10px;
+	box-shadow: 0 2px 8px rgba(13,61,140,0.10);
+	border: 2px solid #e2e8f0;
+	background: #fff;
+	transition: box-shadow 0.2s, transform 0.2s;
+	position: static !important;
+}
+:host ::ng-deep .fc .fc-daygrid-day {
+	background: #fff !important;
+	border: 1px solid #e2e8f0 !important;
+	min-height: 120px;
+}
+
+:host ::ng-deep .fc .fc-daygrid-day-number {
+	font-size: 1.1rem;
+	font-weight: 700;
+	color: #0b2a5b;
+	padding: 4px 8px;
+}
+
+:host ::ng-deep .fc .fc-daygrid-day-frame {
+	padding: 6px 4px 4px 4px;
+}
+
+:host ::ng-deep .fc .fc-event {
+  width: 100% !important;
+  margin: 0 0 8px 0 !important;
+  padding: 0 !important;
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  display: block !important;
+}
+
+:host ::ng-deep .gt-card {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  margin-bottom: 8px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(13,61,140,0.10);
+  border: 2px solid #e2e8f0;
+  background: #fff;
+  transition: box-shadow 0.2s, transform 0.2s;
+  position: static !important;
+}
+
+:host ::ng-deep .gt-card:hover {
+	box-shadow: 0 6px 16px rgba(13,61,140,0.18);
+	transform: translateY(-2px) scale(1.01);
+}
+
+:host ::ng-deep .fc .fc-toolbar {
+	background: #0859d0;
+	color: #fff;
+	border-radius: 12px;
+	padding: 14px 20px;
+	margin-bottom: 5px;
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+}
+
+:host ::ng-deep .fc .fc-toolbar-title {
+	font-size: 25px;
+	font-weight: 700;
+	color: #fff;
+	margin: 0 16px;
+}
+
+:host ::ng-deep .fc .fc-button {
+	background: rgba(255,255,255,0.18);
+	border: 1px solid rgba(255,255,255,0.28);
+	color: #fff;
+	padding: 6px 14px;
+	border-radius: 6px;
+	font-size: 15px;
+	font-weight: 500;
+	cursor: pointer;
+	transition: 0.2s;
+}
+
+:host ::ng-deep .fc .fc-button:hover {
+	background: rgba(255,255,255,0.30);
+	transform: translateY(-2px);
+}
+
+/* Día actual con fondo azul tenue y elegante */
+:host ::ng-deep .fc .fc-day-today {
+	background: #deebf8 !important; /* azul muy tenue */
+	// border: 2px solid #1976d2 !important;
+	border-radius: 8px;
+	box-shadow: 0 0 0 2px #1976d233;
+	transition: background 0.3s;
+}
 :host ::ng-deep .fc .fc-daygrid-day {
 	background: transparent !important;
 }
@@ -12,6 +138,8 @@
 	min-height: 48px;
 	line-height: 48px;
 	font-size: 1.25rem;
+	color: rgb(33, 61, 218);
+	cursor: pointer;
 }
 /* QUITAR fondo amarillo del día actual y resaltar con borde azul */
 .fc .fc-day-today {

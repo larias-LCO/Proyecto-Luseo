@@ -1,5 +1,6 @@
 
 import { Component, ChangeDetectorRef } from '@angular/core';
+import { createTaskCard } from '../../../shared/task-card.helper';
 import { Input, OnChanges, SimpleChanges } from '@angular/core';
 import { ViewChild, TemplateRef } from '@angular/core';
 import { FullCalendarComponent } from '@fullcalendar/angular';
@@ -50,11 +51,26 @@ export class CalendarTask {
     visibleRange: undefined, // Usamos la vista por defecto de la semana
     weekends: false, // Oculta sábados y domingos
     hiddenDays: [0, 6], // 0 = domingo, 6 = sábado
-    datesSet: this.onDatesSet.bind(this)
+    height: 'auto',
+    contentHeight: 'auto',
+    datesSet: this.onDatesSet.bind(this),
+    eventContent: (arg: any) => {
+      const t = arg.event.extendedProps && arg.event.extendedProps.task ? arg.event.extendedProps.task : arg.event;
+      if (!t) return { domNodes: [document.createTextNode(arg.event.title || '')] };
+      try {
+        const card = createTaskCard(t, { compact: true });
+        return { domNodes: [card] };
+      } catch {
+        return { domNodes: [document.createTextNode(arg.event.title || '')] };
+      }
+    }
   };
 
   onDatesSet(arg: any) {
     this.calendarTitle = arg.view.title;
+    this.calendarViewType = arg.view.type;
+    // Soluciona ExpressionChangedAfterItHasBeenCheckedError
+    Promise.resolve(() => this.cdr.detectChanges());
   }
 
   // Cambia la fecha visible del calendario
@@ -76,10 +92,12 @@ setCalendarDate(date: string) {
             // YYYY-MM-DD => YYYY-MM-DDT00:00:00 (local)
             dateStr = dateStr + 'T00:00:00';
           }
+          console.log('Evento calendario:', { nombre: task.name, fecha: dateStr, id: task.id });
           return {
             title: task.name,
-            date: dateStr,
-            allDay: true
+            start: dateStr,
+            allDay: true,
+            extendedProps: { task }
           };
         })
       };
@@ -472,4 +490,7 @@ setCalendarDate(date: string) {
     const day = String(date.getDate()).padStart(2, '0');
     return `${y}-${m}-${day}`;
   }
-}
+
+
+
+  }
