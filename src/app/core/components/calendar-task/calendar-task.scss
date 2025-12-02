@@ -52,15 +52,15 @@
 	padding: 6px 4px 4px 4px;
 }
 
-:host ::ng-deep .fc .fc-event {
-  width: 100% !important;
-  margin: 0 0 8px 0 !important;
-  padding: 0 !important;
-  background: none !important;
-  border: none !important;
-  box-shadow: none !important;
-  display: block !important;
-}
+// :host ::ng-deep .fc .fc-event {
+//   width: 100% !important;
+//   margin: 0 0 8px 0 !important;
+//   padding: 0 !important;
+//   background: none !important;
+//   border: none !important;
+//   box-shadow: none !important;
+//   display: block !important;
+// }
 
 :host ::ng-deep .gt-card {
   width: 100% !important;
@@ -117,15 +117,23 @@
 }
 
 /* Día actual con fondo azul tenue y elegante */
-:host ::ng-deep .fc .fc-day-today {
-	background: #deebf8 !important; /* azul muy tenue */
-	// border: 2px solid #1976d2 !important;
-	border-radius: 8px;
-	box-shadow: 0 0 0 2px #1976d233;
+
+
+
+:host ::ng-deep .fc .fc-day-today,
+:host ::ng-deep .fc .fc-day-today .fc-daygrid-day-frame,
+:host ::ng-deep .fc .fc-day-today .fc-daygrid-day-number {
+	background: #cfe0f7 !important;
 	transition: background 0.3s;
+	border-radius: 8px;
 }
+:host ::ng-deep .fc .fc-daygrid-day:hover {
+	background: #cfe0f7 !important; /* azul un poco más intenso al hacer hover */
+}
+
 :host ::ng-deep .fc .fc-daygrid-day {
 	background: transparent !important;
+	cursor: pointer;
 }
 // :host ::ng-deep .fc .fc-day-today {
 // 	background: rgba(143, 219, 255, 0.45) !important; /* azul bebé traslúcido */
@@ -141,13 +149,28 @@
 	color: rgb(33, 61, 218);
 	cursor: pointer;
 }
-/* QUITAR fondo amarillo del día actual y resaltar con borde azul */
-.fc .fc-day-today {
-	background: transparent !important;
-	border: 2px solid #0859d0 !important;
-	border-radius: 8px;
-	box-shadow: 0 0 0 2px #1976d233;
-}
+ .day-column {
+   min-height: 100px;
+   transition: background 0.2s;
+ 
+ }
+
+ // Azul tenue para el día actual
+ .day-column.today {
+   background: #e0f2fe;
+ }
+
+ // Hover azul tenue para los demás días
+ .day-column:not(.today):hover {
+   background: #e0f2fe;
+ }
+// 	background: transparent !important;
+// 	border: 2px solid #0859d0 !important;
+// 	border-radius: 8px;
+// 	box-shadow: 0 0 0 2px #1976d233;
+// }
+
+
 /* CONTENEDOR AZUL PRINCIPAL */
 .calendar-toolbar {
     margin-top: 60px;

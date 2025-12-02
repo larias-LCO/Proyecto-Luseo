@@ -30,6 +30,11 @@ export class CatalogsService {
   }
 
 
+  getCategories() {
+    return firstValueFrom(this.http.get<any[]>(`${this.baseUrl}/task-categories`));
+  }
+
+
   getOffices() {
     return firstValueFrom(this.http.get<Office[]>(`${this.baseUrl}/offices`));
   }

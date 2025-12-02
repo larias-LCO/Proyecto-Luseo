@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { EditarProyecto } from './editar-proyecto';
+import { CalendarWeekPrev } from './calendar-week-prev';
 
-describe('EditarProyecto', () => {
-  let component: EditarProyecto;
-  let fixture: ComponentFixture<EditarProyecto>;
+describe('CalendarWeekPrev', () => {
+  let component: CalendarWeekPrev;
+  let fixture: ComponentFixture<CalendarWeekPrev>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [EditarProyecto]
+      imports: [CalendarWeekPrev]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(EditarProyecto);
+    fixture = TestBed.createComponent(CalendarWeekPrev);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

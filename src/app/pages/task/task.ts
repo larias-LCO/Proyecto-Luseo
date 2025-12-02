@@ -108,6 +108,8 @@ import { ProjectService } from '../../core/services/project.service';
   styleUrls: ['./task.scss']
 })
 export class TasksPage implements OnInit {
+
+  
   tareaSeleccionada: any = null;
   ngAfterViewInit(): void {
     const clearBtn = document.getElementById('clear-all-filters');
@@ -384,5 +386,9 @@ export class TasksPage implements OnInit {
       console.error('Error al cargar tareas:', error);
     }
   }
+
+
+
+  
 
 }

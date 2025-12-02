@@ -1,13 +1,106 @@
 <div class="modal-backdrop" (click)="closeModal()"></div>
-<div class="modal-content">
+
+<div class="modal-container">
   <div class="modal-header">
-    <h5 class="modal-title">Editar tarea</h5>
-    <button type="button" class="btn-close" (click)="closeModal()" aria-label="Close"></button>
+    <!-- <span class="icon-title">✏️</span> -->
+    <h2>Edit Task</h2>
+    <button class="close-btn" (click)="closeModal()">✖</button>
   </div>
-  <div class="modal-body">
-    <pre>{{ task | json }}</pre>
+
+  <div class="modal-body-new">
+    <form>
+
+      <!-- Task name -->
+      <div class="form-group full">
+        <label>📝 Task Name *</label>
+        <input type="text" [value]="task.name" readonly />
+      </div>
+
+      <!-- GRID 2 COLUMNS -->
+      <div class="grid">
+
+        <!-- Project Information -->
+        <div>
+          <h3 class="section-title">📁 Project Information</h3>
+
+          <div class="form-group">
+            <label>Project</label>
+            <select [(ngModel)]="task.projectId" name="projectId" (change)="loadPhases(task.projectId)">
+              <option *ngFor="let p of allProjects" [value]="p.id">{{ p.name }}</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Phase</label>
+            <select [(ngModel)]="task.projectPhaseId" name="projectPhaseId" (change)="loadPhases(task.projectPhaseId)">
+              <option *ngFor="let ph of projectPhaseId" [value]="ph.id">{{ ph.phase }}</option>
+              <option value="None">None</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Category *</label>
+            <select [(ngModel)]="task.taskCategoryId" name="taskCategoryId">
+              <option *ngFor="let c of categories" [value]="c.id">{{ c.name }}</option>
+            </select>
+          </div>
+
+        </div>
+
+        <!-- Dates & Status -->
+        <div>
+          <h3 class="section-title">📅 Dates & Status</h3>
+
+          <div class="form-group">
+            <label>Issued Date</label>
+            <input type="date" [(ngModel)]="task.issuedDate" name="issuedDate" />
+          </div>
+
+          <div class="form-group">
+            <label>Status *</label>
+            <select [(ngModel)]="task.status" name="status">
+              <option value="IN_PROGRESS">In Progress</option>
+              <option value="COMPLETED">Completed</option>
+              <option value="PAUSED">Paused</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Created By</label>
+            <div class="created-box">
+              <span class="user-icon">👤</span>
+              <span *ngIf="task.createdByEmployeeId">{{ getEmployeeNameById(task.createdByEmployeeId) }}</span>
+            </div>
+          </div>
+
+
+
+           <div id="edit-task-message" class="muted" style="text-align: center;">{{ message }}</div>
+
+        </div>
+
+      </div>
+
+        <div class="description">
+          <label><span class="icon">📄</span>Description</label>
+          <textarea [(ngModel)]="task.description" name="description"></textarea>
+        </div>
+    </form>
   </div>
+
+
+
+  <!-- FOOTER -->
   <div class="modal-footer">
-    <button type="button" class="btn btn-secondary" (click)="closeModal()">Cerrar</button>
+    <div class="actions">
+
+      <!-- Botón para eliminar -->
+    <!-- <button type="button" class="btn-delete" (click)="deleteTask()">🗑️ Delete</button> -->
+    <button type="button" class="cancel-btn" (click)="closeModal()"><span class="icon">❌</span> Cancel </button>
+
+    <button type="button" class="save-btn"><span class="icon">📝</span> Save Changes</button>
+    
+    </div>
   </div>
 </div>
+

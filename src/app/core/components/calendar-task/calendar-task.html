@@ -1,8 +1,9 @@
 
 
 
-
-<div class="calendar-toolbar">
+<div #sectionContainer></div>
+<div #calendarWrapper>
+	<div class="calendar-toolbar">
 	<button class="modern-btn" (click)="calendar?.getApi()?.prev()">
 		<span>&lt;</span>
 	</button>
@@ -17,4 +18,6 @@
 		<button class="modern-btn view-btn" [class.active]="calendarViewType === 'dayGridDay'" (click)="calendar?.getApi()?.changeView('dayGridDay')">day</button>
 	</div>
 </div>
-<full-calendar #calendar [options]="calendarOptions"></full-calendar>
+
+	<full-calendar #calendar [options]="calendarOptions"></full-calendar>
+</div>
