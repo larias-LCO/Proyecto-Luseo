@@ -58,11 +58,13 @@
       </div>
     </div>
     <div class="filters-actions-row">
-      <!-- <div class="filter-show">
-        <label class="checkbox-label" style="min-width: 220px;">
-          <input type="checkbox" id="filter-my-projects"/><span>Show only my assigned projects</span>
+      <div class="filter-show">
+        <label class="checkbox-label"> Show only my assigned projects
+          <input type="checkbox" id="filter-my-projects"/>
         </label>
-      </div> -->
+      </div>
+
+
       <div class="top-right-buttons">
         <button id="clear-all-filters" class="btn btn-secondary btn-sm">
           Clear All Filters
@@ -77,7 +79,13 @@
   </section>
 
   
+
+  
   <section class="schedule">
+    <section class="etiquetas">
+    <!-- Calendar Legend will be rendered here -->
+    <div id="calendar-legend-container"></div>
+ 
     <h2>📌 Schedule</h2>
     <app-create-task-card 
       *ngIf="showCreateTaskModal" 
@@ -94,13 +102,17 @@
       <input type="checkbox" id="mine-only-filter"/>
     </div> -->
   </section>
+   </section>
 
 
 
   <section class="schedule2">
     <h2>📌 Schedule Prev</h2>
     <!--aqui va la etiqueta de el calendario week prev-->
+    <app-calendar-week-prev [tasks]="tasks">
 
+
+    </app-calendar-week-prev>
   </section>
 </div>
     <!-- *ngIf="showCreateTaskModal"  -->

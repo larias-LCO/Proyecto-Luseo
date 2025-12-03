@@ -1,3 +1,17 @@
+:host ::ng-deep .fc .fc-daygrid-body {
+	max-height: 500px;
+	min-height: 300px;
+	overflow-y: auto;
+}
+
+:host ::ng-deep .fc .fc-daygrid-day {
+	position: relative;
+	height: 120px;
+	max-height: 120px;
+	overflow-y: auto;
+}
+
+
 /* Botones de vista personalizados */
 .calendar-view-buttons {
 	display: inline-flex;

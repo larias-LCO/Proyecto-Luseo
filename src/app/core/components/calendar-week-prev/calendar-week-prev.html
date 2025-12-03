@@ -1,1 +1,23 @@
-<p>calendar-week-prev works!</p>
+
+
+
+<div #sectionContainer></div>
+<div #calendarWrapper>
+	<div class="calendar-toolbar">
+	<button class="modern-btn" (click)="calendar?.getApi()?.prev()">
+		<span>&lt;</span>
+	</button>
+	<button class="modern-btn today-btn" (click)="calendar?.getApi()?.today()">today</button>
+	<button class="modern-btn" (click)="calendar?.getApi()?.next()">
+		<span>&gt;</span>
+	</button>
+	<span class="calendar-title">{{ calendarTitle }}</span>
+	<div class="calendar-view-buttons">
+		<button class="modern-btn view-btn" [class.active]="calendarViewType === 'dayGridMonth'" (click)="calendar?.getApi()?.changeView('dayGridMonth')">month</button>
+		<button class="modern-btn view-btn" [class.active]="calendarViewType === 'dayGridWeek'" (click)="calendar?.getApi()?.changeView('dayGridWeek')">week</button>
+		<button class="modern-btn view-btn" [class.active]="calendarViewType === 'dayGridDay'" (click)="calendar?.getApi()?.changeView('dayGridDay')">day</button>
+	</div>
+</div>
+
+	<full-calendar #calendar [options]="calendarOptions"></full-calendar>
+</div>

@@ -1,11 +1,73 @@
-// Helper para obtener el label de status
-function getStatusLabel(status: string): string {
-  switch (status) {
-    case 'IN_PROGRESS': return 'In Progress';
-    case 'COMPLETED': return 'Completed';
-    case 'PAUSED': return 'Paused';
-    default: return status;
-  }
+// Ejemplo de uso para activar la importación y evitar que se vea opaca
+// Puedes borrar o mover esto según tu lógica
+setTimeout(() => {
+  debounceRefetchOrFullRender();
+}, 1000);
+
+
+
+import {
+  saveFullCalendarState,
+  restoreFullCalendarState,
+  debounceRefetchOrFullRender,
+  tryRefetchCalendars
+} from './render-all.service';
+
+
+// ========== CALENDAR LEGEND ==========
+export function createCalendarLegend(tasks: Array<{ taskCategoryName?: string; taskCategoryColorHex?: string }>): HTMLDivElement {
+  const legend = document.createElement('div');
+  legend.className = 'calendar-legend';
+  legend.style.cssText = 'display: flex; flex-wrap: wrap; gap: 12px; align-items: center; padding: 12px 16px; background: linear-gradient(135deg, #f8fafc, #eef6ff); border-radius: 10px; margin-bottom: 16px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);';
+
+  // Title
+  const title = document.createElement('span');
+  title.textContent = 'Legend:';
+  title.style.cssText = 'font-weight: 700; font-size: 13px; color: #334155; margin-right: 4px;';
+  legend.appendChild(title);
+
+  // Project Types Section
+  const projectTypesContainer = document.createElement('div');
+  projectTypesContainer.style.cssText = 'display: flex; gap: 8px; align-items: center; padding-right: 12px; border-right: 2px solid #cbd5e1;';
+
+  // Commercial
+  const commercialBadge = document.createElement('span');
+  commercialBadge.innerHTML = '🏢 Commercial';
+  commercialBadge.style.cssText = 'display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; background: #7DD3FC; color: #000000; border-radius: 6px; font-size: 12px; font-weight: 700; box-shadow: 0 1px 3px rgba(0,0,0,0.2);';
+  projectTypesContainer.appendChild(commercialBadge);
+
+  // Residential
+  const residentialBadge = document.createElement('span');
+  residentialBadge.innerHTML = '🏠 Residential';
+  residentialBadge.style.cssText = 'display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; background: #6EE7B7; color: #000000; border-radius: 6px; font-size: 12px; font-weight: 700; box-shadow: 0 1px 3px rgba(0,0,0,0.2);';
+  projectTypesContainer.appendChild(residentialBadge);
+
+  legend.appendChild(projectTypesContainer);
+
+  // Task Categories Section
+  const categoriesContainer = document.createElement('div');
+  categoriesContainer.style.cssText = 'display: flex; flex-wrap: wrap; gap: 8px; align-items: center;';
+
+  // Extract unique categories from tasks
+  const categoriesMap = new Map();
+  (tasks || []).forEach((task: { taskCategoryName?: string; taskCategoryColorHex?: string }) => {
+    if (task.taskCategoryName && task.taskCategoryColorHex) {
+      categoriesMap.set(task.taskCategoryName, task.taskCategoryColorHex);
+    }
+  });
+
+  // Create badge for each category
+  const sortedCategories = Array.from(categoriesMap.entries()).sort((a, b) => a[0].localeCompare(b[0]));
+  sortedCategories.forEach(([categoryName, colorHex]: [string, string]) => {
+    const categoryBadge = document.createElement('span');
+    categoryBadge.textContent = categoryName;
+    categoryBadge.style.cssText = `display: inline-flex; align-items: center; padding: 4px 10px; background: ${colorHex}; color: ${getContrastColor(colorHex)}; border-radius: 6px; font-size: 11px; font-weight: 700; border: 1px solid ${darkenColor(colorHex, 15)}; box-shadow: 0 1px 2px rgba(0,0,0,0.15);`;
+    categoriesContainer.appendChild(categoryBadge);
+  });
+
+  legend.appendChild(categoriesContainer);
+
+  return legend;
 }
 
 // Helper para hacer POST
@@ -22,7 +84,7 @@ async function apiPost(endpoint: string, payload: any): Promise<any> {
 }
 
 // Helper para refrescar la vista de tareas
-async function renderTasksView() {
+export async function renderTasksView() {
   // Busca el componente Angular y llama a fetchTasks y filterAndRenderTasks
   const ngComponent = (window as any).ng?.getInjector?.(TasksPage)?.get(TasksPage);
   if (ngComponent) {
@@ -58,15 +120,15 @@ function escapeHtml(str: string): string {
 
 function getContrastColor(hex: string): string {
   hex = hex.replace('#', '');
-  if (hex.length === 3) hex = hex.split('').map(x => x + x).join('');
-  const r = parseInt(hex.substr(0,2),16), g = parseInt(hex.substr(2,2),16), b = parseInt(hex.substr(4,2),16);
+  if (hex.length === 3) hex = hex.split('').map((x: string) => x + x).join('');
+  const r: number = parseInt(hex.substr(0,2),16), g: number = parseInt(hex.substr(2,2),16), b: number = parseInt(hex.substr(4,2),16);
   return ((r*0.299 + g*0.587 + b*0.114) > 186) ? '#222222' : '#ffffff';
 }
 
 function darkenColor(hex: string, percent: number): string {
   hex = hex.replace('#', '');
-  if (hex.length === 3) hex = hex.split('').map(x => x + x).join('');
-  let r = parseInt(hex.substr(0,2),16), g = parseInt(hex.substr(2,2),16), b = parseInt(hex.substr(4,2),16);
+  if (hex.length === 3) hex = hex.split('').map((x: string) => x + x).join('');
+  let r: number = parseInt(hex.substr(0,2),16), g: number = parseInt(hex.substr(2,2),16), b: number = parseInt(hex.substr(4,2),16);
   r = Math.max(0, r - Math.round(2.55 * percent));
   g = Math.max(0, g - Math.round(2.55 * percent));
   b = Math.max(0, b - Math.round(2.55 * percent));
@@ -76,6 +138,16 @@ function darkenColor(hex: string, percent: number): string {
 function showGeneralTaskDetails(id: number, name: string) {
   // Aquí deberías abrir el modal de edición o detalles
   alert(`Abrir detalles de la tarea: ${name} (ID: ${id})`);
+}
+    
+// Helper para obtener el label de status
+function getStatusLabel(status: string): string {
+  switch (status) {
+    case 'IN_PROGRESS': return 'In Progress';
+    case 'COMPLETED': return 'Completed';
+    case 'PAUSED': return 'Paused';
+    default: return status;
+  }
 }
 
 
@@ -99,11 +171,12 @@ import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../core/services/auth.service';
 import { firstValueFrom } from 'rxjs';
 import { ProjectService } from '../../core/services/project.service';
+import { CalendarWeekPrev } from '../../core/components/calendar-week-prev/calendar-week-prev';
 
 @Component({
   selector: 'app-task',
   standalone: true,
-  imports: [HeaderComponent, SubmenuComponent, CommonModule, CreateTaskCard, FullCalendarModule, CalendarTask, EditTask],
+  imports: [HeaderComponent, SubmenuComponent, CommonModule, CreateTaskCard, FullCalendarModule, CalendarTask, EditTask, CalendarWeekPrev],
   templateUrl: './task.html',
   styleUrls: ['./task.scss']
 })
@@ -114,14 +187,21 @@ export class TasksPage implements OnInit {
   ngAfterViewInit(): void {
     const clearBtn = document.getElementById('clear-all-filters');
     if (clearBtn) {
-      clearBtn.addEventListener('click', () => this.clearAllFilters());
+      clearBtn.addEventListener('click', () => {
+        this.clearAllFilters();
+        debounceRefetchOrFullRender();
+      });
     }
     // Escuchar evento global para abrir modal de edición
     window.addEventListener('open-edit-task-modal', (e: any) => {
       this.tareaSeleccionada = e.detail.task;
       // Forzar actualización si es necesario
-      setTimeout(() => {}, 0);
+      setTimeout(() => {
+        tryRefetchCalendars();
+      }, 0);
     });
+    // Restaurar estado de calendario al montar vista
+    setTimeout(() => restoreFullCalendarState(), 100);
   }
 
   clearAllFilters(): void {
@@ -138,6 +218,7 @@ export class TasksPage implements OnInit {
     this.currentFilters.creator = '';
     // Mostrar todas las tareas
     this.tasks = this.allTasks;
+    saveFullCalendarState();
   }
 
   calendarOptions: CalendarOptions = {
@@ -265,7 +346,22 @@ export class TasksPage implements OnInit {
     if (this.currentFilters.project) filtered = filtered.filter(t => String(t.projectId) === this.currentFilters.project);
     if (this.currentFilters.category) filtered = filtered.filter(t => String(t.taskCategoryId) === this.currentFilters.category);
     if (this.currentFilters.creator) filtered = filtered.filter(t => String(t.createdByEmployeeId) === this.currentFilters.creator);
+
+    // Mine only filter (Show created by me checkbox)
+    const myEmployeeId = this.myEmployeeId;
+    if (this.currentFilters.mineOnly && myEmployeeId) {
+      filtered = filtered.filter(task => {
+        const taskCreatorId = task.createdByEmployeeId || task.createdById ||
+          (task.createdByEmployee && task.createdByEmployee.id) ||
+          (task.createdBy && task.createdBy.id);
+        if (!taskCreatorId || Number(taskCreatorId) !== Number(myEmployeeId)) {
+          return false;
+        }
+        return true;
+      });
+    }
     this.tasks = filtered;
+    
   }
 
 
@@ -382,11 +478,18 @@ export class TasksPage implements OnInit {
       this.allTasks = await firstValueFrom(this.http.get<any[]>(url));
       this.tasks = this.allTasks;
       console.log('Tareas cargadas:', this.tasks);
+      // Render calendar legend in etiquetas section
+      setTimeout(() => {
+        const legendContainer = document.getElementById('calendar-legend-container');
+        if (legendContainer) {
+          legendContainer.innerHTML = '';
+          legendContainer.appendChild(createCalendarLegend(this.tasks));
+        }
+      }, 0);
     } catch (error) {
       console.error('Error al cargar tareas:', error);
     }
   }
-
 
 
   
