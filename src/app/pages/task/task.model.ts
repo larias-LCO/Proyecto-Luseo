@@ -3,7 +3,7 @@
 // =============================================
 
 // 🔹 Tarea EXACTAMENTE como la responde tu backend
-export interface Task {
+export interface TaskModel {
   id: number;
 
   // Nombre / descripción
@@ -74,11 +74,11 @@ export interface Filters {
 // 📌 Calendar Models
 // =============================================
 export interface TypeGroup {
-  [typeName: string]: Task[];
+  [typeName: string]: TaskModel[];
 }
 
 export interface WeekSection {
-    team: Record<string, Task[]>;
+    team: Record<string, TaskModel[]>;
 }
 
 

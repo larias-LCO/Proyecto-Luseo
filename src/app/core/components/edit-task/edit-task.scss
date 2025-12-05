@@ -1,3 +1,30 @@
+// Modal de éxito
+.success-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #e6ffed;
+  color: #1a7f37;
+  border: 2px solid #1a7f37;
+  border-radius: 10px;
+  padding: 24px 40px;
+  font-size: 1.3rem;
+  font-weight: bold;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  animation: fadeInOut 1.5s;
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { opacity: 0; }
+}
 .modal-container {
   position: fixed;
   top: 50%;

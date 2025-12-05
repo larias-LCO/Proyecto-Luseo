@@ -1,3 +1,164 @@
+
+// Helper global para peticiones GET autenticadas
+export async function apiGet<T = any>(path: string): Promise<T> {
+  const apiBase = (window as any).Auth?.getState?.().apiBase || 'https://api.luseoeng.com';
+  const url = apiBase.replace(/\/$/, '') + path;
+  let res: Response;
+  if ((window as any).Auth && typeof (window as any).Auth.fetchWithAuth === 'function') {
+    res = await (window as any).Auth.fetchWithAuth(url, { headers: { 'Accept': 'application/json' } });
+  } else {
+    res = await fetch(url, { credentials: 'include' });
+  }
+  if (res.status === 401) {
+    try { await (window as any).Auth.logout(); } finally { location.href = '/login.html'; }
+    throw new Error('HTTP 401');
+  }
+  if (!res.ok) {
+    let detail = '';
+    try {
+      const data = await res.json();
+      detail = data?.message || data?.error || data?.detail || JSON.stringify(data);
+    } catch (_) {
+      detail = 'No se pudo leer el detalle del error (no es JSON)';
+    }
+    throw new Error(`HTTP ${res.status}${detail ? ': ' + detail : ''}`);
+  }
+  return res.json();
+}
+
+
+export async function apiDelete(path: string): Promise<any> {
+  const apiBase = (window as any).Auth?.getState?.().apiBase || 'https://api.luseoeng.com';
+  const url = apiBase.replace(/\/$/, '') + path;
+  let res: Response;
+  if ((window as any).Auth && typeof (window as any).Auth.fetchWithAuth === 'function') {
+    res = await (window as any).Auth.fetchWithAuth(url, {method: 'DELETE', headers: {'Accept': 'application/json'}});
+  } else {
+    res = await fetch(url, {method: 'DELETE', headers: {'Accept': 'application/json'}, credentials: 'include'});
+  }
+  if (res.status === 401) {
+    try { await (window as any).Auth.logout(); } finally { location.href = '/login.html'; }
+    throw new Error('HTTP 401');
+  }
+  if (!res.ok) {
+    let detail = '';
+    try {
+      const data = await res.json();
+      detail = data?.message || data?.error || data?.detail || JSON.stringify(data);
+    } catch (_) {
+      try { detail = await res.text(); } catch (__) {}
+    }
+    throw new Error(`HTTP ${res.status}${detail ? ': ' + detail : ''}`);
+  }
+  return res.status === 204 ? null : res.json();
+}
+
+
+// API Helper functions
+export async function apiPost(path: string, data: any): Promise<any> {
+  const apiBase = (window as any).Auth?.getState?.().apiBase || 'https://api.luseoeng.com';
+  const url = apiBase.replace(/\/$/, '') + path;
+  let res: Response;
+  if ((window as any).Auth && typeof (window as any).Auth.fetchWithAuth === 'function') {
+    res = await (window as any).Auth.fetchWithAuth(url, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
+      body: JSON.stringify(data)
+    });
+  } else {
+    res = await fetch(url, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
+      credentials: 'include',
+      body: JSON.stringify(data)
+    });
+  }
+  if (res.status === 401) {
+    try { await (window as any).Auth.logout(); } finally { location.href = '/login.html'; }
+    throw new Error('HTTP 401');
+  }
+  if (!res.ok) {
+    let detail = '';
+    try {
+      const data = await res.json();
+      detail = data?.message || data?.error || data?.detail || JSON.stringify(data);
+    } catch (_) {
+      try { detail = await res.text(); } catch (__) {}
+    }
+    throw new Error(`HTTP ${res.status}${detail ? ': ' + detail : ''}`);
+  }
+  return res.json();
+}
+
+export async function apiPut(path: string, data: any): Promise<any> {
+  const apiBase = (window as any).Auth?.getState?.().apiBase || 'https://api.luseoeng.com';
+  const url = apiBase.replace(/\/$/, '') + path;
+  let res: Response;
+  if ((window as any).Auth && typeof (window as any).Auth.fetchWithAuth === 'function') {
+    res = await (window as any).Auth.fetchWithAuth(url, {
+      method: 'PUT',
+      headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
+      body: JSON.stringify(data)
+    });
+  } else {
+    res = await fetch(url, {
+      method: 'PUT',
+      headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
+      credentials: 'include',
+      body: JSON.stringify(data)
+    });
+  }
+  if (res.status === 401) {
+    try { await (window as any).Auth.logout(); } finally { location.href = '/login.html'; }
+    throw new Error('HTTP 401');
+  }
+  if (!res.ok) {
+    let detail = '';
+    try {
+      const data = await res.json();
+      detail = data?.message || data?.error || data?.detail || JSON.stringify(data);
+    } catch (_) {
+      try { detail = await res.text(); } catch (__) {}
+    }
+    throw new Error(`HTTP ${res.status}${detail ? ': ' + detail : ''}`);
+  }
+  return res.json();
+}
+
+
+export async function deleteGeneralTask(taskId: number, taskName: string): Promise<void> {
+  if (!confirm(`Are you sure you want to delete the task "${taskName}"?\n\nNote: This will also delete all associated subtasks.`)) return;
+  try {
+    await apiDelete(`/general-tasks/${taskId}`);
+    // Refresh immediately without alert (non-invasive)
+    await renderTasksView();
+  } catch (err: any) {
+    console.error('Error deleting task:', err);
+    // Provide helpful error message
+    let errorMsg = 'Error deleting task: ';
+    if (err?.message?.includes('404')) {
+      errorMsg += 'Task not found. It may have already been deleted.';
+    } else if (err?.message?.includes('403') || err?.message?.includes('401')) {
+      errorMsg += 'You do not have permission to delete this task.';
+    } else {
+      errorMsg += err?.message;
+    }
+    alert(errorMsg);
+  }
+}
+
+
+    
+// Refresca la vista de tareas al cerrar el modal de edición
+export async function onEditTaskClosed() {
+  if (typeof window !== 'undefined') {
+    if ((window as any).tasksPageInstance) {
+      (window as any).tasksPageInstance.tareaSeleccionada = null;
+      await (window as any).tasksPageInstance.fetchTasks();
+      await renderTasksView();
+    }
+  }
+}
 // Ejemplo de uso para activar la importación y evitar que se vea opaca
 // Puedes borrar o mover esto según tu lógica
 setTimeout(() => {
@@ -71,17 +232,17 @@ export function createCalendarLegend(tasks: Array<{ taskCategoryName?: string; t
 }
 
 // Helper para hacer POST
-async function apiPost(endpoint: string, payload: any): Promise<any> {
-  const base = (window as any).ng?.getInjector?.(TasksPage)?.get(AuthService)?.getApiBase?.() || '';
-  const url = `${base.replace(/\/$/, '')}${endpoint}`;
-  const resp = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  });
-  if (!resp.ok) throw new Error('POST failed: ' + resp.status);
-  return resp.json();
-}
+// async function apiPost(endpoint: string, payload: any): Promise<any> {
+//   const base = (window as any).ng?.getInjector?.(TasksPage)?.get(AuthService)?.getApiBase?.() || '';
+//   const url = `${base.replace(/\/$/, '')}${endpoint}`;
+//   const resp = await fetch(url, {
+//     method: 'POST',
+//     headers: { 'Content-Type': 'application/json' },
+//     body: JSON.stringify(payload)
+//   });
+//   if (!resp.ok) throw new Error('POST failed: ' + resp.status);
+//   return resp.json();
+// }
 
 // Helper para refrescar la vista de tareas
 export async function renderTasksView() {
@@ -91,6 +252,9 @@ export async function renderTasksView() {
     await ngComponent.fetchTasks();
     ngComponent.filterAndRenderTasks();
   } else if ((window as any).tasksPageInstance) {
+
+  // declare const API: string | undefined;
+
     await (window as any).tasksPageInstance.fetchTasks();
     (window as any).tasksPageInstance.filterAndRenderTasks();
   }
@@ -141,7 +305,7 @@ function showGeneralTaskDetails(id: number, name: string) {
 }
     
 // Helper para obtener el label de status
-function getStatusLabel(status: string): string {
+export function getStatusLabel(status: string): string {
   switch (status) {
     case 'IN_PROGRESS': return 'In Progress';
     case 'COMPLETED': return 'Completed';
@@ -181,7 +345,21 @@ import { CalendarWeekPrev } from '../../core/components/calendar-week-prev/calen
   styleUrls: ['./task.scss']
 })
 export class TasksPage implements OnInit {
+  showMineOnly: boolean = false;
 
+filterTasks() {
+  if (this.currentFilters.showMineOnly && this.myEmployeeId) {
+    this.tasks = this.allTasks.filter(task =>
+      Array.isArray(task.assignedEmployeeIds) &&
+      task.assignedEmployeeIds.includes(this.myEmployeeId)
+    );
+  } else {
+    this.tasks = [...this.allTasks];
+  }
+}
+
+
+  public currentProjectId: number | null = null
   
   tareaSeleccionada: any = null;
   ngAfterViewInit(): void {
@@ -245,16 +423,16 @@ export class TasksPage implements OnInit {
     project?: string;
     category: string;
     creator: string;
-    mineOnly: boolean;
-    myProjects: boolean;
+    showMineOnly: boolean,
+    myProjects: true,
     week: string | null;
   } = {
     searchText: '',
     project: '',
     category: '',
     creator: '',
-    mineOnly: false,
-    myProjects: false,
+    showMineOnly: false,
+    myProjects: true,
     week: null
   };
   tasks: any[] = [];
@@ -264,6 +442,7 @@ export class TasksPage implements OnInit {
   generalTaskEnums = { statuses: [] as string[] };
   cachedCategories: any[] | null = null;
   myEmployeeId: number | null = null;
+  
 
   constructor(
     private http: HttpClient,
@@ -272,7 +451,7 @@ export class TasksPage implements OnInit {
   ) {}
 
   // ======= API HELPERS =======
-  private apiGet<T>(endpoint: string): Promise<T> {
+  public apiGet<T>(endpoint: string): Promise<T> {
     const base = this.auth.getApiBase();
     const url = `${base.replace(/\/$/, '')}${endpoint}`;
     return firstValueFrom(this.http.get<T>(url));
@@ -290,6 +469,8 @@ export class TasksPage implements OnInit {
     }
     return this.generalTaskEnums;
   }
+
+  
 
   // ================= FILTROS BACKEND =================
   async loadCreatorsFromBackend(): Promise<void> {
@@ -325,12 +506,31 @@ export class TasksPage implements OnInit {
   }
 
   setupFilterListeners(): void {
+    // Filtro de búsqueda por texto (en vivo desde la primera letra)
+    const searchInput = document.getElementById('project-search') as HTMLInputElement | null;
+    if (searchInput) {
+      searchInput.addEventListener('input', () => {
+        const value = searchInput.value.trim();
+        this.currentFilters.searchText = value;
+        this.onFilterChange(); // Siempre filtra en vivo
+      });
+    }
     const projectSelect = document.getElementById('project-filter');
     const categorySelect = document.getElementById('category-filter');
     const creatorSelect = document.getElementById('creator-filter');
     if (projectSelect) projectSelect.addEventListener('change', () => this.onFilterChange());
     if (categorySelect) categorySelect.addEventListener('change', () => this.onFilterChange());
     if (creatorSelect) creatorSelect.addEventListener('change', () => this.onFilterChange());
+    const mineOnlyCheckbox = document.getElementById('mine-only-filter') as HTMLInputElement | null;
+    if (mineOnlyCheckbox) {
+      const self = this;
+      mineOnlyCheckbox.checked = !!self.currentFilters.showMineOnly;
+     mineOnlyCheckbox.addEventListener('change', () => {
+  this.currentFilters.showMineOnly = mineOnlyCheckbox.checked;
+  this.onFilterChange();
+});
+
+    }
   }
 
   onFilterChange(): void {
@@ -343,24 +543,59 @@ export class TasksPage implements OnInit {
 
     // Filtrar tareas y actualizar el array mostrado en el calendario
     let filtered = this.allTasks;
+    // Filtro de texto (en vivo desde la primera letra)
+    const search = (this.currentFilters.searchText || '').trim().toLowerCase();
+    if (search.length > 0) {
+      filtered = filtered.filter(t => {
+        return (
+          (t.name && t.name.toLowerCase().includes(search)) ||
+          (t.projectName && t.projectName.toLowerCase().includes(search)) ||
+          (t.projectCode && t.projectCode.toLowerCase().includes(search)) ||
+          (t.clientName && t.clientName.toLowerCase().includes(search))
+        );
+      });
+    }
     if (this.currentFilters.project) filtered = filtered.filter(t => String(t.projectId) === this.currentFilters.project);
     if (this.currentFilters.category) filtered = filtered.filter(t => String(t.taskCategoryId) === this.currentFilters.category);
     if (this.currentFilters.creator) filtered = filtered.filter(t => String(t.createdByEmployeeId) === this.currentFilters.creator);
 
-    // Mine only filter (Show created by me checkbox)
+    // Mine only filter (Show only tasks from projects where I am assigned)
     const myEmployeeId = this.myEmployeeId;
-    if (this.currentFilters.mineOnly && myEmployeeId) {
-      filtered = filtered.filter(task => {
-        const taskCreatorId = task.createdByEmployeeId || task.createdById ||
-          (task.createdByEmployee && task.createdByEmployee.id) ||
-          (task.createdBy && task.createdBy.id);
-        if (!taskCreatorId || Number(taskCreatorId) !== Number(myEmployeeId)) {
-          return false;
-        }
-        return true;
-      });
+    if (this.currentFilters.showMineOnly && myEmployeeId) {
+      // Obtener los IDs de proyectos donde el usuario está asignado
+      const myProjectIds = this.allProjects
+        .filter(p => Array.isArray(p.employeeIds) && p.employeeIds.includes(myEmployeeId))
+        .map(p => p.id);
+      // Filtrar tareas que pertenezcan a esos proyectos
+      filtered = filtered.filter(task => myProjectIds.includes(task.projectId));
     }
+    // If not filtering by mine only, just show all filtered tasks (no extra filter)
     this.tasks = filtered;
+
+    // Mostrar mensajes personalizados y ocultar calendario si no hay proyectos asignados
+    const calendarContainer = document.getElementById('calendar-legend-container');
+    const calendarMessage = document.getElementById('calendar-message');
+    const mainCalendar = document.getElementById('main-calendar');
+    if (calendarContainer && calendarMessage && mainCalendar) {
+      let message = '';
+      let hideCalendar = false;
+      if (this.currentFilters.showMineOnly) {
+        const myProjectIds = this.allProjects
+          .filter(p => Array.isArray(p.employeeIds) && p.employeeIds.includes(myEmployeeId))
+          .map(p => p.id);
+        if (myProjectIds.length === 0) {
+          message = 'No projects found • Showing tasks without project assignment';
+          hideCalendar = true;
+        } else if (filtered.length === 0) {
+          message = 'No tasks found without project assignment';
+          hideCalendar = true;
+        }
+      }
+      calendarContainer.innerHTML = '';
+      calendarMessage.innerText = message;
+      calendarMessage.style.display = hideCalendar && message ? 'block' : 'none';
+      mainCalendar.style.display = hideCalendar ? 'none' : '';
+    }
     
   }
 
@@ -491,7 +726,36 @@ export class TasksPage implements OnInit {
     }
   }
 
+async onEditTaskClosed() {
+  this.tareaSeleccionada = null;
+  await this.fetchTasks(); // O el método que refresca las tareas y el calendario
+}
+
 
   
 
+}
+
+// Variable global para almacenar los festivos
+let allHolidays: any[] = [];
+
+// Cargar festivos (holidays) - mismo endpoint y comportamiento que reportHours
+export async function loadHolidays(): Promise<void> {
+  try {
+    const currentYear = new Date().getFullYear();
+    const response = await apiGet(`/holidays/all/${currentYear}`);
+
+    if (response && response.colombia && response.usa) {
+      allHolidays = [
+        ...response.colombia.map((h: any) => ({ ...h, countryCode: 'CO' })),
+        ...response.usa.map((h: any) => ({ ...h, countryCode: 'US' }))
+      ];
+    } else {
+      allHolidays = [];
+      console.warn('⚠️ No holidays data received');
+    }
+  } catch (err) {
+    console.error('❌ Error loading holidays:', err);
+    allHolidays = [];
+  }
 }

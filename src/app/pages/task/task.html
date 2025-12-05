@@ -58,13 +58,12 @@
       </div>
     </div>
     <div class="filters-actions-row">
-      <div class="filter-show">
-        <label class="checkbox-label"> Show only my assigned projects
-          <input type="checkbox" id="filter-my-projects"/>
-        </label>
+
+
+      <div class="filter-show" style="display: flex; align-items: center; gap: 8px;">
+        <input type="checkbox" id="mine-only-filter" style="margin:0;" />
+        <label for="mine-only-filter" style="margin:0;">Show only my assigned projects</label>
       </div>
-
-
       <div class="top-right-buttons">
         <button id="clear-all-filters" class="btn btn-secondary btn-sm">
           Clear All Filters
@@ -91,12 +90,13 @@
       *ngIf="showCreateTaskModal" 
       (close)="showCreateTaskModal = false">
     </app-create-task-card>
-    <app-edit-task 
-      *ngIf="tareaSeleccionada" 
-      [task]="tareaSeleccionada" 
-      (close)="tareaSeleccionada = null">
-    </app-edit-task>
-    <app-calendar-task [tasks]="tasks"></app-calendar-task>
+    <app-edit-task
+  *ngIf="tareaSeleccionada"
+  [task]="tareaSeleccionada"
+  (close)="onEditTaskClosed()">
+</app-edit-task>
+    <div id="calendar-message" style="display:none;color:#e11d48;font-weight:600;margin:24px 0;text-align:center;"></div>
+    <app-calendar-task id="main-calendar" [tasks]="tasks"></app-calendar-task>
     <!-- Mine only -->
     <!-- <div class="by-me" ><label>Show created by me</label>
       <input type="checkbox" id="mine-only-filter"/>

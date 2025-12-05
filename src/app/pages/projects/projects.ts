@@ -11,7 +11,7 @@ import { SubmenuComponent } from '../../core/components/submenu/submenu';
 import { ProjectFiltersService } from '../../core/services/project-filters.service';
 import { CreateProjectComponent } from '../../core/components/create-project/create-project';
 import { ProjectPayload, ProjectService } from '../../core/services/project.service';
-import { CreateEditHelper } from './create-edit';
+import { CreateEditHelper } from '../../shared/create-edit';
 import { ProjectDetailsComponent } from '../../core/components/project-details/project-details';
 
 
@@ -355,8 +355,9 @@ closeProjectDetails() {
       (window as any).__lastProjectResponse = { items, pageInfo };
       this.debug('✅ Projects loaded:', items);
       this.debug('📄 PageInfo:', pageInfo);
-      this.projects = items;
+      this.projects = Array.isArray(items) ? items : [];
       this.pageInfo = pageInfo;
+      console.log('Projects:', this.projects); // Depuración: muestra los proyectos recibidos
     } catch (error) {
       this.debug('❌ Error loading projects:', error);
       console.error('❌ Error loading projects:', error);

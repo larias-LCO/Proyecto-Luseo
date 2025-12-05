@@ -107,16 +107,17 @@ async loadProjects(query: any): Promise<{ items: any[], pageInfo: any }> {
   });
 
   const response = await lastValueFrom(obs$);
-  console.log('✅ Raw response:', response);
+
+
 
   // Si la respuesta es un array directo, usarlo directamente
-  const items = Array.isArray(response)
-    ? response
-    : (response?.items ??
-       response?.content ??
-       response?._embedded?.projects ??
-       []);
-
+ const items = Array.isArray(response)
+  ? response
+  : (response?.items ??
+     response?.content ??
+     response?._embedded?.projects ??
+     []);
+     
   const p = response?.page ?? response;
 
   const pageInfo = {

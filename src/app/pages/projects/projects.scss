@@ -299,9 +299,10 @@
 //BOTONSITO NEW PROJECT 
 
 .btn-create {
- margin-right: 6px;
+ margin-right: 5px;
+ margin-left: -80px;
   color: #fff;
-  min-width: 120px;
+  min-width: 150px;
   height: 36px;
   padding: 6px 14px;
   font-size: 14px;
@@ -320,49 +321,7 @@
   transform: translateY(-2px);
 }
 /* ===== TOOLTIP ANIMADO ===== */
-.tooltip {
-  position: relative;
-  display: inline-block;
-  margin-right: 10px;
-}
 
-.tooltip .tooltip-text {
-  position: absolute;
-  bottom: 125%;
-  left: 50%;
-  transform: translateX(-50%) translateY(8px);
-  background: rgba(15, 23, 42, 0.9); /* azul oscuro transparente */
-  color: #fff;
-  padding: 8px 12px;
-  border-radius: 8px;
-  font-size: 13px;
-  white-space: nowrap;
-  opacity: 0;
-  visibility: hidden;
-  transition: all 0.3s ease;
-  pointer-events: none;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  z-index: 9999; /* o un valor alto para sobresalir del menú */ 
-}
-
-/* flechita del tooltip */
-.tooltip .tooltip-text::after {
-  content: '';
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  margin-left: -6px;
-  border-width: 6px;
-  border-style: solid;
-  border-color: rgba(15, 23, 42, 0.9) transparent transparent transparent;
-}
-
-/* Hover: animación suave */
-.tooltip:hover .tooltip-text {
-  opacity: 1;
-  visibility: visible;
-  transform: translateX(-50%) translateY(0);
-}
 
 .btn-clear-filters {
  margin-right: 6px;
@@ -390,7 +349,7 @@
 
  /* Pager moved below toolbar: modern centered pager */
     .pager-wrap{display: flex;justify-content: center;margin-top: 24px; margin-bottom: 50px;margin-top: 50px;}
-    .pager{ display: flex;align-items: center;gap: 10px;background: #fafafa;padding: 10px 20px;border-radius: 12px;box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);}
+    .pager{ display: flex;align-items: center;gap: 10px;background: white;padding: 10px 20px;border-radius: 12px;box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);}
     .pager-info {color: #5d5c63;font-size: 14px;font-weight: 500;}
 
 /* === BOTONES DE PÁGINA === */
@@ -420,7 +379,7 @@
 }
    /* === BOTÓN DE ORDEN === */
 .sort-btn {
-  background: #f5f3ff;
+  background: white;
   color: #365aff;
   border: 1px solid #e2dff8;
   font-weight: 600;

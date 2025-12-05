@@ -4,7 +4,7 @@ export type AuthState = {
   authenticated: boolean;
   username?: string;
   token?: string;
-  roles?: string[];
+  role?: string[];
 };
 
 @Injectable({ providedIn: 'root' })
@@ -25,6 +25,23 @@ export class AuthService {
       }
     });
     this.loadFromStorage();
+
+    // Log para depuración: token y roles decodificados
+    const token = this.getStoredToken();
+    if (token) {
+      try {
+        const parts = token.split('.');
+        if (parts.length === 3) {
+          const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/').padEnd(parts[1].length + (4 - (parts[1].length % 4)) % 4, '=')));
+          console.log('[AuthService] JWT payload:', payload);
+          console.log('[AuthService] Roles en token:', payload.roles || payload.role || payload.authorities || payload.scopes || payload.scope);
+        }
+      } catch (e) {
+        console.warn('[AuthService] No se pudo decodificar el token JWT:', e);
+      }
+    } else {
+      console.log('[AuthService] No hay token JWT almacenado.');
+    }
   }
 
   configure(apiBase: string) {
@@ -53,7 +70,7 @@ export class AuthService {
         roles = parts.length ? parts : undefined;
       }
     }
-    this.state.set({ authenticated: !!token, token: token || undefined, username, roles });
+    this.state.set({ authenticated: !!token, token: token || undefined, username, role: roles });
   }
 
   private getStoredToken(): string | null {
@@ -125,7 +142,7 @@ export class AuthService {
     localStorage.setItem(this.usernameKey, username);
     if (roles) localStorage.setItem(this.rolesKey, JSON.stringify(roles));
     else localStorage.removeItem(this.rolesKey);
-    this.state.set({ authenticated: true, username, token, roles });
+    this.state.set({ authenticated: true, username, token, role: roles });
   }
 
   logout(): void {
@@ -144,11 +161,11 @@ export class AuthService {
   }
 
   getRoles(): string[] {
-    return this.state().roles || [];
+    return this.state().role || [];
   }
 
   hasRole(role: string): boolean {
-    const roles = (this.state().roles || []).map(r => r.toUpperCase());
+    const roles = (this.state().role || []).map(r => r.toUpperCase());
     return roles.includes(role.toUpperCase());
   }
 

@@ -120,7 +120,7 @@
     </div>
     
  <div class="filters-actions">
-      <button id="openCreate" class="btn-create" type="button" [style.display]="isAdminOrOwner ? '' : 'none'" (click)="openCreateModal()">New Project</button>
+      <button id="openCreate" class="btn-create" type="button" [style.display]="isAdminOrOwner ? '' : 'none'" (click)="openCreateModal()">Create New Project</button>
       <button id="refresh" class="btn btn-clear-filters" type="button" (click)="clearFilters()">Clean filters</button>
     </div>
   </div>
@@ -172,7 +172,7 @@
         </thead>
         <tbody>
           <tr *ngIf="projects.length === 0">
-            <td class="muted" colspan="7">No results</td>
+            <td class="muted" colspan="9">No results</td>
           </tr>
   <tr *ngFor="let p of projects; trackBy: trackByProject"
     (click)="openProjectDetails(p)"

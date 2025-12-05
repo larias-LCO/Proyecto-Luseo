@@ -95,10 +95,14 @@
     <div class="actions">
 
       <!-- Botón para eliminar -->
-    <!-- <button type="button" class="btn-delete" (click)="deleteTask()">🗑️ Delete</button> -->
+      <button type="button" class="btn-delete" (click)="deleteTask()"><span class="icon">🗑️</span> Delete</button>
     <button type="button" class="cancel-btn" (click)="closeModal()"><span class="icon">❌</span> Cancel </button>
 
-    <button type="button" class="save-btn"><span class="icon">📝</span> Save Changes</button>
+    <button type="button" class="save-btn" (click)="saveTask()"><span class="icon">📝</span> Save Changes</button>
+    <!-- Modal de éxito -->
+    <div *ngIf="showSuccessModal" class="success-modal">
+      <span>✅ Edición exitosa</span>
+    </div>
     
     </div>
   </div>

@@ -152,7 +152,7 @@ setCalendarDate(date: string) {
     }
 
     // Crea una sección de semana para el calendario
-    createWeekSection(weekKey: string, weekData: any): HTMLElement {
+createWeekSection(weekKey: string, weekData: any): HTMLElement {
       const section = document.createElement('div');
       section.className = 'week-section';
       section.style.cssText = 'margin-bottom: 32px; background: white; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);';
@@ -185,7 +185,7 @@ setCalendarDate(date: string) {
     }
 
     // Renderiza el calendario de tareas para las semanas indicadas
-    renderMultiProjectCalendar(container: HTMLElement, allTasks: any[], currentFilters: any, renderCalendarView: (container: HTMLElement, tasks: any[], weeksToShow: string[] | null) => void): void {
+ renderMultiProjectCalendar(container: HTMLElement, allTasks: any[], currentFilters: any, renderCalendarView: (container: HTMLElement, tasks: any[], weeksToShow: string[] | null) => void): void {
       let weeksToShow: string[] | null = null;
       if (currentFilters.week) {
         const weekStart = this.getWeekStart(currentFilters.week);
@@ -196,7 +196,7 @@ setCalendarDate(date: string) {
       renderCalendarView(container, allTasks, weeksToShow);
     }
 
-  getWeekStart(weekString: string): Date {
+ getWeekStart(weekString: string): Date {
     // weekString format: "2025-W02"
     const [year, week] = weekString.split('-W');
     const date = new Date(Number(year), 0, 1 + (Number(week) - 1) * 7);
@@ -204,7 +204,7 @@ setCalendarDate(date: string) {
     const diff = date.getDate() - day + (day === 0 ? -6 : 1);
     return new Date(date.setDate(diff));
   }
-    getMonday(date: Date | string): Date {
+getMonday(date: Date | string): Date {
     const d = new Date(date);
     const day = d.getDay();
     const diff = d.getDate() - day + (day === 0 ? -6 : 1);
@@ -213,7 +213,7 @@ setCalendarDate(date: string) {
     return d;
   }
 
-  formatDateLocal(d: Date | string): string {
+ formatDateLocal(d: Date | string): string {
     const date = new Date(d);
     const y = date.getFullYear();
     const m = String(date.getMonth() + 1).padStart(2, '0');
@@ -221,6 +221,50 @@ setCalendarDate(date: string) {
     return `${y}-${m}-${day}`;
   }
 
+groupTasksByWeekAndType(tasks: any[]): Record<string, { team: Record<number, any[]> }> {
+  const grouped: Record<string, { team: Record<number, any[]> }> = {};
 
+  tasks.forEach((task: any) => {
+    const dateStr = task.issuedDate || task.createdDate || this.formatDateLocal(new Date());
+    // Parse date in local timezone to avoid dayOfWeek shifting
+    const [year, month, day] = dateStr.split('T')[0].split('-');
+    const date = new Date(Number(year), Number(month) - 1, Number(day));
+
+    // Get Monday of that week
+    const monday = this.getMonday(date);
+    const weekKey = this.formatDateLocal(monday);
+
+    if (!grouped[weekKey]) {
+      grouped[weekKey] = { team: {} };
+    }
+
+    const dayOfWeek = date.getDay(); // 0=Sun, 1=Mon, ..., 5=Fri, 6=Sat
+
+    if (!grouped[weekKey].team[dayOfWeek]) {
+      grouped[weekKey].team[dayOfWeek] = [];
+    }
+
+    grouped[weekKey].team[dayOfWeek].push(task);
+  });
+
+  // PRIORITIZE "Out of Office" tasks within each day - they should appear first
+  Object.keys(grouped).forEach((weekKey) => {
+    Object.keys(grouped[weekKey].team).forEach((dayOfWeek) => {
+      grouped[weekKey].team[Number(dayOfWeek)].sort((a: any, b: any) => {
+        const aIsOutOfOffice = (a.taskCategoryName || '').toLowerCase().includes('out of office');
+        const bIsOutOfOffice = (b.taskCategoryName || '').toLowerCase().includes('out of office');
+
+        // Out of Office tasks come first
+        if (aIsOutOfOffice && !bIsOutOfOffice) return -1;
+        if (!aIsOutOfOffice && bIsOutOfOffice) return 1;
+
+        // For same type, maintain original order
+        return 0;
+      });
+    });
+  });
+
+  return grouped;
+}
 
   }

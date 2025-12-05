@@ -312,12 +312,17 @@ function cerrarSesion() {
   async function fetchWithAuth(input: RequestInfo, init?: RequestInit): Promise<Response> {
     init = init || {};
     init.headers = { ...(init.headers || {}), ...authHeader() };
-    let res = await fetch(input, init);
+    // Si input es una ruta relativa, conviértela a absoluta usando url(path)
+    let realInput = input;
+    if (typeof input === 'string' && input.startsWith('/')) {
+      realInput = url(input);
+    }
+    let res = await fetch(realInput, init);
     if (res.status === 401 && state?.token) {
       try {
         await refreshToken();
         init.headers = { ...(init.headers || {}), ...authHeader() };
-        res = await fetch(input, init);
+        res = await fetch(realInput, init);
       } catch {}
     }
     return res;

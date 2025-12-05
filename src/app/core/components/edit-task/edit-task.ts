@@ -1,9 +1,12 @@
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
+import { deleteGeneralTask } from '../../../pages/task/task';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CatalogsService } from '../../services/catalogs.service';
 import { ProjectService } from '../../services/project.service';
 import { HttpClient } from '@angular/common/http';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-edit-task',
@@ -12,7 +15,36 @@ import { HttpClient } from '@angular/common/http';
   styleUrl: './edit-task.scss'
 })
 export class EditTask implements OnInit {
-      
+  showSuccessModal: boolean = false;
+
+  async deleteTask() {
+    if (!this.task?.id || !this.task?.name) return;
+    if (!confirm(`Are you sure you want to delete the task "${this.task.name}"?\n\nNote: This will also delete all associated subtasks.`)) return;
+    this.loading = true;
+    this.message = 'Deleting...';
+    try {
+      const apiBase = this.auth.getApiBase().replace(/\/$/, '');
+      const url = `${apiBase}/general-tasks/${this.task.id}`;
+      const res: any = await firstValueFrom(this.http.delete(url, { observe: 'response' }));
+      if (res.status === 204 || res.status === 200) {
+        this.message = 'Task deleted successfully!';
+        this.close.emit();
+        // Aquí puedes refrescar la lista de tareas si lo necesitas
+      } else {
+        this.message = 'Error deleting task: ' + res.statusText;
+      }
+    } catch (err: any) {
+      if (err?.status === 403) {
+        this.message = 'You do not have permission to delete this task.';
+      } else if (err?.status === 404) {
+        this.message = 'Task not found. It may have already been deleted.';
+      } else {
+        this.message = 'Error deleting task: ' + (err.message || 'Unknown error');
+      }
+    }
+    this.loading = false;
+  }
+
     getEmployeeNameById(id: number): string {
       const emp = this.employees.find(e => e.id == id);
       return emp ? emp.name : '';
@@ -30,7 +62,12 @@ export class EditTask implements OnInit {
   createdByEmployeeName: string = '';
   loading = false;
 
-  constructor(private catalogs: CatalogsService, private projectService: ProjectService, private http:HttpClient) {}
+  constructor(
+    private catalogs: CatalogsService,
+    private projectService: ProjectService,
+    private http: HttpClient,
+    private auth: AuthService
+  ) {}
 
   async ngOnInit() {
     // Cargar proyectos desde el backend
@@ -63,7 +100,11 @@ export class EditTask implements OnInit {
       return;
     }
     try {
-      const result = await this.http.get<any[]>(`/api/projects/${projectId}/phases`).toPromise();
+      // Usar firstValueFrom en vez de .toPromise()
+      // Importa: import { firstValueFrom } from 'rxjs';
+      const base = this.auth.getApiBase().replace(/\/$/, '');
+      const url = `${base}/projects/${projectId}/phases`;
+      const result = await firstValueFrom(this.http.get<any[]>(url));
       this.projectPhaseId = result || [];
     } catch (err: any) {
       // Si es 404, simplemente deja la lista vacía y no muestres error
@@ -100,10 +141,15 @@ export class EditTask implements OnInit {
       taskCategoryId: this.task.taskCategoryId ? Number(this.task.taskCategoryId) : null,
     };
     try {
-      await this.http.put(`/api/general-tasks/${this.task.id}`, payload).toPromise();
+      const base = this.auth.getApiBase().replace(/\/$/, '');
+      const url = `${base}/general-tasks/${this.task.id}`;
+      await firstValueFrom(this.http.put(url, payload));
       this.message = 'Task updated successfully!';
-      this.close.emit();
-      // Aquí puedes emitir un evento o refrescar la lista de tareas
+      this.showSuccessModal = true;
+      setTimeout(() => {
+        this.showSuccessModal = false;
+        this.close.emit(); // Cierra el modal principal y refresca la vista
+      }, 1500); // Modal visible por 1.5 segundos
     } catch (err: any) {
       this.message = 'Error: ' + (err.message || 'Unknown error');
     }
@@ -112,11 +158,9 @@ export class EditTask implements OnInit {
   }
 
 
- 
-
-  
-
   closeModal() {
     this.close.emit();
   }
+
+  
 }

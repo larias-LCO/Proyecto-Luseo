@@ -1,5 +1,5 @@
 // create-edit.ts
-import { ProjectService, ProjectPayload } from './../../core/services/project.service';
+import { ProjectService, ProjectPayload } from '../core/services/project.service';
 
 export class CreateEditHelper {
   constructor(private projectService: ProjectService) {}
@@ -20,7 +20,7 @@ export class CreateEditHelper {
 
 // ====== SCRIPT: TS relacionado con Create / Edit ======
 (() => {
-  const API = 'https://boracic-preboding-shelley.ngrok-free.dev/';
+  const API = 'https://api.luseoeng.com';
 
   // --- Tipos de datos ---
   interface Office { id: number; name: string; }
