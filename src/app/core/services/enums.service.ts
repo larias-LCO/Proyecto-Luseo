@@ -33,4 +33,6 @@ export class EnumsService {
       return { areaUnit: [], type: [], status: [], scope: [] };
     }
   }
+
+  
 }

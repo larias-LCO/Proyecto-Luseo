@@ -63,7 +63,7 @@
   <label>Project Manager</label>
   <select [(ngModel)]="selectedManager" (ngModelChange)="onSimpleFilterChange()">
     <option value="">All</option>
-    <option *ngFor="let m of projectManagers" [value]="m.id"> {{ m.name }} · {{ m.jobTitle }} {{ m.department ? '· ' + m.department : '' }}
+    <option *ngFor="let m of projectManagers" [value]="m.id"> {{ m.name }} 
     </option>
   </select>
       </div>

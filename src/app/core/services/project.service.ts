@@ -1,3 +1,5 @@
+  
+
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthService } from './auth.service';
@@ -27,6 +29,27 @@ export interface ProjectPayload {
 
 @Injectable({ providedIn: 'root' })
 export class ProjectService {
+  /** Nuevo método para obtener proyectos como Observable */
+  getProjects(query: any) {
+    const base = (this.auth.getApiBase() || '').replace(/\/$/, '');
+    const url = `${base}/projects`;
+    const token = this.auth.getState().token;
+    const headers = new HttpHeaders({
+      'Accept': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {})
+    });
+    let params = new HttpParams();
+    Object.entries(query).forEach(([key, value]) => {
+      if (value !== null && value !== undefined && value !== '') {
+        params = params.set(key, String(value));
+      }
+    });
+    return this.http.get<any>(url, {
+      headers,
+      params,
+      withCredentials: true
+    });
+  }
   constructor(private auth: AuthService, private http: HttpClient) {}
 
   // Crea un proyecto y devuelve una Promesa con la respuesta

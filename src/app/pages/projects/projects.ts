@@ -1,3 +1,24 @@
+function toggleSort(){
+    try{
+        const cur = String(searchState.sort || 'projectCode,asc');
+        const parts = cur.split(',');
+        const field = parts[0] || 'projectCode';
+        const dir = (parts[1] || 'asc').toLowerCase() === 'asc' ? 'desc' : 'asc';
+        searchState.sort = `${field},${dir}`;
+        // Update UI label if present
+        if (el.sort_toggle){
+            // keep label simple: show field short name and arrow
+            const short = field === 'projectCode' ? 'Code' : field;
+            el.sort_toggle.textContent = `${short} ${dir === 'asc' ? '↑' : '↓'}`;
+        }
+        // Reset to first page when changing sort
+        searchState.page = 0;
+        // Reload projects (do not await here; caller will handle UI)
+        try{ loadProjects(); } catch(e){ console.warn('toggleSort: loadProjects failed', e); }
+    }catch(e){ console.warn('toggleSort error', e); }
+}
+
+
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule, NgForOf, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -10,9 +31,10 @@ import { HeaderComponent } from '../../core/components/header/header';
 import { SubmenuComponent } from '../../core/components/submenu/submenu';
 import { ProjectFiltersService } from '../../core/services/project-filters.service';
 import { CreateProjectComponent } from '../../core/components/create-project/create-project';
-import { ProjectPayload, ProjectService } from '../../core/services/project.service';
+import { ProjectPayload } from '../../core/services/project.service';
 import { CreateEditHelper } from '../../shared/create-edit';
 import { ProjectDetailsComponent } from '../../core/components/project-details/project-details';
+import { ProjectService } from '../../core/services/project.service';
 
 
 @Component({
@@ -27,13 +49,14 @@ export class ProjectsPage implements OnInit {
   
    private createEdit: CreateEditHelper;
   @ViewChild(CreateProjectComponent) createProjectRef?: CreateProjectComponent;
- // Catálogos cargados desde el backend
+  // Catálogos cargados desde el backend
   offices: any[] = [];
   clients: any[] = [];
   software: any[] = [];
   departments: any[] = [];
   jobPositions: any[] = [];
   employees: Employee[] = [];
+  managerOptions: { id: number, name: string }[] = [];
   statusList = [
     { value: 'ACTIVE', label: 'Active' },
     { value: 'INACTIVE', label: 'Inactive' }
@@ -107,15 +130,15 @@ constructor(
   // --- Inicialización ---
   async ngOnInit() {
     // --- Inicialización de catálogos y proyectos ---
-  await this.loadCatalogs(); // ✅ Esto realmente carga y asigna los catálogos
-  this.enums = await this.enumsService.loadEnums(); // enums dinámicos
-   this.projectFiltersService.setEmployees(this.employees); //Configurar filtros con los empleados cargados
-
-  this.loadProjects(); // 👈 Se cargan los proyectos al iniciar
-
-  // El modal de creación es manejado por el CreateProjectComponent
-
+    await this.loadCatalogs(); // ✅ Esto realmente carga y asigna los catálogos
+    this.enums = await this.enumsService.loadEnums(); // enums dinámicos
+    this.projectFiltersService.setEmployees(this.employees); //Configurar filtros con los empleados cargados
+    this.managerOptions = await this.projectFiltersService.getManagerFilterOptions();
+    this.loadProjects(); // 👈 Se cargan los proyectos al iniciar
+    // El modal de creación es manejado por el CreateProjectComponent
   }
+
+  
 
 // --- Mostrar modal de detalles ---
 openProjectDetails(idOrProject: any) {
@@ -225,6 +248,7 @@ closeProjectDetails() {
       this.departments = (data.departments || []).slice().sort(byName);
       this.jobPositions = (data.jobPositions || []).slice().sort(byName);
       this.employees = (data.employees || []).slice().sort(byName);
+      this.projectFiltersService.setEmployees(this.employees); //Configurar filtros con los empleados cargados
 
       this.debug('✅ Catálogos cargados correctamente:', data);
     } catch (e) {
@@ -308,22 +332,35 @@ closeProjectDetails() {
     this.applySearchFromUI();
   }
 
+
+  //FILTER SEARCH
   // Auto-search when user types >= 3 chars; also when cleared to empty
   onSearchChange(value: string): void {
     const text = (value || '').trim();
     // Debounce to avoid spamming the backend
     if (this.searchDebounce) clearTimeout(this.searchDebounce);
     this.searchDebounce = setTimeout(() => {
-      if (text.length === 0 || text.length >= 3) {
-        this.applySearchFromUI();
-      }
+      // Ahora aplica búsqueda con cualquier cambio, incluso 1 letra o número
+      this.applySearchFromUI();
     }, 300);
   }
 
   // Handler genérico para selects: aplica búsqueda inmediata
   onSimpleFilterChange(): void {
+    // Actualizar los filtros con los valores actuales de los selects
+    this.searchState.filters = {
+      officeId: this.selectedOffice,
+      clientId: this.selectedClient,
+      softwareId: this.selectedSoftware,
+      status: this.selectedStatus,
+      type: this.selectedType,
+      scope: this.selectedScope,
+      managerId: this.selectedManager,
+      departmentId: this.selectedDepartment,
+      q: this.searchText?.trim() || ''
+    };
     this.searchState.page = 0;
-    this.applySearchFromUI();
+    this.loadProjects();
   }
 
   private buildSearchQuery(): any {
