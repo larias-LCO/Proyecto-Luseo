@@ -121,7 +121,7 @@
           <th class="col-rate text-right">Rate (per hour)</th>
           <th class="col-role text-center">Role</th>
           <th class="col-state text-center">State</th>
-          <th class="col-actions text-right">Actions</th>
+          <th class="col-actions text-right" *ngIf="canEditDelete">Actions</th>
         </tr>
       </thead>
         <tbody>
@@ -177,9 +177,8 @@
           </td>
 
           <!-- Acciones (alineadas a la derecha) -->
-          <td class="td-actions text-right">
-            <!-- Ocultar acciones para USER; ADMIN no puede tocar OWNER -->
-            <ng-container *ngIf="canEditDelete && !(isAdmin && getEmployeeRoles(m).includes('OWNER')); else noActions">
+          <td class="td-actions text-right" *ngIf="canEditDelete">
+            <ng-container *ngIf="!(isAdmin && getEmployeeRoles(m).includes('OWNER')); else noActions">
               <button
                 class="btn-action btn-edit"
                 (click)="abrirModal(m)"
@@ -224,6 +223,16 @@
     <button (click)="setPage(page + 1)" [disabled]="page === totalPages">›</button>
     <button (click)="setPage(totalPages)" [disabled]="page === totalPages">»</button>
   </div>
+
+  <!-- Modal de confirmación reutilizable -->
+  <app-confirm-modal
+    *ngIf="confirmDeleteId"
+    [message]="'¿Eliminar empleado ' + confirmDeleteName + '? Esta acción no se puede deshacer.'"
+    [confirmText]="'Aceptar'"
+    [cancelText]="'Cancelar'"
+    (confirm)="confirmarEliminarEmpleado()"
+    (cancel)="cancelarEliminarEmpleado()"
+  ></app-confirm-modal>
 
   <!-- Modal editar -->
   <app-editar-miembro

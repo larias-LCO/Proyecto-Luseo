@@ -11,6 +11,8 @@ import { AuthService } from '../../services/auth.service';
   styleUrls: ['./fagregar-miembro.scss']
 })
 export class FagregarMiembroComponent {
+      showPassword = false;
+    showSuccessModal = false;
   @Input() catalogs: { departments: any[]; jobs: any[]; offices: any[] } | null = null;
   @Input() allowedRoles: string[] | null = null; // e.g., ['ADMIN','OWNER'] or ['ADMIN']
   @Output() created = new EventEmitter<void>();
@@ -44,7 +46,7 @@ export class FagregarMiembroComponent {
       
       return;
     }
-    // Limpiar el formulario antes de mostrar el modal
+    // Limpiar el formulario antes de mostrar el modal y forzar paso 1
     this.form.reset({
       nombre: '',
       departamento: '',
@@ -56,6 +58,9 @@ export class FagregarMiembroComponent {
       correo: '',
       password: ''
     });
+    this.form.markAsPristine();
+    this.form.markAsUntouched();
+    this.paso = 1;
     this.mostrarModal = true;
   }
 
@@ -75,7 +80,7 @@ export class FagregarMiembroComponent {
     correo: '',
     password: ''
   });
-  
+    
     this.form.markAsPristine();
     this.form.markAsUntouched();
   }
@@ -100,6 +105,7 @@ export class FagregarMiembroComponent {
   }
 
   async agregar() {
+    
     if (!this.form.valid) {
       this.form.markAllAsTouched();
       return;
@@ -182,11 +188,18 @@ export class FagregarMiembroComponent {
         throw new Error(`Error creando empleado (${empRes.status}): ${txt || empRes.statusText}`);
       }
 
-      this.created.emit();
-      this.cerrarModal();
-    } catch (e: any) {
-      console.error('Fallo al crear miembro:', e);
-      alert(e?.message || 'Error al crear el miembro');
+      // Notificar a otras pestañas que se creó un empleado
+      localStorage.setItem('employee-created', JSON.stringify({ ts: Date.now() }));
+      // Mostrar modal de éxito
+      this.showSuccessModal = true;
+      setTimeout(() => {
+        this.showSuccessModal = false;
+        this.created.emit();
+        this.cerrarModal();
+      }, 1500);
+    } catch (err: any) {
+      console.error('Error guardando empleado:', err);
+      alert(err?.message ?? 'Error al guardar los cambios.');
     }
   }
 }

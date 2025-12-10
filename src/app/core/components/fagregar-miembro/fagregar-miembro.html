@@ -93,9 +93,20 @@
         </small>
       </div>
 
-      <div>
-        <input type="password" placeholder="Contraseña" formControlName="password"
+      <div class="form-control password-group">
+        <input [type]="showPassword ? 'text' : 'password'" placeholder="Contraseña" formControlName="password"
           [ngClass]="{ 'input-error': form.get('password')?.invalid && form.get('password')?.touched }">
+        <button type="button" class="toggle-password" (click)="showPassword = !showPassword" tabindex="-1">
+          <span *ngIf="!showPassword">👁️</span>
+          <span *ngIf="showPassword"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+     xmlns="http://www.w3.org/2000/svg">
+  <path d="M3 3L21 21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  <path d="M17.94 17.94C16.07 19.22 14.12 20 12 20C7 20 3 14 3 14C4.12 12.17 5.5 10.63 7.06 9.46M9.9 7.6C10.57 7.21 11.28 7 12 7C17 7 21 13 21 13C20.56 13.73 20.06 14.39 19.52 15"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="12" cy="14" r="2" fill="currentColor"/>
+</svg>
+</span>
+        </button>
         <small *ngIf="form.get('password')?.invalid && form.get('password')?.touched">Mínimo 6 caracteres</small>
       </div>
     </div>
@@ -108,5 +119,10 @@
       <button class="agregar" *ngIf="paso === 2" (click)="agregar()">Agregar</button>
         </div>
       </form>
+
+    <!-- Modal de éxito -->
+    <div *ngIf="showSuccessModal" class="success-modal">
+      <span>✅ Miembro creado correctamente</span>
+    </div>
 
 

@@ -17,7 +17,7 @@ export class AuthService {
   state = signal<AuthState>({ authenticated: false });
 
   constructor() {
-    // Sync across tabs
+       // Sync across tabs
     window.addEventListener('storage', (e) => {
       if (!e.key) return;
       if ([...this.storageTokenKeys, this.usernameKey].includes(e.key)) {
@@ -25,7 +25,6 @@ export class AuthService {
       }
     });
     this.loadFromStorage();
-
     // Log para depuración: token y roles decodificados
     const token = this.getStoredToken();
     if (token) {

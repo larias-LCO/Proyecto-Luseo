@@ -10,6 +10,7 @@ import { Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 import { EditarMiembroComponent } from '../../core/components/editar-miembro/editar-miembro'; // Ajusta ruta si hace falta
+import { ConfirmModalComponent } from '../../shared/confirm-modal/confirm-modal';
 import { EmployeeApi } from './team-api';
 import { filterEmployees } from './team-utils';
 import { VALID_PAGE_SIZES, getInitialPageSize, readFiltersFromUrl, syncFiltersToUrl } from './team-pagination';
@@ -24,18 +25,34 @@ type Filters = { query: string; department: string; jobPosition: string; office:
 @Component({
   selector: 'app-team',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, EditarMiembroComponent, SubmenuComponent, HeaderComponent, FagregarMiembroComponent],
+  imports: [CommonModule, ReactiveFormsModule, EditarMiembroComponent, SubmenuComponent, HeaderComponent, FagregarMiembroComponent, ConfirmModalComponent],
   templateUrl: './team.html',
   styleUrls: ['./team.scss']
 })
 export class TeamComponent implements OnInit, OnDestroy {
+    showAlert = false;
+    alertMessage = '';
+    confirmDeleteId: string | number | null = null;
+    confirmDeleteName: string = '';
   private auth = inject(AuthService);
   private api!: EmployeeApi;
   private fb = new FormBuilder();
+  constructor() {
+    this.filterForm = this.fb.group({
+      q: [''],
+      department: [''],
+      job: [''],
+      office: [''],
+      state: [''],
+      role: [''],
+      size: ['']
+    });
+  }
 
   // Permissions
   get isOwner() { return !!this.auth.hasRole?.('OWNER'); }
   get isAdmin() { return !!this.auth.hasRole?.('ADMIN'); }
+    private tabId = String(Math.random()) + '-' + String(Date.now());
   get isUser() { return !!this.auth.hasRole?.('USER'); }
   get canAddMember() { return this.isOwner || this.isAdmin; }
   get canEditDelete() { return this.isOwner || this.isAdmin; }
@@ -71,18 +88,7 @@ export class TeamComponent implements OnInit, OnDestroy {
   // subscriptions
   private subs = new Subscription();
 
-  constructor() {
-    // init reactive form for filters
-    this.filterForm = this.fb.group({
-      q: [''],
-      department: [''],
-      job: [''],
-      office: [''],
-      state: [''],
-      role: [''],
-      size: ['']
-    });
-  }
+  // ...existing code...
 
   ngOnInit(): void {
     const base = this.auth.getApiBase?.() ?? '';
@@ -137,6 +143,13 @@ export class TeamComponent implements OnInit, OnDestroy {
         this.updateUrl();
       });
     this.subs.add(s);
+
+    // Listener para sincronización en tiempo real entre pestañas
+    window.addEventListener('storage', (event) => {
+      if ((event.key === 'employee-deleted' || event.key === 'employee-created') && event.newValue) {
+        this.refreshData();
+      }
+    });
 
     // initial load
     this.refreshData();
@@ -274,25 +287,42 @@ export class TeamComponent implements OnInit, OnDestroy {
     const roles = this.getEmployeeRoles(target);
     const isOwner = roles.includes('OWNER');
     if (!this.canEditDelete) {
-      alert('No autorizado: tu rol no permite eliminar miembros.');
+      this.alertMessage = 'No autorizado: tu rol no permite eliminar miembros.';
+      this.showAlert = true;
       return;
     }
     if (this.isAdmin && isOwner) {
-      alert('No autorizado: un ADMIN no puede eliminar a un OWNER.');
+      this.alertMessage = 'No autorizado: un ADMIN no puede eliminar a un OWNER.';
+      this.showAlert = true;
       return;
     }
-    if (!confirm(`¿Eliminar empleado ${target.name || target.fullName || id}? Esta acción no se puede deshacer.`)) return;
+    // Mostrar modal de confirmación personalizado
+    this.confirmDeleteId = id;
+    this.confirmDeleteName = target.name || target.fullName || id;
+    this.showAlert = false;
+  }
+
+  async confirmarEliminarEmpleado() {
+    if (!this.confirmDeleteId) return;
     try {
       if (typeof this.api.deleteEmployee === 'function') {
-        await this.api.deleteEmployee(Number(id));
+        await this.api.deleteEmployee(Number(this.confirmDeleteId));
       } else {
         const base = this.auth.getApiBase?.() ?? '';
-        await fetch(`${base.replace(/\/$/, '')}/employees/${id}`, { method: 'DELETE' });
+        await fetch(`${base.replace(/\/$/, '')}/employees/${this.confirmDeleteId}`, { method: 'DELETE' });
       }
+      localStorage.setItem('employee-deleted', JSON.stringify({ id: this.confirmDeleteId, ts: Date.now() }));
       await this.refreshData();
     } catch (err: any) {
-      alert(err?.message || 'Error eliminando empleado');
+      this.alertMessage = err?.message || 'Error eliminando empleado';
+      this.showAlert = true;
     }
+    this.cancelarEliminarEmpleado();
+  }
+
+  cancelarEliminarEmpleado() {
+    this.confirmDeleteId = null;
+    this.confirmDeleteName = '';
   }
 
   getEmployeeRoles(e: any): string[] {

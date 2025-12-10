@@ -1,4 +1,4 @@
-// src/app/core/auth/auth-sync.ts
+// sincronizacion de pestañas 
 (() => {
   const STORAGE_KEY = 'auth.state';
   const LOCK_KEY = 'auth.refresh.lock';

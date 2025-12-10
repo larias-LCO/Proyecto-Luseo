@@ -1,3 +1,46 @@
+/* Estilo para el grupo de contraseña con el botón de ojo */
+.password-group {
+  position: relative;
+}
+.toggle-password {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2em;
+  padding: 0 0.3em;
+  z-index: 2;
+}
+// Modal de éxito
+.success-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #e6ffed;
+  color: #1a7f37;
+  border: 2px solid #1a7f37;
+  border-radius: 10px;
+  padding: 24px 40px;
+  font-size: 1.3rem;
+  font-weight: bold;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  animation: fadeInOut 1.5s;
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { opacity: 0; }
+}
 .modal-backdrop {
   position: fixed;
   top: 0;
@@ -15,7 +58,7 @@
 .modal {
   border-radius: 10px;
   padding: 20px 30px;
-  background: #fff;
+  background: #fff;     
   box-shadow: 0 4px 25px rgba(0, 0, 0, 0.2);
   animation: aparecer 0.3s ease;
   width: 700px;
