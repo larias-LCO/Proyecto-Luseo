@@ -1,3 +1,7 @@
+<!-- Modal de éxito -->
+<div *ngIf="showSuccessModal" class="success-modal">
+  <span>✅ Cambios guardados correctamente</span>
+</div>
 <div class="editar-miembro-modal">
   <div class="modal-backdrop" (click)="cerrarModal()"></div>
 
@@ -6,52 +10,78 @@
 
       <h2 class="modal-title">Editar Miembro</h2>
 
+      
+
       <form [formGroup]="form" (ngSubmit)="guardarCambios()" class="form-grid">
 
         <!-- Columna izquierda / derecha (placeholders) -->
+         <div>
+         <label>Name</label>
         <input
           type="text"
           formControlName="nombre"
           placeholder="Nombre"
           class="form-input"
-          autocomplete="off"
-        />
+          autocomplete="off"/>
+        </div>
 
+
+        <div>
+          <label >Department</label>
         <select formControlName="departamento" class="form-input">
-          <option value="">Departamento</option>
+          <option value="">Department</option>
           <option *ngFor="let d of catalogs.departments" [value]="d.name">{{ d.name }}</option>
         </select>
+        </div>
 
+
+        <div>
+          <label>Office</label>
         <select formControlName="oficina" class="form-input">
-          <option value="">Oficina</option>
+          <option value="">Office</option>
           <option *ngFor="let o of catalogs.offices" [value]="o.name">{{ o.name }}</option>
         </select>
+        </div>
 
+
+        <div>
+          <label>Job Position</label>
         <select formControlName="posicion" class="form-input">
           <option value="">Posición</option>
           <option *ngFor="let j of catalogs.jobs" [value]="j.name">{{ j.name }}</option>
         </select>
+        </div>
 
+
+        <div>
+          <label>Rol</label>
         <select formControlName="rol" class="form-input">
           <option value="">Rol</option>
           <!-- Si el padre pasó allowedRoles ya filtrados, solo los mostramos; por seguridad, si ADMIN aparece OWNER lo deshabilitamos -->
           <option *ngFor="let r of allowedRoles" [value]="r" [disabled]="(r === 'OWNER') && isAdmin()">{{ r }}</option>
         </select>
+        </div>
 
+        <div>
+          <label>Billable Rate</label>
         <input
           type="number"
           formControlName="tarifa"
-          placeholder="Tarifa facturable"
+          placeholder="Billable Rate"
           class="form-input"
-          min="0"
-        />
+          min="0"/>
+        </div>
 
+
+        <div>
+          <label>Estate</label>
         <!-- Estado ocupa toda la fila -->
         <select formControlName="estado" class="form-input full-width">
-          <option value="">Estado</option>
-          <option value="ACTIVE">Activo</option>
-          <option value="INACTIVE">Inactivo</option>
+          <option value="">State</option>
+          <option value="ACTIVE">Active</option>
+          <option value="INACTIVE">Inactive</option>
         </select>
+        </div>
 
         <!-- Botones: full-width para alinear a la derecha -->
         <div class="modal-buttons full-width">

@@ -102,10 +102,10 @@
 
     <!-- BOTONES -->
     <div class="acciones">
-      <button (click)="cerrarModal()">Cancelar</button>
-      <button *ngIf="paso === 2" (click)="atras()">Atrás</button>
-      <button *ngIf="paso === 1" (click)="siguiente()">Siguiente</button>
-      <button *ngIf="paso === 2" (click)="agregar()">Agregar</button>
+      <button class="cancelar" (click)="cerrarModal()">Cancelar</button>
+      <button class="atras" *ngIf="paso === 2" (click)="atras()">Atrás</button>
+      <button class="siguiente" *ngIf="paso === 1" (click)="siguiente()">Siguiente</button>
+      <button class="agregar" *ngIf="paso === 2" (click)="agregar()">Agregar</button>
         </div>
       </form>
 

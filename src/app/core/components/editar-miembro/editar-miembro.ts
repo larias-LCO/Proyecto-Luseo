@@ -1,3 +1,4 @@
+  
 import {
   Component,
   Input,
@@ -35,6 +36,7 @@ import { EmployeeApi } from '../../../pages/team/team-api'; // Ajusta la ruta si
   styleUrls: ['./editar-miembro.scss']
 })
 export class EditarMiembroComponent implements OnInit, OnChanges {
+    showSuccessModal = false;
   private fb = inject(FormBuilder);
   private auth = inject(AuthService);
   private api!: EmployeeApi;
@@ -54,8 +56,12 @@ export class EditarMiembroComponent implements OnInit, OnChanges {
   // lista que usa el template para mostrar roles (fácil de filtrar si hace falta)
   filteredAllowedRoles: string[] = [];
 
+
+
+
   // Control local por seguridad (no rompe el *ngIf del padre)
   mostrarModal = true;
+
 
   ngOnInit(): void {
     const base = this.auth.getApiBase?.() ?? '';
@@ -175,12 +181,16 @@ export class EditarMiembroComponent implements OnInit, OnChanges {
         });
       }
 
-      // Emitir al padre para que actualice su lista inmediata
-      this.guardar.emit(payload);
-      this.cerrarModal();
+      // Mostrar modal de éxito
+      this.showSuccessModal = true;
+      setTimeout(() => {
+        this.showSuccessModal = false;
+        // Emitir al padre para que actualice su lista inmediata y cerrar modal
+        this.guardar.emit(payload);
+        this.cerrarModal();
+      }, 1500);
     } catch (err: any) {
       console.error('Error guardando empleado:', err);
-      // Mostrar error simple (puedes adaptar a una notificación más bonita)
       alert(err?.message ?? 'Error al guardar los cambios.');
     }
   }

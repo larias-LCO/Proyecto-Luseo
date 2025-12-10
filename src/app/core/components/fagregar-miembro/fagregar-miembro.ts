@@ -41,8 +41,21 @@ export class FagregarMiembroComponent {
     // Solo ADMIN u OWNER pueden abrir
     if (!(this.auth.hasRole('ADMIN') || this.auth.hasRole('OWNER'))) {
       alert('No autorizado: tu rol no permite agregar miembros.');
+      
       return;
     }
+    // Limpiar el formulario antes de mostrar el modal
+    this.form.reset({
+      nombre: '',
+      departamento: '',
+      oficina: '',
+      posicion: '',
+      rol: 'USER',
+      tarifa: '',
+      usuario: '',
+      correo: '',
+      password: ''
+    });
     this.mostrarModal = true;
   }
 
