@@ -1,22 +1,3 @@
-function toggleSort(){
-    try{
-        const cur = String(searchState.sort || 'projectCode,asc');
-        const parts = cur.split(',');
-        const field = parts[0] || 'projectCode';
-        const dir = (parts[1] || 'asc').toLowerCase() === 'asc' ? 'desc' : 'asc';
-        searchState.sort = `${field},${dir}`;
-        // Update UI label if present
-        if (el.sort_toggle){
-            // keep label simple: show field short name and arrow
-            const short = field === 'projectCode' ? 'Code' : field;
-            el.sort_toggle.textContent = `${short} ${dir === 'asc' ? '↑' : '↓'}`;
-        }
-        // Reset to first page when changing sort
-        searchState.page = 0;
-        // Reload projects (do not await here; caller will handle UI)
-        try{ loadProjects(); } catch(e){ console.warn('toggleSort: loadProjects failed', e); }
-    }catch(e){ console.warn('toggleSort error', e); }
-}
 
 
 import { Component, OnInit, ViewChild } from '@angular/core';
@@ -58,8 +39,10 @@ export class ProjectsPage implements OnInit {
   employees: Employee[] = [];
   managerOptions: { id: number, name: string }[] = [];
   statusList = [
-    { value: 'ACTIVE', label: 'Active' },
-    { value: 'INACTIVE', label: 'Inactive' }
+    { value: 'CANCELLED', label: 'CANCELLED' },
+    { value: 'COMPLETED', label: 'COMPLETED' },
+    { value: 'IN_PROGRESS', label: 'IN PROGRESS' },
+    { value: 'PAUSED', label: 'PAUSED' }
   ];
 
   // Filtros seleccionados
@@ -74,7 +57,7 @@ export class ProjectsPage implements OnInit {
   pageSize: number = 10;
   searchText: string = '';
   private searchDebounce: any;
-  isCreateOpen = false;
+  isCreateOpen = false; // El modal solo se abre manualmente
 
    mockprojects = [
     { id: 1, name: 'Hotel App' },
@@ -88,10 +71,10 @@ export class ProjectsPage implements OnInit {
 enums: Enums = { areaUnit: [], type: [], status: [], scope: [] };
 
 projects: any[] = [];
-  pageInfo = { number: 0, totalPages: 0, totalElements: 0, size: 20 };
+  pageInfo = { number: 0, totalPages: 0, totalElements: 0, size: 10 };
   searchState = {
     page: 0,
-    size: 20,
+    size: 10,
     sort: 'projectCode,asc',
     filters: {} as any
   };
@@ -129,12 +112,30 @@ constructor(
 
   // --- Inicialización ---
   async ngOnInit() {
+    // Verificar autenticación antes de cargar datos
+    const authState = this.auth.getState();
+    if (!authState.authenticated || !authState.token) {
+      window.location.href = '/login';
+      return;
+    }
     // --- Inicialización de catálogos y proyectos ---
-    await this.loadCatalogs(); // ✅ Esto realmente carga y asigna los catálogos
-    this.enums = await this.enumsService.loadEnums(); // enums dinámicos
-    this.projectFiltersService.setEmployees(this.employees); //Configurar filtros con los empleados cargados
-    this.managerOptions = await this.projectFiltersService.getManagerFilterOptions();
-    this.loadProjects(); // 👈 Se cargan los proyectos al iniciar
+    await this.loadCatalogs();
+    this.enums = await this.enumsService.loadEnums();
+    // Ordenar catálogos alfabéticamente
+    const byName = (a: any, b: any) => (String(a.name || a.label || '')).localeCompare(String(b.name || b.label || ''), undefined, { sensitivity: 'base' });
+    this.offices = (this.offices || []).slice().sort(byName);
+    this.clients = (this.clients || []).slice().sort(byName);
+    this.software = (this.software || []).slice().sort(byName);
+    this.departments = (this.departments || []).slice().sort(byName);
+    // Debug: mostrar empleados antes de setEmployees
+    console.log('Empleados cargados para setEmployees:', this.employees);
+    this.employees = (this.employees || []).slice().sort(byName);
+    this.projectFiltersService.setEmployees(this.employees);
+    // Debug: mostrar empleados en el servicio
+    console.log('Empleados en servicio:', this.projectFiltersService.employeesAll);
+    this.managerOptions = (await this.projectFiltersService.getManagerFilterOptions()).slice().sort(byName);
+    console.log('ManagerOptions cargados:', this.managerOptions);
+    this.loadProjects();
     // El modal de creación es manejado por el CreateProjectComponent
   }
 
@@ -165,10 +166,11 @@ closeProjectDetails() {
 
   // ====== Modal: abrir/cerrar y backdrop ======
   openCreateModal(): void {
-    // Abrir el modal del componente hijo
-    this.createProjectRef?.openModal();
-    // Rellenar selects del modal con catálogos/enums cargados
-    this.populateCreateModalSelects();
+    this.isCreateOpen = true;
+    setTimeout(() => {
+      this.createProjectRef?.openModal();
+      this.populateCreateModalSelects();
+    });
   }
 
   closeCreateModal(): void {

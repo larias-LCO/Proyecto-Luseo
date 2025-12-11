@@ -1,3 +1,61 @@
+/* ===========================
+   METRICS CARDS
+=========================== */
+.pd-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: -10px;
+  justify-content: flex-start;
+  margin-left: 15px;
+  margin-bottom: -10px;
+}
+
+.metric {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border: 1px solid #e3e3e3;
+  border-radius: 8px;
+  padding: 12px 10px;
+width: 200px;
+  box-shadow: 0px 2px 5px rgba(0,0,0,0.06);
+  font-size: 14px;
+  font-weight: 500;
+  gap: -10px;
+  height: 40px;
+  margin: 10px;
+}
+
+.metric .dot {
+  width: 8px;
+  height: 8px;
+  aspect-ratio: 1/1;
+  border-radius: 50%;
+  margin-right: 10px;
+  flex-shrink: 0;
+  min-width: 8px;
+  min-height: 8px;
+  max-width: 8px;
+  max-height: 8px;
+}
+.metric .dot-cost {
+  background: #2ec4b6;
+}
+.metric .dot-time {
+  background: #2979ff;
+}
+.metric span {
+  color: #222;
+  font-weight: 400;
+  margin-right: 4px;
+  min-width: 120px;
+}
+.metric strong {
+  color: #222;
+  font-weight: 600;
+  margin-left: 12px;
+  font-size: 16px;
+}
 // Modal backdrop y centrado forzado
 .modal {
 	display: flex;
@@ -426,20 +484,23 @@
 /* Grid de tarjetas */
 .pd-details {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-  gap: 10px; /* ← más pegadas */
+  grid-template-columns: repeat(3, 1fr); /* 3 columnas iguales */
+  gap: -20px; /* más espacio entre tarjetas */
+  align-items: stretch;
 }
 
 /* Cada tarjeta */
 .detail-card {
   background: #ffffff;
   border: 1px solid #e3e3e3;
-  padding: 10px 12px;
+  padding: 14px 18px;
   border-radius: 12px;
   box-shadow: 0px 2px 5px rgba(0,0,0,0.06);
   display: flex;
   flex-direction: column;
-  margin: 22px;
+  margin: 20px;
+  min-width: 0;
+  min-height: 20px;
 }
 
 /* Etiquetas */

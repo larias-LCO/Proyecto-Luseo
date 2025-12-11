@@ -31,7 +31,7 @@
   box-shadow: 0 10px 35px rgba(0,0,0,0.25);
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: visible;
   font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   position: relative;
   z-index: 1100;                  /* 4. asegurar que esté encima de otros elementos */

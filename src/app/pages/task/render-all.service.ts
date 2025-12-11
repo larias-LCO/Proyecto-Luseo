@@ -226,6 +226,13 @@ export function debounceRefetchOrFullRender() {
 					await renderTasksView();
 					try { await restoreFullCalendarState(); } catch (err) {}
 				}
-			} catch (e) { console.warn('debounceRefetchOrFullRender failed', e); }
+			} catch (e) {
+				console.warn('debounceRefetchOrFullRender failed', e);
+				// Depuración extra: verifica existencia de funciones
+				console.log('tryRefetchCalendars:', typeof tryRefetchCalendars);
+				console.log('saveFullCalendarState:', typeof saveFullCalendarState);
+				console.log('renderTasksView:', typeof renderTasksView);
+				console.log('restoreFullCalendarState:', typeof restoreFullCalendarState);
+			}
 		}, 50);
 	}

@@ -2,6 +2,7 @@
     // /* Modal */
 /* CONTENEDOR OSCURO (backdrop) */
 
+// Centrado vertical y horizontal con flexbox
 .modal {
   display: none;
   position: fixed !important;
@@ -15,6 +16,7 @@
   max-height: 100vh !important;
   background: rgba(15, 23, 42, 0.7);
   backdrop-filter: blur(4px);
+  display: flex !important;
   justify-content: center;
   align-items: center;
   z-index: 1000;
@@ -28,15 +30,16 @@
   background: #fff;
   border-radius: 16px; 
   width: 100%;
-  max-width: 980px;               /* 1. tamaño razonable */
-  max-height: calc(100vh - 80px); /* 1. no salga de la pantalla */
+  max-width: 900px;               /* 1. tamaño razonable */
+  max-height: 90vh;               /* Más alto pero deja espacio abajo */
+  margin-bottom: 3vh;             /* Separación visual del borde inferior */
+  overflow: auto;                 /* Scroll interno si el contenido es grande */
   box-shadow: 0 10px 35px rgba(0,0,0,0.25);
   display: flex;
   flex-direction: column;
-  overflow: hidden;
   font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   position: relative;
-  z-index: 1100;                  /* 4. asegurar que esté encima de otros elementos */
+  z-index: 1100;            /* 4. asegurar que esté encima de otros elementos */
 }
 
 /* HEADER moderno con profundidad, blur y sutil brillo */
@@ -237,13 +240,13 @@ textarea {
 
   /* Forzar las columnas para que Team quede a la izquierda y Assigned PM a la derecha
      (Útil si no quieres cambiar el orden del HTML). */
-  .filter-team { grid-column: 1; }
+  .filter-team { grid-column: 1; margin-left: -20px; }
   .filtro-assigned { grid-column: 2; }
 
   /* Estilos internos de filtros */
   .filters {
     display: flex;
-    gap: 12px;
+    gap: 3px;
     flex-wrap: nowrap;
     margin: 8px 0 12px 0;
   }
@@ -270,7 +273,7 @@ textarea {
   .filter-team .filters {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 5px;
   }
   .filter-team .filters > div {
     flex: 0 0 auto;
@@ -324,7 +327,7 @@ textarea {
 .filter-team,
 .filter-pm {
   background: #ffffff;
-  border-radius: 1rem;
+  border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
   padding: 1.25rem 1.5rem;
   display: flex;
@@ -332,22 +335,30 @@ textarea {
   transition: all 0.2s ease-in-out;
   border: 1px solid #e5e7eb;
 }
+.filter-pm{
+  margin-left: -10px;
+  margin-right: -8px;
+}
 
 /* Title styling inside each card */
 .filter-team label:first-of-type,
 .filter-pm label:first-of-type {
-  font-size: 1.1rem;
+  font-size: 1.0rem;
   font-weight: 600;
   color: #1f2937;
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
-.filter-team label:first-of-type::before,
-.filter-pm .titulopm::before {
+.filter-team label:first-of-type::before {
   content: "👥";
   font-size: 1rem;
 }
+.filter-pm .titulopm::before{
+  content: "👨‍💼";
+  font-size: 1rem;
+}
+
 
 /* Selected members box (chips) */
 .selected-box {
@@ -418,7 +429,6 @@ select[multiple] option[selected] {
 .filters {
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
   margin: 1rem 0;
 
   div {
@@ -577,17 +587,18 @@ select[multiple] {
   display: flex;
   align-items: center;
   font-weight: 700;
-  font-size: 1.25rem;
+  font-size: 19px;
   color: #2c1d5a;
   margin-bottom: 0; // más cerca de la sección inferior
   position: relative;
   padding-bottom: 6px;
   margin-top: -9px;
+  margin-left: -20px;
 
   i {
     color: #5c2ca3;
     font-size: 1.4rem;
-    margin-right: 10px;
+   
   }
 
   &::after {
@@ -597,7 +608,7 @@ select[multiple] {
     left: 0;
     width: 100%; // ocupa todo el ancho del contenedor
     height: 2px;
-    background: linear-gradient(90deg, #0f189c 0%, #4f78ff 60%, transparent 80%);
+    background: linear-gradient(90deg, #1554ff 0%, #3766ff 60%, transparent 80%);
     border-radius: 4px;
   }
 }

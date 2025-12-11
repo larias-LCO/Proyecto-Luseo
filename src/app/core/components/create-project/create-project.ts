@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { EventEmitter, Output } from '@angular/core';
 import { CommonModule, NgIf, NgForOf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProjectService, ProjectPayload } from '../../services/project.service';
@@ -14,8 +15,44 @@ import { Enums, EnumsService } from '../../services/enums.service';
   styleUrls: ['./create-project.scss']
 })
 export class CreateProjectComponent {
+          @Output() close = new EventEmitter<void>();
+        phaseOptions: any[] = [];
+        phaseStatusOptions: any[] = [];
+      @Input() projectId?: number;
+    phaseStartDate: string = '';
+    phases: any[] = [];
+
+    async fetchProjectPhases(projectId: number): Promise<any[]> {
+      try {
+        const phases = await this.projectService.getPhasesByProjectId(projectId);
+        this.phases = Array.isArray(phases) ? phases : [];
+        this.phaseOptions = this.phases.map(ph => ({ value: ph.id, label: ph.phase }));
+        this.phaseStatusOptions = Array.isArray(this.phases[0]?.statusOptions)
+          ? this.phases[0].statusOptions.map((s: any) => ({ value: s, label: s }))
+          : [];
+        console.log('Fases cargadas:', this.phases);
+        console.log('Opciones de phaseOptions:', this.phaseOptions);
+        console.log('Opciones de phaseStatusOptions:', this.phaseStatusOptions);
+        return this.phases;
+      } catch (e) {
+        this.phases = [];
+        this.phaseOptions = [];
+        this.phaseStatusOptions = [];
+        console.warn(`Failed to fetch phases for project ${projectId}:`, e);
+        return [];
+      }
+    }
+
+    async loadPhaseStartDate(projectId: number) {
+      let phases = [];
+      try { phases = await this.fetchProjectPhases(projectId); } catch (e) { phases = []; }
+      // pickDefaultPhaseId: elige la fase actual (puedes implementar tu lógica)
+      const defPhaseId = phases.length ? phases[0].id : null;
+      const currentPhaseObj = (phases || []).find(ph => String(ph.id) === String(defPhaseId));
+      this.phaseStartDate = currentPhaseObj && currentPhaseObj.startDate ? currentPhaseObj.startDate : '';
+    }
   // Datos del formulario
-  project: ProjectPayload = {
+  project: ProjectPayload & { phaseId?: string | number | null; phaseStatus?: string | null } = {
     projectCode: null,
     name: null,
     projectArea: null,
@@ -25,12 +62,17 @@ export class CreateProjectComponent {
     status: null,
     scope: null,
     trackedTime: null,
-    cost: null,
+    realCost: null,
     clientId: null,
     officeId: null,
     softwareId: null,
     employeeIds: [],
-    pmIds: []
+    pmIds: [],
+    clientName: null,
+    officeName: null,
+    softwareName: null,
+    phaseId: null,
+    phaseStatus: null,
   };
 
   message = '';
@@ -88,12 +130,15 @@ export class CreateProjectComponent {
         status: this.project.status ?? null,
         scope: this.project.scope ?? null,
         trackedTime: this.project.trackedTime != null ? Number(this.project.trackedTime) : null,
-        cost: this.project.cost != null ? Number(this.project.cost) : null,
+        realCost: this.project.realCost != null ? Number(this.project.realCost) : null,
         clientId: this.project.clientId != null ? Number(this.project.clientId) : null,
         officeId: this.project.officeId != null ? Number(this.project.officeId) : null,
         softwareId: this.project.softwareId != null ? Number(this.project.softwareId) : null,
         employeeIds,
-        pmIds
+        pmIds,
+        clientName: this.project.clientName ?? null,
+        officeName: this.project.officeName ?? null,
+        softwareName: this.project.softwareName ?? null
       };
 
       const created = await this.projectService.createProject(payload);
@@ -114,12 +159,19 @@ export class CreateProjectComponent {
     this.resetForm();
     this.visible = true;
     void this.loadLookups();
+    // Si tienes el projectId, carga las fases y la fecha de inicio
+    if (this.projectId) {
+      void this.fetchProjectPhases(this.projectId).then(() => {
+        void this.loadPhaseStartDate(this.projectId!);
+      });
+    }
     // always refresh people options to get latest state from server
     void this.loadPeopleOptions();
   }
 
   closeModal() {
     this.visible = false;
+    this.close.emit();
   }
 
   /** Reset the form model and selections so modal opens clean */
@@ -134,12 +186,15 @@ export class CreateProjectComponent {
       status: null,
       scope: null,
       trackedTime: null,
-      cost: null,
+      realCost: null,
       clientId: null,
       officeId: null,
       softwareId: null,
       employeeIds: [],
-      pmIds: []
+      pmIds: [],
+      clientName: null,
+      officeName: null,
+      softwareName: null
     };
     this.message = '';
     this.teamSelection = [];
