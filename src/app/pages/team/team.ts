@@ -6,7 +6,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
-import { Subscription } from 'rxjs';
+import { Subscription, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 import { EditarMiembroComponent } from '../../core/components/editar-miembro/editar-miembro'; // Ajusta ruta si hace falta
@@ -18,6 +18,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { SubmenuComponent } from "../../core/components/submenu/submenu";
 import { HeaderComponent } from "../../core/components/header/header";
 import { FagregarMiembroComponent } from '../../core/components/fagregar-miembro/fagregar-miembro';
+import { WebsocketService } from '../../core/services/websocket.service';
 
 type Employee = any;
 type Filters = { query: string; department: string; jobPosition: string; office: string; state: string; role: string };
@@ -35,6 +36,7 @@ export class TeamComponent implements OnInit, OnDestroy {
     confirmDeleteId: string | number | null = null;
     confirmDeleteName: string = '';
   private auth = inject(AuthService);
+  private ws = inject(WebsocketService);
   private api!: EmployeeApi;
   private fb = new FormBuilder();
   constructor() {
@@ -87,6 +89,8 @@ export class TeamComponent implements OnInit, OnDestroy {
 
   // subscriptions
   private subs = new Subscription();
+  // Debounce para refrescos pasivos (WS/Storage) sin alterar filtros/paginación
+  private wsRefresh$ = new Subject<void>();
 
   // ...existing code...
 
@@ -147,13 +151,30 @@ export class TeamComponent implements OnInit, OnDestroy {
     // Listener para sincronización en tiempo real entre pestañas
     window.addEventListener('storage', (event) => {
       if ((event.key === 'employee-deleted' || event.key === 'employee-created') && event.newValue) {
-        this.refreshData();
+        // Notificar refresco pasivo sin tocar filtros
+        this.wsRefresh$.next();
       }
     });
 
     // initial load
     this.refreshData();
     this.loadCatalogs();
+
+    // WebSocket: suscripción pasiva a eventos de empleados
+    const wsSub = this.ws.subscribe('employee').subscribe(event => {
+      console.log('WS EMPLOYEE EVENT', event);
+      // Actualización pasiva: encolamos refresco manteniendo filtros y estado actual
+      this.wsRefresh$.next();
+    });
+    this.subs.add(wsSub);
+
+    // Aplicar debounce para evitar múltiples reloads seguidos
+    const wsDebounceSub = this.wsRefresh$
+      .pipe(debounceTime(500))
+      .subscribe(() => {
+        this.refreshData();
+      });
+    this.subs.add(wsDebounceSub);
   }
 
   ngOnDestroy(): void {

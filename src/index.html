@@ -1,11 +1,21 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>Luseo Engineering</title>
-  <base href="/">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/x-icon" href="assets/img-icons/LOGO_LUSEO_ENGINEERING.png">
+    <meta charset="utf-8">
+    <title>Luseo Engineering</title>
+    <base href="/">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <script>
+      // Polyfills tempranos para librerías que esperan entorno Node (sockjs-client)
+      // Debe ejecutarse antes de que cargue el bundle de Angular
+      (function(){
+        if (typeof window !== 'undefined') {
+          window.global = window.global || window;
+          window.process = window.process || { env: {} };
+        }
+      })();
+    </script>
 </head>
 <body>
   <app-root></app-root>
