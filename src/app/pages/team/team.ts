@@ -10,7 +10,7 @@ import { Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 import { EditarMiembroComponent } from '../../core/components/editar-miembro/editar-miembro'; // Ajusta ruta si hace falta
-import { ConfirmModalComponent } from '../../shared/confirm-modal/confirm-modal';
+import { ConfirmModalComponent } from '../../core/components/confirm-modal/confirm-modal';
 import { EmployeeApi } from './team-api';
 import { filterEmployees } from './team-utils';
 import { VALID_PAGE_SIZES, getInitialPageSize, readFiltersFromUrl, syncFiltersToUrl } from './team-pagination';

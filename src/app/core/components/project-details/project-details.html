@@ -1,3 +1,4 @@
+
 <!-- Single, well-formed modal template for project details -->
 <div class="modal" (click)="closeModal()">
   <div class="modal-content" (click)="$event.stopPropagation()">
@@ -270,5 +271,15 @@
 
   </div>
 </div>
+
+<!-- Modal de confirmación para eliminar proyecto -->
+<app-confirm-modal
+  *ngIf="showConfirmModal"
+  [message]="'¿Seguro que deseas eliminar el proyecto \'' + confirmDeleteName + '\'? Esta acción no se puede deshacer.'"
+  [confirmText]="'Eliminar'"
+  [cancelText]="'Cancelar'"
+  (confirm)="confirmDeleteProject()"
+  (cancel)="cancelDeleteProject()"
+></app-confirm-modal>
 
 

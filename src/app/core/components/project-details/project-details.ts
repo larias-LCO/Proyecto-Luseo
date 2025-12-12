@@ -6,11 +6,13 @@ import { Project } from './project.model'; // tu modelo de proyecto (si no exist
 import { ApiService } from '../../services/api.service';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { EditProjectComponent } from '../edit-project/edit-project';
+import { ConfirmModalComponent } from '../confirm-modal/confirm-modal';
+
 
 @Component({
   selector: 'app-project-details',
   standalone: true,
-  imports: [CommonModule, MatDialogModule],
+  imports: [CommonModule, MatDialogModule, ConfirmModalComponent],
   templateUrl: './project-details.html',
   styleUrls: ['./project-details.scss']
 })
@@ -27,7 +29,9 @@ team: Employee[] = [];   // ← ESTA será la lista final de TEAM
 assignedDeps: string[] = [];
 assignedRoles: string[] = [];
 isLoading = false;
-showModal = false;
+  showConfirmModal = false;
+  confirmDeleteId: number | null = null;
+  confirmDeleteName: string = '';
 errorMessage = '';
   private _employeesCache?: Employee[];
 
@@ -109,8 +113,7 @@ async openProjectDetails(id: number): Promise<void> {
   try {
     await this.loadProjectDetails(id);
 
-    // Si todo va bien, mostrar modal
-    this.showModal = true;
+    // Si todo va bien, puedes mostrar feedback visual si lo deseas
 
     // Debug: log project and assigned/team data to help diagnose missing team members
     try {
@@ -123,7 +126,7 @@ async openProjectDetails(id: number): Promise<void> {
   } catch (e: any) {
     console.error('❌ Error loading project details:', e);
     this.errorMessage = 'Error loading details: ' + (e?.message || e);
-    this.showModal = true; // mostrar modal con el mensaje de error
+    // Puedes mostrar feedback visual de error si lo deseas
   } finally {
     this.isLoading = false;
   }
@@ -131,7 +134,7 @@ async openProjectDetails(id: number): Promise<void> {
 
 // ✅ Cerrar el modal
 closeModal(): void {
-  this.showModal = false;
+  // No hay showModal, solo cerrar modal si aplica
   this.close.emit();
 }
 
@@ -296,32 +299,31 @@ isAdminOrOwner(): boolean {
 }
 
 // 🗑️ Eliminar proyecto
-async deleteProject(): Promise<void> {
-  if (!this.project) return;
-
-  const confirmed = confirm(
-    `Delete project "${this.project.name || this.project.projectCode || ''}"? This action cannot be undone.`
-  );
-
-  if (!confirmed) return;
-
-  try {
-    await this.api.delete(`/projects/${this.project.id}`);
-    console.log('✅ Project deleted successfully');
-    // Puedes recargar la lista principal si el padre lo maneja:
-    this.close.emit(); // Cierra el modal después de borrar
-  } catch (error: any) {
-    alert('Error deleting project: ' + (error.message || error));
-    console.error(error);
+  deleteProject(): void {
+    if (!this.project) return;
+    this.confirmDeleteId = this.project.id;
+    this.confirmDeleteName = this.project.name || this.project.projectCode || '';
+    this.showConfirmModal = true;
   }
-}
-onTeamSelect(event: Employee) {
-  this.teamSelected.push(event);
-}
 
-onTeamRemove(event: Employee) {
-  this.teamSelected = this.teamSelected.filter(e => e.id !== event.id);
-}
+  async confirmDeleteProject(): Promise<void> {
+    if (!this.confirmDeleteId) return;
+    try {
+      await this.api.delete(`/projects/${this.confirmDeleteId}`);
+      this.showConfirmModal = false;
+      this.close.emit();
+    } catch (error: any) {
+      this.errorMessage = 'Error deleting project: ' + (error.message || error);
+      this.showConfirmModal = false;
+    }
+  }
+
+  cancelDeleteProject(): void {
+    this.showConfirmModal = false;
+    this.confirmDeleteId = null;
+    this.confirmDeleteName = '';
+  }
+
 
 
 // ✏️ Editar proyecto

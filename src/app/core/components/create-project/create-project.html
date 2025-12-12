@@ -1,14 +1,33 @@
+<!-- Modal de éxito -->
+<div *ngIf="showSuccessModal" class="modal success-modal" style="display:flex;align-items:center;justify-content:center;position:fixed;z-index:9999;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.2)">
+  <div style="background:#fff;border-radius:12px;padding:32px 40px;box-shadow:0 4px 24px #0002;display:flex;flex-direction:column;align-items:center;gap:12px;min-width:260px">
+    <div style="font-size:2.5rem;color:#10b981;">✔</div>
+    <div style="font-size:1.2rem;font-weight:600;">¡Proyecto creado exitosamente!</div>
+  </div>
+</div>
 <!-- Create project modal -->
 <div id="createModal" class="modal" [class.show]="visible" (click)="closeModal()">
-  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="createTitle" (click)="$event.stopPropagation()">
-    <div class="modal-header">
-      <div id="createTitle" style="font-weight:600">Create project</div>
-      <button id="createClose" class="btn btn-secondary" type="button" (click)="closeModal()">Close</button>
-    </div>
+  <div *ngIf="visible">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="createTitle" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div id="createTitle" style="font-weight:600">Create project</div>
+        <button id="createClose" class="btn btn-secondary" type="button" (click)="closeModal()">Close</button>
+      </div>
 
     <div id="createBody" class="modal-body">
       <div class="grid">
-        <div><label for="p_code">Code</label><input id="p_code" name="p_code" [(ngModel)]="project.projectCode" placeholder="PRJ-001" /></div>
+        <div>
+          <label for="p_code">Code</label>
+          <input id="p_code" name="p_code" [(ngModel)]="project.projectCode" placeholder="PRJ-001"
+            (input)="onProjectCodeInput()"
+            [style.border-color]="project.projectCode ? (projectCodeDuplicate ? '#ef4444' : '#10b981') : ''"
+            [attr.aria-invalid]="projectCodeDuplicate ? 'true' : null"
+          />
+          <small class="code-feedback" *ngIf="project.projectCode">
+            <span *ngIf="projectCodeDuplicate" style="color:#ef4444">⚠️ Este código ya existe</span>
+            <span *ngIf="!projectCodeDuplicate" style="color:#10b981">✓ Código disponible</span>
+          </small>
+        </div>
         <div><label for="p_name">Name</label><input id="p_name" name="p_name" [(ngModel)]="project.name" placeholder="Project name" /></div>
         <div><label for="p_area">Area</label><input id="p_area" name="p_area" [(ngModel)]="project.projectArea" type="number" step="0.01" placeholder="0.00" /></div>
         <div><label for="p_areaUnit">Area unit</label>

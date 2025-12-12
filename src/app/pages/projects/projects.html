@@ -60,7 +60,7 @@
 <!-- PROJECT MANAGER FILTER -->
   <div class="filter-item">
   <label>Project Manager</label>
-  <select [(ngModel)]="selectedManager" (change)="applySearchFromUI()">
+  <select [(ngModel)]="selectedManager" (change)="fillManagerFilter()">
     <option value="">All</option>
     <option *ngFor="let m of managerOptions" [value]="m.id">{{ m.name }}</option>
   </select>

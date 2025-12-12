@@ -2,6 +2,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 
 @Component({
   selector: 'app-confirm-modal',
+  standalone: true,
   templateUrl: './confirm-modal.html',
   styleUrls: ['./confirm-modal.scss']
 })

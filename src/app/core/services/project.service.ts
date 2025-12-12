@@ -1,4 +1,4 @@
-  
+
 
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
@@ -169,5 +169,18 @@ async loadProjects(query: any): Promise<{ items: any[], pageInfo: any }> {
   };
   return { items, pageInfo };
 }
+
+  async createProjectPhase(phaseBody: any): Promise<any> {
+    const base = (this.auth.getApiBase() || '').replace(/\/$/, '');
+    const url = `${base}/project-phases`;
+    const token = this.auth.getState().token;
+    const headers = new HttpHeaders({
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {})
+    });
+    const obs$ = this.http.post<any>(url, phaseBody, { headers, withCredentials: true });
+    return await lastValueFrom(obs$);
+  }
 
 }

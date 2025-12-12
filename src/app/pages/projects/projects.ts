@@ -54,7 +54,9 @@ export class ProjectsPage implements OnInit {
   selectedStatus: string = '';
   selectedType: string = '';
   selectedScope: string = '';
-  pageSize: number = 10;
+  // ...existing code...
+pageSize: number = 10; // Default value
+// ...existing code...
   searchText: string = '';
   private searchDebounce: any;
   isCreateOpen = false; // El modal solo se abre manualmente
@@ -65,10 +67,9 @@ export class ProjectsPage implements OnInit {
     { id: 3, name: 'CRM System' }
   ];
 
-  // constructor(private catalogsService: CatalogsService, private enumsService: EnumsService, private auth: AuthService, private http: HttpClient, private projectFiltersService: ProjectFiltersService) {}
-
   // --- Variables internas de enums y proyectos ---
 enums: Enums = { areaUnit: [], type: [], status: [], scope: [] };
+
 
 projects: any[] = [];
   pageInfo = { number: 0, totalPages: 0, totalElements: 0, size: 10 };
@@ -110,6 +111,8 @@ constructor(
     }
   }
 
+
+  
   // --- Inicialización ---
   async ngOnInit() {
     // Verificar autenticación antes de cargar datos
@@ -131,7 +134,7 @@ constructor(
     console.log('Empleados cargados para setEmployees:', this.employees);
     this.employees = (this.employees || []).slice().sort(byName);
     this.projectFiltersService.setEmployees(this.employees);
-    // Debug: mostrar empleados en el servicio
+    // // Debug: mostrar empleados en el servicio
     console.log('Empleados en servicio:', this.projectFiltersService.employeesAll);
     this.managerOptions = (await this.projectFiltersService.getManagerFilterOptions()).slice().sort(byName);
     console.log('ManagerOptions cargados:', this.managerOptions);
@@ -161,6 +164,7 @@ closeProjectDetails() {
   this.selectedProject = null;
   this.selectedProjectId = null;
   this.debug('🔴 Cerrando modal');
+  this.loadProjects(); // Recarga la lista automáticamente
 }
 
 
@@ -330,7 +334,7 @@ closeProjectDetails() {
     const newSize = Number(v);
     this.pageSize = Number.isFinite(newSize) && newSize > 0 ? newSize : 10;
     // Reiniciar a primera página y aplicar filtros vigentes
-    this.searchState.page = 0;
+    this.searchState .page = 0;
     this.applySearchFromUI();
   }
 
@@ -474,6 +478,7 @@ closeProjectDetails() {
           cache.employees = [];
           cache.employeesById = new Map();
         }
+        
       }
 
       // fetch project from backend via projectService

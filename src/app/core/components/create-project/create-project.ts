@@ -1,4 +1,5 @@
-import { Component, Input } from '@angular/core';
+
+import { Component, Input, OnInit } from '@angular/core';
 import { EventEmitter, Output } from '@angular/core';
 import { CommonModule, NgIf, NgForOf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -7,6 +8,9 @@ import { CatalogsService, Employee, Office, Client, Software, JobPosition, Depar
 import { ProjectFiltersService } from '../../services/project-filters.service';
 import { Enums, EnumsService } from '../../services/enums.service';
 
+// Utilidad para cache local de códigos
+const cache = { allProjectCodes: new Set<string>() };
+
 @Component({
   selector: 'app-create-project',
   standalone: true,
@@ -14,7 +18,11 @@ import { Enums, EnumsService } from '../../services/enums.service';
   templateUrl: './create-project.html',
   styleUrls: ['./create-project.scss']
 })
-export class CreateProjectComponent {
+export class CreateProjectComponent implements OnInit {
+  showSuccessModal = false;
+  // --- Validación de código de proyecto ---
+  projectCodeDuplicate: boolean = false;
+  loadingProjectCodes: boolean = false;
           @Output() close = new EventEmitter<void>();
         phaseOptions: any[] = [];
         phaseStatusOptions: any[] = [];
@@ -27,8 +35,9 @@ export class CreateProjectComponent {
         const phases = await this.projectService.getPhasesByProjectId(projectId);
         this.phases = Array.isArray(phases) ? phases : [];
         this.phaseOptions = this.phases.map(ph => ({ value: ph.id, label: ph.phase }));
-        this.phaseStatusOptions = Array.isArray(this.phases[0]?.statusOptions)
-          ? this.phases[0].statusOptions.map((s: any) => ({ value: s, label: s }))
+        // Phase status options vendrán de enums si existen
+        this.phaseStatusOptions = Array.isArray(this.enums.phaseStatuses)
+          ? this.enums.phaseStatuses.map((s: any) => ({ value: s, label: s }))
           : [];
         console.log('Fases cargadas:', this.phases);
         console.log('Opciones de phaseOptions:', this.phaseOptions);
@@ -113,13 +122,69 @@ export class CreateProjectComponent {
     private enumsService: EnumsService
   ) {}
 
+
+  async ngOnInitAsync() {
+    await this.loadPhaseEnums();
+    this.loadAllProjectCodes();
+  }
+
+  ngOnInit() {
+    this.ngOnInitAsync();
+  }
+
+  phaseEnums: { names: string[]; statuses: string[] } = { names: [], statuses: [] };
+  private phasesByProject: Map<string, any[]> = new Map();
+
+  async loadPhaseEnums() {
+    this.phaseEnums = await this.enumsService.loadPhaseEnums();
+  }
+
+  pickDefaultPhaseId(phases: any[]): string {
+    return this.enumsService.pickDefaultPhaseId(phases);
+  }
+
+  async loadAllProjectCodes() {
+    this.loadingProjectCodes = true;
+    try {
+      // Cargar todos los proyectos sin paginación (solo necesitamos projectCode)
+      const data = await this.projectService.getProjects({ page: 0, size: 10000, sort: 'projectCode,asc' });
+      const allProjects = Array.isArray(data?.items) ? data.items : (Array.isArray(data) ? data : []);
+      cache.allProjectCodes.clear();
+      allProjects.forEach((p: any) => {
+        if (p.projectCode) {
+          cache.allProjectCodes.add(p.projectCode.toLowerCase());
+        }
+      });
+      // Opcional: console.log(`✅ Loaded ${cache.allProjectCodes.size} project codes for validation`);
+    } catch (e) {
+      console.warn('Failed to load all project codes:', e);
+    } finally {
+      this.loadingProjectCodes = false;
+    }
+
+    
+  }
+
+  isProjectCodeDuplicate(code: string): boolean {
+    if (!code || code.trim() === '') return false;
+    const normalizedCode = code.trim().toLowerCase();
+    return cache.allProjectCodes.has(normalizedCode);
+  }
+
+  onProjectCodeInput() {
+    this.projectCodeDuplicate = this.isProjectCodeDuplicate(this.project.projectCode || '');
+  }
+
   async onSubmit() {
+    this.onProjectCodeInput();
+    if (this.projectCodeDuplicate) {
+      this.message = '❌ El código de proyecto ya existe. Usa uno diferente.';
+      return;
+    }
     this.message = 'Creando proyecto...';
     try {
       const employeeIds = Array.from(new Set([...(this.teamSelection || []), ...(this.pmSelection || [])]));
       const pmIds = [...(this.pmSelection || [])];
-
-      // Coerce numeric fields to numbers (backend expects numeric ids)
       const payload: ProjectPayload = {
         projectCode: this.project.projectCode ?? null,
         name: this.project.name ?? null,
@@ -140,11 +205,33 @@ export class CreateProjectComponent {
         officeName: this.project.officeName ?? null,
         softwareName: this.project.softwareName ?? null
       };
-
       const created = await this.projectService.createProject(payload);
+      // Si el usuario seleccionó una phase, crearla
+      try {
+        if (this.project.phaseId) {
+          const phaseName = this.phaseOptions.find(ph => ph.value === this.project.phaseId)?.label || this.project.phaseId;
+          const phaseStatus = this.project.phaseStatus || 'ACTIVE';
+          const phaseStartDate = this.phaseStartDate || null;
+          const phaseBody = {
+            phase: phaseName,
+            status: phaseStatus,
+            startDate: phaseStartDate,
+            endDate: null,
+            projectId: created.id
+          };
+          await this.projectService.createProjectPhase(phaseBody);
+        }
+      } catch (e) {
+        console.warn('Phase creation failed:', e);
+      }
       this.message = `✅ Proyecto creado: ${created?.name || created?.projectCode || 'OK'}`;
       window.dispatchEvent(new CustomEvent('project:created', { detail: created }));
-      this.closeModal();
+      await this.loadAllProjectCodes(); // Refresca el cache después de crear
+      this.showSuccessModal = true;
+      setTimeout(() => {
+        this.showSuccessModal = false;
+        this.closeModal();
+      }, 1500);
     } catch (err: any) {
       this.message = '❌ Error creando proyecto: ' + err.message;
     }
@@ -366,4 +453,6 @@ private async loadPeopleOptions() {
       .join('')
       .toUpperCase();
   }
+
+  
 }

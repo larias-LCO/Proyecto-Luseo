@@ -254,7 +254,7 @@ async function buildAllPMIds(force: boolean) {
           foundPMs = true;
         }
         if (!foundPMs && p.projectManagerId) { all.add(Number(p.projectManagerId)); foundPMs = true; }
-        if (!foundPMs && p.pmId) { all.add(Number(p.pmId)); foundPMs = true; }
+        if (!foundPMs && p.PmIds) { all.add(Number(p.PmIds)); foundPMs = true; }
         if (!foundPMs && Array.isArray(p.assignments)) {
           const pmAssignments = p.assignments.filter((a: any) => {
             const role = (a.role || a.assignmentRole || '').toLowerCase();
@@ -463,6 +463,17 @@ export class ProjectFiltersService {
     this.cache.employees = employees;
     // Normalizamos IDs a number para consistencia interna
     this.cache.employeesById = new Map(employees.map(e => [Number(e.id), e]));
+    // LOG: Verificar IDs cargados
+    const ids = employees.map(e => Number(e.id));
+    console.log('[setEmployees] IDs de empleados cargados:', ids);
+    // Si hay PMs en cache, mostrar si están en empleados
+    if (this.cache.allPMIds && this.cache.allPMIds.size > 0) {
+      this.cache.allPMIds.forEach(pmId => {
+        if (!ids.includes(pmId)) {
+          console.warn(`[setEmployees] El PM con id ${pmId} no está en empleados cargados`);
+        }
+      });
+    }
   }
 
   /** Acceso público de solo lectura a todos los empleados en caché */
