@@ -67,19 +67,26 @@
           </select>
         </div>
 
-         <div><label for="p_phase">Project phase (optional)</label>
+
+         <div>
+           <label for="p_phase">Project phase (optional)</label>
            <select id="p_phase" [(ngModel)]="project.phaseId">
              <option value="">None</option>
              <option *ngFor="let ph of phaseOptions" [value]="ph.value">{{ ph.label }}</option>
            </select>
          </div>
-         <div><label for="p_phaseStatus">Phase status</label>
+
+         <div *ngIf="project.phaseId">
+           <label for="p_phaseStatus">Phase status</label>
            <select id="p_phaseStatus" [(ngModel)]="project.phaseStatus">
              <option value="">None</option>
              <option *ngFor="let s of phaseStatusOptions" [value]="s.value">{{ s.label }}</option>
            </select>
          </div>
-         <div><label for="p_phaseStartDate">Phase start date (optional)</label><input id="p_phaseStartDate" type="date" /></div>
+         <div *ngIf="project.phaseId">
+           <label for="p_phaseStartDate">Phase start date (optional)</label>
+           <input id="p_phaseStartDate" type="date" [(ngModel)]="phaseStartDate" />
+         </div>
         <div style="grid-column:1/-1"><label for="p_notes">Notes</label><textarea id="p_notes" name="p_notes" [(ngModel)]="project.notes" placeholder="Notes or comments"></textarea></div>
 
         

@@ -177,18 +177,19 @@
     (click)="openProjectDetails(p)"
     class="clickable-row">
 
-            <td>{{ p.projectCode || '-' }}</td>
-            <td>{{ p.name || '-' }}</td>
-            <td>{{ p.clientName || '-' }}</td>
-            <td>{{ displayEnum(p.projectType) || '-' }}</td>
-            <td>{{ p.officeName || '-' }}</td>
-            <td>{{ displayEnum(p.scope) || '-' }}</td>
-            <td>{{ p.softwareName || '-' }}</td>
-            <td>
-              <span class="status-pill {{ statusToClass(p.status) }}">{{ p.status || '-' }}</span>
-            </td>
-            <td>{{ p.pmNames || '-' }}</td>
-          </tr>
+    <td>{{ p.projectCode || '-' }}</td>
+    <td>{{ p.name || '-' }}</td>
+    <td>{{ p.clientName || '-' }}</td>
+    <td>{{ displayEnum(p.projectType) || '-' }}</td>
+    <td>{{ p.officeName || '-' }}</td>
+    <td>{{ displayEnum(p.scope) || '-' }}</td>
+    <td>{{ p.softwareName || '-' }}</td>
+    <td>
+      <span class="status-pill {{ statusToClass(p.status) }}">{{ p.status || '-' }}</span>
+    </td>
+    <td>{{ p.pmNames || '-' }}</td>
+
+    
         </tbody>
       </table>
     </div>
@@ -198,7 +199,8 @@
   *ngIf="selectedProjectId || selectedProject"
   [projectId]="selectedProjectId ?? undefined"
   [project]="selectedProject"
-  (close)="closeProjectDetails()">
+  [roles]="auth.getRoles()"
+  (close)="handleProjectDetailsClose($event)">
 </app-project-details>
 
 

@@ -1,5 +1,3 @@
-
-
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule, NgForOf, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -21,7 +19,7 @@ import { ProjectService } from '../../core/services/project.service';
 @Component({
   selector: 'app-projects',
   standalone: true,
-  imports: [CommonModule, FormsModule, HttpClientModule, HeaderComponent, SubmenuComponent, CreateProjectComponent, ProjectDetailsComponent, NgIf, NgForOf],
+  imports: [CommonModule, FormsModule, HttpClientModule, HeaderComponent, SubmenuComponent, CreateProjectComponent, ProjectDetailsComponent],
   templateUrl: './projects.html',
   styleUrls: ['./projects.scss'],
   providers: [ProjectService],
@@ -84,7 +82,7 @@ projects: any[] = [];
 constructor(
     private catalogsService: CatalogsService,
     private enumsService: EnumsService,
-    private auth: AuthService,
+    public auth: AuthService,
     private http: HttpClient,
     private projectFiltersService: ProjectFiltersService,
     private projectService: ProjectService
@@ -96,6 +94,45 @@ constructor(
 
   selectedProject: any | null = null;
   selectedProjectId: number | null = null;
+
+  /**
+   * Abre el modal de edición para el proyecto dado.
+   * Puede delegar a un componente, helper o lógica global según arquitectura.
+   */
+  openEditModal(project: any): void {
+    if (!project || !project.id) return;
+    if ((window as any).openEditProject) {
+      (window as any).openEditProject(project.id);
+    } else {
+      alert('Función de edición no implementada.');
+    }
+  }
+
+  /**
+   * Elimina el proyecto dado tras confirmación.
+   * Puede delegar a un modal de confirmación o llamar al servicio directamente.
+   */
+  async deleteProject(project: any): Promise<void> {
+    if (!project || !project.id) return;
+    if (!confirm(`¿Seguro que deseas eliminar el proyecto "${project.name || project.projectCode || project.id}"?`)) return;
+    try {
+      await this.projectService.deleteProject(project.id);
+      this.loadProjects(); // Recarga la lista tras eliminar
+    } catch (err: any) {
+      alert('Error eliminando proyecto: ' + (err.message || err));
+    }
+  }
+
+    /**
+     * Devuelve true si el usuario autenticado tiene rol USER (no puede editar/eliminar)
+     */
+    get isUserOnly(): boolean {
+      try {
+        return this.auth.hasRole && this.auth.hasRole('USER');
+      } catch {
+        return false;
+      }
+    }
 
   // Debug helper: route logs through here so linters don't complain about raw console.log usage.
   // It prints only when a dev flag is present on window.__env?.debug === true.
@@ -130,14 +167,28 @@ constructor(
     this.clients = (this.clients || []).slice().sort(byName);
     this.software = (this.software || []).slice().sort(byName);
     this.departments = (this.departments || []).slice().sort(byName);
-    // Debug: mostrar empleados antes de setEmployees
-    console.log('Empleados cargados para setEmployees:', this.employees);
     this.employees = (this.employees || []).slice().sort(byName);
     this.projectFiltersService.setEmployees(this.employees);
     // // Debug: mostrar empleados en el servicio
-    console.log('Empleados en servicio:', this.projectFiltersService.employeesAll);
-    this.managerOptions = (await this.projectFiltersService.getManagerFilterOptions()).slice().sort(byName);
-    console.log('ManagerOptions cargados:', this.managerOptions);
+      // Debug: mostrar empleados antes de setEmployees
+      console.log('[DEBUG] Empleados cargados para setEmployees:', this.employees);
+      this.employees = (this.employees || []).slice().sort(byName);
+      // Log IDs de empleados
+      console.log('[DEBUG] IDs de empleados:', this.employees.map(e => e.id));
+      this.projectFiltersService.setEmployees(this.employees);
+      // Debug: mostrar empleados en el servicio
+      console.log('[DEBUG] Empleados en servicio (projectFiltersService.employeesAll):', this.projectFiltersService.employeesAll);
+
+      // Esperar a que los empleados estén cargados antes de pedir managers
+      const managerOptionsRaw = await this.projectFiltersService.getManagerFilterOptions();
+      console.log('[DEBUG] Opciones crudas de managerOptions:', managerOptionsRaw);
+      this.managerOptions = managerOptionsRaw.slice().sort(byName);
+      console.log('[DEBUG] ManagerOptions cargados (final):', this.managerOptions);
+
+      // Validar coincidencias de IDs entre pmIds y empleados
+      if (Array.isArray(this.managerOptions) && this.managerOptions.length === 0) {
+        console.warn('[DEBUG] managerOptions está vacío. Verifica que los pmIds de los proyectos coincidan con los IDs de empleados.');
+      }
     this.loadProjects();
     // El modal de creación es manejado por el CreateProjectComponent
   }
@@ -276,18 +327,21 @@ closeProjectDetails() {
       .sort((a: Employee, b: Employee) => (a.name || '').localeCompare(b.name || '', undefined, { sensitivity: 'base' }));
   }
 
-  /** Rellena dinámicamente el filtro de Managers (opciones desde proyectos o fallback) */
-  async fillManagerFilter(): Promise<void> {
-    try {
-      await this.projectFiltersService.ensureAllPMs(); // construye cache.global PM ids
-      const managerOptions = await this.projectFiltersService.getManagerFilterOptions();
-      // Aquí decides: guardar en una variable para usar en template, o dejar get projectManagers() + getManagerFilterOptions
-      this.debug('Managers disponibles:', managerOptions);
-      // ejemplo de almacenaje:
-      // this.managersOptions = managerOptions;
-    } catch (err) {
-      console.error('Error al llenar filtro de managers:', err);
-    }
+  /** Rellena dinámicamente el filtro de Managers (solo de los proyectos cargados) */
+  fillManagerFilter(): void {
+    // Extrae los PMs de los proyectos actualmente cargados
+    const pmIdSet = new Set<number>();
+    (this.projects || []).forEach((p: any) => {
+      if (Array.isArray(p.pmIds)) {
+        p.pmIds.forEach((id: number) => pmIdSet.add(Number(id)));
+      }
+    });
+    // Busca los empleados que coinciden con esos IDs
+    this.managerOptions = this.employees
+      .filter(e => pmIdSet.has(Number(e.id)))
+      .map(e => ({ id: e.id, name: e.name }))
+      .sort((a, b) => (a.name || '').localeCompare(b.name || '', undefined, { sensitivity: 'base' }));
+    this.debug('Managers disponibles (solo proyectos listados):', this.managerOptions);
   }
 
   displayEnum(v: string | null | undefined): string {
@@ -334,8 +388,8 @@ closeProjectDetails() {
     const newSize = Number(v);
     this.pageSize = Number.isFinite(newSize) && newSize > 0 ? newSize : 10;
     // Reiniciar a primera página y aplicar filtros vigentes
-    this.searchState .page = 0;
     this.applySearchFromUI();
+    this.loadProjects();
   }
 
 
@@ -370,10 +424,10 @@ closeProjectDetails() {
   }
 
   private buildSearchQuery(): any {
-    const { page, size, sort, filters } = this.searchState;
+    const { page, sort, filters } = this.searchState;
     const query: any = {
       page: page,
-      size: size,
+      size: this.pageSize,
       sort: sort
     };
 
@@ -401,6 +455,8 @@ closeProjectDetails() {
       this.projects = Array.isArray(items) ? items : [];
       this.pageInfo = pageInfo;
       console.log('Projects:', this.projects); // Depuración: muestra los proyectos recibidos
+      // Actualizar el filtro de Project Manager
+      this.fillManagerFilter();
     } catch (error) {
       this.debug('❌ Error loading projects:', error);
       console.error('❌ Error loading projects:', error);
@@ -464,21 +520,25 @@ closeProjectDetails() {
       if (!(this as any)._modalCache) (this as any)._modalCache = {};
       const cache: any = (this as any)._modalCache;
 
-      // Ensure employees cache
-      if (!cache.employees || !cache.employees.length) {
-        try {
-          // try to use catalogsService if available
-          if (this.catalogsService && typeof (this.catalogsService as any).getEmployees === 'function') {
-            cache.employees = await (this.catalogsService as any).getEmployees();
-          } else {
-            cache.employees = [];
-          }
-          cache.employeesById = new Map<number, any>((cache.employees || []).map((e: any) => [e.id, e]));
-        } catch (e) {
+      // LIMPIA el cache antes de recargar datos
+      cache.employees = [];
+      cache.employeesById = new Map();
+      // Si tienes cache.projectDetails o similar, límpialo también:
+      if (cache.projectDetails) {
+        delete cache.projectDetails[id];
+      }
+
+      // Ensure employees cache (se recarga siempre)
+      try {
+        if (this.catalogsService && typeof (this.catalogsService as any).getEmployees === 'function') {
+          cache.employees = await (this.catalogsService as any).getEmployees();
+        } else {
           cache.employees = [];
-          cache.employeesById = new Map();
         }
-        
+        cache.employeesById = new Map<number, any>((cache.employees || []).map((e: any) => [e.id, e]));
+      } catch (e) {
+        cache.employees = [];
+        cache.employeesById = new Map();
       }
 
       // fetch project from backend via projectService
@@ -643,5 +703,14 @@ closeProjectDetails() {
     } catch (err) {
       console.error('Error opening project modal:', err);
     }
+  }
+
+  handleProjectDetailsClose(event?: any) {
+    if (event && event.reopenDetails && event.projectId) {
+      // Reabrir el modal de detalles con el id actualizado
+      setTimeout(() => this.openProjectDetails(event.projectId), 100);
+      return;
+    }
+    this.closeProjectDetails();
   }
 }

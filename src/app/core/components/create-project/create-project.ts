@@ -246,12 +246,31 @@ export class CreateProjectComponent implements OnInit {
     this.resetForm();
     this.visible = true;
     void this.loadLookups();
-    // Si tienes el projectId, carga las fases y la fecha de inicio
-    if (this.projectId) {
-      void this.fetchProjectPhases(this.projectId).then(() => {
-        void this.loadPhaseStartDate(this.projectId!);
-      });
-    }
+    // Esperar a que los enums de fases estén listos antes de poblar los selects
+    (async () => {
+      await this.loadPhaseEnums();
+      this.phaseOptions = Array.isArray(this.phaseEnums.names)
+        ? this.phaseEnums.names
+            .slice()
+            .sort((a: string, b: string) => a.localeCompare(b, undefined, { sensitivity: 'base' }))
+            .map((ph: any) => ({ value: ph, label: ph }))
+        : [];
+      this.phaseStatusOptions = Array.isArray(this.phaseEnums.statuses)
+        ? this.phaseEnums.statuses
+            .slice()
+            .sort((a: string, b: string) => a.localeCompare(b, undefined, { sensitivity: 'base' }))
+            .map((s: any) => ({ value: s, label: s }))
+        : [];
+      // Si tienes el projectId, carga las fases y la fecha de inicio
+      if (this.projectId) {
+        await this.fetchProjectPhases(this.projectId);
+        await this.loadPhaseStartDate(this.projectId!);
+      }
+      // Por defecto, dejar Project Phase en None y limpiar los otros dos
+      this.project.phaseId = '';
+      this.project.phaseStatus = 'ACTIVE';
+      this.phaseStartDate = '';
+    })();
     // always refresh people options to get latest state from server
     void this.loadPeopleOptions();
   }

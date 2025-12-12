@@ -8,7 +8,6 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 import { Subscription, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
-
 import { EditarMiembroComponent } from '../../core/components/editar-miembro/editar-miembro'; // Ajusta ruta si hace falta
 import { ConfirmModalComponent } from '../../core/components/confirm-modal/confirm-modal';
 import { EmployeeApi } from './team-api';
@@ -330,11 +329,16 @@ export class TeamComponent implements OnInit, OnDestroy {
         await this.api.deleteEmployee(Number(this.confirmDeleteId));
       } else {
         const base = this.auth.getApiBase?.() ?? '';
-        await fetch(`${base.replace(/\/$/, '')}/employees/${this.confirmDeleteId}`, { method: 'DELETE' });
+        const res = await fetch(`${base.replace(/\/$/, '')}/employees/${this.confirmDeleteId}`, { method: 'DELETE' });
+        if (!res.ok) throw new Error(`Error deleting employee: ${res.status}`);
       }
       localStorage.setItem('employee-deleted', JSON.stringify({ id: this.confirmDeleteId, ts: Date.now() }));
       await this.refreshData();
+      // Limpiar filtro de búsqueda y volver a aplicar filtros para evitar que la lista quede "vacía" si el filtro ya no coincide
+      this.filterForm.patchValue({ q: '' });
+      this.applyFilters();
     } catch (err: any) {
+      console.error('Error eliminando empleado:', err);
       this.alertMessage = err?.message || 'Error eliminando empleado';
       this.showAlert = true;
     }

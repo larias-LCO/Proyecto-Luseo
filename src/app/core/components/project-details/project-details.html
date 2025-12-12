@@ -1,4 +1,5 @@
 
+
 <!-- Single, well-formed modal template for project details -->
 <div class="modal" (click)="closeModal()">
   <div class="modal-content" (click)="$event.stopPropagation()">
@@ -72,14 +73,16 @@
     <span>{{ project.scope || '-' }}</span>
   </div>
 
-  <!-- <div class="meta-card">
-    <label>Phase</label>
-    <span>{{ project.phase || '-' }}</span>
-  </div> -->
 
-  <div class="meta-card" *ngFor="let pm of pms">
+  <!-- NEW: Mostrar fase actual si existe -->
+  <div class="meta-card" *ngIf="currentPhaseName">
+    <label>Phase</label>
+    <span>{{ currentPhaseName }}</span>
+  </div>
+
+  <div class="meta-card" *ngFor="let pmId of pmIds">
     <label>PM</label>
-    <span>{{ pm.name }}</span>
+    <span>{{ employeeOptionLabel(pmId) }}</span>
   </div>
 
 </div>
@@ -96,45 +99,43 @@
       </div> -->
 
       <!-- ============================= -->
-<!--  METRICS SECTION -->
-<!-- ============================= -->
-<div class="pd-section">
-  <h3 class="title-section">METRICS</h3>
-  <div class="pd-metrics">
-    <ng-container *ngIf="metricsList.length; else defaultMetrics">
-      <div class="metric" *ngFor="let m of metricsList">
-        <span class="dot" [ngClass]="m.dot"></span>
-        <span>{{ m.label }}:</span>
-        <strong>{{ m.value }}</strong>
+      <!--  METRICS SECTION (solo USER) -->
+      <!-- ============================= -->
+      <div *ngIf="roles && roles.length && roles[0].toUpperCase() === 'OWNER'" class="pd-section">
+        <h3 class="title-section">METRICS</h3>
+        <div class="pd-metrics">
+          <ng-container *ngIf="metricsList.length; else defaultMetrics">
+            <div class="metric" *ngFor="let m of metricsList">
+              <span class="dot" [ngClass]="m.dot"></span>
+              <span>{{ m.label }}:</span>
+              <strong>{{ m.value }}</strong>
+            </div>
+          </ng-container>
+          <ng-template #defaultMetrics>
+            <div class="metric" *ngIf="project.cost">
+              <span class="dot dot-cost"></span>
+              <span>Estimated cost:</span>
+              <strong>{{ project.cost }}</strong>
+            </div>
+            <div class="metric" *ngIf="project.realCost">
+              <span class="dot dot-cost"></span>
+              <span>Accumulated project cost:</span>
+              <strong>{{ project.realCost }}</strong>
+            </div>
+            <div class="metric" *ngIf="project.estimatedTime">
+              <span class="dot dot-time"></span>
+              <span>Estimated time:</span>
+              <strong>{{ project.estimatedTime }}</strong>
+            </div>
+            <div class="metric" *ngIf="project.trackedTime">
+              <span class="dot dot-time"></span>
+              <span>Accumulated project time:</span>
+              <strong>{{ project.trackedTime }}</strong>
+            </div>
+          </ng-template>
+        </div>
       </div>
-    </ng-container>
-    <ng-template #defaultMetrics>
-      <div class="metric" *ngIf="project.cost">
-        <span class="dot dot-cost"></span>
-        <span>Estimated cost:</span>
-        <strong>{{ project.cost }}</strong>
-      </div>
-      <div class="metric" *ngIf="project.realCost">
-        <span class="dot dot-cost"></span>
-        <span>Accumulated project cost:</span>
-        <strong>{{ project.realCost }}</strong>
-      </div>
-      
-      <div class="metric" *ngIf="project.estimatedTime">
-        <span class="dot dot-time"></span>
-        <span>Estimated time:</span>
-        <strong>{{ project.estimatedTime }}</strong>
-      </div>
-      <div class="metric" *ngIf="project.trackedTime">
-        <span class="dot dot-time"></span>
-        <span>Accumulated project time:</span>
-        <strong>{{ project.trackedTime }}</strong>
-      </div>
-
-    </ng-template>
-  </div>
-</div>
-<hr class="pd-divider" />
+      <hr class="pd-divider" *ngIf="roles && roles.length && roles[0].toUpperCase() === 'OWNER'" />
 
 <!-- ============================= -->
 <!--  DETAILS SECTION -->
@@ -159,10 +160,8 @@
       <span>{{ project.areaUnit || '-' }}</span>
     </div>
 
-    <!-- <div class="detail-card">
-      <label>PHASE START</label>
-      <span>{{ project.startDate ? (project.startDate | date) : '-' }}</span>
-    </div> -->
+
+    
 
   </div>
 </div>
@@ -179,10 +178,12 @@
     <div class="pair">
       <label>PROJECT MANAGER(S)</label>
       <div class="val">
-  <ng-container *ngIf="pms.length; else noPMs">
-          <span *ngFor="let pm of pms" class="chip pm">{{ employeeOptionLabel(pm) }}</span>
-        </ng-container>
-        <ng-template #noPMs><span class="muted">-</span></ng-template>
+  <ng-container *ngIf="pmSelected.length; else noPMs">
+    <span *ngFor="let pm of pmSelected; let last = last">
+      {{ pm.name }}<span *ngIf="!last">, </span>
+    </span>
+  </ng-container>
+  <ng-template #noPMs><span class="muted">-</span></ng-template>
       </div>
     </div>
 
@@ -197,9 +198,34 @@
       </div>
     </div>
   </div>
-</div>
+  </div>
 
-<hr class="pd-divider" />
+  <hr class="pd-divider" />
+
+  <!-- PHASES CARDS SECTION -->
+  <div class="pd-section">
+    <h3 class="title-phases">PROJECT PHASES</h3>
+    <div class="phases-container">
+      <ng-container *ngIf="phases && phases.length > 0; else noPhases">
+        <ng-container *ngFor="let phase of phases">
+          <div class="phase-card" [ngClass]="{'phase-active': (phase.status || '').toUpperCase() === 'ACTIVE'}">
+            <div class="phase-name">{{ phase.phase || '-' }}</div>
+            <span class="phase-status">{{ (phase.status || 'ACTIVE') | lowercase }}</span>
+            <div class="phase-dates">Start: {{ phase.startDate || '-' }}  |  End: {{ phase.endDate || 'ongoing' }}</div>
+          </div>
+          <div style="height: 16px;"></div> <!-- Espaciado entre tarjetas -->
+        </ng-container>
+      </ng-container>
+      <ng-template #noPhases>
+        <div class="muted">No phases defined for this project</div>
+      </ng-template>
+    </div>
+  </div>
+
+ 
+
+
+  <hr class="pd-divider" />
 
 <!-- ============================= -->
 <!-- DEPARTMENTS & ROLES -->

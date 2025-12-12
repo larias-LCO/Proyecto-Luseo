@@ -1,4 +1,5 @@
 import { Component, Inject, OnInit } from '@angular/core';
+import { Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
@@ -20,6 +21,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
   styleUrls: ['./edit-project.scss']
 })
 export class EditProjectComponent implements OnInit {
+@Output() projectUpdated = new EventEmitter<void>();
   
   form!: FormGroup;
 
@@ -286,11 +288,23 @@ export class EditProjectComponent implements OnInit {
   async onSave() {
     if (this.form.invalid) return;
 
-    const payload = { ...this.form.value };
+    // Asegura que pmIds y employeeIds estén actualizados y sean arrays de números
+    const pmIds = Array.isArray(this.pmSelection) ? this.pmSelection.map(Number) : [];
+    const employeeIds = Array.isArray(this.teamSelection) ? this.teamSelection.map(Number) : [];
+
+    const payload = {
+      ...this.form.value,
+      pmIds,
+      employeeIds
+    };
+
+    // Log para depuración
+    console.log('[EditProject] Payload enviado al guardar:', payload);
 
     try {
       await this.projectService.updateProject(this.project.id, payload);
-      // Close with 'saved' signal so project-details can reopen with fresh data
+      this.projectUpdated.emit(); // <-- EMITE EVENTO
+      // Close with 'saved' signal so project-details puede reabrir con datos frescos
       this.dialogRef.close({ action: 'saved', projectId: this.project.id });
     } catch (err) {
       console.error('Error saving project:', err);
