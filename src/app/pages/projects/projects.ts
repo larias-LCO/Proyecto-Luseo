@@ -367,6 +367,7 @@ closeProjectDetails() {
     this.searchState.size = this.pageSize || 20;
     this.searchState.page = 0;
     this.loadProjects();
+    
   }
 
   clearFilters(): void {
@@ -384,13 +385,12 @@ closeProjectDetails() {
     this.loadProjects();
   }
 
-  onPageSizeChange(v: any): void {
-    const newSize = Number(v);
-    this.pageSize = Number.isFinite(newSize) && newSize > 0 ? newSize : 10;
-    // Reiniciar a primera página y aplicar filtros vigentes
-    this.applySearchFromUI();
-    this.loadProjects();
-  }
+onPageSizeChange() {
+  this.searchState.size = this.pageSize;
+  this.searchState.page = 0;
+  this.loadProjects();
+}
+
 
 
   //FILTER SEARCH

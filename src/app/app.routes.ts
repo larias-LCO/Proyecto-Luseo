@@ -6,7 +6,7 @@ import { ProjectsPage } from './pages/projects/projects';
 import { TasksPage } from './pages/task/task';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'proyectos', pathMatch: 'full' },
+  // { path: '', redirectTo: 'proyectos', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
   { path: 'team', component: TeamComponent, canActivate: [authGuard] },
   { path: 'proyectos', component: ProjectsPage, canActivate: [authGuard] },

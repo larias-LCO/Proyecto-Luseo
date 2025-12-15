@@ -86,6 +86,33 @@
       </select>
     </div>
 
+    <div>
+      <label for="p_phase">Project phase (optional)</label>
+      <select id="p_phase" formControlName="phaseId">
+        <option value="">None (no changes)</option>
+        <ng-container *ngFor="let group of phaseGroups">
+          <optgroup [label]="group.label">
+            <option *ngFor="let ph of group.options" [value]="ph.value">{{ ph.label }}</option>
+          </optgroup>
+        </ng-container>
+      </select>
+    </div>
+    <div *ngIf="showPhaseStatus">
+      <label for="p_phaseStatus">Phase status</label>
+      <select id="p_phaseStatus" formControlName="phaseStatus">
+        <option value="">None</option>
+        <option *ngFor="let s of phaseStatusOptions" [value]="s.value">{{ s.label }}</option>
+      </select>
+    </div>
+    <div *ngIf="showPhaseStart">
+      <label for="p_phaseStartDate">Phase start date (optional)</label>
+      <input id="p_phaseStartDate" type="date" formControlName="phaseStartDate" />
+    </div>
+    <div *ngIf="showPhaseEnd">
+      <label for="p_phaseEndDate">Phase end date (optional)</label>
+      <input id="p_phaseEndDate" type="date" formControlName="phaseEndDate" />
+    </div>
+
     <div style="grid-column: 1/-1;">
       <label>Notes</label>
       <textarea formControlName="notes"></textarea>

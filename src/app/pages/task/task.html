@@ -28,7 +28,7 @@
         placeholder="🔍 Search tasks by project, code, client or task name..."
       />
     </div>
-    <!-- Project, Category, Created by, Week -->
+    <!-- Project, Category, Created by, Week, created by me-->
     <div class="filters-container">
       <div class="filter-group" style="min-width: 150px;">
         <label>Project</label>
@@ -53,9 +53,13 @@
         <input
           type="week"
           id="week-filter"
-          class="search-input"
-        />
+          class="search-input"/>
       </div>
+
+        <div class="filter-created-by-me">
+          <input type="checkbox" id="created-by-me" (change)="onShowCreatedByMeChange($event)">
+          <label for="created-by-me">Show created by me</label>
+        </div>
     </div>
     <div class="filters-actions-row">
 
@@ -91,12 +95,17 @@
       (close)="showCreateTaskModal = false">
     </app-create-task-card>
     <app-edit-task
-  *ngIf="tareaSeleccionada"
-  [task]="tareaSeleccionada"
-  (close)="onEditTaskClosed()">
-</app-edit-task>
+      *ngIf="tareaSeleccionada && editTaskDataLoaded"
+      [task]="tareaSeleccionada"
+      [canEditTask]="canEditTask"
+      [canDeleteTask]="canDeleteTask"
+      [allProjects]="editTaskProjects"
+      [categories]="editTaskCategories"
+      [employees]="editTaskEmployees"
+      (close)="onEditTaskClosed()">
+    </app-edit-task>
     <div id="calendar-message" style="display:none;color:#e11d48;font-weight:600;margin:24px 0;text-align:center;"></div>
-    <app-calendar-task id="main-calendar" [tasks]="tasks"></app-calendar-task>
+    <app-calendar-task #calendarTaskRef id="main-calendar" [tasks]="tasks"></app-calendar-task>
     <!-- Mine only -->
     <!-- <div class="by-me" ><label>Show created by me</label>
       <input type="checkbox" id="mine-only-filter"/>
@@ -109,7 +118,7 @@
   <section class="schedule2">
     <h2>📌 Schedule Prev</h2>
     <!--aqui va la etiqueta de el calendario week prev-->
-    <app-calendar-week-prev [tasks]="tasks">
+    <app-calendar-week-prev #calendarWeekPrevRef [tasks]="tasks">
 
 
     </app-calendar-week-prev>

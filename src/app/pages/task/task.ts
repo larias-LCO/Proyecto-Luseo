@@ -127,6 +127,7 @@ export async function apiPut(path: string, data: any): Promise<any> {
 
 
 export async function deleteGeneralTask(taskId: number, taskName: string): Promise<void> {
+  //mensaje de confirmación
   if (!confirm(`Are you sure you want to delete the task "${taskName}"?\n\nNote: This will also delete all associated subtasks.`)) return;
   try {
     await apiDelete(`/general-tasks/${taskId}`);
@@ -318,7 +319,7 @@ export function getStatusLabel(status: string): string {
 // Usa el helper global para renderizar la tarjeta de tarea
 import { createTaskCard } from '../../shared/task-card.helper';
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CreateTaskCard } from '../../core/components/create-task-card/create-task-card';
 import { EditTask } from '../../core/components/edit-task/edit-task';
@@ -336,6 +337,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { firstValueFrom } from 'rxjs';
 import { ProjectService } from '../../core/services/project.service';
 import { CalendarWeekPrev } from '../../core/components/calendar-week-prev/calendar-week-prev';
+import { ConfirmModalComponent } from '../../core/components/confirm-modal/confirm-modal';
 
 @Component({
   selector: 'app-task',
@@ -345,39 +347,221 @@ import { CalendarWeekPrev } from '../../core/components/calendar-week-prev/calen
   styleUrls: ['./task.scss']
 })
 export class TasksPage implements OnInit {
+  // Eliminar constructor duplicado. El constructor correcto es el que inyecta dependencias:
+  // (Constructor duplicado eliminado)
   showMineOnly: boolean = false;
 
+  @ViewChild('calendarTaskRef') calendarTaskRef?: CalendarTask;
+  @ViewChild('calendarWeekPrevRef') calendarWeekPrevRef?: CalendarWeekPrev;
+
+  /**
+   * Devuelve true si el usuario autenticado tiene rol USER (no puede editar/eliminar)
+   */
+  get isUserOnly(): boolean {
+    try {
+      return this.auth.hasRole && this.auth.hasRole('USER');
+    } catch {
+      return false;
+    }
+  }
+
+    showCreatedByMe: boolean = false;
+  // Filtra tareas por creador (usuario autenticado)
+  onShowCreatedByMeChange(event: any) {
+    this.showCreatedByMe = event.target.checked;
+    this.filterTasks();
+  }
+
 filterTasks() {
+    // DEBUG: Mostrar valores actuales de usuario y tareas
+    const state = this.auth.getState?.();
+    const myUsername = state?.username ?? null;
+    console.log('[DEBUG] myEmployeeId:', this.myEmployeeId);
+    console.log('[DEBUG] myUsername:', myUsername);
+    (this.allTasks || []).forEach(task => {
+      console.log('[DEBUG] Task', {
+        id: task.id,
+        name: task.name,
+        createdByEmployeeId: task.createdByEmployeeId,
+        createdByEmployeeName: task.createdByEmployeeName,
+        createdByUsername: task.createdByUsername,
+        createdBy: task.createdBy,
+        sub: task.sub
+      });
+    });
+  let filtered = [...this.allTasks];
+  // Filtro: solo tareas creadas por mí
+  if (this.showCreatedByMe) {
+    const state = this.auth.getState?.();
+    const myUsername = state?.username ?? null;
+    const myEmployeeId = this.myEmployeeId;
+    filtered = filtered.filter(task => {
+      // Prioridad: employeeId si existe, si no username
+      if (myEmployeeId && task.createdByEmployeeId) {
+        return String(task.createdByEmployeeId) === String(myEmployeeId);
+      }
+      return (
+        myUsername && (
+          (task.createdByUsername && String(task.createdByUsername).toLowerCase() === String(myUsername).toLowerCase()) ||
+          (task.createdBy && String(task.createdBy).toLowerCase() === String(myUsername).toLowerCase()) ||
+          (task.sub && String(task.sub).toLowerCase() === String(myUsername).toLowerCase())
+        )
+      );
+    });
+  }
+  // Filtro: solo tareas asignadas a mí (ya existente)
   if (this.currentFilters.showMineOnly && this.myEmployeeId) {
-    this.tasks = this.allTasks.filter(task =>
+    filtered = filtered.filter(task =>
       Array.isArray(task.assignedEmployeeIds) &&
       task.assignedEmployeeIds.includes(this.myEmployeeId)
     );
-  } else {
-    this.tasks = [...this.allTasks];
   }
+  // Log de fechas de tareas filtradas para depuración
+  console.log('[DEBUG][Calendar] Tareas enviadas al calendario:');
+  filtered.forEach(task => {
+    console.log(`ID: ${task.id}, Name: ${task.name}, issuedDate: ${task.issuedDate}, createdDate: ${task.createdDate}`);
+  });
+  this.tasks = filtered;
+  console.log('[DEBUG][Calendar] this.tasks después de asignar:', this.tasks);
+  // Forzar actualización del calendario si es necesario
+  setTimeout(() => {
+    const todayStr = new Date().toISOString().slice(0, 10); // 'YYYY-MM-DD'
+    if (this.calendarTaskRef && this.calendarTaskRef.setCalendarDate) {
+      this.calendarTaskRef.setCalendarDate(todayStr);
+    }
+    if (this.calendarWeekPrevRef && this.calendarWeekPrevRef.setCalendarDate) {
+      this.calendarWeekPrevRef.setCalendarDate(todayStr);
+    }
+  }, 0);
 }
 
+
+  // Permisos para el modal de edición
+  public isOwnTask: boolean = false;
+  public canEditTask: boolean = false;
+  public canDeleteTask: boolean = false;
 
   public currentProjectId: number | null = null
   
   tareaSeleccionada: any = null;
-  ngAfterViewInit(): void {
+  editTaskDataLoaded: boolean = false;
+  editTaskProjects: any[] = [];
+  editTaskCategories: any[] = [];
+  editTaskEmployees: any[] = [];
+  async ngAfterViewInit() {
+    // Forzar inicialización de Auth al cargar la vista
+    try {
+      await this.initAuth();
+      console.log('[PERM DEBUG][ngAfterViewInit] myEmployeeId:', this.myEmployeeId);
+    } catch (err) {
+      console.error('[PERM DEBUG][ngAfterViewInit] Error inicializando Auth:', err);
+    }
     const clearBtn = document.getElementById('clear-all-filters');
     if (clearBtn) {
+      await this.initAuth();
       clearBtn.addEventListener('click', () => {
         this.clearAllFilters();
         debounceRefetchOrFullRender();
       });
+
+const state = this.auth.getState?.();
+if (!state) {
+  alert('No se pudo obtener la información de usuario.');
+  return;
+}
+
     }
     // Escuchar evento global para abrir modal de edición
-    window.addEventListener('open-edit-task-modal', (e: any) => {
+    window.addEventListener('open-edit-task-modal', async (e: any) => {
+      // Esperar a que Auth esté inicializado y los datos estén listos
+      let maxTries = 10;
+      while ((!this.myEmployeeId || !this.auth.getState()?.role) && maxTries > 0) {
+        try {
+          await this.initAuth();
+        } catch (err) {
+          console.error('[PERM DEBUG] Error inicializando Auth:', err);
+        }
+        await new Promise(res => setTimeout(res, 50));
+        maxTries--;
+      }
+      // Si después de varios intentos sigue sin datos, no abrir el modal
+      const state = this.auth.getState && this.auth.getState();
+      const roleValue = Array.isArray(state?.role) ? state.role[0] : state?.role;
+      if (!this.myEmployeeId && !state?.username && !roleValue) {
+        alert('No se pudo obtener la información de usuario. Intenta recargar la página.');
+        return;
+      }
+      // Cargar datos necesarios antes de abrir el modal
+      this.editTaskDataLoaded = false;
       this.tareaSeleccionada = e.detail.task;
+      // Cargar proyectos, categorías y empleados
+      try {
+        const [projectsResult, categories, employees] = await Promise.all([
+          this.projectService.loadProjects({}),
+          this.apiGet<any[]>('/task-categories'),
+          this.apiGet<any[]>('/employees')
+        ]);
+        this.editTaskProjects = projectsResult.items || [];
+        this.editTaskCategories = categories || [];
+        this.editTaskEmployees = employees || [];
+        this.editTaskDataLoaded = true;
+      } catch (err) {
+        this.editTaskProjects = [];
+        this.editTaskCategories = [];
+        this.editTaskEmployees = [];
+        this.editTaskDataLoaded = true;
+        console.error('Error loading edit modal data:', err);
+      }
+      // Inyectar permisos de edición/borrado
+      const myEmployeeId = this.myEmployeeId;
+      const myRole = this.normRole(roleValue || '');
+      // LOGS DE DEPURACIÓN
+      console.log('[PERM DEBUG] myEmployeeId:', myEmployeeId);
+      console.log('[PERM DEBUG] tareaSeleccionada:', this.tareaSeleccionada);
+      console.log('[PERM DEBUG] tareaSeleccionada.createdByEmployeeId:', this.tareaSeleccionada?.createdByEmployeeId);
+      let isOwnTask = false;
+      const myUsername = state?.username ?? null;
+      if (this.tareaSeleccionada) {
+        // Permitir editar si el usuario es el creador por employeeId o username
+        // Solo comparar por username, ya que employeeId no está en AuthState
+        if (false) {
+          // No se puede comparar employeeId
+        } else if (
+          myUsername &&
+          (
+            this.tareaSeleccionada.createdByUsername ||
+            this.tareaSeleccionada.createdBy ||
+            this.tareaSeleccionada.sub
+          )
+        ) {
+          const createdBy =
+            this.tareaSeleccionada.createdByUsername ||
+            this.tareaSeleccionada.createdBy ||
+            this.tareaSeleccionada.sub;
+          isOwnTask =
+            String(myUsername).toLowerCase() === String(createdBy).toLowerCase();
+        }
+      }
+      
+      console.log('[PERM DEBUG] isOwnTask:', isOwnTask);
+      console.log('[PERM DEBUG] myRole:', myRole);
+      this.isOwnTask = isOwnTask;
+      // Solo los USER tienen restricción, ADMIN y OWNER siempre pueden editar/eliminar
+      if (myRole === 'USER') {
+        // Solo puede editar si es propia
+        this.canEditTask = isOwnTask;
+        this.canDeleteTask = isOwnTask;
+      } else {
+        // ADMIN y OWNER pueden editar todo
+        this.canEditTask = true;
+        this.canDeleteTask = true;
+      }
       // Forzar actualización si es necesario
       setTimeout(() => {
         tryRefetchCalendars();
       }, 0);
     });
+
     // Restaurar estado de calendario al montar vista
     setTimeout(() => restoreFullCalendarState(), 100);
   }
@@ -395,7 +579,7 @@ filterTasks() {
     this.currentFilters.category = '';
     this.currentFilters.creator = '';
     // Mostrar todas las tareas
-    this.tasks = this.allTasks;
+    this.filterTasks();
     saveFullCalendarState();
   }
 
@@ -475,7 +659,12 @@ filterTasks() {
   // ================= FILTROS BACKEND =================
   async loadCreatorsFromBackend(): Promise<void> {
     try {
-      this.creators = await this.apiGet<any[]>('/employees');
+      // Obtener todos los empleados
+      const allEmployees = await this.apiGet<any[]>('/employees');
+      // Obtener los IDs únicos de creadores de tareas (pueden ser string o number)
+      const creatorIds = Array.from(new Set((this.allTasks || []).map(t => t.createdByEmployeeId).filter(id => id !== undefined && id !== null)));
+      // Filtrar solo empleados que hayan creado tareas (comparar como string y number)
+      this.creators = allEmployees.filter(emp => creatorIds.some(cid => String(cid) === String(emp.id)));
     } catch (err) {
       console.error('Error loading creators:', err);
       this.creators = [];
@@ -506,6 +695,35 @@ filterTasks() {
   }
 
   setupFilterListeners(): void {
+    const weekInput = document.getElementById('week-filter') as HTMLInputElement | null;
+    if (weekInput) {
+      weekInput.addEventListener('change', () => {
+        this.currentFilters.week = weekInput.value;
+        this.onFilterChange();
+        // Ir a la semana seleccionada en ambos calendarios
+        setTimeout(() => {
+          if (weekInput.value) {
+            // El valor es "YYYY-Www", convertir a fecha lunes de esa semana
+            const [year, week] = weekInput.value.split('-W');
+            if (year && week) {
+              // ISO: semana inicia en lunes
+              const simpleDate = (y: number, m: number, d: number) => new Date(Date.UTC(y, m, d));
+              const firstDay = simpleDate(Number(year), 0, 1);
+              const dayOfWeek = firstDay.getUTCDay();
+              const daysToAdd = ((Number(week) - 1) * 7) + (dayOfWeek <= 4 ? 1 - dayOfWeek : 8 - dayOfWeek);
+              const monday = new Date(firstDay.getTime() + daysToAdd * 86400000);
+              const mondayStr = monday.toISOString().slice(0, 10);
+              if (this.calendarTaskRef) {
+                this.calendarTaskRef.setCalendarDate(mondayStr);
+              }
+              if (this.calendarWeekPrevRef) {
+                this.calendarWeekPrevRef.setCalendarDate(mondayStr);
+              }
+            }
+          }
+        }, 0);
+      });
+    }
     // Filtro de búsqueda por texto (en vivo desde la primera letra)
     const searchInput = document.getElementById('project-search') as HTMLInputElement | null;
     if (searchInput) {
@@ -525,12 +743,12 @@ filterTasks() {
     if (mineOnlyCheckbox) {
       const self = this;
       mineOnlyCheckbox.checked = !!self.currentFilters.showMineOnly;
-     mineOnlyCheckbox.addEventListener('change', () => {
-  this.currentFilters.showMineOnly = mineOnlyCheckbox.checked;
-  this.onFilterChange();
-});
-
+      mineOnlyCheckbox.addEventListener('change', () => {
+        this.currentFilters.showMineOnly = mineOnlyCheckbox.checked;
+        this.onFilterChange();
+      });
     }
+
   }
 
   onFilterChange(): void {
@@ -559,6 +777,29 @@ filterTasks() {
     if (this.currentFilters.category) filtered = filtered.filter(t => String(t.taskCategoryId) === this.currentFilters.category);
     if (this.currentFilters.creator) filtered = filtered.filter(t => String(t.createdByEmployeeId) === this.currentFilters.creator);
 
+    // Filtro por semana (ISO 8601)
+    if (this.currentFilters.week) {
+      // El valor del input type="week" es "YYYY-Www" (ej: "2025-W51")
+      const [year, week] = this.currentFilters.week.split('-W');
+      if (year && week) {
+        filtered = filtered.filter(t => {
+          if (!t.issuedDate) return false;
+          const date = new Date(t.issuedDate);
+          // Obtener año y semana ISO de la fecha de la tarea
+          const getWeek = (d: Date) => {
+            d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+            const dayNum = d.getUTCDay() || 7;
+            d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+            const yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+            const weekNum = Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1)/7);
+            return { year: d.getUTCFullYear(), week: weekNum };
+          };
+          const { year: taskYear, week: taskWeek } = getWeek(date);
+          return String(taskYear) === year && String(taskWeek).padStart(2, '0') === week;
+        });
+      }
+    }
+
     // Mine only filter (Show only tasks from projects where I am assigned)
     const myEmployeeId = this.myEmployeeId;
     if (this.currentFilters.showMineOnly && myEmployeeId) {
@@ -570,7 +811,7 @@ filterTasks() {
       filtered = filtered.filter(task => myProjectIds.includes(task.projectId));
     }
     // If not filtering by mine only, just show all filtered tasks (no extra filter)
-    this.tasks = filtered;
+    this.filterTasks();
 
     // Mostrar mensajes personalizados y ocultar calendario si no hay proyectos asignados
     const calendarContainer = document.getElementById('calendar-legend-container');
@@ -618,11 +859,11 @@ filterTasks() {
       await this.initAuth();
       await this.loadProjectsFromService();
       await this.loadCategories();
+      await this.fetchTasks();
       await this.loadCreatorsFromBackend();
       this.populateProjectSelect();
       this.populateCategorySelect();
       this.populateCreatorSelect();
-      await this.fetchTasks();
       // Ya no se renderiza la lista, solo en el calendario
       this.setupFilterListeners();
     } catch (err) {
@@ -657,6 +898,7 @@ filterTasks() {
   }
 
   async initAuth(): Promise<void> {
+
     // Esperar a que Auth esté listo
     let attempts = 0;
     const win = window as any;
@@ -666,15 +908,27 @@ filterTasks() {
     }
 
     if (!win.Auth || !win.Auth.getState) {
-      throw new Error('Auth module not available');
+      console.warn('No se pudo inicializar el módulo de autenticación. La app continuará en modo limitado.');
+      return;
     }
 
-    const state = win.Auth.getState();
-    this.myEmployeeId = state.employeeId || null;
+    const state = this.auth.getState?.();
+    let myEmployeeId = state?.employeeId != null ? Number(state.employeeId) : null;
+    const myUsername = state?.username ?? null;
+
+    if (!myEmployeeId && myUsername && Array.isArray(this.editTaskEmployees) && this.editTaskEmployees.length > 0) {
+      // Fallback: buscar por username si no viene en el token
+      const found = this.editTaskEmployees.find((e: any) => String(e.username).toLowerCase() === String(myUsername).toLowerCase());
+      if (found && found.id) {
+        myEmployeeId = found.id;
+      }
+    }
+    this.myEmployeeId = myEmployeeId;
+
 
     // Actualizar UI con info de usuario (si tienes user-info en el template)
     const userName = state.username || 'User';
-    const role = this.normRole(state.role || (state.authorities && state.authorities[0]) || '');
+    const role = this.normRole(Array.isArray(state.role) ? state.role[0] : state.role || '');
 
     const userInfoEl = document.getElementById('user-info');
     if (userInfoEl) {
@@ -711,8 +965,8 @@ filterTasks() {
     const url = `${base.replace(/\/$/, '')}/general-tasks`;
     try {
       this.allTasks = await firstValueFrom(this.http.get<any[]>(url));
-      this.tasks = this.allTasks;
-      console.log('Tareas cargadas:', this.tasks);
+      console.log('Tareas cargadas:', this.allTasks);
+      this.filterTasks();
       // Render calendar legend in etiquetas section
       setTimeout(() => {
         const legendContainer = document.getElementById('calendar-legend-container');

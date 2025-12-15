@@ -5,6 +5,7 @@ export type AuthState = {
   username?: string;
   token?: string;
   role?: string[];
+  employeeId?: string;
 };
 
 @Injectable({ providedIn: 'root' })
@@ -55,6 +56,15 @@ export class AuthService {
     // Fallback: try to decode roles from JWT if not explicitly stored
     if ((!roles || roles.length === 0) && token) {
       const decoded = this.decodeJwt(token);
+      const employeeId = decoded?.employeeId || decoded?.empId || decoded?.userId; // según cómo venga
+  this.state.set({
+  authenticated: !!token,
+  token: token || undefined,
+  username,
+  role: roles,
+  employeeId // <-- agrega esto
+});
+
       const rawRoles = decoded?.roles
         ?? decoded?.authorities
         ?? decoded?.scopes
@@ -71,6 +81,8 @@ export class AuthService {
     }
     this.state.set({ authenticated: !!token, token: token || undefined, username, role: roles });
   }
+
+  
 
   private getStoredToken(): string | null {
     for (const k of this.storageTokenKeys) {

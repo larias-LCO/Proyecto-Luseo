@@ -92,11 +92,17 @@ setCalendarDate(date: string) {
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['tasks']) {
+      console.log('[DEBUG][CalendarTask] Tareas recibidas en @Input tasks:', this.tasks);
       this.calendarOptions = {
         ...this.calendarOptions,
         events: (this.tasks || []).map(task => {
           // Forzar fecha local para evitar desfase por zona horaria
           let dateStr = task.issuedDate || task.createdDate;
+          if (!dateStr) {
+            // Fallback: usar fecha de hoy si no hay ninguna
+            dateStr = new Date().toISOString().slice(0, 10);
+            console.warn('[CalendarTask] Tarea sin fecha, usando hoy:', task);
+          }
           if (dateStr && /^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
             // YYYY-MM-DD => YYYY-MM-DDT00:00:00 (local)
             dateStr = dateStr + 'T00:00:00';

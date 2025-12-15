@@ -97,8 +97,14 @@ export class CalendarWeekPrev {
   // Cambia la fecha visible del calendario
 setCalendarDate(date: string) {
   if (this.calendarComponent) {
+    // Calcular el lunes de la semana anterior a la fecha recibida
+    const selected = new Date(date);
+    const monday = this.getMonday(selected);
+    const prevMonday = new Date(monday);
+    prevMonday.setDate(monday.getDate() - 7);
+    const prevMondayStr = this.formatDateLocal(prevMonday);
     const api = this.calendarComponent.getApi();
-    api.changeView('dayGridWeek', date); // date en formato 'YYYY-MM-DD'
+    api.changeView('dayGridWeek', prevMondayStr); // Mostrar semana anterior
   }
 }
 

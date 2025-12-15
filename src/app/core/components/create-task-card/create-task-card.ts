@@ -16,6 +16,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
   styleUrl: './create-task-card.scss'
 })
 export class CreateTaskCard implements OnInit {
+  showSuccessModal = false;
   @Output() close = new EventEmitter<void>();
 
   projects: any[] = [];
@@ -132,7 +133,11 @@ export class CreateTaskCard implements OnInit {
         this.messageColor = '#10b981';
       }
       this.form.reset();
-      this.close.emit();
+      this.showSuccessModal = true;
+      setTimeout(() => {
+        this.showSuccessModal = false;
+        window.location.reload();
+      }, 1200);
     } catch (err: any) {
       this.message = 'Error: ' + (err?.message || err);
       this.messageColor = '#ef4444';
