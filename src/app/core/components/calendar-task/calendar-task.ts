@@ -21,7 +21,7 @@ export class CalendarTask {
   public calendarTitle: string = '';
   @Input() tasks: any[] = [];
 
-  @ViewChild('calendar') calendarComponent!: FullCalendarComponent;
+ @ViewChild('calendar') calendar!: FullCalendarComponent;
   @ViewChild('eventContent', { static: true }) eventContentTemplate!: TemplateRef<any>;
   @ViewChild('sectionContainer', { static: true }) sectionContainer!: ElementRef;
   @ViewChild('calendarWrapper', { static: true }) calendarWrapper!: ElementRef;
@@ -34,8 +34,8 @@ export class CalendarTask {
   ngAfterViewInit() {
     // Esperar a que el calendario esté listo y luego obtener el tipo de vista
     setTimeout(() => {
-      if (this.calendarComponent && this.calendarComponent.getApi()) {
-        this.calendarViewType = this.calendarComponent.getApi().view?.type || null;
+      if (this.calendar && this.calendar.getApi()) {
+        this.calendarViewType = this.calendar.getApi().view?.type || null;
         this.cdr.detectChanges();
       }
     });
@@ -45,7 +45,7 @@ export class CalendarTask {
       const section = this.createTypeSection('', true, 'my-section', calendarEl);
       this.sectionContainer.nativeElement.appendChild(section);
     }
-    console.log("Calendar API:", this.calendarComponent?.getApi());
+    console.log("Calendar API:", this.calendar?.getApi());
   }
 
 
@@ -84,8 +84,8 @@ export class CalendarTask {
 
   // Cambia la fecha visible del calendario
 setCalendarDate(date: string) {
-  if (this.calendarComponent) {
-    const api = this.calendarComponent.getApi();
+  if (this.calendar) {
+    const api = this.calendar.getApi();
     api.changeView('dayGridWeek', date); // date en formato 'YYYY-MM-DD'
   }
 }
@@ -120,7 +120,7 @@ setCalendarDate(date: string) {
   }
 
   someMethod() {
-    let calendarApi = this.calendarComponent.getApi();
+    let calendarApi = this.calendar.getApi();
     calendarApi.next();
   }
 

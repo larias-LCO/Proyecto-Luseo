@@ -65,7 +65,7 @@
 
 
       <div class="filter-show" style="display: flex; align-items: center; gap: 8px;">
-        <input type="checkbox" id="mine-only-filter" style="margin:0;" />
+        <input type="checkbox" id="mine-only-filter" (change)="onFilterChange()" style="margin:0;" />
         <label for="mine-only-filter" style="margin:0;">Show only my assigned projects</label>
       </div>
       <div class="top-right-buttons">
@@ -94,16 +94,17 @@
       *ngIf="showCreateTaskModal" 
       (close)="showCreateTaskModal = false">
     </app-create-task-card>
-    <app-edit-task
-      *ngIf="tareaSeleccionada && editTaskDataLoaded"
-      [task]="tareaSeleccionada"
-      [canEditTask]="canEditTask"
-      [canDeleteTask]="canDeleteTask"
-      [allProjects]="editTaskProjects"
-      [categories]="editTaskCategories"
-      [employees]="editTaskEmployees"
-      (close)="onEditTaskClosed()">
-    </app-edit-task>
+<app-edit-task
+  *ngIf="tareaSeleccionada"
+  [task]="tareaSeleccionada"
+  [canEditTask]="canEditTask"
+  [canDeleteTask]="canDeleteTask"
+  [allProjects]="editTaskProjects"
+  [categories]="editTaskCategories"
+  [employees]="editTaskEmployees"
+  (close)="tareaSeleccionada = null">
+</app-edit-task>
+
     <div id="calendar-message" style="display:none;color:#e11d48;font-weight:600;margin:24px 0;text-align:center;"></div>
     <app-calendar-task #calendarTaskRef id="main-calendar" [tasks]="tasks"></app-calendar-task>
     <!-- Mine only -->

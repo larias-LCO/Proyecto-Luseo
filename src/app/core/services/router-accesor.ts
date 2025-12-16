@@ -14,3 +14,4 @@ export class RouterAccessor {
     return this._router;
   }
 }
+

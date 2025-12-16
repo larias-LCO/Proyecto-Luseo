@@ -1,16 +1,26 @@
 
 // Helper global para peticiones GET autenticadas
 export async function apiGet<T = any>(path: string): Promise<T> {
-  const apiBase = (window as any).Auth?.getState?.().apiBase || 'https://api.luseoeng.com';
-  const url = apiBase.replace(/\/$/, '') + path;
+  const apiBase = (window as any).Auth?.getState?.().apiBase || 'https://api-pruebas.luseoeng.com';
+  const url = apiBase.replace(/\/\$/, '') + path;
   let res: Response;
+  const token = (window as any).Auth?.getState?.().token || localStorage.getItem('auth.token') || localStorage.getItem('token');
+  console.log('[apiGet] URL:', url);
+  console.log('[apiGet] Token:', token);
   if ((window as any).Auth && typeof (window as any).Auth.fetchWithAuth === 'function') {
     res = await (window as any).Auth.fetchWithAuth(url, { headers: { 'Accept': 'application/json' } });
   } else {
     res = await fetch(url, { credentials: 'include' });
   }
+  console.log('[apiGet] Response status:', res.status);
   if (res.status === 401) {
-    try { await (window as any).Auth.logout(); } finally { location.href = '/login.html'; }
+    console.warn('[apiGet] 401 Unauthorized. Token:', token);
+    try { await (window as any).Auth.logout(); } finally {
+      // Redirigir a la ruta Angular de login en vez de un archivo físico
+      if (window.location.pathname !== '/login') {
+        window.location.href = '/login';
+      }
+    }
     throw new Error('HTTP 401');
   }
   if (!res.ok) {
@@ -28,7 +38,7 @@ export async function apiGet<T = any>(path: string): Promise<T> {
 
 
 export async function apiDelete(path: string): Promise<any> {
-  const apiBase = (window as any).Auth?.getState?.().apiBase || 'https://api.luseoeng.com';
+  const apiBase = (window as any).Auth?.getState?.().apiBase || 'https://api-pruebas.luseoeng.com';
   const url = apiBase.replace(/\/$/, '') + path;
   let res: Response;
   if ((window as any).Auth && typeof (window as any).Auth.fetchWithAuth === 'function') {
@@ -160,20 +170,7 @@ export async function onEditTaskClosed() {
     }
   }
 }
-// Ejemplo de uso para activar la importación y evitar que se vea opaca
-// Puedes borrar o mover esto según tu lógica
-setTimeout(() => {
-  debounceRefetchOrFullRender();
-}, 1000);
 
-
-
-import {
-  saveFullCalendarState,
-  restoreFullCalendarState,
-  debounceRefetchOrFullRender,
-  tryRefetchCalendars
-} from './render-all.service';
 
 
 // ========== CALENDAR LEGEND ==========
@@ -188,37 +185,42 @@ export function createCalendarLegend(tasks: Array<{ taskCategoryName?: string; t
   title.style.cssText = 'font-weight: 700; font-size: 13px; color: #334155; margin-right: 4px;';
   legend.appendChild(title);
 
-  // Project Types Section
+  // Project Types Section (solo si hay tareas con esos tipos)
   const projectTypesContainer = document.createElement('div');
   projectTypesContainer.style.cssText = 'display: flex; gap: 8px; align-items: center; padding-right: 12px; border-right: 2px solid #cbd5e1;';
-
-  // Commercial
-  const commercialBadge = document.createElement('span');
-  commercialBadge.innerHTML = '🏢 Commercial';
-  commercialBadge.style.cssText = 'display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; background: #7DD3FC; color: #000000; border-radius: 6px; font-size: 12px; font-weight: 700; box-shadow: 0 1px 3px rgba(0,0,0,0.2);';
-  projectTypesContainer.appendChild(commercialBadge);
-
-  // Residential
-  const residentialBadge = document.createElement('span');
-  residentialBadge.innerHTML = '🏠 Residential';
-  residentialBadge.style.cssText = 'display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; background: #6EE7B7; color: #000000; border-radius: 6px; font-size: 12px; font-weight: 700; box-shadow: 0 1px 3px rgba(0,0,0,0.2);';
-  projectTypesContainer.appendChild(residentialBadge);
-
-  legend.appendChild(projectTypesContainer);
+  let hasCommercial = false;
+  let hasResidential = false;
+  (tasks || []).forEach((task: any) => {
+    if (task.projectType === 'Commercial') hasCommercial = true;
+    if (task.projectType === 'Residential') hasResidential = true;
+  });
+  if (hasCommercial) {
+    const commercialBadge = document.createElement('span');
+    commercialBadge.innerHTML = '🏢 Commercial';
+    commercialBadge.style.cssText = 'display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; background: #7DD3FC; color: #000000; border-radius: 6px; font-size: 12px; font-weight: 700; box-shadow: 0 1px 3px rgba(0,0,0,0.2);';
+    projectTypesContainer.appendChild(commercialBadge);
+  }
+  if (hasResidential) {
+    const residentialBadge = document.createElement('span');
+    residentialBadge.innerHTML = '🏠 Residential';
+    residentialBadge.style.cssText = 'display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; background: #6EE7B7; color: #000000; border-radius: 6px; font-size: 12px; font-weight: 700; box-shadow: 0 1px 3px rgba(0,0,0,0.2);';
+    projectTypesContainer.appendChild(residentialBadge);
+  }
+  if (hasCommercial || hasResidential) {
+    legend.appendChild(projectTypesContainer);
+  }
 
   // Task Categories Section
   const categoriesContainer = document.createElement('div');
   categoriesContainer.style.cssText = 'display: flex; flex-wrap: wrap; gap: 8px; align-items: center;';
-
-  // Extract unique categories from tasks
+  // Extraer solo las categorías presentes en las tareas filtradas
   const categoriesMap = new Map();
   (tasks || []).forEach((task: { taskCategoryName?: string; taskCategoryColorHex?: string }) => {
     if (task.taskCategoryName && task.taskCategoryColorHex) {
       categoriesMap.set(task.taskCategoryName, task.taskCategoryColorHex);
     }
   });
-
-  // Create badge for each category
+  // Mostrar solo las categorías presentes en las tareas filtradas
   const sortedCategories = Array.from(categoriesMap.entries()).sort((a, b) => a[0].localeCompare(b[0]));
   sortedCategories.forEach(([categoryName, colorHex]: [string, string]) => {
     const categoryBadge = document.createElement('span');
@@ -226,11 +228,14 @@ export function createCalendarLegend(tasks: Array<{ taskCategoryName?: string; t
     categoryBadge.style.cssText = `display: inline-flex; align-items: center; padding: 4px 10px; background: ${colorHex}; color: ${getContrastColor(colorHex)}; border-radius: 6px; font-size: 11px; font-weight: 700; border: 1px solid ${darkenColor(colorHex, 15)}; box-shadow: 0 1px 2px rgba(0,0,0,0.15);`;
     categoriesContainer.appendChild(categoryBadge);
   });
+  legend.appendChild(categoriesContainer);
+  return legend;
 
   legend.appendChild(categoriesContainer);
 
   return legend;
 }
+
 
 // Helper para hacer POST
 // async function apiPost(endpoint: string, payload: any): Promise<any> {
@@ -247,6 +252,7 @@ export function createCalendarLegend(tasks: Array<{ taskCategoryName?: string; t
 
 // Helper para refrescar la vista de tareas
 export async function renderTasksView() {
+        // Create and insert legend/guide at the top
   // Busca el componente Angular y llama a fetchTasks y filterAndRenderTasks
   const ngComponent = (window as any).ng?.getInjector?.(TasksPage)?.get(TasksPage);
   if (ngComponent) {
@@ -338,6 +344,13 @@ import { firstValueFrom } from 'rxjs';
 import { ProjectService } from '../../core/services/project.service';
 import { CalendarWeekPrev } from '../../core/components/calendar-week-prev/calendar-week-prev';
 import { ConfirmModalComponent } from '../../core/components/confirm-modal/confirm-modal';
+import {
+  saveFullCalendarState,
+  restoreFullCalendarState,
+  debounceRefetchOrFullRender,
+  tryRefetchCalendars
+} from './render-all.service';
+
 
 @Component({
   selector: 'app-task',
@@ -373,63 +386,226 @@ export class TasksPage implements OnInit {
   }
 
 filterTasks() {
+          // Log explícito para depuración directa del estado de autenticación
+          console.log('[DEBUG][Filtro] this.auth.getState():', this.auth.getState && this.auth.getState());
+          console.log('[DEBUG][Filtro] this.createdByEmployeeId antes de filtrar:', this.createdByEmployeeId, 'typeof:', typeof this.createdByEmployeeId);
+        // Declarar filtered antes de cualquier uso
+          let filtered = [...this.allTasks];
+          const state = this.auth.getState?.();
+          let createdByEmployeeId = state?.employeeId != null ? Number(state.employeeId) : null;
+          const myUsername = state?.username ?? null;
+        // Refuerzo: asegurar que createdByEmployeeId esté inicializado correctamente antes de filtrar
+        // Solo buscar en empleados si el ID no viene en el estado
+        if ((!createdByEmployeeId || isNaN(createdByEmployeeId)) && myUsername && Array.isArray(this.editTaskEmployees) && this.editTaskEmployees.length > 0) {
+          const found = this.editTaskEmployees.find((e: any) => String(e.username).toLowerCase() === String(myUsername).toLowerCase());
+          if (found && found.id) {
+            createdByEmployeeId = found.id;
+          }
+        }
+        this.createdByEmployeeId = createdByEmployeeId;
+        console.log('[DEBUG][Filtro] createdByEmployeeId usado para filtrar:', this.createdByEmployeeId);
+        // Log de depuración de IDs de tareas
+        (filtered || []).forEach(task => {
+          console.log('[DEBUG][Filtro] Task.id:', task.id, 'Task.createdByEmployeeId:', task.createdByEmployeeId, 'typeof:', typeof task.createdByEmployeeId);
+        });
     // DEBUG: Mostrar valores actuales de usuario y tareas
+    // const state = this.auth.getState?.();
+    // const myUsername = state?.username ?? null;
+    // console.log('[DEBUG] createdByEmployeeId:', this.createdByEmployeeId);
+    // console.log('[DEBUG] myUsername:', myUsername);
+    // (this.allTasks || []).forEach(task => {
+    //   console.log('[DEBUG] Task', {
+    //     id: task.id,
+    //     name: task.name,
+    //     createdByEmployeeId: task.createdByEmployeeId,
+    //     createdByEmployeeName: task.createdByEmployeeName,
+    //     createdByUsername: task.createdByUsername,
+    //     createdBy: task.createdBy,
+    //     sub: task.sub
+    //   });
+    // });
+  //   let filtered = [...this.allTasks];
+    // Agregar holidays como tareas especiales (si hay holidays cargados)
+    if (Array.isArray(allHolidays) && allHolidays.length > 0) {
+      const holidayTasks = allHolidays.map(h => ({
+        id: `holiday-${h.date}-${h.countryCode}`,
+        name: h.name + (h.countryCode ? ` (${h.countryCode})` : ''),
+        issuedDate: h.date,
+        taskCategoryName: 'Holiday',
+        taskCategoryColorHex: '#FBBF24', // amarillo
+        projectType: 'Holiday',
+        isHoliday: true,
+        ...h
+      }));
+      filtered = [...filtered, ...holidayTasks];
+    }
+  // // Filtro: solo tareas creadas por mí
+  if (this.showCreatedByMe) {
+    // Buscar el nombre completo del usuario autenticado usando el username
     const state = this.auth.getState?.();
     const myUsername = state?.username ?? null;
-    console.log('[DEBUG] myEmployeeId:', this.myEmployeeId);
-    console.log('[DEBUG] myUsername:', myUsername);
-    (this.allTasks || []).forEach(task => {
-      console.log('[DEBUG] Task', {
-        id: task.id,
-        name: task.name,
-        createdByEmployeeId: task.createdByEmployeeId,
+    // Log de depuración para ver el username autenticado y los empleados disponibles
+    console.log('[DEBUG][Filtro] Username autenticado:', myUsername);
+    if (Array.isArray(this.editTaskEmployees)) {
+      console.log('[DEBUG][Filtro] Ejemplo empleados:', this.editTaskEmployees.slice(0, 3));
+    }
+    let myFullName: string | null = null;
+    if (myUsername && Array.isArray(this.editTaskEmployees)) {
+      let found = this.editTaskEmployees.find(
+        (e: any) => String(e.username).toLowerCase() === String(myUsername).toLowerCase()
+      );
+      // Si no encuentra por username, intenta por email o user
+      if (!found) {
+        found = this.editTaskEmployees.find(
+          (e: any) =>
+            (e.email && String(e.email).toLowerCase() === String(myUsername).toLowerCase()) ||
+            (e.user && String(e.user).toLowerCase() === String(myUsername).toLowerCase())
+        );
+      }
+      if (found && found.name) {
+        myFullName = found.name;
+      } else {
+        console.warn('[DEBUG][Filtro] No se encontró el nombre completo para el usuario autenticado:', myUsername);
+      }
+    }
+    // Log para depuración: mostrar myFullName y todos los createdByEmployeeName de las tareas
+    console.log('[DEBUG][Filtro] myFullName:', myFullName);
+    console.log('[DEBUG][Filtro] createdByEmployeeName de todas las tareas:', (filtered || []).map(t => t.createdByEmployeeName));
+    console.log('[DEBUG][Filtro] Aplicando filtro showCreatedByMe con nombre completo:', myFullName);
+    filtered = filtered.filter(task => {
+      let match = false;
+      const username = myUsername ? String(myUsername).toLowerCase() : '';
+      const taskName = task.createdByEmployeeName ? String(task.createdByEmployeeName).toLowerCase() : '';
+      const taskUsername = task.createdByUsername ? String(task.createdByUsername).toLowerCase() : '';
+      const taskCreatedBy = task.createdBy ? String(task.createdBy).toLowerCase() : '';
+      const taskSub = task.sub ? String(task.sub).toLowerCase() : '';
+      // Fallback especial: comparar username con nombre simplificado (sin espacios, tildes, minúsculas)
+      const simplify = (str: string) => str
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '') // quitar tildes
+        .replace(/\s+/g, ''); // quitar espacios
+      const simpleTaskName = taskName ? simplify(taskName) : '';
+      const simpleUsername = simplify(username);
+      // Log detallado para cada tarea
+      console.log('[DEBUG][Filtro][Comparacion]', {
+        username,
+        myFullName,
+        taskId: task.id,
         createdByEmployeeName: task.createdByEmployeeName,
         createdByUsername: task.createdByUsername,
         createdBy: task.createdBy,
-        sub: task.sub
+        sub: task.sub,
+        simpleTaskName,
+        simpleUsername
       });
-    });
-  let filtered = [...this.allTasks];
-  // Filtro: solo tareas creadas por mí
-  if (this.showCreatedByMe) {
-    const state = this.auth.getState?.();
-    const myUsername = state?.username ?? null;
-    const myEmployeeId = this.myEmployeeId;
-    filtered = filtered.filter(task => {
-      // Prioridad: employeeId si existe, si no username
-      if (myEmployeeId && task.createdByEmployeeId) {
-        return String(task.createdByEmployeeId) === String(myEmployeeId);
+      // Filtro por nombre completo
+      if (myFullName && taskName === myFullName.toLowerCase()) {
+        match = true;
+      } else if (!myFullName && username) {
+        // Fallbacks: comparar con username y variantes
+        // Fallback especial: comparar username con nombre simplificado (sin espacios, tildes, minúsculas)
+        const simplify = (str: string) => str
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '') // quitar tildes
+          .replace(/\s+/g, ''); // quitar espacios
+        const simpleTaskName = taskName ? simplify(taskName) : '';
+        const simpleUsername = simplify(username);
+        // Comparar username con cada palabra del nombre completo (ej: 'larias' con 'Lorena' o 'Arias')
+        const taskNameParts = taskName ? taskName.split(/\s+/).map(simplify) : [];
+        if (
+          taskName === username ||
+          taskUsername === username ||
+          taskCreatedBy === username ||
+          taskSub === username ||
+          (taskName && username.startsWith(taskName)) ||
+          (taskUsername && username.startsWith(taskUsername)) ||
+          (taskCreatedBy && username.startsWith(taskCreatedBy)) ||
+          (taskSub && username.startsWith(taskSub)) ||
+          (simpleTaskName && simpleTaskName === simpleUsername) ||
+          (taskNameParts.length > 0 && taskNameParts.includes(simpleUsername))
+        ) {
+          match = true;
+        }
       }
-      return (
-        myUsername && (
-          (task.createdByUsername && String(task.createdByUsername).toLowerCase() === String(myUsername).toLowerCase()) ||
-          (task.createdBy && String(task.createdBy).toLowerCase() === String(myUsername).toLowerCase()) ||
-          (task.sub && String(task.sub).toLowerCase() === String(myUsername).toLowerCase())
-        )
-      );
+      if (!match) {
+        console.log('[DEBUG][Filtro] Tarea NO incluida:', task.id, {
+          createdByEmployeeName: task.createdByEmployeeName,
+          createdByUsername: task.createdByUsername,
+          createdBy: task.createdBy,
+          sub: task.sub
+        }, 'vs', myFullName || myUsername);
+      } else {
+        console.log('[DEBUG][Filtro] Tarea INCLUIDA:', task.id, {
+          createdByEmployeeName: task.createdByEmployeeName,
+          createdByUsername: task.createdByUsername,
+          createdBy: task.createdBy,
+          sub: task.sub
+        });
+      }
+      return match;
     });
+    // Forzar refresco del calendario tras asignar this.tasks
+    this.tasks = [...filtered];
+    setTimeout(() => {
+      if (this.calendarTaskRef && this.calendarTaskRef.calendar && this.calendarTaskRef.calendar.getApi) {
+        const api = this.calendarTaskRef.calendar.getApi();
+        api.removeAllEvents();
+        (this.tasks || []).forEach(task => {
+          let dateStr = task.issuedDate || task.createdDate;
+          if (!dateStr) dateStr = new Date().toISOString().slice(0, 10);
+          if (dateStr && /^\d{4}-\d{2}-\d{2}$/.test(dateStr)) dateStr = dateStr + 'T00:00:00';
+          api.addEvent({
+            title: task.name,
+            start: dateStr,
+            allDay: true,
+            extendedProps: { task }
+          });
+        });
+      }
+      if (this.calendarWeekPrevRef && this.calendarWeekPrevRef.setCalendarDate) {
+        const todayStr = new Date().toISOString().slice(0, 10);
+        this.calendarWeekPrevRef.setCalendarDate(todayStr);
+      }
+    }, 0);
+    return; // Evita doble asignación de this.tasks más abajo
   }
-  // Filtro: solo tareas asignadas a mí (ya existente)
-  if (this.currentFilters.showMineOnly && this.myEmployeeId) {
-    filtered = filtered.filter(task =>
-      Array.isArray(task.assignedEmployeeIds) &&
-      task.assignedEmployeeIds.includes(this.myEmployeeId)
-    );
+  // Filtro: solo tareas de proyectos donde estoy asignado
+  if (this.currentFilters.showMineOnly && this.createdByEmployeeId) {
+    const myProjectIds = (this.allProjects || [])
+      .filter(p => Array.isArray(p.employeeIds) && p.employeeIds.includes(this.createdByEmployeeId))
+      .map(p => p.id);
+    filtered = filtered.filter(task => myProjectIds.includes(task.projectId));
   }
   // Log de fechas de tareas filtradas para depuración
   console.log('[DEBUG][Calendar] Tareas enviadas al calendario:');
   filtered.forEach(task => {
     console.log(`ID: ${task.id}, Name: ${task.name}, issuedDate: ${task.issuedDate}, createdDate: ${task.createdDate}`);
   });
-  this.tasks = filtered;
+  this.tasks = [...filtered]; // fuerza nueva referencia siempre
   console.log('[DEBUG][Calendar] this.tasks después de asignar:', this.tasks);
   // Forzar actualización del calendario si es necesario
   setTimeout(() => {
-    const todayStr = new Date().toISOString().slice(0, 10); // 'YYYY-MM-DD'
-    if (this.calendarTaskRef && this.calendarTaskRef.setCalendarDate) {
-      this.calendarTaskRef.setCalendarDate(todayStr);
+    // Refrescar eventos del calendario principal
+    if (this.calendarTaskRef && this.calendarTaskRef.calendar && this.calendarTaskRef.calendar.getApi) {
+      const api = this.calendarTaskRef.calendar.getApi();
+      api.removeAllEvents();
+      (this.tasks || []).forEach(task => {
+        let dateStr = task.issuedDate || task.createdDate;
+        if (!dateStr) dateStr = new Date().toISOString().slice(0, 10);
+        if (dateStr && /^\d{4}-\d{2}-\d{2}$/.test(dateStr)) dateStr = dateStr + 'T00:00:00';
+        api.addEvent({
+          title: task.name,
+          start: dateStr,
+          allDay: true,
+          extendedProps: { task }
+        });
+      });
     }
+    // Refrescar calendario week prev si existe
     if (this.calendarWeekPrevRef && this.calendarWeekPrevRef.setCalendarDate) {
+      const todayStr = new Date().toISOString().slice(0, 10);
       this.calendarWeekPrevRef.setCalendarDate(todayStr);
     }
   }, 0);
@@ -448,11 +624,14 @@ filterTasks() {
   editTaskProjects: any[] = [];
   editTaskCategories: any[] = [];
   editTaskEmployees: any[] = [];
-  async ngAfterViewInit() {
+  createdByEmployeeId: number | null = null;
+
+
+async ngAfterViewInit() {
     // Forzar inicialización de Auth al cargar la vista
     try {
       await this.initAuth();
-      console.log('[PERM DEBUG][ngAfterViewInit] myEmployeeId:', this.myEmployeeId);
+      console.log('[PERM DEBUG][ngAfterViewInit] createdByEmployeeId:', this.createdByEmployeeId);
     } catch (err) {
       console.error('[PERM DEBUG][ngAfterViewInit] Error inicializando Auth:', err);
     }
@@ -475,7 +654,7 @@ if (!state) {
     window.addEventListener('open-edit-task-modal', async (e: any) => {
       // Esperar a que Auth esté inicializado y los datos estén listos
       let maxTries = 10;
-      while ((!this.myEmployeeId || !this.auth.getState()?.role) && maxTries > 0) {
+      while ((!this.createdByEmployeeId || !this.auth.getState()?.role) && maxTries > 0) {
         try {
           await this.initAuth();
         } catch (err) {
@@ -487,7 +666,7 @@ if (!state) {
       // Si después de varios intentos sigue sin datos, no abrir el modal
       const state = this.auth.getState && this.auth.getState();
       const roleValue = Array.isArray(state?.role) ? state.role[0] : state?.role;
-      if (!this.myEmployeeId && !state?.username && !roleValue) {
+      if (!this.createdByEmployeeId && !state?.username && !roleValue) {
         alert('No se pudo obtener la información de usuario. Intenta recargar la página.');
         return;
       }
@@ -495,17 +674,31 @@ if (!state) {
       this.editTaskDataLoaded = false;
       this.tareaSeleccionada = e.detail.task;
       // Cargar proyectos, categorías y empleados
+      let employees: any[] = [];
       try {
-        const [projectsResult, categories, employees] = await Promise.all([
+        const [projectsResult, categories, empleadosCargados] = await Promise.all([
           this.projectService.loadProjects({}),
           this.apiGet<any[]>('/task-categories'),
           this.apiGet<any[]>('/employees')
         ]);
+        employees = empleadosCargados || [];
         this.editTaskProjects = projectsResult.items || [];
         this.editTaskCategories = categories || [];
-        this.editTaskEmployees = employees || [];
+        this.editTaskEmployees = employees;
+        // --- RESOLVER createdByEmployeeId usando username si no está ---
+        const state = this.auth.getState?.();
+        let createdByEmployeeId = state?.employeeId != null ? Number(state.employeeId) : null;
+        const myUsername = state?.username ?? null;
+        if ((!createdByEmployeeId || isNaN(createdByEmployeeId)) && myUsername && Array.isArray(employees) && employees.length > 0) {
+          const found = employees.find((e: any) => String(e.username).toLowerCase() === String(myUsername).toLowerCase());
+          if (found && found.id) {
+            createdByEmployeeId = found.id;
+          }
+        }
+        this.createdByEmployeeId = createdByEmployeeId;
         this.editTaskDataLoaded = true;
       } catch (err) {
+        employees = [];
         this.editTaskProjects = [];
         this.editTaskCategories = [];
         this.editTaskEmployees = [];
@@ -513,19 +706,38 @@ if (!state) {
         console.error('Error loading edit modal data:', err);
       }
       // Inyectar permisos de edición/borrado
-      const myEmployeeId = this.myEmployeeId;
       const myRole = this.normRole(roleValue || '');
       // LOGS DE DEPURACIÓN
-      console.log('[PERM DEBUG] myEmployeeId:', myEmployeeId);
       console.log('[PERM DEBUG] tareaSeleccionada:', this.tareaSeleccionada);
       console.log('[PERM DEBUG] tareaSeleccionada.createdByEmployeeId:', this.tareaSeleccionada?.createdByEmployeeId);
-      let isOwnTask = false;
+      console.log('[PERM DEBUG] this.createdByEmployeeId:', this.createdByEmployeeId);
+      console.log('[PERM DEBUG] state.employeeId:', state?.employeeId);
       const myUsername = state?.username ?? null;
+      // Refuerzo: si no hay employeeId, buscarlo en la lista de empleados recién cargada (employees)
+      if ((!this.createdByEmployeeId || isNaN(this.createdByEmployeeId)) && myUsername && Array.isArray(employees) && employees.length > 0) {
+        const found = employees.find((emp: any) => {
+          const possible = [emp.username, emp.email, emp.user];
+          return possible.some(val => val && String(val).toLowerCase() === String(myUsername).toLowerCase());
+        });
+        if (found && found.id) {
+          this.createdByEmployeeId = found.id;
+          console.log('[PERM DEBUG] (FIX) Resuelto createdByEmployeeId por username/email/user (employees):', this.createdByEmployeeId);
+        } else {
+          console.log('[PERM DEBUG] (FIX) No se encontró employeeId por username/email/user en empleados');
+        }
+      }
+      console.log('[PERM DEBUG] tareaSeleccionada.createdByUsername:', this.tareaSeleccionada?.createdByUsername);
+      console.log('[PERM DEBUG] tareaSeleccionada.createdBy:', this.tareaSeleccionada?.createdBy);
+      console.log('[PERM DEBUG] tareaSeleccionada.sub:', this.tareaSeleccionada?.sub);
+      let isOwnTask = false;
       if (this.tareaSeleccionada) {
-        // Permitir editar si el usuario es el creador por employeeId o username
-        // Solo comparar por username, ya que employeeId no está en AuthState
-        if (false) {
-          // No se puede comparar employeeId
+        // Permitir editar si el usuario es el creador por createdByEmployeeId o username
+        if (
+          this.createdByEmployeeId &&
+          this.tareaSeleccionada.createdByEmployeeId &&
+          String(this.tareaSeleccionada.createdByEmployeeId) === String(this.createdByEmployeeId)
+        ) {
+          isOwnTask = true;
         } else if (
           myUsername &&
           (
@@ -538,11 +750,22 @@ if (!state) {
             this.tareaSeleccionada.createdByUsername ||
             this.tareaSeleccionada.createdBy ||
             this.tareaSeleccionada.sub;
+          console.log('[PERM DEBUG] Comparing myUsername:', myUsername, 'with createdBy:', createdBy);
           isOwnTask =
             String(myUsername).toLowerCase() === String(createdBy).toLowerCase();
         }
+        // Refuerzo: si el usuario es USER y el username coincide, permite editar aunque el ID no esté
+        if (!isOwnTask && myRole === 'USER' && myUsername && this.tareaSeleccionada) {
+          const createdBy =
+            this.tareaSeleccionada.createdByUsername ||
+            this.tareaSeleccionada.createdBy ||
+            this.tareaSeleccionada.sub;
+          console.log('[PERM DEBUG] (Refuerzo) Comparing myUsername:', myUsername, 'with createdBy:', createdBy);
+          if (createdBy && String(myUsername).toLowerCase() === String(createdBy).toLowerCase()) {
+            isOwnTask = true;
+          }
+        }
       }
-      
       console.log('[PERM DEBUG] isOwnTask:', isOwnTask);
       console.log('[PERM DEBUG] myRole:', myRole);
       this.isOwnTask = isOwnTask;
@@ -565,6 +788,8 @@ if (!state) {
     // Restaurar estado de calendario al montar vista
     setTimeout(() => restoreFullCalendarState(), 100);
   }
+
+
 
   clearAllFilters(): void {
     // Limpiar selects
@@ -602,6 +827,7 @@ if (!state) {
     this.init();
     setTimeout(() => this.ngAfterViewInit(), 0);
   }
+  
   currentFilters: {
     searchText: string;
     project?: string;
@@ -621,11 +847,12 @@ if (!state) {
   };
   tasks: any[] = [];
   allTasks: any[] = [];
-  allProjects: any[] = [];
+   allProjects: any[] = [];
   creators: any[] = [];
   generalTaskEnums = { statuses: [] as string[] };
   cachedCategories: any[] | null = null;
-  myEmployeeId: number | null = null;
+  // createdByEmployeeId ya está declarado, eliminar duplicado
+  loadHolidaysForCalendar: boolean = true;
   
 
   constructor(
@@ -760,7 +987,21 @@ if (!state) {
     if (creatorSelect) this.currentFilters.creator = creatorSelect.value;
 
     // Filtrar tareas y actualizar el array mostrado en el calendario
-    let filtered = this.allTasks;
+    let filtered = [...this.allTasks];
+    // Agregar holidays como tareas especiales (si hay holidays cargados)
+    if (Array.isArray(allHolidays) && allHolidays.length > 0) {
+      const holidayTasks = allHolidays.map(h => ({
+        id: `holiday-${h.date}-${h.countryCode}`,
+        name: h.name + (h.countryCode ? ` (${h.countryCode})` : ''),
+        issuedDate: h.date,
+        taskCategoryName: 'Holiday',
+        taskCategoryColorHex: '#FBBF24', // amarillo
+        projectType: 'Holiday',
+        isHoliday: true,
+        ...h
+      }));
+      filtered = [...filtered, ...holidayTasks];
+    }
     // Filtro de texto (en vivo desde la primera letra)
     const search = (this.currentFilters.searchText || '').trim().toLowerCase();
     if (search.length > 0) {
@@ -773,9 +1014,16 @@ if (!state) {
         );
       });
     }
-    if (this.currentFilters.project) filtered = filtered.filter(t => String(t.projectId) === this.currentFilters.project);
-    if (this.currentFilters.category) filtered = filtered.filter(t => String(t.taskCategoryId) === this.currentFilters.category);
-    if (this.currentFilters.creator) filtered = filtered.filter(t => String(t.createdByEmployeeId) === this.currentFilters.creator);
+    // Los holidays no tienen projectId, taskCategoryId ni createdByEmployeeId, así que no los excluimos por estos filtros
+    if (this.currentFilters.project) {
+      filtered = filtered.filter(t => t.isHoliday || String(t.projectId) === this.currentFilters.project);
+    }
+    if (this.currentFilters.category) {
+      filtered = filtered.filter(t => t.isHoliday || String(t.taskCategoryId) === this.currentFilters.category);
+    }
+    if (this.currentFilters.creator) {
+      filtered = filtered.filter(t => t.isHoliday || String(t.createdByEmployeeId) === this.currentFilters.creator);
+    }
 
     // Filtro por semana (ISO 8601)
     if (this.currentFilters.week) {
@@ -783,9 +1031,10 @@ if (!state) {
       const [year, week] = this.currentFilters.week.split('-W');
       if (year && week) {
         filtered = filtered.filter(t => {
-          if (!t.issuedDate) return false;
-          const date = new Date(t.issuedDate);
-          // Obtener año y semana ISO de la fecha de la tarea
+          const dateStr = t.issuedDate || t.date; // holidays pueden tener .date
+          if (!dateStr) return false;
+          const date = new Date(dateStr);
+          // Obtener año y semana ISO de la fecha de la tarea o holiday
           const getWeek = (d: Date) => {
             d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
             const dayNum = d.getUTCDay() || 7;
@@ -801,17 +1050,45 @@ if (!state) {
     }
 
     // Mine only filter (Show only tasks from projects where I am assigned)
-    const myEmployeeId = this.myEmployeeId;
-    if (this.currentFilters.showMineOnly && myEmployeeId) {
+    const createdByEmployeeId = this.createdByEmployeeId;
+    if (this.currentFilters.showMineOnly && createdByEmployeeId) {
       // Obtener los IDs de proyectos donde el usuario está asignado
       const myProjectIds = this.allProjects
-        .filter(p => Array.isArray(p.employeeIds) && p.employeeIds.includes(myEmployeeId))
+        .filter(p => Array.isArray(p.employeeIds) && p.employeeIds.includes(createdByEmployeeId))
         .map(p => p.id);
       // Filtrar tareas que pertenezcan a esos proyectos
       filtered = filtered.filter(task => myProjectIds.includes(task.projectId));
     }
-    // If not filtering by mine only, just show all filtered tasks (no extra filter)
-    this.filterTasks();
+    // Asignar tareas filtradas y refrescar calendario y leyenda
+    this.tasks = [...filtered];
+    setTimeout(() => {
+      if (this.calendarTaskRef && this.calendarTaskRef.calendar && this.calendarTaskRef.calendar.getApi) {
+        const api = this.calendarTaskRef.calendar.getApi();
+        api.removeAllEvents();
+        (this.tasks || []).forEach(task => {
+          let dateStr = task.issuedDate || task.createdDate;
+          if (!dateStr) dateStr = new Date().toISOString().slice(0, 10);
+          if (dateStr && /^\d{4}-\d{2}-\d{2}$/.test(dateStr)) dateStr = dateStr + 'T00:00:00';
+          api.addEvent({
+            title: task.name,
+            start: dateStr,
+            allDay: true,
+            extendedProps: { task }
+          });
+        });
+      }
+      // Refrescar calendario week prev si existe
+      if (this.calendarWeekPrevRef && this.calendarWeekPrevRef.setCalendarDate) {
+        const todayStr = new Date().toISOString().slice(0, 10);
+        this.calendarWeekPrevRef.setCalendarDate(todayStr);
+      }
+      // Renderizar legend SOLO con las tareas filtradas
+      const calendarContainer = document.getElementById('calendar-legend-container');
+      if (calendarContainer) {
+        calendarContainer.innerHTML = '';
+        calendarContainer.appendChild(createCalendarLegend(this.tasks));
+      }
+    }, 0);
 
     // Mostrar mensajes personalizados y ocultar calendario si no hay proyectos asignados
     const calendarContainer = document.getElementById('calendar-legend-container');
@@ -822,7 +1099,7 @@ if (!state) {
       let hideCalendar = false;
       if (this.currentFilters.showMineOnly) {
         const myProjectIds = this.allProjects
-          .filter(p => Array.isArray(p.employeeIds) && p.employeeIds.includes(myEmployeeId))
+          .filter(p => Array.isArray(p.employeeIds) && p.employeeIds.includes(createdByEmployeeId))
           .map(p => p.id);
         if (myProjectIds.length === 0) {
           message = 'No projects found • Showing tasks without project assignment';
@@ -836,6 +1113,8 @@ if (!state) {
       calendarMessage.innerText = message;
       calendarMessage.style.display = hideCalendar && message ? 'block' : 'none';
       mainCalendar.style.display = hideCalendar ? 'none' : '';
+      // Renderizar legend SOLO con las tareas filtradas
+      calendarContainer.appendChild(createCalendarLegend(this.tasks));
     }
     
   }
@@ -860,16 +1139,18 @@ if (!state) {
       await this.loadProjectsFromService();
       await this.loadCategories();
       await this.fetchTasks();
+      this.setupFilterListeners();
+      // await this.fetchTasks();
       await this.loadCreatorsFromBackend();
       this.populateProjectSelect();
       this.populateCategorySelect();
       this.populateCreatorSelect();
-      // Ya no se renderiza la lista, solo en el calendario
-      this.setupFilterListeners();
+     
+
     } catch (err) {
       console.error('Initialization error:', err);
     }
-  }
+  } 
 
   // Llena el select de proyectos con los datos cargados
   populateProjectSelect(): void {
@@ -913,17 +1194,17 @@ if (!state) {
     }
 
     const state = this.auth.getState?.();
-    let myEmployeeId = state?.employeeId != null ? Number(state.employeeId) : null;
+    let createdByEmployeeId = state?.employeeId != null ? Number(state.employeeId) : null;
     const myUsername = state?.username ?? null;
 
-    if (!myEmployeeId && myUsername && Array.isArray(this.editTaskEmployees) && this.editTaskEmployees.length > 0) {
-      // Fallback: buscar por username si no viene en el token
+    // Fallback: buscar por username si no viene en el token
+    if ((!createdByEmployeeId || isNaN(createdByEmployeeId)) && myUsername && Array.isArray(this.editTaskEmployees) && this.editTaskEmployees.length > 0) {
       const found = this.editTaskEmployees.find((e: any) => String(e.username).toLowerCase() === String(myUsername).toLowerCase());
       if (found && found.id) {
-        myEmployeeId = found.id;
+        createdByEmployeeId = found.id;
       }
     }
-    this.myEmployeeId = myEmployeeId;
+    this.createdByEmployeeId = createdByEmployeeId;
 
 
     // Actualizar UI con info de usuario (si tienes user-info en el template)

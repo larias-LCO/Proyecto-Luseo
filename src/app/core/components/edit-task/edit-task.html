@@ -16,20 +16,20 @@
           <h3 class="section-title">📁 Project Information</h3>
           <div class="form-group">
             <label>Project</label>
-            <select [(ngModel)]="task.projectId" name="projectId" (change)="loadPhases(task.projectId)" [disabled]="isUserOnly && !canEditTask">
+            <select [(ngModel)]="task.projectId" name="projectId" (change)="loadPhases(task.projectId)" [disabled]="!canEditTask">
               <option *ngFor="let p of allProjects" [value]="p.id">{{ p.name }}</option>
             </select>
           </div>
           <div class="form-group">
             <label>Phase</label>
-            <select [(ngModel)]="task.projectPhaseId" name="projectPhaseId" (change)="loadPhases(task.projectPhaseId)" [disabled]="isUserOnly && !canEditTask">
+            <select [(ngModel)]="task.projectPhaseId" name="projectPhaseId" (change)="loadPhases(task.projectPhaseId)" [disabled]="!canEditTask">
               <option *ngFor="let ph of projectPhaseId" [value]="ph.id">{{ ph.phase }}</option>
               <option value="None">None</option>
             </select>
           </div>
           <div class="form-group">
             <label>Category *</label>
-            <select [(ngModel)]="task.taskCategoryId" name="taskCategoryId" [disabled]="isUserOnly && !canEditTask">
+            <select [(ngModel)]="task.taskCategoryId" name="taskCategoryId" [disabled]="!canEditTask">
               <option *ngFor="let c of categories" [value]="c.id">{{ c.name }}</option>
             </select>
           </div>
@@ -38,16 +38,16 @@
           <h3 class="section-title">📅 Dates & Status</h3>
           <div class="form-group">
             <label>Issued Date</label>
-            <input type="date" [(ngModel)]="task.issuedDate" name="issuedDate" [disabled]="isUserOnly && !canEditTask" />
+            <input type="date" [(ngModel)]="task.issuedDate" name="issuedDate" [disabled]="!canEditTask" />
           </div>
           <div class="form-group" *ngIf="showEndDate">
             <label>End Date (Vacations Only)</label>
-            <input type="date" [(ngModel)]="task.endDate" name="endDate" [disabled]="isUserOnly && !canEditTask" />
+            <input type="date" [(ngModel)]="task.endDate" name="endDate" [disabled]="!canEditTask" />
             <small style="color: #64748b; font-size: 12px;">Tasks will be created for each day in the range</small>
           </div>
           <div class="form-group">
             <label>Status *</label>
-            <select [(ngModel)]="task.status" name="status" [disabled]="isUserOnly && !canEditTask">
+            <select [(ngModel)]="task.status" name="status" [disabled]="!canEditTask">
               <option value="IN_PROGRESS">In Progress</option>
               <option value="COMPLETED">Completed</option>
               <option value="PAUSED">Paused</option>
@@ -65,15 +65,15 @@
       </div>
       <div class="description">
         <label><span class="icon">📄</span>Description</label>
-        <textarea [(ngModel)]="task.description" name="description" [disabled]="isUserOnly && !canEditTask"></textarea>
+        <textarea [(ngModel)]="task.description" name="description" [disabled]="!canEditTask"></textarea>
       </div>
     </form>
   </div>
   <div class="modal-footer">
     <div class="actions">
-      <button *ngIf="canDeleteTask && (!isUserOnly || canEditTask)" type="button" class="btn-delete" (click)="deleteTask()"><span class="icon">🗑️</span> Delete</button>
+      <button *ngIf="canDeleteTask" type="button" class="btn-delete" (click)="deleteTask()"><span class="icon">🗑️</span> Delete</button>
       <button type="button" class="cancel-btn" (click)="closeModal()"><span class="icon">❌</span> Cancel </button>
-      <button *ngIf="canEditTask && (!isUserOnly || canEditTask)" type="button" class="save-btn" (click)="saveTask()"><span class="icon">📝</span> Save Changes</button>
+      <button *ngIf="canEditTask" type="button" class="save-btn" (click)="saveTask()"><span class="icon">📝</span> Save Changes</button>
       <!-- MODAL DE ÉXITO PERSONALIZADO -->
       <div *ngIf="showSuccessModal" class="modal-show" style="z-index:9999;background:rgba(0,0,0,0.18);display:flex;align-items:center;justify-content:center;position:fixed;left:0;top:0;width:100vw;height:100vh;">
         <div style="background:#fff;padding:32px 36px 28px 36px;border-radius:16px;box-shadow:0 2px 16px rgba(0,0,0,0.10);text-align:center;min-width:320px;max-width:90vw;margin:auto;">

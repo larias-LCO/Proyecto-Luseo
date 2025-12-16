@@ -168,28 +168,26 @@ constructor(
     this.software = (this.software || []).slice().sort(byName);
     this.departments = (this.departments || []).slice().sort(byName);
     this.employees = (this.employees || []).slice().sort(byName);
+    // LOG: Empleados cargados
+    console.log('[VALIDACIÓN] Empleados cargados:', this.employees);
+    if (!this.employees || this.employees.length === 0) {
+      console.warn('[VALIDACIÓN] No se cargaron empleados. Revisa la respuesta de loadCatalogs.');
+    }
     this.projectFiltersService.setEmployees(this.employees);
-    // // Debug: mostrar empleados en el servicio
-      // Debug: mostrar empleados antes de setEmployees
-      console.log('[DEBUG] Empleados cargados para setEmployees:', this.employees);
-      this.employees = (this.employees || []).slice().sort(byName);
-      // Log IDs de empleados
-      console.log('[DEBUG] IDs de empleados:', this.employees.map(e => e.id));
-      this.projectFiltersService.setEmployees(this.employees);
-      // Debug: mostrar empleados en el servicio
-      console.log('[DEBUG] Empleados en servicio (projectFiltersService.employeesAll):', this.projectFiltersService.employeesAll);
+    // LOG: Empleados en el servicio
+    console.log('[VALIDACIÓN] Empleados en servicio (projectFiltersService.employeesAll):', this.projectFiltersService.employeesAll);
 
-      // Esperar a que los empleados estén cargados antes de pedir managers
-      const managerOptionsRaw = await this.projectFiltersService.getManagerFilterOptions();
-      console.log('[DEBUG] Opciones crudas de managerOptions:', managerOptionsRaw);
-      this.managerOptions = managerOptionsRaw.slice().sort(byName);
-      console.log('[DEBUG] ManagerOptions cargados (final):', this.managerOptions);
+    // Esperar a que los empleados estén cargados antes de pedir managers
+    const managerOptionsRaw = await this.projectFiltersService.getManagerFilterOptions();
+    console.log('[VALIDACIÓN] Opciones crudas de managerOptions:', managerOptionsRaw);
+    this.managerOptions = managerOptionsRaw.slice().sort(byName);
+    console.log('[VALIDACIÓN] ManagerOptions cargados (final):', this.managerOptions);
 
-      // Validar coincidencias de IDs entre pmIds y empleados
-      if (Array.isArray(this.managerOptions) && this.managerOptions.length === 0) {
-        console.warn('[DEBUG] managerOptions está vacío. Verifica que los pmIds de los proyectos coincidan con los IDs de empleados.');
-      }
-    this.loadProjects();
+    // Validar coincidencias de IDs entre pmIds y empleados
+    if (Array.isArray(this.managerOptions) && this.managerOptions.length === 0) {
+      console.warn('[VALIDACIÓN] managerOptions está vacío. Verifica que los pmIds de los proyectos coincidan con los IDs de empleados.');
+    }
+    await this.loadProjects();
     // El modal de creación es manejado por el CreateProjectComponent
   }
 
@@ -197,14 +195,14 @@ constructor(
 
 // --- Mostrar modal de detalles ---
 openProjectDetails(idOrProject: any) {
-  // Accept either an id (number) or a full project object. Prefer id when possible so details are fetched from backend.
+// Acepte una identificación (número) o un objeto de proyecto completo. Prefiera la identificación cuando sea posible para que los detalles se obtengan del backend.
   if (typeof idOrProject === 'number' || typeof idOrProject === 'string') {
     this.selectedProject = null;
     this.selectedProjectId = Number(idOrProject);
     this.debug('🟢 Abriendo modal del proyecto (by id):', this.selectedProjectId);
   } else {
-    // If the caller passes a full project object we open modal immediately with it for instant UX
-    // and still set selectedProjectId so the details component can optionally re-fetch/enrich the data.
+// Si la persona que llama pasa un objeto de proyecto completo, abrimos modal inmediatamente con él para una experiencia de usuario instantánea
+    // y aún configura selectedProjectId para que el componente de detalles pueda, opcionalmente, volver a buscar/enriquecer los datos.
     this.selectedProject = idOrProject;
     this.selectedProjectId = idOrProject && idOrProject.id ? Number(idOrProject.id) : null;
     this.debug('🟢 Abriendo modal del proyecto (by object):', this.selectedProject && this.selectedProject.id ? this.selectedProject.id : this.selectedProject);
@@ -454,7 +452,11 @@ onPageSizeChange() {
       this.debug('📄 PageInfo:', pageInfo);
       this.projects = Array.isArray(items) ? items : [];
       this.pageInfo = pageInfo;
-      console.log('Projects:', this.projects); // Depuración: muestra los proyectos recibidos
+      // LOG: Proyectos cargados
+      console.log('[VALIDACIÓN] Proyectos cargados:', this.projects);
+      if (!this.projects || this.projects.length === 0) {
+        console.warn('[VALIDACIÓN] No se cargaron proyectos. Revisa la respuesta de projectService.loadProjects.');
+      }
       // Actualizar el filtro de Project Manager
       this.fillManagerFilter();
     } catch (error) {

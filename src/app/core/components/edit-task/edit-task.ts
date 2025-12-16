@@ -21,7 +21,26 @@ export class EditTask implements OnInit, OnChanges {
      * Se debe setear desde el padre (TasksPage) según la lógica de permisos.
      */
     @Input() canEditTask: boolean = false;
-  @Input() canDeleteTask: boolean = false;
+    @Input() canDeleteTask: boolean = false;
+
+    // Refuerzo: asegúrate de que los botones se actualicen si los inputs cambian
+    ngOnChanges(changes: SimpleChanges): void {
+      if (changes['canEditTask'] || changes['canDeleteTask']) {
+        // Forzar actualización de la vista si es necesario
+        // (Angular lo hace automáticamente, pero esto es explícito)
+        this.canEditTask = !!this.canEditTask;
+        this.canDeleteTask = !!this.canDeleteTask;
+      }
+      // Mostrar End Date si la categoría es 'Out of office' (inmediato al recibir inputs)
+      if (
+        (this.task?.taskCategoryName && this.task.taskCategoryName.toLowerCase() === 'out of office') ||
+        (this.categories && this.task?.taskCategoryId && this.categories.find(c => c.id === this.task.taskCategoryId && c.name && c.name.toLowerCase() === 'out of office'))
+      ) {
+        this.showEndDate = true;
+      } else {
+        this.showEndDate = false;
+      }
+    }
 
 
   
@@ -95,17 +114,17 @@ export class EditTask implements OnInit, OnChanges {
     }
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    // Mostrar End Date si la categoría es 'Out of office' (inmediato al recibir inputs)
-    if (
-      (this.task?.taskCategoryName && this.task.taskCategoryName.toLowerCase() === 'out of office') ||
-      (this.categories && this.task?.taskCategoryId && this.categories.find(c => c.id === this.task.taskCategoryId && c.name && c.name.toLowerCase() === 'out of office'))
-    ) {
-      this.showEndDate = true;
-    } else {
-      this.showEndDate = false;
-    }
-  }
+  // ngOnChanges(changes: SimpleChanges): void {
+  //   // Mostrar End Date si la categoría es 'Out of office' (inmediato al recibir inputs)
+  //   if (
+  //     (this.task?.taskCategoryName && this.task.taskCategoryName.toLowerCase() === 'out of office') ||
+  //     (this.categories && this.task?.taskCategoryId && this.categories.find(c => c.id === this.task.taskCategoryId && c.name && c.name.toLowerCase() === 'out of office'))
+  //   ) {
+  //     this.showEndDate = true;
+  //   } else {
+  //     this.showEndDate = false;
+  //   }
+  // }
 
   async loadPhases(projectId: number) {
     if (projectId === null || projectId === undefined || projectId === 0) {
