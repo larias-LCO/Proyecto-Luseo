@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { inject } from '@angular/core';
 import { CommonModule, NgForOf, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CatalogsService, Employee } from './../../core/services/catalogs.service';
@@ -14,6 +15,9 @@ import { ProjectPayload } from '../../core/services/project.service';
 import { CreateEditHelper } from '../../shared/create-edit';
 import { ProjectDetailsComponent } from '../../core/components/project-details/project-details';
 import { ProjectService } from '../../core/services/project.service';
+import { WebsocketService } from '../../core/services/websocket.service';
+import { debounceTime } from 'rxjs/operators';
+import { Subject, Subscription } from 'rxjs';
 
 
 @Component({
@@ -25,6 +29,13 @@ import { ProjectService } from '../../core/services/project.service';
   providers: [ProjectService],
 })
 export class ProjectsPage implements OnInit {
+
+  // WebSocket y subs para eventos en tiempo real
+
+private ws = inject(WebsocketService);
+private wsRefresh$ = new Subject<void>();
+private subs = new Subscription();
+
   
    private createEdit: CreateEditHelper;
   @ViewChild(CreateProjectComponent) createProjectRef?: CreateProjectComponent;
@@ -95,6 +106,10 @@ constructor(
   selectedProject: any | null = null;
   selectedProjectId: number | null = null;
 
+
+
+  
+
   /**
    * Abre el modal de edición para el proyecto dado.
    * Puede delegar a un componente, helper o lógica global según arquitectura.
@@ -148,6 +163,7 @@ constructor(
     }
   }
 
+  
 
   
   // --- Inicialización ---
@@ -158,6 +174,23 @@ constructor(
       window.location.href = '/login';
       return;
     }
+ 
+// --- Configuración de WebSocket para actualizaciones en tiempo real ---
+
+  const wsSub = this.ws.subscribe('project').subscribe((event: any) => {
+  console.log('WS PROJECT EVENT', event);
+  this.wsRefresh$.next();
+});
+this.subs.add(wsSub);
+
+const wsDebounceSub = this.wsRefresh$
+  .pipe(debounceTime(500))
+  .subscribe(() => {
+    this.loadProjects();
+  });
+this.subs.add(wsDebounceSub);
+ //=======================================================================
+    
     // --- Inicialización de catálogos y proyectos ---
     await this.loadCatalogs();
     this.enums = await this.enumsService.loadEnums();
@@ -715,4 +748,5 @@ onPageSizeChange() {
     }
     this.closeProjectDetails();
   }
+
 }

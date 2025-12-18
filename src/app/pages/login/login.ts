@@ -12,7 +12,7 @@ import { AuthService } from '../../core/services/auth.service';
   styleUrls: ['./login.scss']
 })
 export class LoginComponent implements OnInit {
-  loading = false;
+  loading = false; 
   errorMsg = '';
   form!: FormGroup;
 

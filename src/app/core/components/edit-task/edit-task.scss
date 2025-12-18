@@ -44,6 +44,20 @@ input[disabled], select[disabled], textarea[disabled] {
   z-index: 9999;
   overflow: hidden;
   padding-bottom: 1rem;
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.85);
+  animation: modalZoomIn 0.32s cubic-bezier(0.4,0,0.2,1) forwards;
+}
+
+@keyframes modalZoomIn {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.85);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
 }
 
 .modal-header{

@@ -1,4 +1,3 @@
-
 import { Component, ChangeDetectorRef } from '@angular/core';
 import { createTaskCard } from '../../../shared/task-card.helper';
 import { createTypeSection as createToggleSection } from '../section-toggle/section-toggle';
@@ -37,6 +36,7 @@ export class CalendarTask {
       if (this.calendar && this.calendar.getApi()) {
         this.calendarViewType = this.calendar.getApi().view?.type || null;
         this.cdr.detectChanges();
+         this.addCompactClassToDays();
       }
     });
     // Renderizar el botón show/hide que controla el calendario
@@ -62,12 +62,69 @@ export class CalendarTask {
     hiddenDays: [0, 6], // 0 = domingo, 6 = sábado
     height: 'auto',
     contentHeight: 'auto',
+    dayMaxEventRows: false,
+    dayMaxEvents: false,
+    eventOrderStrict: true,
+    eventOverlap: false,
+    eventDisplay: 'block',
+    eventOrder: function(a: any, b: any) {
+      let priorityA = 300;
+      let priorityB = 300;
+      const aIsHoliday = !!(a.extendedProps && (a.extendedProps.isHoliday || a.extendedProps.task?.isHoliday));
+      if (aIsHoliday) priorityA = 100;
+      const bIsHoliday = !!(b.extendedProps && (b.extendedProps.isHoliday || b.extendedProps.task?.isHoliday));
+      if (bIsHoliday) priorityB = 100;
+      if (!aIsHoliday) {
+        let aIsOutOfOffice = a.extendedProps?.isOutOfOffice;
+        if (!aIsOutOfOffice) {
+          const taskA = a.extendedProps?.task || {};
+          const categoryNameA = (taskA.taskCategoryName || '').toLowerCase();
+          aIsOutOfOffice = categoryNameA.includes('out of office');
+        }
+        if (aIsOutOfOffice) priorityA = 200;
+      }
+      if (!bIsHoliday) {
+        let bIsOutOfOffice = b.extendedProps?.isOutOfOffice;
+        if (!bIsOutOfOffice) {
+          const taskB = b.extendedProps?.task || {};
+          const categoryNameB = (taskB.taskCategoryName || '').toLowerCase();
+          bIsOutOfOffice = categoryNameB.includes('out of office');
+        }
+        if (bIsOutOfOffice) priorityB = 200;
+      }
+      if (priorityA !== priorityB) {
+        return priorityA - priorityB;
+      }
+      if (priorityA >= 100) {
+        const taskA = a.extendedProps?.task || {};
+        const taskB = b.extendedProps?.task || {};
+        const typeA = taskA.projectType || 'ZZZ';
+        const typeB = taskB.projectType || 'ZZZ';
+        const subPriorityA = typeA === 'COMMERCIAL' ? 1 : typeA === 'RESIDENTIAL' ? 2 : 3;
+        const subPriorityB = typeB === 'COMMERCIAL' ? 1 : typeB === 'RESIDENTIAL' ? 2 : 3;
+        if (subPriorityA !== subPriorityB) return subPriorityA - subPriorityB;
+        const codeA = (taskA.projectCode || '').toUpperCase();
+        const codeB = (taskB.projectCode || '').toUpperCase();
+        if (codeA !== codeB) return codeA.localeCompare(codeB);
+        const nameA = (taskA.name || '').toUpperCase();
+        const nameB = (taskB.name || '').toUpperCase();
+        return nameA.localeCompare(nameB);
+      }
+      return 0;
+    },
     datesSet: this.onDatesSet.bind(this),
     eventContent: (arg: any) => {
       const t = arg.event.extendedProps && arg.event.extendedProps.task ? arg.event.extendedProps.task : arg.event;
       if (!t) return { domNodes: [document.createTextNode(arg.event.title || '')] };
+      // Calcular cuántas tareas hay en ese día
+      let taskCount = 1;
       try {
-        const card = createTaskCard(t, { compact: true });
+        const dateStr = arg.event.startStr?.slice(0, 10);
+        let allEvents = arg.view?.calendar?.getEvents?.() || [];
+        if (dateStr && allEvents.length > 0) {
+          taskCount = allEvents.filter((ev: any) => ev.startStr?.slice(0, 10) === dateStr).length;
+        }
+        const card = createTaskCard(t, { taskCount });
         return { domNodes: [card] };
       } catch {
         return { domNodes: [document.createTextNode(arg.event.title || '')] };
@@ -80,7 +137,25 @@ export class CalendarTask {
     this.calendarViewType = arg.view.type;
     // Soluciona ExpressionChangedAfterItHasBeenCheckedError
     Promise.resolve(() => this.cdr.detectChanges());
+  this.addCompactClassToDays();
   }
+
+  // Esta función agrega la clase .more-than-3 a los días con más de 3 tareas
+addCompactClassToDays() {
+  setTimeout(() => {
+    // Selecciona todos los días del calendario
+    const dayCells = document.querySelectorAll('.fc-daygrid-day');
+    dayCells.forEach(cell => {
+      // Busca las tarjetas dentro de cada celda
+      const cards = cell.querySelectorAll('.gt-card');
+      if (cards.length > 3) {
+        cell.classList.add('more-than-3');
+      } else {
+        cell.classList.remove('more-than-3');
+      }
+    });
+  }, 0);
+}
 
   // Cambia la fecha visible del calendario
 setCalendarDate(date: string) {

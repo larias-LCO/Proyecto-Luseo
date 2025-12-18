@@ -78,8 +78,15 @@ export class CalendarWeekPrev {
     eventContent: (arg: any) => {
       const t = arg.event.extendedProps && arg.event.extendedProps.task ? arg.event.extendedProps.task : arg.event;
       if (!t) return { domNodes: [document.createTextNode(arg.event.title || '')] };
+      // Calcular cuántas tareas hay en ese día
+      let taskCount = 1;
       try {
-        const card = createTaskCard(t, { compact: true });
+        const dateStr = arg.event.startStr?.slice(0, 10);
+        let allEvents = arg.view?.calendar?.getEvents?.() || [];
+        if (dateStr && allEvents.length > 0) {
+          taskCount = allEvents.filter((ev: any) => ev.startStr?.slice(0, 10) === dateStr).length;
+        }
+        const card = createTaskCard(t, { taskCount });
         return { domNodes: [card] };
       } catch {
         return { domNodes: [document.createTextNode(arg.event.title || '')] };

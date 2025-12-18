@@ -57,7 +57,7 @@ export class EditTask implements OnInit, OnChanges {
       if (res.status === 204 || res.status === 200) {
         this.message = 'Task deleted successfully!';
         this.close.emit();
-        // Aquí puedes refrescar la lista de tareas si lo necesitas
+        setTimeout(() => { window.location.reload(); }, 300);
       } else {
         this.message = 'Error deleting task: ' + res.statusText;
       }
@@ -71,7 +71,6 @@ export class EditTask implements OnInit, OnChanges {
       }
     }
     this.loading = false;
-    
   }
 
     getEmployeeNameById(id: number): string {
@@ -111,6 +110,25 @@ export class EditTask implements OnInit, OnChanges {
     // Cargar fases si hay proyecto
     if (this.task?.projectId && this.task.projectId !== 'None' && this.task.projectId !== null && this.task.projectId !== undefined) {
       await this.loadPhases(this.task.projectId);
+    }
+    // Asegurar que el proyecto de la tarea esté en allProjects
+    if (this.task?.projectId && this.task.projectId !== 'None' && this.task.projectId !== null && this.task.projectId !== undefined) {
+      const exists = this.allProjects.some(p => String(p.id) === String(this.task.projectId));
+      if (!exists) {
+        try {
+          const project = await this.projectService.getProjectById(Number(this.task.projectId));
+          if (project && project.id) {
+            this.allProjects = [...this.allProjects, project];
+          }
+        } catch (err) {
+          // Si no se encuentra el proyecto, opcional: mostrar un fallback
+          // this.message = 'El proyecto de esta tarea no está disponible.';
+        }
+      }
+    }
+    // Por default Phase = None si no hay valor
+    if (!this.task?.projectPhaseId) {
+      this.task.projectPhaseId = 'None';
     }
   }
 

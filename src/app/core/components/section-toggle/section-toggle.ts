@@ -53,4 +53,7 @@ export function createTypeSection(title: string, collapsible: boolean = false, s
     }
 
     return section;
+
+    
 }
+

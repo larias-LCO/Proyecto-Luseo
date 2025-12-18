@@ -1,7 +1,6 @@
-
 // Helper global para peticiones GET autenticadas
 export async function apiGet<T = any>(path: string): Promise<T> {
-  const apiBase = (window as any).Auth?.getState?.().apiBase || 'https://api-pruebas.luseoeng.com';
+  const apiBase = (window as any).Auth?.getState?.().apiBase || 'https://api.luseoeng.com';
   const url = apiBase.replace(/\/\$/, '') + path;
   let res: Response;
   const token = (window as any).Auth?.getState?.().token || localStorage.getItem('auth.token') || localStorage.getItem('token');
@@ -38,7 +37,7 @@ export async function apiGet<T = any>(path: string): Promise<T> {
 
 
 export async function apiDelete(path: string): Promise<any> {
-  const apiBase = (window as any).Auth?.getState?.().apiBase || 'https://api-pruebas.luseoeng.com';
+  const apiBase = (window as any).Auth?.getState?.().apiBase || 'https://api.luseoeng.com';
   const url = apiBase.replace(/\/$/, '') + path;
   let res: Response;
   if ((window as any).Auth && typeof (window as any).Auth.fetchWithAuth === 'function') {
@@ -141,8 +140,16 @@ export async function deleteGeneralTask(taskId: number, taskName: string): Promi
   if (!confirm(`Are you sure you want to delete the task "${taskName}"?\n\nNote: This will also delete all associated subtasks.`)) return;
   try {
     await apiDelete(`/general-tasks/${taskId}`);
-    // Refresh immediately without alert (non-invasive)
+    // Emitir evento WebSocket para notificar a otros clientes
+    try {
+      const ws = (window as any).ng?.getInjector?.(WebsocketService)?.get(WebsocketService) || (window as any).wsService;
+      if (ws && typeof ws.send === 'function') {
+        ws.send('task', { action: 'delete', taskId });
+      }
+    } catch (e) { console.warn('No se pudo emitir evento WebSocket de borrado de tarea', e); }
+    // Refrescar la vista y recargar la página para asegurar actualización
     await renderTasksView();
+    window.location.reload();
   } catch (err: any) {
     console.error('Error deleting task:', err);
     // Provide helpful error message
@@ -177,7 +184,7 @@ export async function onEditTaskClosed() {
 export function createCalendarLegend(tasks: Array<{ taskCategoryName?: string; taskCategoryColorHex?: string }>): HTMLDivElement {
   const legend = document.createElement('div');
   legend.className = 'calendar-legend';
-  legend.style.cssText = 'display: flex; flex-wrap: wrap; gap: 12px; align-items: center; padding: 12px 16px; background: linear-gradient(135deg, #f8fafc, #eef6ff); border-radius: 10px; margin-bottom: 16px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);';
+  legend.style.cssText = 'display: flex; flex-wrap: wrap; gap: 12px; align-items: center; padding: 12px 16px; background: linear-gradient(135deg, #f8fafc, #eef6ff); border-radius: 4px; margin-bottom: 16px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);';
 
   // Title
   const title = document.createElement('span');
@@ -197,13 +204,13 @@ export function createCalendarLegend(tasks: Array<{ taskCategoryName?: string; t
   if (hasCommercial) {
     const commercialBadge = document.createElement('span');
     commercialBadge.innerHTML = '🏢 Commercial';
-    commercialBadge.style.cssText = 'display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; background: #7DD3FC; color: #000000; border-radius: 6px; font-size: 12px; font-weight: 700; box-shadow: 0 1px 3px rgba(0,0,0,0.2);';
+    commercialBadge.style.cssText = 'display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; background: #7DD3FC; color: #000000; border-radius: 4px; font-size: 12px; font-weight: 700; box-shadow: 0 1px 3px rgba(0,0,0,0.2);';
     projectTypesContainer.appendChild(commercialBadge);
   }
   if (hasResidential) {
     const residentialBadge = document.createElement('span');
     residentialBadge.innerHTML = '🏠 Residential';
-    residentialBadge.style.cssText = 'display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; background: #6EE7B7; color: #000000; border-radius: 6px; font-size: 12px; font-weight: 700; box-shadow: 0 1px 3px rgba(0,0,0,0.2);';
+    residentialBadge.style.cssText = 'display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; background: #6EE7B7; color: #000000; border-radius: 4px; font-size: 12px; font-weight: 700; box-shadow: 0 1px 3px rgba(0,0,0,0.2);';
     projectTypesContainer.appendChild(residentialBadge);
   }
   if (hasCommercial || hasResidential) {
@@ -225,7 +232,7 @@ export function createCalendarLegend(tasks: Array<{ taskCategoryName?: string; t
   sortedCategories.forEach(([categoryName, colorHex]: [string, string]) => {
     const categoryBadge = document.createElement('span');
     categoryBadge.textContent = categoryName;
-    categoryBadge.style.cssText = `display: inline-flex; align-items: center; padding: 4px 10px; background: ${colorHex}; color: ${getContrastColor(colorHex)}; border-radius: 6px; font-size: 11px; font-weight: 700; border: 1px solid ${darkenColor(colorHex, 15)}; box-shadow: 0 1px 2px rgba(0,0,0,0.15);`;
+    categoryBadge.style.cssText = `display: inline-flex; align-items: center; padding: 4px 10px; background: ${colorHex}; color: ${getContrastColor(colorHex)}; border-radius: 4px; font-size: 11px; font-weight: 700; border: 1px solid ${darkenColor(colorHex, 15)}; box-shadow: 0 1px 2px rgba(0,0,0,0.15);`;
     categoriesContainer.appendChild(categoryBadge);
   });
   legend.appendChild(categoriesContainer);
@@ -308,7 +315,19 @@ function darkenColor(hex: string, percent: number): string {
 
 function showGeneralTaskDetails(id: number, name: string) {
   // Aquí deberías abrir el modal de edición o detalles
-  alert(`Abrir detalles de la tarea: ${name} (ID: ${id})`);
+  // Mostrar información de la tarea o holiday en un modal personalizado
+  const idStr = String(id);
+  if (idStr.startsWith('holiday-')) {
+    // Buscar el holiday correspondiente
+    const holiday = allHolidays.find(h => `holiday-${h.date}-${h.countryCode}` === idStr);
+    if (holiday) {
+      const message = `<div style='font-size:1.2em;'><span style='font-size:1.5em;'>🎉</span> <b>${holiday.name}</b></div><div style='margin-top:0.5em;'><b>País:</b> ${holiday.countryCode === 'CO' ? 'Colombia' : holiday.countryCode === 'US' ? 'USA' : holiday.countryCode || ''}</div><div><b>Fecha:</b> ${holiday.date}</div>`;
+      showCustomModal(message, 'Aceptar');
+      return;
+    }
+  }
+  // Si no es holiday, mostrar info de la tarea normal
+  showCustomModal(`<b>Detalles de la tarea:</b><br>${name} (ID: ${id})`, 'Aceptar');
 }
     
 // Helper para obtener el label de status
@@ -323,7 +342,61 @@ export function getStatusLabel(status: string): string {
 
 
 // Usa el helper global para renderizar la tarjeta de tarea
+
 import { createTaskCard } from '../../shared/task-card.helper';
+// Modal personalizado para alertas
+export function showCustomModal(message: string, confirmText = 'Aceptar') {
+  // Si ya existe un modal, no crear otro
+  if (document.getElementById('custom-confirm-modal')) return;
+  const modal = document.createElement('div');
+  modal.id = 'custom-confirm-modal';
+  modal.innerHTML = `
+    <div class="modal-backdrop" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(30,32,38,0.55);display:flex;align-items:center;justify-content:center;z-index:2000;backdrop-filter:blur(2px);transition:background 0.3s;">
+      <div class="modal-content" style="background:linear-gradient(135deg,#232526 0%,#414345 100%);color:#f3f4f6;padding:2.2rem 2.5rem;border-radius:18px;min-width:370px;max-width:92vw;box-shadow:0 8px 32px 0 rgba(31,38,135,0.37);border:1.5px solid #fff2;border-bottom:4px solid #013dad7e;position:relative;overflow:hidden;transform:scale(0.95);opacity:0;transition:all 0.25s cubic-bezier(.4,2,.6,1);font-family:'Segoe UI',Roboto,sans-serif;">
+        <div style="position:absolute;top:18px;right:18px;cursor:pointer;font-size:1.5em;color:#fff9;transition:color 0.2s;" id="custom-modal-close" title="Close">✖️</div>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:1.2rem;">
+          <span style="font-size:2.2em;">🎉</span>
+          <span style="font-size:1.25em;font-weight:700;letter-spacing:0.5px;line-height:1.1;">${message}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:0.7em;">
+          <span style="font-size:1.3em;">🌎</span>
+          <span style="font-size:1em;font-weight:500;">Country:</span>
+          <span style="font-size:1em;font-weight:700;letter-spacing:0.5px;">{COUNTRY}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:1.2em;">
+          <span style="font-size:1.3em;">📅</span>
+          <span style="font-size:1em;font-weight:500;">Date:</span>
+          <span style="font-size:1em;font-weight:700;letter-spacing:0.5px;">{DATE}</span>
+        </div>
+        <div style="display:flex;justify-content:flex-end;gap:1rem;">
+          <button id="custom-confirm-btn" style="padding:0.6rem 2.2rem;background:linear-gradient(90deg,#b90a0a 0%,#800202 100%);color:#fff;border:none;border-radius:6px;font-size:1.08em;font-weight:600;cursor:pointer;box-shadow:0 2px 8px #0c8ef880;transition:background 0.2s;letter-spacing:0.5px;">${confirmText}</button>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  // Transición de entrada
+  setTimeout(() => {
+    const content = modal.querySelector('.modal-content') as HTMLElement;
+    if (content) {
+      content.style.transform = 'scale(1)';
+      content.style.opacity = '1';
+    }
+  }, 10);
+  // Cerrar modal
+  document.getElementById('custom-confirm-btn')?.addEventListener('click', () => {
+    modal.remove();
+  });
+  document.getElementById('custom-modal-close')?.addEventListener('click', () => {
+    modal.remove();
+  });
+  // Cerrar con Escape
+  modal.addEventListener('keydown', (e: any) => {
+    if (e.key === 'Escape') modal.remove();
+  });
+  modal.tabIndex = -1;
+  modal.focus();
+}
 
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -351,6 +424,11 @@ import {
   tryRefetchCalendars
 } from './render-all.service';
 
+import { inject } from '@angular/core';
+import { WebsocketService } from '../../core/services/websocket.service';
+import { debounceTime } from 'rxjs/operators';
+import { Subject, Subscription } from 'rxjs';
+
 
 @Component({
   selector: 'app-task',
@@ -360,6 +438,12 @@ import {
   styleUrls: ['./task.scss']
 })
 export class TasksPage implements OnInit {
+  // WebSocket y subs para eventos en tiempo real (Angular DI, no window fallbacks)
+private ws = inject(WebsocketService);
+private wsRefresh$ = new Subject<void>();
+private subs = new Subscription();
+
+
   // Eliminar constructor duplicado. El constructor correcto es el que inyecta dependencias:
   // (Constructor duplicado eliminado)
   showMineOnly: boolean = false;
@@ -367,6 +451,8 @@ export class TasksPage implements OnInit {
   @ViewChild('calendarTaskRef') calendarTaskRef?: CalendarTask;
   @ViewChild('calendarWeekPrevRef') calendarWeekPrevRef?: CalendarWeekPrev;
 
+
+  
   /**
    * Devuelve true si el usuario autenticado tiene rol USER (no puede editar/eliminar)
    */
@@ -384,7 +470,10 @@ export class TasksPage implements OnInit {
     this.showCreatedByMe = event.target.checked;
     this.filterTasks();
   }
+  
 
+
+  
 filterTasks() {
           // Log explícito para depuración directa del estado de autenticación
           console.log('[DEBUG][Filtro] this.auth.getState():', this.auth.getState && this.auth.getState());
@@ -432,12 +521,28 @@ filterTasks() {
         name: h.name + (h.countryCode ? ` (${h.countryCode})` : ''),
         issuedDate: h.date,
         taskCategoryName: 'Holiday',
-        taskCategoryColorHex: '#FBBF24', // amarillo
         projectType: 'Holiday',
         isHoliday: true,
-        ...h
+        countryCode: h.countryCode,
+        localName: h.localName,
+        date: h.date
       }));
-      filtered = [...filtered, ...holidayTasks];
+      // Eliminar tareas normales en días festivos
+      const holidayDates = new Set(allHolidays.map(h => h.date));
+      filtered = filtered.filter(t => {
+        const date = t.issuedDate || t.date;
+        // Si es holiday, siempre mostrar
+        if (t.isHoliday) return true;
+        // Si la fecha es festivo, ocultar tarea normal
+        if (date && holidayDates.has(date)) return false;
+        return true;
+      });
+      // Agregar las tarjetas Holiday (si no están ya)
+      holidayTasks.forEach(ht => {
+        if (!filtered.some(t => t.id === ht.id)) {
+          filtered.push(ht);
+        }
+      });
     }
   // // Filtro: solo tareas creadas por mí
   if (this.showCreatedByMe) {
@@ -546,8 +651,11 @@ filterTasks() {
       }
       return match;
     });
+    // // Ordenar antes de asignar
+    // filtered.sort(taskOrder);
     // Forzar refresco del calendario tras asignar this.tasks
     this.tasks = [...filtered];
+    console.log('[DEBUG][filterTasks] Tareas después de filtrar:', this.tasks.length, 'IDs:', this.tasks.map(t => t.id), 'Nombres:', this.tasks.map(t => t.name));
     setTimeout(() => {
       if (this.calendarTaskRef && this.calendarTaskRef.calendar && this.calendarTaskRef.calendar.getApi) {
         const api = this.calendarTaskRef.calendar.getApi();
@@ -583,6 +691,7 @@ filterTasks() {
   filtered.forEach(task => {
     console.log(`ID: ${task.id}, Name: ${task.name}, issuedDate: ${task.issuedDate}, createdDate: ${task.createdDate}`);
   });
+  // filtered.sort(taskOrder);
   this.tasks = [...filtered]; // fuerza nueva referencia siempre
   console.log('[DEBUG][Calendar] this.tasks después de asignar:', this.tasks);
   // Forzar actualización del calendario si es necesario
@@ -816,18 +925,69 @@ if (!state) {
       if (!t) return { domNodes: [document.createTextNode(arg.event.title || '')] };
       try {
         const card = createTaskCard(t, { compact: true });
+        // Interceptar click en tarjeta de holiday para mostrar modal personalizado
+        if (t && t.isHoliday && card) {
+          card.style.cursor = 'pointer';
+          card.onclick = (e: any) => {
+            e.stopPropagation();
+            const message = `<div style='font-size:1.2em;'><span style='font-size:1.5em;'>🎉</span> <b>${t.name}</b></div><div style='margin-top:0.5em;'><b>País:</b> ${t.countryCode === 'CO' ? 'Colombia' : t.countryCode === 'US' ? 'USA' : t.countryCode || ''}</div><div><b>Fecha:</b> ${t.date}</div>`;
+            showCustomModal(message, 'Aceptar');
+          };
+        }
         return { domNodes: [card] };
       } catch {
         return { domNodes: [document.createTextNode(arg.event.title || '')] };
       }
+    },
+    eventClick: (info: any) => {
+      const t = info.event.extendedProps && info.event.extendedProps.task ? info.event.extendedProps.task : info.event;
+      if (t && t.isHoliday) {
+        info.jsEvent.preventDefault();
+        const message = `<div style='font-size:1.2em;'><span style='font-size:1.5em;'>🎉</span> <b>${t.name}</b></div><div style='margin-top:0.5em;'><b>País:</b> ${t.countryCode === 'CO' ? 'Colombia' : t.countryCode === 'US' ? 'USA' : t.countryCode || ''}</div><div><b>Fecha:</b> ${t.date}</div>`;
+        showCustomModal(message, 'Aceptar');
+        return false;
+      }
+      // Si no es holiday, dejar el comportamiento normal
+      return true;
     }
   };
   showCreateTaskModal = false;
   ngOnInit(): void {
     this.init();
     setTimeout(() => this.ngAfterViewInit(), 0);
+    // --- WebSocket: suscripción pasiva a eventos de tareas ---
+    const wsTaskSub = this.ws.subscribe('task').subscribe((event: any) => {
+      console.log('WS TASK EVENT', event);
+      this.wsRefresh$.next();
+    });
+    this.subs.add(wsTaskSub);
+    const wsTaskDebounceSub = this.wsRefresh$
+      .pipe(debounceTime(500))
+      .subscribe(async () => {
+        if (typeof this.fetchTasks === 'function') await this.fetchTasks();
+        if (typeof renderTasksView === 'function') await renderTasksView();
+      });
+    this.subs.add(wsTaskDebounceSub);
+    // --- WebSocket: suscripción pasiva a eventos de proyectos ---
+    const wsProjectSub = this.ws.subscribe('project'
+      
+    ).subscribe((event: any) => {
+      console.log('WS PROJECT EVENT', event);
+      this.wsRefresh$.next();
+    });
+    this.subs.add(wsProjectSub);
+    const wsProjectDebounceSub = this.wsRefresh$
+      .pipe(debounceTime(500))
+      .subscribe(() => {
+        if (typeof this.loadProjectsFromService === 'function') this.loadProjectsFromService();
+      });
+    this.subs.add(wsProjectDebounceSub);
+    
   }
   
+  
+
+
   currentFilters: {
     searchText: string;
     project?: string;
@@ -841,7 +1001,7 @@ if (!state) {
     project: '',
     category: '',
     creator: '',
-    showMineOnly: false,
+    showMineOnly: true,
     myProjects: true,
     week: null
   };
@@ -881,7 +1041,6 @@ if (!state) {
     return this.generalTaskEnums;
   }
 
-  
 
   // ================= FILTROS BACKEND =================
   async loadCreatorsFromBackend(): Promise<void> {
@@ -970,6 +1129,11 @@ if (!state) {
     if (mineOnlyCheckbox) {
       const self = this;
       mineOnlyCheckbox.checked = !!self.currentFilters.showMineOnly;
+      // Si está marcado por defecto, aplicar el filtro inmediatamente
+      if (mineOnlyCheckbox.checked) {
+        this.currentFilters.showMineOnly = true;
+        this.onFilterChange();
+      }
       mineOnlyCheckbox.addEventListener('change', () => {
         this.currentFilters.showMineOnly = mineOnlyCheckbox.checked;
         this.onFilterChange();
@@ -1133,24 +1297,24 @@ if (!state) {
   }
 
   // ========== INITIALIZATION ========== 
-  async init(): Promise<void> {
-    try {
-      await this.initAuth();
-      await this.loadProjectsFromService();
-      await this.loadCategories();
-      await this.fetchTasks();
-      this.setupFilterListeners();
-      // await this.fetchTasks();
-      await this.loadCreatorsFromBackend();
-      this.populateProjectSelect();
-      this.populateCategorySelect();
-      this.populateCreatorSelect();
-     
-
-    } catch (err) {
-      console.error('Initialization error:', err);
-    }
-  } 
+async init(): Promise<void> {
+  try {
+    await this.initAuth();
+    await this.loadProjectsFromService();
+    this.loadHolidaysForCalendar = true;
+    await this.loadGeneralTaskEnums();
+    await this.loadCategories();
+    await loadHolidays(); // <-- AGREGA ESTA LÍNEA AQUÍ
+    await this.fetchTasks();
+    this.setupFilterListeners();
+    await this.loadCreatorsFromBackend();
+    this.populateProjectSelect();
+    this.populateCategorySelect();
+    this.populateCreatorSelect();
+  } catch (err) {
+    console.error('Initialization error:', err);
+  }
+}
 
   // Llena el select de proyectos con los datos cargados
   populateProjectSelect(): void {
@@ -1245,7 +1409,9 @@ if (!state) {
     const base = this.auth.getApiBase();
     const url = `${base.replace(/\/$/, '')}/general-tasks`;
     try {
-      this.allTasks = await firstValueFrom(this.http.get<any[]>(url));
+      const response = await firstValueFrom(this.http.get<any[]>(url));
+      console.log('[DEBUG][fetchTasks] Respuesta cruda del backend:', response);
+      this.allTasks = response;
       console.log('Tareas cargadas:', this.allTasks);
       this.filterTasks();
       // Render calendar legend in etiquetas section
@@ -1288,6 +1454,56 @@ export async function loadHolidays(): Promise<void> {
     } else {
       allHolidays = [];
       console.warn('⚠️ No holidays data received');
+    }
+
+    // Bloquear creación de tareas en días festivos
+    setTimeout(() => {
+      const createTaskBtn = document.getElementById('create-task-btn');
+      if (createTaskBtn) {
+        createTaskBtn.addEventListener('click', (e: any) => {
+          // Obtener la fecha seleccionada en el calendario (si aplica)
+          let selectedDate = null;
+          const calendar = document.querySelector('.fc');
+          if (calendar && calendar.getAttribute('data-selected-date')) {
+            selectedDate = calendar.getAttribute('data-selected-date');
+          }
+          // Si no hay selección, usar hoy
+          if (!selectedDate) {
+            selectedDate = new Date().toISOString().slice(0, 10);
+          }
+          // Revisar si la fecha es festivo
+          const isHoliday = allHolidays.some(h => h.date === selectedDate);
+          if (isHoliday) {
+            e.preventDefault();
+            showCustomModal('No se pueden crear tareas en días festivos.');
+            return false;
+          }
+          return true;
+        }, true);
+      }
+    }, 0);
+
+    // Ocultar tareas en días festivos
+    if (window && (window as any).tasksPageInstance) {
+      const instance = (window as any).tasksPageInstance;
+      if (Array.isArray(instance.allTasks)) {
+        const holidayDates = allHolidays.map(h => h.date);
+        instance.allTasks = instance.allTasks.filter((t: any) => {
+          if (!t) return false;
+          const date = t.issuedDate || t.date;
+          if (t.isHoliday) {
+            return true;
+          }
+          if (date && holidayDates.includes(date)) {
+            return false;
+          }
+          return true;
+        });
+        // Refrescar vista
+        if (typeof instance.filterTasks === 'function') {
+          instance.filterTasks();
+        }
+      }
     }
   } catch (err) {
     console.error('❌ Error loading holidays:', err);
