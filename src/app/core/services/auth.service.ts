@@ -32,14 +32,10 @@ export class AuthService {
         const parts = token.split('.');
         if (parts.length === 3) {
           const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/').padEnd(parts[1].length + (4 - (parts[1].length % 4)) % 4, '=')));
-          console.log('[AuthService] JWT payload:', payload);
-          console.log('[AuthService] Roles en token:', payload.roles || payload.role || payload.authorities || payload.scopes || payload.scope);
         }
       } catch (e) {
         console.warn('[AuthService] No se pudo decodificar el token JWT:', e);
       }
-    } else {
-      console.log('[AuthService] No hay token JWT almacenado.');
     }
   }
 
@@ -181,10 +177,6 @@ fetchWithAuth(input: RequestInfo | URL, init: RequestInit = {}) {
   if (!headers.has('X-Requested-With')) {
     headers.set('X-Requested-With', 'XMLHttpRequest');
   }
-  // Log para depuración
-  console.log('[fetchWithAuth] URL:', input);
-  console.log('[fetchWithAuth] Headers:', Array.from(headers.entries()));
-  console.log('[fetchWithAuth] Credentials:', 'include');
   return fetch(input, { ...init, headers, credentials: 'include', mode: 'cors' });
 }
 }

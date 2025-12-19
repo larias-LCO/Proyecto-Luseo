@@ -1,4 +1,4 @@
 export const environment = {
-  production: true,
+  production: false,
   wsUrl: 'https://api-pruebas.luseoeng.com/ws'
 };

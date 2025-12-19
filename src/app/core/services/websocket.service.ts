@@ -123,8 +123,6 @@ export class WebsocketService implements OnDestroy {
   private restorePendingSubscriptions() {
     if (this.pendingSubscriptions.length === 0) return;
 
-    console.log(`🔁 Restaurando ${this.pendingSubscriptions.length} suscripciones pendientes...`);
-
     const pending = [...this.pendingSubscriptions];
     this.pendingSubscriptions = [];
 
