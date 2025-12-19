@@ -335,20 +335,27 @@ if (typeof window.apiGet === 'undefined') {
     try {
       token = localStorage.getItem('token');
     } catch {}
-    const headers: Record<string, string> = {
-      'Accept': 'application/json',
-      'X-Requested-With': 'XMLHttpRequest'
-    };
-    if (token) headers['Authorization'] = `Bearer ${token}`;
-    const resp = await fetch(fullUrl, {
-      method: 'GET',
-      headers: headers,
-      credentials: 'include'
-    });
-    const text = await resp.text();
-    if (!text || /^\s*$/.test(text)) return {};
-    if (/^\s*</.test(text)) throw new Error('Non-JSON response received');
-    try { return JSON.parse(text); } catch { throw new Error('Invalid JSON from ' + fullUrl); }
+    // Usar solo Angular HttpClient
+    // @ts-ignore
+    if (window.ng && window.ng.coreTokens && window.ng.coreTokens.HttpClient) {
+      // @ts-ignore
+      const injector = window.ng.getInjector(document.body);
+      // @ts-ignore
+      const http = injector.get(window.ng.coreTokens.HttpClient);
+      const headers = {
+        'Accept': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest',
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+      };
+      // @ts-ignore
+      const resp: any = await http.get(fullUrl, { headers, observe: 'response', responseType: 'text', withCredentials: true }).toPromise();
+      const text = (resp?.body ?? '').toString();
+      if (!text || /^\s*$/.test(text)) return {};
+      if (/^\s*</.test(text)) throw new Error('Non-JSON response received');
+      try { return JSON.parse(text); } catch { throw new Error('Invalid JSON from ' + fullUrl); }
+    } else {
+      throw new Error('Angular HttpClient is not available in this context.');
+    }
   };
 }
 

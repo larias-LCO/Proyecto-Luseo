@@ -82,6 +82,10 @@ export interface WeekSection {
 }
 
 
+export interface AuthState {
+  employeeId: number;
+  role: 'ADMIN' | 'OWNER' | 'USER';
+}
 
 
 

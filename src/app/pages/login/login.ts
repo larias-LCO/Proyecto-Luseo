@@ -12,11 +12,11 @@ import { AuthService } from '../../core/services/auth.service';
   styleUrls: ['./login.scss']
 })
 export class LoginComponent implements OnInit {
-  loading = false;
+  loading = false; 
   errorMsg = '';
   form!: FormGroup;
 
-  private returnUrl = '/team';
+  private returnUrl = '/proyectos';
 
   constructor(
     private fb: FormBuilder,
@@ -34,7 +34,9 @@ export class LoginComponent implements OnInit {
   async ngOnInit() {
     // Bootstrap auth state (keeps configured apiBase from AuthService)
     await this.auth.bootstrap();
-    this.returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/team';
+    // Intenta recuperar la última ruta visitada
+    const lastRoute = localStorage.getItem('lastRoute');
+    this.returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || lastRoute || '/proyectos';
     const s = this.auth.getState();
     if (s.authenticated) {
       this.router.navigateByUrl(this.returnUrl);
@@ -51,7 +53,9 @@ export class LoginComponent implements OnInit {
     this.loading = true;
     try {
       await this.auth.login(username!, password!);
-      this.router.navigateByUrl(this.returnUrl);
+      // Después de login, navega a la última ruta guardada
+      const lastRoute = localStorage.getItem('lastRoute');
+      this.router.navigateByUrl(this.returnUrl || lastRoute || '/proyectos');
     } catch (e: any) {
       this.errorMsg = 'Usuario/contraseña inválidos';
     } finally {

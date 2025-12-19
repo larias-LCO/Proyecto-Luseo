@@ -32,6 +32,21 @@ export interface ProjectPayload {
 
 @Injectable({ providedIn: 'root' })
 export class ProjectService {
+
+      /**
+       * Elimina un proyecto por su ID.
+       */
+      async deleteProject(id: number): Promise<void> {
+        const base = (this.auth.getApiBase() || '').replace(/\/$/, '');
+        const url = `${base}/projects/${id}`;
+        const token = this.auth.getState().token;
+        const headers = new HttpHeaders({
+          'Accept': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {})
+        });
+        const obs$ = this.http.delete(url, { headers, withCredentials: true });
+        await lastValueFrom(obs$);
+      }
     private phasesByProject: Map<string, any[]> = new Map();
     async getPhasesByProjectId(projectId: number): Promise<any[]> {
       const cacheKey = String(projectId);

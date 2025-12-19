@@ -1,6 +1,5 @@
-
-
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { inject } from '@angular/core';
 import { CommonModule, NgForOf, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CatalogsService, Employee } from './../../core/services/catalogs.service';
@@ -16,17 +15,27 @@ import { ProjectPayload } from '../../core/services/project.service';
 import { CreateEditHelper } from '../../shared/create-edit';
 import { ProjectDetailsComponent } from '../../core/components/project-details/project-details';
 import { ProjectService } from '../../core/services/project.service';
+import { WebsocketService } from '../../core/services/websocket.service';
+import { debounceTime } from 'rxjs/operators';
+import { Subject, Subscription } from 'rxjs';
 
 
 @Component({
   selector: 'app-projects',
   standalone: true,
-  imports: [CommonModule, FormsModule, HttpClientModule, HeaderComponent, SubmenuComponent, CreateProjectComponent, ProjectDetailsComponent, NgIf, NgForOf],
+  imports: [CommonModule, FormsModule, HttpClientModule, HeaderComponent, SubmenuComponent, CreateProjectComponent, ProjectDetailsComponent],
   templateUrl: './projects.html',
   styleUrls: ['./projects.scss'],
   providers: [ProjectService],
 })
 export class ProjectsPage implements OnInit {
+
+  // WebSocket y subs para eventos en tiempo real
+
+private ws = inject(WebsocketService);
+private wsRefresh$ = new Subject<void>();
+private subs = new Subscription();
+
   
    private createEdit: CreateEditHelper;
   @ViewChild(CreateProjectComponent) createProjectRef?: CreateProjectComponent;
@@ -84,7 +93,7 @@ projects: any[] = [];
 constructor(
     private catalogsService: CatalogsService,
     private enumsService: EnumsService,
-    private auth: AuthService,
+    public auth: AuthService,
     private http: HttpClient,
     private projectFiltersService: ProjectFiltersService,
     private projectService: ProjectService
@@ -96,6 +105,49 @@ constructor(
 
   selectedProject: any | null = null;
   selectedProjectId: number | null = null;
+
+
+
+  
+
+  /**
+   * Abre el modal de edición para el proyecto dado.
+   * Puede delegar a un componente, helper o lógica global según arquitectura.
+   */
+  openEditModal(project: any): void {
+    if (!project || !project.id) return;
+    if ((window as any).openEditProject) {
+      (window as any).openEditProject(project.id);
+    } else {
+      alert('Función de edición no implementada.');
+    }
+  }
+
+  /**
+   * Elimina el proyecto dado tras confirmación.
+   * Puede delegar a un modal de confirmación o llamar al servicio directamente.
+   */
+  async deleteProject(project: any): Promise<void> {
+    if (!project || !project.id) return;
+    if (!confirm(`¿Seguro que deseas eliminar el proyecto "${project.name || project.projectCode || project.id}"?`)) return;
+    try {
+      await this.projectService.deleteProject(project.id);
+      this.loadProjects(); // Recarga la lista tras eliminar
+    } catch (err: any) {
+      alert('Error eliminando proyecto: ' + (err.message || err));
+    }
+  }
+
+    /**
+     * Devuelve true si el usuario autenticado tiene rol USER (no puede editar/eliminar)
+     */
+    get isUserOnly(): boolean {
+      try {
+        return this.auth.hasRole && this.auth.hasRole('USER');
+      } catch {
+        return false;
+      }
+    }
 
   // Debug helper: route logs through here so linters don't complain about raw console.log usage.
   // It prints only when a dev flag is present on window.__env?.debug === true.
@@ -111,6 +163,7 @@ constructor(
     }
   }
 
+  
 
   
   // --- Inicialización ---
@@ -121,6 +174,23 @@ constructor(
       window.location.href = '/login';
       return;
     }
+ 
+// --- Configuración de WebSocket para actualizaciones en tiempo real ---
+
+  const wsSub = this.ws.subscribe('project').subscribe((event: any) => {
+  console.log('WS PROJECT EVENT', event);
+  this.wsRefresh$.next();
+});
+this.subs.add(wsSub);
+
+const wsDebounceSub = this.wsRefresh$
+  .pipe(debounceTime(500))
+  .subscribe(() => {
+    this.loadProjects();
+  });
+this.subs.add(wsDebounceSub);
+ //=======================================================================
+    
     // --- Inicialización de catálogos y proyectos ---
     await this.loadCatalogs();
     this.enums = await this.enumsService.loadEnums();
@@ -130,15 +200,27 @@ constructor(
     this.clients = (this.clients || []).slice().sort(byName);
     this.software = (this.software || []).slice().sort(byName);
     this.departments = (this.departments || []).slice().sort(byName);
-    // Debug: mostrar empleados antes de setEmployees
-    console.log('Empleados cargados para setEmployees:', this.employees);
     this.employees = (this.employees || []).slice().sort(byName);
+    // LOG: Empleados cargados
+    console.log('[VALIDACIÓN] Empleados cargados:', this.employees);
+    if (!this.employees || this.employees.length === 0) {
+      console.warn('[VALIDACIÓN] No se cargaron empleados. Revisa la respuesta de loadCatalogs.');
+    }
     this.projectFiltersService.setEmployees(this.employees);
-    // // Debug: mostrar empleados en el servicio
-    console.log('Empleados en servicio:', this.projectFiltersService.employeesAll);
-    this.managerOptions = (await this.projectFiltersService.getManagerFilterOptions()).slice().sort(byName);
-    console.log('ManagerOptions cargados:', this.managerOptions);
-    this.loadProjects();
+    // LOG: Empleados en el servicio
+    console.log('[VALIDACIÓN] Empleados en servicio (projectFiltersService.employeesAll):', this.projectFiltersService.employeesAll);
+
+    // Esperar a que los empleados estén cargados antes de pedir managers
+    const managerOptionsRaw = await this.projectFiltersService.getManagerFilterOptions();
+    console.log('[VALIDACIÓN] Opciones crudas de managerOptions:', managerOptionsRaw);
+    this.managerOptions = managerOptionsRaw.slice().sort(byName);
+    console.log('[VALIDACIÓN] ManagerOptions cargados (final):', this.managerOptions);
+
+    // Validar coincidencias de IDs entre pmIds y empleados
+    if (Array.isArray(this.managerOptions) && this.managerOptions.length === 0) {
+      console.warn('[VALIDACIÓN] managerOptions está vacío. Verifica que los pmIds de los proyectos coincidan con los IDs de empleados.');
+    }
+    await this.loadProjects();
     // El modal de creación es manejado por el CreateProjectComponent
   }
 
@@ -146,14 +228,14 @@ constructor(
 
 // --- Mostrar modal de detalles ---
 openProjectDetails(idOrProject: any) {
-  // Accept either an id (number) or a full project object. Prefer id when possible so details are fetched from backend.
+// Acepte una identificación (número) o un objeto de proyecto completo. Prefiera la identificación cuando sea posible para que los detalles se obtengan del backend.
   if (typeof idOrProject === 'number' || typeof idOrProject === 'string') {
     this.selectedProject = null;
     this.selectedProjectId = Number(idOrProject);
     this.debug('🟢 Abriendo modal del proyecto (by id):', this.selectedProjectId);
   } else {
-    // If the caller passes a full project object we open modal immediately with it for instant UX
-    // and still set selectedProjectId so the details component can optionally re-fetch/enrich the data.
+// Si la persona que llama pasa un objeto de proyecto completo, abrimos modal inmediatamente con él para una experiencia de usuario instantánea
+    // y aún configura selectedProjectId para que el componente de detalles pueda, opcionalmente, volver a buscar/enriquecer los datos.
     this.selectedProject = idOrProject;
     this.selectedProjectId = idOrProject && idOrProject.id ? Number(idOrProject.id) : null;
     this.debug('🟢 Abriendo modal del proyecto (by object):', this.selectedProject && this.selectedProject.id ? this.selectedProject.id : this.selectedProject);
@@ -276,18 +358,21 @@ closeProjectDetails() {
       .sort((a: Employee, b: Employee) => (a.name || '').localeCompare(b.name || '', undefined, { sensitivity: 'base' }));
   }
 
-  /** Rellena dinámicamente el filtro de Managers (opciones desde proyectos o fallback) */
-  async fillManagerFilter(): Promise<void> {
-    try {
-      await this.projectFiltersService.ensureAllPMs(); // construye cache.global PM ids
-      const managerOptions = await this.projectFiltersService.getManagerFilterOptions();
-      // Aquí decides: guardar en una variable para usar en template, o dejar get projectManagers() + getManagerFilterOptions
-      this.debug('Managers disponibles:', managerOptions);
-      // ejemplo de almacenaje:
-      // this.managersOptions = managerOptions;
-    } catch (err) {
-      console.error('Error al llenar filtro de managers:', err);
-    }
+  /** Rellena dinámicamente el filtro de Managers (solo de los proyectos cargados) */
+  fillManagerFilter(): void {
+    // Extrae los PMs de los proyectos actualmente cargados
+    const pmIdSet = new Set<number>();
+    (this.projects || []).forEach((p: any) => {
+      if (Array.isArray(p.pmIds)) {
+        p.pmIds.forEach((id: number) => pmIdSet.add(Number(id)));
+      }
+    });
+    // Busca los empleados que coinciden con esos IDs
+    this.managerOptions = this.employees
+      .filter(e => pmIdSet.has(Number(e.id)))
+      .map(e => ({ id: e.id, name: e.name }))
+      .sort((a, b) => (a.name || '').localeCompare(b.name || '', undefined, { sensitivity: 'base' }));
+    this.debug('Managers disponibles (solo proyectos listados):', this.managerOptions);
   }
 
   displayEnum(v: string | null | undefined): string {
@@ -313,6 +398,7 @@ closeProjectDetails() {
     this.searchState.size = this.pageSize || 20;
     this.searchState.page = 0;
     this.loadProjects();
+    
   }
 
   clearFilters(): void {
@@ -330,13 +416,12 @@ closeProjectDetails() {
     this.loadProjects();
   }
 
-  onPageSizeChange(v: any): void {
-    const newSize = Number(v);
-    this.pageSize = Number.isFinite(newSize) && newSize > 0 ? newSize : 10;
-    // Reiniciar a primera página y aplicar filtros vigentes
-    this.searchState .page = 0;
-    this.applySearchFromUI();
-  }
+onPageSizeChange() {
+  this.searchState.size = this.pageSize;
+  this.searchState.page = 0;
+  this.loadProjects();
+}
+
 
 
   //FILTER SEARCH
@@ -370,10 +455,10 @@ closeProjectDetails() {
   }
 
   private buildSearchQuery(): any {
-    const { page, size, sort, filters } = this.searchState;
+    const { page, sort, filters } = this.searchState;
     const query: any = {
       page: page,
-      size: size,
+      size: this.pageSize,
       sort: sort
     };
 
@@ -400,7 +485,13 @@ closeProjectDetails() {
       this.debug('📄 PageInfo:', pageInfo);
       this.projects = Array.isArray(items) ? items : [];
       this.pageInfo = pageInfo;
-      console.log('Projects:', this.projects); // Depuración: muestra los proyectos recibidos
+      // LOG: Proyectos cargados
+      console.log('[VALIDACIÓN] Proyectos cargados:', this.projects);
+      if (!this.projects || this.projects.length === 0) {
+        console.warn('[VALIDACIÓN] No se cargaron proyectos. Revisa la respuesta de projectService.loadProjects.');
+      }
+      // Actualizar el filtro de Project Manager
+      this.fillManagerFilter();
     } catch (error) {
       this.debug('❌ Error loading projects:', error);
       console.error('❌ Error loading projects:', error);
@@ -464,21 +555,25 @@ closeProjectDetails() {
       if (!(this as any)._modalCache) (this as any)._modalCache = {};
       const cache: any = (this as any)._modalCache;
 
-      // Ensure employees cache
-      if (!cache.employees || !cache.employees.length) {
-        try {
-          // try to use catalogsService if available
-          if (this.catalogsService && typeof (this.catalogsService as any).getEmployees === 'function') {
-            cache.employees = await (this.catalogsService as any).getEmployees();
-          } else {
-            cache.employees = [];
-          }
-          cache.employeesById = new Map<number, any>((cache.employees || []).map((e: any) => [e.id, e]));
-        } catch (e) {
+      // LIMPIA el cache antes de recargar datos
+      cache.employees = [];
+      cache.employeesById = new Map();
+      // Si tienes cache.projectDetails o similar, límpialo también:
+      if (cache.projectDetails) {
+        delete cache.projectDetails[id];
+      }
+
+      // Ensure employees cache (se recarga siempre)
+      try {
+        if (this.catalogsService && typeof (this.catalogsService as any).getEmployees === 'function') {
+          cache.employees = await (this.catalogsService as any).getEmployees();
+        } else {
           cache.employees = [];
-          cache.employeesById = new Map();
         }
-        
+        cache.employeesById = new Map<number, any>((cache.employees || []).map((e: any) => [e.id, e]));
+      } catch (e) {
+        cache.employees = [];
+        cache.employeesById = new Map();
       }
 
       // fetch project from backend via projectService
@@ -644,4 +739,14 @@ closeProjectDetails() {
       console.error('Error opening project modal:', err);
     }
   }
+
+  handleProjectDetailsClose(event?: any) {
+    if (event && event.reopenDetails && event.projectId) {
+      // Reabrir el modal de detalles con el id actualizado
+      setTimeout(() => this.openProjectDetails(event.projectId), 100);
+      return;
+    }
+    this.closeProjectDetails();
+  }
+
 }

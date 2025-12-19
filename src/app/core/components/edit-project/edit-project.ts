@@ -1,4 +1,9 @@
+
+
+  
 import { Component, Inject, OnInit } from '@angular/core';
+import { EnumsService } from '../../services/enums.service';
+import { Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
@@ -20,11 +25,17 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
   styleUrls: ['./edit-project.scss']
 })
 export class EditProjectComponent implements OnInit {
+@Output() projectUpdated = new EventEmitter<void>();
   
   form!: FormGroup;
 
   // The project being edited (normalized from MAT_DIALOG_DATA)
   project!: Project | any;
+
+  // Controla la visibilidad de los campos de phase
+  showPhaseStatus = false;
+  showPhaseStart = false;
+  showPhaseEnd = false;
 
   // Data from backend
   offices: any[] = [];
@@ -59,10 +70,130 @@ export class EditProjectComponent implements OnInit {
     private projectService: ProjectService,
     private dialogRef: MatDialogRef<EditProjectComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
-    private filtersService: ProjectFiltersService
+    private filtersService: ProjectFiltersService,
+    @Inject(EnumsService) private enumsService: EnumsService
   ) {}
 
+  // PHASES (copiado/adaptado de create-project)
+  phaseGroups: { label: string, options: { value: string, label: string }[] }[] = [];
+  phaseStatusOptions: any[] = [];
+  phaseStartDate: string = '';
+  phases: any[] = [];
+  phaseEnums: { names: string[]; statuses: string[] } = { names: [], statuses: [] };
+  private phasesByProject: Map<string, any[]> = new Map();
+
+  async fetchProjectPhases(projectId: number): Promise<any[]> {
+    try {
+      const phases = await this.projectService.getPhasesByProjectId(projectId);
+      this.phases = Array.isArray(phases) ? phases : [];
+      this.updatePhaseGroups();
+      console.log('Fases cargadas:', this.phases);
+      console.log('Opciones de phaseGroups:', this.phaseGroups);
+      console.log('Opciones de phaseStatusOptions:', this.phaseStatusOptions);
+      return this.phases;
+    } catch (e) {
+      this.phases = [];
+      this.updatePhaseGroups();
+      console.warn(`Failed to fetch phases for project ${projectId}:`, e);
+      return [];
+    }
+  }
+
+  updatePhaseGroups() {
+    // Grupo de fases existentes
+    const existing = (this.phases || []).map(ph => ({
+      value: `existing:${ph.id}`,
+      label: `${String(ph.phase || '').replace(/_/g, ' ')} (${String(ph.status || '').replace(/_/g, ' ')}) - ${ph.startDate ? String(ph.startDate).slice(0,10) : 'N/A'}`
+    }));
+    // Grupo de nuevas fases
+    const newPhases = Array.isArray(this.phaseEnums.names)
+      ? this.phaseEnums.names.slice().sort((a: string, b: string) => a.localeCompare(b, undefined, { sensitivity: 'base' }))
+        .map(n => ({ value: `new:${n}`, label: `+ New: ${String(n).replace(/_/g, ' ')}` }))
+      : [];
+    this.phaseGroups = [];
+    this.phaseGroups.push({ label: 'Existing Phases (edit)', options: existing });
+    this.phaseGroups.push({ label: 'Add New Phase', options: newPhases });
+  }
+  
+
+  async loadPhaseStartDate(projectId: number) {
+    let phases = [];
+    try { phases = await this.fetchProjectPhases(projectId); } catch (e) { phases = []; }
+    const defPhaseId = phases.length ? phases[0].id : null;
+    const currentPhaseObj = (phases || []).find(ph => String(ph.id) === String(defPhaseId));
+    this.phaseStartDate = currentPhaseObj && currentPhaseObj.startDate ? currentPhaseObj.startDate : '';
+  }
+
+  async loadPhaseEnums() {
+    this.phaseEnums = await this.enumsService.loadPhaseEnums();
+  }
+
+  pickDefaultPhaseId(phases: any[]): string {
+    return this.enumsService.pickDefaultPhaseId(phases);
+  }
+
+  onPhaseChange() {
+    const val = this.form.get('phaseId')?.value;
+    this.showPhaseStatus = false;
+    this.showPhaseStart = false;
+    this.showPhaseEnd = false;
+    if (!val) {
+      // Nada seleccionado
+      this.form.patchValue({ phaseStatus: '', phaseStartDate: '', phaseEndDate: '' });
+      return;
+    }
+    if (val.startsWith('existing:')) {
+      // Editar fase existente
+      const phaseId = val.split(':')[1];
+      const phase = (this.phases || []).find(p => String(p.id) === phaseId);
+      if (phase) {
+        this.showPhaseStatus = true;
+        this.showPhaseStart = true;
+        this.showPhaseEnd = true;
+        this.form.patchValue({
+          phaseStatus: phase.status || 'ACTIVE',
+          phaseStartDate: phase.startDate ? String(phase.startDate).slice(0,10) : '',
+          phaseEndDate: phase.endDate ? String(phase.endDate).slice(0,10) : ''
+        });
+      }
+    } else if (val.startsWith('new:')) {
+      // Crear nueva fase
+      this.showPhaseStatus = true;
+      this.showPhaseStart = true;
+      this.showPhaseEnd = false;
+      this.form.patchValue({
+        phaseStatus: 'ACTIVE',
+        phaseStartDate: '',
+        phaseEndDate: ''
+      });
+    }
+  }
+
   ngOnInit(): void {
+    // PHASES INIT
+    (async () => {
+      await this.loadPhaseEnums();
+      // Siempre poblar las opciones desde enums
+      this.updatePhaseGroups();
+      this.phaseStatusOptions = Array.isArray(this.phaseEnums.statuses)
+        ? this.phaseEnums.statuses.slice().sort((a: string, b: string) => a.localeCompare(b, undefined, { sensitivity: 'base' })).map((s: any) => ({ value: s, label: s }))
+        : [];
+      if (this.project && this.project.id) {
+        await this.fetchProjectPhases(this.project.id);
+        await this.loadPhaseStartDate(this.project.id);
+      }
+      // Inicializar los valores del form si existen en el proyecto
+      if (this.project && this.form) {
+        this.form.patchValue({
+          phaseId: this.project.phaseId || '',
+          phaseStatus: this.project.phaseStatus || '',
+          phaseStartDate: this.project.phaseStartDate || '',
+          phaseEndDate: this.project.phaseEndDate || ''
+        });
+      }
+      // Suscribirse a cambios del select de fase
+      this.form.get('phaseId')?.valueChanges.subscribe(() => this.onPhaseChange());
+    })();
 
 
   // Normalize incoming dialog data: some callers pass { project: {...} }
@@ -89,6 +220,8 @@ export class EditProjectComponent implements OnInit {
       notes: [''],
       pmIds: [[]],
       employeeIds: [[]],
+      phaseId: [''],
+      phaseStatus: [''],
     });
 
     // 2️⃣ Patch form immediately with any provided project fields (so textarea shows notes
@@ -286,15 +419,29 @@ export class EditProjectComponent implements OnInit {
   async onSave() {
     if (this.form.invalid) return;
 
-    const payload = { ...this.form.value };
+    // Asegura que pmIds y employeeIds estén actualizados y sean arrays de números
+    const pmIds = Array.isArray(this.pmSelection) ? this.pmSelection.map(Number) : [];
+    const employeeIds = Array.isArray(this.teamSelection) ? this.teamSelection.map(Number) : [];
+
+    const payload = {
+      ...this.form.value,
+      pmIds,
+      employeeIds
+    };
+
+    // Log para depuración
+    console.log('[EditProject] Payload enviado al guardar:', payload);
 
     try {
       await this.projectService.updateProject(this.project.id, payload);
-      // Close with 'saved' signal so project-details can reopen with fresh data
+      this.projectUpdated.emit(); // <-- EMITE EVENTO
+      // Close with 'saved' signal so project-details puede reabrir con datos frescos
       this.dialogRef.close({ action: 'saved', projectId: this.project.id });
     } catch (err) {
       console.error('Error saving project:', err);
       this.message = 'Error saving project: ' + ((err as any)?.message || String(err));
     }
   }
+
+  
 }

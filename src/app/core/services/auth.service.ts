@@ -5,6 +5,7 @@ export type AuthState = {
   username?: string;
   token?: string;
   role?: string[];
+  employeeId?: number;
 };
 
 @Injectable({ providedIn: 'root' })
@@ -12,7 +13,7 @@ export class AuthService {
   private storageTokenKeys = ['auth.token', 'token'];
   private usernameKey = 'auth.username';
   private rolesKey = 'auth.roles';
-  private apiBase = 'https://api-pruebas.luseoeng.com';
+  private apiBase = 'https://api.luseoeng.com';
 
   state = signal<AuthState>({ authenticated: false });
 
@@ -48,9 +49,11 @@ export class AuthService {
     const username = localStorage.getItem(this.usernameKey) || undefined;
     const rolesJson = localStorage.getItem(this.rolesKey);
     let roles = rolesJson ? (JSON.parse(rolesJson) as string[]) : undefined;
-    // Fallback: try to decode roles from JWT if not explicitly stored
-    if ((!roles || roles.length === 0) && token) {
+    // Fallback: try to decode roles and employeeId from JWT if not explicitly stored
+    let employeeId: number | undefined = undefined;
+    if (token) {
       const decoded = this.decodeJwt(token);
+      // Roles
       const rawRoles = decoded?.roles
         ?? decoded?.authorities
         ?? decoded?.scopes
@@ -64,9 +67,16 @@ export class AuthService {
         const parts = rawRoles.split(/[ ,]+/).map(s => s.trim()).filter(Boolean);
         roles = parts.length ? parts : undefined;
       }
+      // EmployeeId
+      if (decoded && (decoded.employeeId !== undefined || decoded.employee_id !== undefined)) {
+        employeeId = Number(decoded.employeeId ?? decoded.employee_id);
+        if (isNaN(employeeId)) employeeId = undefined;
+      }
     }
-    this.state.set({ authenticated: !!token, token: token || undefined, username, role: roles });
+    this.state.set({ authenticated: !!token, token: token || undefined, username, role: roles, employeeId });
   }
+
+  
 
   private getStoredToken(): string | null {
     for (const k of this.storageTokenKeys) {
@@ -137,7 +147,16 @@ export class AuthService {
     localStorage.setItem(this.usernameKey, username);
     if (roles) localStorage.setItem(this.rolesKey, JSON.stringify(roles));
     else localStorage.removeItem(this.rolesKey);
-    this.state.set({ authenticated: true, username, token, role: roles });
+    // Decodificar employeeId del token si existe
+    let employeeId: number | undefined = undefined;
+    try {
+      const decoded = this.decodeJwt(token);
+      if (decoded && (decoded.employeeId !== undefined || decoded.employee_id !== undefined)) {
+        employeeId = Number(decoded.employeeId ?? decoded.employee_id);
+        if (isNaN(employeeId)) employeeId = undefined;
+      }
+    } catch {}
+    this.state.set({ authenticated: true, username, token, role: roles, employeeId });
   }
 
   logout(): void {

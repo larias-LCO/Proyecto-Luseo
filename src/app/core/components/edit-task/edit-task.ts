@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { deleteGeneralTask } from '../../../pages/task/task';
 import { CommonModule } from '@angular/common';
@@ -14,8 +14,36 @@ import { AuthService } from '../../services/auth.service';
   templateUrl: './edit-task.html',
   styleUrl: './edit-task.scss'
 })
-export class EditTask implements OnInit {
+export class EditTask implements OnInit, OnChanges {
   showSuccessModal: boolean = false;
+    /**
+     * canEditTask: true si el usuario puede editar la tarea (rol ADMIN/OWNER o USER que creó la tarea)
+     * Se debe setear desde el padre (TasksPage) según la lógica de permisos.
+     */
+    @Input() canEditTask: boolean = false;
+    @Input() canDeleteTask: boolean = false;
+
+    // Refuerzo: asegúrate de que los botones se actualicen si los inputs cambian
+    ngOnChanges(changes: SimpleChanges): void {
+      if (changes['canEditTask'] || changes['canDeleteTask']) {
+        // Forzar actualización de la vista si es necesario
+        // (Angular lo hace automáticamente, pero esto es explícito)
+        this.canEditTask = !!this.canEditTask;
+        this.canDeleteTask = !!this.canDeleteTask;
+      }
+      // Mostrar End Date si la categoría es 'Out of office' (inmediato al recibir inputs)
+      if (
+        (this.task?.taskCategoryName && this.task.taskCategoryName.toLowerCase() === 'out of office') ||
+        (this.categories && this.task?.taskCategoryId && this.categories.find(c => c.id === this.task.taskCategoryId && c.name && c.name.toLowerCase() === 'out of office'))
+      ) {
+        this.showEndDate = true;
+      } else {
+        this.showEndDate = false;
+      }
+    }
+
+
+  
 
   async deleteTask() {
     if (!this.task?.id || !this.task?.name) return;
@@ -29,7 +57,7 @@ export class EditTask implements OnInit {
       if (res.status === 204 || res.status === 200) {
         this.message = 'Task deleted successfully!';
         this.close.emit();
-        // Aquí puedes refrescar la lista de tareas si lo necesitas
+        setTimeout(() => { window.location.reload(); }, 300);
       } else {
         this.message = 'Error deleting task: ' + res.statusText;
       }
@@ -52,15 +80,16 @@ export class EditTask implements OnInit {
   @Input() task: any;
   @Output() close = new EventEmitter<void>();
 
-  allProjects: any[] = [];
-  categories: any[] = [];
+  @Input() allProjects: any[] = [];
+  @Input() categories: any[] = [];
+  @Input() employees: any[] = [];
   projectPhaseId: any[]= [];
   statuses: string[] = ['IN_PROGRESS', 'COMPLETED', 'PAUSED'];
-  employees: any[] = [];
   description: any []= [];
   message= '';
   createdByEmployeeName: string = '';
   loading = false;
+  showEndDate = false;
 
   constructor(
     private catalogs: CatalogsService,
@@ -69,18 +98,8 @@ export class EditTask implements OnInit {
     private auth: AuthService
   ) {}
 
+  
   async ngOnInit() {
-    // Cargar proyectos desde el backend
-    const projectsResult = await this.projectService.loadProjects({});
-    this.allProjects = projectsResult.items || [];
-    // Cargar categorías desde el backend (debería existir getCategories en CatalogsService)
-    if ((this.catalogs as any).getCategories) {
-      this.categories = await (this.catalogs as any).getCategories();
-    }
-    // Cargar empleados para el select de Created By
-    if ((this.catalogs as any).getEmployees) {
-      this.employees = await (this.catalogs as any).getEmployees();
-    }
     // Cargar statuses (enums)
     if ((this as any).loadGeneralTaskEnums) {
       const enums = await (this as any).loadGeneralTaskEnums();
@@ -92,7 +111,38 @@ export class EditTask implements OnInit {
     if (this.task?.projectId && this.task.projectId !== 'None' && this.task.projectId !== null && this.task.projectId !== undefined) {
       await this.loadPhases(this.task.projectId);
     }
+    // Asegurar que el proyecto de la tarea esté en allProjects
+    if (this.task?.projectId && this.task.projectId !== 'None' && this.task.projectId !== null && this.task.projectId !== undefined) {
+      const exists = this.allProjects.some(p => String(p.id) === String(this.task.projectId));
+      if (!exists) {
+        try {
+          const project = await this.projectService.getProjectById(Number(this.task.projectId));
+          if (project && project.id) {
+            this.allProjects = [...this.allProjects, project];
+          }
+        } catch (err) {
+          // Si no se encuentra el proyecto, opcional: mostrar un fallback
+          // this.message = 'El proyecto de esta tarea no está disponible.';
+        }
+      }
+    }
+    // Por default Phase = None si no hay valor
+    if (!this.task?.projectPhaseId) {
+      this.task.projectPhaseId = 'None';
+    }
   }
+
+  // ngOnChanges(changes: SimpleChanges): void {
+  //   // Mostrar End Date si la categoría es 'Out of office' (inmediato al recibir inputs)
+  //   if (
+  //     (this.task?.taskCategoryName && this.task.taskCategoryName.toLowerCase() === 'out of office') ||
+  //     (this.categories && this.task?.taskCategoryId && this.categories.find(c => c.id === this.task.taskCategoryId && c.name && c.name.toLowerCase() === 'out of office'))
+  //   ) {
+  //     this.showEndDate = true;
+  //   } else {
+  //     this.showEndDate = false;
+  //   }
+  // }
 
   async loadPhases(projectId: number) {
     if (projectId === null || projectId === undefined || projectId === 0) {
@@ -162,5 +212,16 @@ export class EditTask implements OnInit {
     this.close.emit();
   }
 
+
+    /**
+   * Devuelve true si el usuario autenticado tiene rol USER (no puede editar/eliminar)
+   */
+  get isUserOnly(): boolean {
+    try {
+      return this.auth.hasRole && this.auth.hasRole('USER');
+    } catch {
+      return false;
+    }
+  }
   
 }

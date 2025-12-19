@@ -290,7 +290,7 @@ async renderTasksView(): Promise<void> {
         tasks = this.applyAllFilters(
           tasks,
           this.tasksPage.currentFilters,
-          this.tasksPage.myEmployeeId ?? 0,
+          this.tasksPage.createdByEmployeeId ?? 0,
           this.tasksPage.allProjects,
           getWeekStart
         );
