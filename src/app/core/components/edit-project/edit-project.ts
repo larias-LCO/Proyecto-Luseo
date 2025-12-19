@@ -426,7 +426,9 @@ export class EditProjectComponent implements OnInit {
     const payload = {
       ...this.form.value,
       pmIds,
-      employeeIds
+      employeeIds,
+      // also include legacy `teamIds` in case backend expects that key
+      teamIds: employeeIds
     };
 
     // Log para depuración
@@ -434,6 +436,19 @@ export class EditProjectComponent implements OnInit {
 
     try {
       await this.projectService.updateProject(this.project.id, payload);
+      // After saving, fetch the project to verify what the backend persisted
+      try {
+        const refreshed = await this.projectService.getProjectById(this.project.id);
+        console.log('[EditProject] Project after save (backend):', refreshed);
+        console.log('[EditProject] Backend member fields lengths:', {
+          employeeIds: (refreshed?.employeeIds || []).length,
+          teamIds: (refreshed?.teamIds || []).length,
+          employees: (refreshed?.employees || []).length,
+          assigned: (refreshed?.assigned || []).length,
+        });
+      } catch (e) {
+        console.warn('Could not fetch project after save for diagnostics:', e);
+      }
       this.projectUpdated.emit(); // <-- EMITE EVENTO
       // Close with 'saved' signal so project-details puede reabrir con datos frescos
       this.dialogRef.close({ action: 'saved', projectId: this.project.id });

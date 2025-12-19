@@ -80,9 +80,9 @@
     <span>{{ currentPhaseName }}</span>
   </div>
 
-  <div class="meta-card" *ngFor="let pmId of pmIds">
+  <div class="meta-card" *ngFor="let pm of pmSelected">
     <label>PM</label>
-    <span>{{ employeeOptionLabel(pmId) }}</span>
+    <span>{{ employeeOptionLabel(pm) }}</span>
   </div>
 
 </div>

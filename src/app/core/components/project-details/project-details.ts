@@ -34,6 +34,8 @@ team: Employee[] = [];   // ← ESTA será la lista final de TEAM
 assignedDeps: string[] = [];
 assignedRoles: string[] = [];
 isLoading = false;
+  // Cache boolean to avoid calling methods in template each change-detection cycle
+  canEdit: boolean = false;
   showConfirmModal = false;
   confirmDeleteId: number | null = null;
   confirmDeleteName: string = '';
@@ -108,6 +110,8 @@ private isAllowedTeamEmployee(employee: Employee): boolean {
   // (implementation moved lower to include job/department details)
 
   async ngOnInit() {
+    // Calcular permisos de edición una vez al inicializar
+    this.updateCanEdit();
     // If the parent provided the project object directly, show it immediately
     // and also attempt to fetch fuller details from the API to enrich the view.
     if (this.project && (this.project as any).id) {
@@ -125,6 +129,8 @@ private isAllowedTeamEmployee(employee: Employee): boolean {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    // Recalcular permisos si cambian los roles por @Input
+    if (changes['roles']) this.updateCanEdit();
     // react when parent sets projectId or project after initialization
     if (changes['projectId'] && !changes['projectId'].isFirstChange()) {
       const id = changes['projectId'].currentValue as number | undefined;
@@ -234,10 +240,58 @@ employeeOptionLabel(emp: any): string {
       this.project.realTime = toNumber((p as any).realTime ?? (p as any).actualTime ?? (p as any).real_hours ?? (p as any).timeSpent) ?? this.project.realTime;
 
       // 3️⃣ Obtener empleados asignados (tolerante a varias formas que envía el backend)
-      const assignedIds = this.extractAssignedIds(p);
-      const assigned = assignedIds
-        .map((i: number) => employeesById.get(Number(i)))
-        .filter((e: Employee | undefined): e is Employee => Boolean(e));
+      // Preferir arrays de objetos completos (p.employees, p.assigned) si el backend los retorna,
+      // en caso contrario resolver desde ids contra el catálogo de empleados.
+      let assigned: Employee[] = [];
+      // Si el backend devolvió objetos completos en `employees` o `assigned`, úsalos
+      const rawEmployees = (p as any).employees;
+      const rawAssigned = (p as any).assigned;
+      if (Array.isArray(rawEmployees) && rawEmployees.length && typeof rawEmployees[0] === 'object') {
+        assigned = rawEmployees.map((x: any) => {
+          const fromCache = employeesById.get(Number(x.id));
+          return Object.assign({}, fromCache || {}, { id: Number(x.id), name: x.name || fromCache?.name });
+        }).filter((e: any) => e && Number.isFinite(e.id));
+      } else if (Array.isArray(rawAssigned) && rawAssigned.length && typeof rawAssigned[0] === 'object') {
+        assigned = rawAssigned.map((x: any) => {
+          const id = Number(x.id ?? x.employeeId ?? x.employee?.id ?? x);
+          const fromCache = employeesById.get(id);
+          return Object.assign({}, fromCache || {}, { id, name: x.name || fromCache?.name });
+        }).filter((e: any) => e && Number.isFinite(e.id));
+      } else {
+        const assignedIds = this.extractAssignedIds(p);
+        // Log inicial para diagnóstico
+        console.debug('[ProjectDetails] extracted assignedIds:', assignedIds, 'count:', assignedIds.length);
+        // Debug raw fields presence/length to diagnose missing members
+        try {
+          console.debug('[ProjectDetails] raw member fields', {
+            employees: (p as any).employees?.length,
+            assigned: (p as any).assigned?.length,
+            teamIds: (p as any).teamIds?.length,
+            teamMembers: (p as any).teamMembers?.length,
+            assignments: (p as any).assignments?.length,
+            employeeIds: (p as any).employeeIds?.length,
+            pmIds: (p as any).pmIds?.length,
+            pms: (p as any).pms?.length,
+            projectManagers: (p as any).projectManagers?.length,
+            team: (p as any).team?.length,
+            members: (p as any).members?.length,
+          });
+        } catch (e) {}
+        // Mapear ids a objetos; si falta algún empleado en la caché, crear un placeholder
+        assigned = assignedIds
+          .map((i: number) => {
+            const emp = employeesById.get(Number(i));
+            if (!emp) {
+              console.warn(`[ProjectDetails] employee id ${i} not found in employees cache; inserting placeholder`);
+              return ({ id: Number(i), name: `Unknown (#${i})` } as unknown) as Employee;
+            }
+            return emp;
+          })
+          .filter((e: Employee | undefined): e is Employee => Boolean(e));
+        if (assigned.length !== assignedIds.length) {
+          console.info(`[ProjectDetails] assignedIds length ${assignedIds.length} != resolved assigned.length ${assigned.length}`);
+        }
+      }
 
       // 4️⃣ Obtener Project Managers (soporta pmIds, pms, projectManagers, etc.)
       let pmIds: number[] = [];
@@ -289,7 +343,7 @@ employeeOptionLabel(emp: any): string {
 
       // 7️⃣ Asignar a propiedades del componente
       this.pmSelected = pms; // ← LOS OBJETOS COMPLETOS para el HTML
-      this.pmIds = pms.map(pm => pm.id); // ← solo si necesitas los IDs
+      this.pmIds = pms.map(pm => pm.id).filter((n): n is number => typeof n === 'number'); // ensure number[]
       this.team = team;
       this.assignedDeps = assignedDeps;
       this.assignedRoles = assignedRoles;
@@ -327,16 +381,54 @@ employeeOptionLabel(emp: any): string {
   private extractAssignedIds(p: any): number[] {
     if (!p) return [];
     const candidates: any[] = [];
-    if (Array.isArray(p.employeeIds)) candidates.push(...p.employeeIds);
-    if (Array.isArray(p.assignedEmployeeIds)) candidates.push(...p.assignedEmployeeIds);
-    if (Array.isArray(p.teamIds)) candidates.push(...p.teamIds);
-    if (Array.isArray(p.pmIds)) candidates.push(...p.pmIds);
-    if (Array.isArray(p.employees)) candidates.push(...p.employees.map((x: any) => x.id ?? x));
-    if (Array.isArray(p.teamMembers)) candidates.push(...p.teamMembers.map((x: any) => x.id ?? x.employeeId ?? x));
-    if (Array.isArray(p.assignments)) candidates.push(...p.assignments.map((a: any) => a.employeeId ?? a.employee?.id ?? a.id ?? a));
-    if (Array.isArray(p.assigned)) candidates.push(...p.assigned.map((x: any) => x.id ?? x));
 
-    const ids = Array.from(new Set(candidates.map((c: any) => Number(c)).filter(n => Number.isFinite(n))));
+    const pushFrom = (val: any) => {
+      if (val === undefined || val === null) return;
+      // If it's an array of primitives
+      if (Array.isArray(val) && val.length && (typeof val[0] === 'number' || typeof val[0] === 'string')) {
+        candidates.push(...val);
+        return;
+      }
+      // If it's an array of objects with id/employeeId
+      if (Array.isArray(val) && val.length && typeof val[0] === 'object') {
+        candidates.push(...val.map((x: any) => x.id ?? x.employeeId ?? x.employee?.id ?? x));
+        return;
+      }
+      // If it's a single string with comma-separated ids
+      if (typeof val === 'string') {
+        const parts = val.split(/[^0-9]+/).map(s => s.trim()).filter(s => s !== '');
+        candidates.push(...parts);
+        return;
+      }
+      // If it's a single numeric-like value
+      if (typeof val === 'number') candidates.push(val);
+    };
+
+    // Common fields
+    pushFrom(p.employeeIds);
+    pushFrom(p.assignedEmployeeIds);
+    pushFrom(p.teamIds);
+    pushFrom(p.pmIds);
+    pushFrom(p.pms);
+    pushFrom(p.projectManagers);
+    pushFrom(p.employees);
+    pushFrom(p.assigned);
+    pushFrom(p.teamMembers);
+    pushFrom(p.assignments);
+    // Additional possible keys returned by inconsistent backends
+    pushFrom(p.team);
+    pushFrom(p.members);
+    pushFrom(p.employeesAssigned);
+    pushFrom(p.assignees);
+
+    const numericCandidates = candidates
+      .map((c: any) => {
+        const n = Number(c);
+        return Number.isFinite(n) ? n : undefined;
+      })
+      .filter((n): n is number => typeof n === 'number' && Number.isFinite(n));
+
+    const ids = Array.from(new Set<number>(numericCandidates));
     return ids;
   }
 
@@ -363,7 +455,7 @@ employeeOptionLabel(emp: any): string {
         : [];
 
       this.pmSelected = pms;
-      this.pmIds = pms.map(pm => pm.id);
+      this.pmIds = pms.map(pm => pm.id).filter((n): n is number => typeof n === 'number');
       this.team = assigned.filter((e: Employee) => !pms.some((pm: Employee) => pm && pm.id === e.id));
     } catch (e) {
       // ignore; loadProjectDetails will enrich later
@@ -373,11 +465,18 @@ employeeOptionLabel(emp: any): string {
 // --- NOTES Y ACCIONES --- //
 
 isAdminOrOwner(): boolean {
-  // Prioriza roles recibidos por @Input, si no, usa AuthService
-  const roles = (this.roles && this.roles.length ? this.roles : (this.authService.getState().role || []))
-    .map(r => r.toLowerCase());
-  console.log('[ProjectDetails] roles usados para permisos:', roles);
-  return roles.includes('admin') || roles.includes('owner');
+  return this.canEdit;
+}
+
+// Actualiza la propiedad cacheada `canEdit` a partir de `roles` o del estado de AuthService
+private updateCanEdit(): void {
+  try {
+    const rolesSource = (this.roles && this.roles.length) ? this.roles : (this.authService.getState().role || []);
+    const roles = (Array.isArray(rolesSource) ? rolesSource : [rolesSource]).map(r => String(r).toLowerCase());
+    this.canEdit = roles.includes('admin') || roles.includes('owner');
+  } catch (e) {
+    this.canEdit = false;
+  }
 }
 
 // 🗑️ Eliminar proyecto
@@ -409,43 +508,32 @@ isAdminOrOwner(): boolean {
 
 
 // ✏️ Editar proyecto
-openEditModal() {
-  // Close the details modal completely before opening edit
-  this.closeModal();
+  openEditModal() {
+    // Open the edit dialog on top of the details modal (do not close details first).
+    const openDialog = () => {
+      const ref = this.dialog.open(EditProjectComponent, {
+        width: '720px',
+        disableClose: false,
+        panelClass: 'edit-modal-card',
+        data: { project: this.project },
+        hasBackdrop: true
+      });
 
-  const openDialog = () => {
-    const ref = this.dialog.open(EditProjectComponent, {
-      width: '720px',
-      disableClose: false,
-      panelClass: 'edit-modal-card',
-      data: { project: this.project },
-      hasBackdrop: true
-    });
-
-    // If the user cancels or saves, reopen the details modal for the same project.
-    ref.afterClosed().subscribe((result: any) => {
-      console.log('Edit dialog closed with result:', result);
-      
-      if (result === 'cancel') {
-        // Reopen details modal
-        const id = this.project?.id ?? this.projectId;
-        if (id) {
-          setTimeout(() => this.openProjectDetails(Number(id)), 60);
+      // After the edit dialog closes, if saved reload the project details so the UI updates immediately.
+      ref.afterClosed().subscribe((result: any) => {
+        console.log('Edit dialog closed with result:', result);
+        if (result && typeof result === 'object' && result.action === 'saved') {
+          const id = result.projectId ?? this.project?.id ?? this.projectId;
+          if (id) {
+            // Reload details from backend to reflect saved changes
+            this.loadProjectDetails(id);
+          }
         }
-      }
-      if (result && typeof result === 'object' && result.action === 'saved') {
-        // Recargar el proyecto después de guardar
-        const id = result.projectId ?? this.project?.id ?? this.projectId;
-        if (id) {
-          this.loadProjectDetails(id);
-        }
-        // Emitir evento al padre para que reabra el modal de detalles
-        this.close.emit({ reopenDetails: true, projectId: id });
-      }
-    });
-  };
-  openDialog();
-}
+        // If cancelled, do nothing: details modal remains visible underneath.
+      });
+    };
+    openDialog();
+  }
 
 // === MÉTRICAS AVANZADAS ===
 get metricsList(): Array<{ dot: string, label: string, value: any }> {
