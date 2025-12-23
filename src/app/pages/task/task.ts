@@ -1,6 +1,6 @@
 // Helper global para peticiones GET autenticadas
 export async function apiGet<T = any>(path: string): Promise<T> {
-  const apiBase = (window as any).Auth?.getState?.().apiBase || 'https://api.luseoeng.com';
+  const apiBase = (window as any).Auth?.getState?.().apiBase || 'https://api-pruebas.luseoeng.com';
   const url = apiBase.replace(/\/\$/, '') + path;
   let res: Response;
   const token = (window as any).Auth?.getState?.().token || localStorage.getItem('auth.token') || localStorage.getItem('token');
@@ -37,7 +37,7 @@ export async function apiGet<T = any>(path: string): Promise<T> {
 
 
 export async function apiDelete(path: string): Promise<any> {
-  const apiBase = (window as any).Auth?.getState?.().apiBase || 'https://api.luseoeng.com';
+  const apiBase = (window as any).Auth?.getState?.().apiBase || 'https://api-pruebas.luseoeng.com';
   const url = apiBase.replace(/\/$/, '') + path;
   let res: Response;
   if ((window as any).Auth && typeof (window as any).Auth.fetchWithAuth === 'function') {
@@ -65,7 +65,7 @@ export async function apiDelete(path: string): Promise<any> {
 
 // API Helper functions
 export async function apiPost(path: string, data: any): Promise<any> {
-  const apiBase = (window as any).Auth?.getState?.().apiBase || 'https://api.luseoeng.com';
+  const apiBase = (window as any).Auth?.getState?.().apiBase || 'https://api-pruebas.luseoeng.com';
   const url = apiBase.replace(/\/$/, '') + path;
   let res: Response;
   if ((window as any).Auth && typeof (window as any).Auth.fetchWithAuth === 'function') {
@@ -100,7 +100,7 @@ export async function apiPost(path: string, data: any): Promise<any> {
 }
 
 export async function apiPut(path: string, data: any): Promise<any> {
-  const apiBase = (window as any).Auth?.getState?.().apiBase || 'https://api.luseoeng.com';
+  const apiBase = (window as any).Auth?.getState?.().apiBase || 'https://api-pruebas.luseoeng.com';
   const url = apiBase.replace(/\/$/, '') + path;
   let res: Response;
   if ((window as any).Auth && typeof (window as any).Auth.fetchWithAuth === 'function') {

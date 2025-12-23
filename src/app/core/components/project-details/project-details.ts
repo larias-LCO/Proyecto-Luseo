@@ -51,7 +51,7 @@ private isLikelyPM(employee: Employee): boolean {
 }
 
 private isAllowedTeamEmployee(employee: Employee): boolean {
-  const allowedRoles = ['developer', 'designer', 'qa', 'engineer'];
+  const allowedRoles = ['Drafter', 'Engineer', 'Senior Engineer', 'Designer'];
   const roles = (employee.roles ?? '') as any;
   // support array or comma-separated / freeform role strings
   if (Array.isArray(roles)) {

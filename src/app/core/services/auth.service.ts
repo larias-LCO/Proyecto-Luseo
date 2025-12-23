@@ -13,7 +13,7 @@ export class AuthService {
   private storageTokenKeys = ['auth.token', 'token'];
   private usernameKey = 'auth.username';
   private rolesKey = 'auth.roles';
-  private apiBase = 'https://api.luseoeng.com';
+  private apiBase = 'https://api-pruebas.luseoeng.com';
 
   state = signal<AuthState>({ authenticated: false });
 

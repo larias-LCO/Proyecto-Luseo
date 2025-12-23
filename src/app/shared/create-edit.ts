@@ -20,7 +20,7 @@ export class CreateEditHelper {
 
 // ====== SCRIPT: TS relacionado con Create / Edit ======
 (() => {
-  const API = 'https://api.luseoeng.com';
+  const API = 'https://api-pruebas.luseoeng.com';
 
   // --- Tipos de datos ---
   interface Office { id: number; name: string; }

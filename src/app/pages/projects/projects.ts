@@ -587,7 +587,7 @@ onPageSizeChange() {
       const pmIds = Array.isArray(p.pmIds) ? p.pmIds.map(Number) : [];
       const isLikelyPM = (employee: any) => (String(employee?.roles || '').toLowerCase().includes('pm'));
       const isAllowedTeamEmployee = (employee: any) => {
-        const allowedRoles = ['developer', 'designer', 'qa', 'engineer'];
+        const allowedRoles = ['Drafter', 'Engineer', 'Senior Engineer', 'Designer'];
         return allowedRoles.includes(String(employee?.roles || '').toLowerCase());
       };
 
@@ -682,10 +682,10 @@ onPageSizeChange() {
         const li = document.createElement('li');
         const avatar = document.createElement('span');
         avatar.className = 'avatar';
-        avatar.textContent = String(pm.name || '').charAt(0) || '?';
+        avatar.textContent = String(pm.Name || '').charAt(0) || '?';
         li.appendChild(avatar);
         const txt = document.createElement('span');
-        txt.textContent = pm.name || '-';
+        txt.textContent = pm.Name || '-';
         li.appendChild(txt);
         pmList.appendChild(li);
       });

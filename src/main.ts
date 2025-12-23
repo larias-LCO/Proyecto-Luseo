@@ -5,7 +5,7 @@ import { AppComponent } from './app/app';
 import './app/core/services/auth-sync';
 
 // Inicializa la base de la API para Auth
-(window as any).Auth.bootstrap({ apiBase: 'https://api.luseoeng.com' });
+(window as any).Auth.bootstrap({ apiBase: 'https://api-pruebas.luseoeng.com' });
 
 // Polyfills para librerías que esperan entorno Node
 // Corrige errores como "global is not defined" en sockjs-client

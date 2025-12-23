@@ -1,0 +1,4 @@
+export enum SubTaskTag {
+  FIRE_PROTECTION = 'FIRE PROTECTION',
+  PEER_REVIEW = 'PEER REVIEW'
+}

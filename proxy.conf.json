@@ -1,0 +1,10 @@
+{
+  "/auth": {
+    "target": "https://api-pruebas.luseoeng.com",
+    "secure": true,
+    "changeOrigin": true,
+    "logLevel": "debug",
+    "cookieDomainRewrite": "localhost",
+    "cookiePathRewrite": "/"
+  }
+}
