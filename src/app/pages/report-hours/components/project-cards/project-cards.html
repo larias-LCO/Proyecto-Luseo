@@ -1,1 +1,59 @@
-<p>project-cards works!</p>
+<div class="projects-container">
+
+  <div *ngIf="cards.length === 0" class="empty-state">
+    <div class="icon">📂</div>
+    <div class="title">No projects found</div>
+    <div class="subtitle">Try adjusting your filters</div>
+  </div>
+
+  <ng-container *ngIf="cards.length > 0">
+    <div class="header">
+      <h3>Projects ({{ cards.length }})</h3>
+    </div>
+
+    <div class="projects-scroll-wrapper">
+      <div class="projects-grid">
+
+        <div
+          class="project-card"
+          *ngFor="let project of cards"
+          (click)="selectProject(project.id)"
+        >
+
+          <div class="top-bar"></div>
+
+          <div class="card-header">
+            <span class="project-code">
+              {{ project.code }}
+            </span>
+          </div>
+
+          <div class="card-body">
+            <h3 class="project-name" [title]="project.name">
+              {{ project.name }}
+            </h3>
+
+            <div class="pm-box">
+              <div class="avatar">
+                {{ project.pmInitials }}
+              </div>
+
+              <div class="pm-info">
+                <div class="label">PM</div>
+                <div class="name">{{ project.pmName }}</div>
+              </div>
+            </div>
+
+            <div class="footer">
+              <span>Click to report →</span>
+              <span class="badge">⏱️ Report</span>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </ng-container>
+
+</div>

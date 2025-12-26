@@ -10,6 +10,7 @@ export class AuthStateService {
   readonly session$ = this.state$.asObservable();
 
   setSession(me: AuthMeResponse | null) {
+
     this.state$.next(me);
   }
 
@@ -35,5 +36,10 @@ export class AuthStateService {
 
   get serverTimeMillis() {
     return this.state$.value?.serverTimeMillis ?? null;
+  }
+
+  /** ✅ AQUÍ ESTÁ LA CLAVE */
+  get employeeId(): number | null {
+    return this.state$.value?.employeeId ?? null;
   }
 }

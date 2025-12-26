@@ -1,0 +1,60 @@
+/* Page-level layout for Report Hours to separate embedded components */
+.report-hours {
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+	padding: 12px;
+}
+
+.report-section {
+	/* lightweight card wrapper for each section/component */
+	background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.005));
+	border: 1px solid rgba(0,0,0,0.04);
+	border-radius: 10px;
+	padding: 10px;
+	box-shadow: 0 6px 18px rgba(2,6,23,0.05);
+}
+
+.report-section .section-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+	padding-bottom: 8px;
+	margin-bottom: 6px;
+	border-bottom: 1px solid rgba(0,0,0,0.04);
+}
+
+.report-section .section-title {
+	margin: 0;
+	font-size: 14px;
+	font-weight: 700;
+	color: #0b1220;
+}
+
+.report-section .section-body {
+	padding-top: 6px;
+}
+
+/* Make sure embedded components have consistent spacing inside sections */
+.report-section .filters-container,
+.report-section .projects-container,
+.report-section .some-other-component {
+	margin: 0;
+}
+
+/* Responsive spacing tweaks */
+@media (max-width: 720px) {
+	.report-hours { gap: 10px; padding: 8px; }
+	.report-section { padding: 8px; border-radius: 8px; }
+}
+
+/* Variant: remove inner padding (use for full-bleed components like grid) */
+.report-section--flush {
+  padding: 0;
+}
+
+.report-section--flush .section-body {
+  padding: 0;
+}
+

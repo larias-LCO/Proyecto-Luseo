@@ -1,0 +1,247 @@
+// src/app/pages/report-hours/components/filters/filters.scss
+
+// Modern filter bar styles (responsive, accessible, and minimal)
+$bg: #0f1724;
+$card: #0b1220;
+$muted: #000000;
+$accent: #7c5cff;
+$accent-2: #00d4ff;
+$success: #22c55e;
+$danger: #ef4444;
+$glass: rgba(255,255,255,0.04);
+$radius: 10px;
+$shadow: 0 6px 18px rgba(2,6,23,0.6);
+$transition: 180ms cubic-bezier(.2,.9,.3,1);
+
+.filters-container {
+    display: block;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    color: #000000;
+
+    .filters-card {
+        background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+        border-radius: $radius;
+        padding: 12px;
+        box-shadow: $shadow;
+        border: 1px solid rgba(255,255,255,0.03);
+        backdrop-filter: blur(6px);
+    }
+
+    .filter-row {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .filter-item {
+        background: $glass;
+        border-radius: 8px;
+        padding: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 140px;
+        position: relative;
+        transition: transform $transition, box-shadow $transition;
+        border: 1px solid transparent;
+
+        &:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(12,18,30,0.45);
+            border-color: rgba(124,92,255,0.12);
+        }
+
+        label {
+            font-size: 12px;
+            color: $muted;
+            min-width: 0px;
+        }
+    }
+
+    // Inputs & Selects
+    input[type="text"],
+    input[type="search"],
+    input[type="date"],
+    select {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background: transparent;
+        border: none;
+        color: inherit;
+        outline: none;
+        font-size: 14px;
+        padding: 6px 8px;
+        width: 100%;
+    }
+
+    select {
+        cursor: pointer;
+        padding-right: 28px;
+    }
+
+    // Custom caret for select
+    .filter-item.select {
+        position: relative;
+
+        &::after {
+            content: "▾";
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 12px;
+            color: $muted;
+            pointer-events: none;
+        }
+    }
+
+    // Search input with icon
+    .search {
+        flex: 1 1 260px;
+        min-width: 180px;
+        display: flex;
+        align-items: center;
+
+        input {
+            padding-left: 28px;
+        }
+
+        &::before {
+            content: "🔍";
+            position: absolute;
+            left: 12px;
+            font-size: 14px;
+            opacity: 0.8;
+            pointer-events: none;
+        }
+    }
+
+    // Date range group
+    .date-range {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+
+        .date {
+            min-width: 140px;
+            display: flex;
+            align-items: center;
+            position: relative;
+
+            &::before {
+                content: "📅";
+                position: absolute;
+                left: 10px;
+                font-size: 14px;
+                opacity: 0.9;
+                pointer-events: none;
+            }
+
+            input {
+                padding-left: 28px;
+            }
+        }
+    }
+
+    // Chips and badges
+    .chips {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+
+        .chip {
+            background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            border-radius: 999px;
+            padding: 6px 10px;
+            font-size: 13px;
+            color: $muted;
+            border: 1px solid rgba(255,255,255,0.02);
+            transition: all $transition;
+            cursor: pointer;
+
+            &.active {
+                color: #071226;
+                background: linear-gradient(90deg, $accent, $accent-2);
+                box-shadow: 0 6px 20px rgba(124,92,255,0.16);
+                border-color: rgba(255,255,255,0.06);
+            }
+        }
+    }
+
+    // Action buttons
+    .actions {
+        margin-left: auto;
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .btn {
+        -webkit-tap-highlight-color: transparent;
+        border: none;
+        cursor: pointer;
+        border-radius: 8px;
+        padding: 8px 12px;
+        font-weight: 600;
+        font-size: 13px;
+        transition: transform $transition, box-shadow $transition, opacity $transition;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+
+        &.primary {
+            background: linear-gradient(90deg, $accent, $accent-2);
+            color: #071226;
+            box-shadow: 0 8px 26px rgba(124,92,255,0.16);
+        }
+
+        &.ghost {
+            background: transparent;
+            border: 1px dashed rgba(255,255,255,0.03);
+            color: $muted;
+        }
+
+        &:active { transform: translateY(1px) scale(0.998); }
+        &:hover { opacity: 0.95; }
+    }
+
+    .clear-btn {
+        background: transparent;
+        color: $muted;
+        border-radius: 6px;
+        padding: 6px;
+        font-size: 13px;
+
+        &:hover { color: #001677; background: rgba(255,255,255,0.02); }
+    }
+
+    // Empty/placeholder state
+    .no-filters {
+        padding: 14px;
+        text-align: center;
+        color: $muted;
+        font-size: 13px;
+        background: rgba(255,255,255,0.01);
+        border-radius: 8px;
+    }
+
+    // Small screens
+    @media (max-width: 720px) {
+        .filter-row {
+            gap: 8px;
+        }
+        .actions { width: 100%; justify-content: space-between; }
+        .filters-card { padding: 10px; }
+        .filter-item { min-width: 0; flex: 1 1 45%; }
+        .search { flex-basis: 100%; }
+    }
+
+    // Accessibility focus ring
+    input:focus, select:focus, .btn:focus {
+        outline: none;
+        box-shadow: 0 0 0 4px rgba(124,92,255,0.12);
+        border-radius: 8px;
+    }
+}

@@ -1,0 +1,180 @@
+.projects-container {
+  display: flex;
+  flex-direction: column;
+  text-align: center
+}
+
+/* Empty state: centered, larger icon and text */
+.projects-container .empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 12px;
+  min-height: 220px; /* ensure it occupies similar space to cards grid */
+  text-align: center;
+  color: rgba(11,18,32,0.8);
+}
+
+.projects-container .empty-state .icon {
+  font-size: 150px;
+  line-height: 1;
+  margin-bottom: 12px;
+}
+
+.projects-container .empty-state .title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.projects-container .empty-state .subtitle {
+  font-size: 18px;
+  color: rgba(11,18,32,0.6);
+}
+
+/* Scrollable grid wrapper (compact) */
+.projects-scroll-wrapper {
+  max-height: 60vh;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 220px); /* narrower cards for compact layout */
+  grid-auto-rows: 180px; /* slightly shorter cards */
+  gap: 12px;
+  justify-content: start;
+  align-items: start;
+  text-align: left;
+}
+
+.project-card {
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(6,128,228,0.03), rgba(79,209,197,0.02));
+  box-shadow: 0 6px 14px rgba(4,10,20,0.12);
+  transition: box-shadow 120ms ease, border-color 120ms ease, background-color 120ms ease;
+  border: 1px solid rgba(0,0,0,0.03);
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+
+.project-card:hover {
+  box-shadow: 0 10px 30px rgba(94, 147, 238, 0.479);
+  border-color: rgb(0, 67, 190);
+  background: linear-gradient(180deg, rgba(6,128,228,0.05), rgba(79,209,197,0.03));
+}
+
+.top-bar {
+  height: 3px;
+  background: linear-gradient(135deg, var(--primary, #5ca8ff), #072c4a, var(--primary-dark, #0b1220));
+}
+
+/* Selected / active state: visible border and subtle highlight */
+.project-card:active,
+.project-card:focus-within,
+.project-card.selected {
+  outline: none;
+  border: 2px solid var(--primary, #4f8cff);
+  box-shadow: 0 12px 34px rgba(79,140,255,0.12);
+}
+
+.card-header {
+  padding: 10px 8px 8px 8px;
+  background: rgba(255,255,255,0.01);
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+
+.card-body {
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.project-code {
+  display: inline-block;
+  font-size: 11px;
+  color: rgba(0, 0, 0, 0.75);
+  background: rgba(6,128,228,0.10);
+  text-align: center;
+  border-radius: 8px;
+  padding: 4px 8px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.project-name {
+  font-size: 14px;
+  margin: 0;
+  padding: 2px 0;
+  font-weight: 700;
+  color: #0b1220;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pm-box {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 4px; /* keep PM close to title, but separated enough */
+}
+
+.avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #071226;
+  background: linear-gradient(90deg, #6b8cff, #4fd1c5); /* subtler blue-cyan */
+  font-size: 13px;
+  box-shadow: inset 0 -2px 6px rgba(0,0,0,0.06);
+}
+
+.pm-info .label {
+  font-size: 11px;
+  color: rgba(12, 12, 12, 0.65);
+}
+
+.pm-info .name {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 8px;
+  color: rgba(3, 3, 3, 0.72);
+  font-size: 12px;
+  border-top: 1px solid rgba(0,0,0,0.04);
+  margin-top: 6px;
+}
+
+/* subtle separation effect for sections */
+.project-card .card-header,
+.project-card .card-body,
+.project-card .footer {
+  background-clip: padding-box;
+}
+
+/* Responsive: allow grid to adapt on small screens (compact) */
+@media (max-width: 720px) {
+  .projects-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    grid-auto-rows: auto;
+  }
+  .projects-scroll-wrapper { max-height: 50vh; }
+}

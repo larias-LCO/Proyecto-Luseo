@@ -1,1 +1,57 @@
-<p>filters works!</p>
+<div class="filters-container">
+  <div class="filters-card">
+    <div class="filter-row">
+
+      <!-- YEAR -->
+      <div class="filter-item select">
+        <label class="visually-hidden">Year</label>
+        <select
+          [ngModel]="filters.year"
+          (ngModelChange)="filters.year = $event; applyFilters()"
+        >
+          <option *ngFor="let y of availableYears" [ngValue]="y">20{{ y }}</option>
+        </select>
+      </div>
+
+      <!-- SEARCH -->
+      <div class="filter-item search">
+        <label class="visually-hidden"></label>
+        <input
+          type="text"
+          placeholder="Search project for name, code or client"
+          [ngModel]="filters.searchText"
+          (ngModelChange)="filters.searchText = $event; applyFilters()"
+        />
+      </div>
+
+      <!-- MY PROJECTS -->
+      <div class="filter-item">
+        <label>
+          <input
+            type="checkbox"
+            [ngModel]="filters.myProjectsOnly"
+            (ngModelChange)="filters.myProjectsOnly = $event; applyFilters()"
+          />
+          My assigned projects
+        </label>
+      </div>
+
+      <!-- ADMIN: Filtrar por empleado -->
+      <ng-container *ngIf="isAdminOrOwner">
+        <div class="filter-item select">
+          <select disabled>
+            <option>Employee reports [Inhabilitado]</option>
+          </select>
+        </div>
+      </ng-container>
+
+      <!-- CLEAR FILTERS (global) -->
+      <div class="filter-item actions">
+        <button type="button" class="btn ghost clear-btn" (click)="resetFilters()">
+          Filter reset
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>

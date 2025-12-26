@@ -10,32 +10,32 @@ export class AuthService {
   ) {}
 
   login(req: LoginRequest) {
-    const base = (window as any).Auth?.getState?.()?.apiBase || 'https://api-pruebas.luseoeng.com';
-    const url = `${base.replace(/\/$/, '')}/auth/login`;
+    const base = 'https://api-pruebas.luseoeng.com';
+    const url = `${base}/auth/login`;
     return this.http.post<AuthResponse>(url, req, {
       withCredentials: true
     });
   }
 
   me() {
-    const base = (window as any).Auth?.getState?.()?.apiBase || 'https://api-pruebas.luseoeng.com';
-    const url = `${base.replace(/\/$/, '')}/auth/me`;
+    const base = 'https://api-pruebas.luseoeng.com';
+    const url = `${base}/auth/me`;
     return this.http.get<AuthMeResponse>(url, {
       withCredentials: true
     });
   }
 
   refresh() {
-    const base = (window as any).Auth?.getState?.()?.apiBase || 'https://api-pruebas.luseoeng.com';
-    const url = `${base.replace(/\/$/, '')}/auth/refresh`;
+    const base = 'https://api-pruebas.luseoeng.com';
+    const url = `${base}/auth/refresh`;
     return this.http.post<AuthResponse>(url, {}, {
       withCredentials: true
     });
   }
 
   logout() {
-    const base = (window as any).Auth?.getState?.()?.apiBase || 'https://api-pruebas.luseoeng.com';
-    const url = `${base.replace(/\/$/, '')}/auth/logout`;
+    const base = 'https://api-pruebas.luseoeng.com';
+    const url = `${base}/auth/logout`;
     return this.http.post<void>(url, {}, {
       withCredentials: true
     });

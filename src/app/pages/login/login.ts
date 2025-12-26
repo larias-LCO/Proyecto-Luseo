@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule, NgIf } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
-import { AuthFacade } from '../report-hours/auth/auth.facade';
 import { AuthService as ReportAuthApi } from '../report-hours/auth/services/auth-api.service';
 import { AuthStateService as ReportAuthState } from '../report-hours/auth/services/auth-state.service';
 
@@ -18,11 +17,10 @@ export class LoginComponent implements OnInit {
   errorMsg = '';
   form!: FormGroup;
 
-  private returnUrl = '/proyectos';
+  private returnUrl = '/report-hours';
 
   constructor(
     private fb: FormBuilder,
-    private facade: AuthFacade,
     private reportApi: ReportAuthApi,
     private reportState: ReportAuthState,
     private router: Router,
@@ -38,9 +36,10 @@ export class LoginComponent implements OnInit {
   ngOnInit() {
     // Intenta recuperar sesión por cookie usando el API de report-hours
     const lastRoute = localStorage.getItem('lastRoute');
-    this.returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || lastRoute || '/proyectos';
+    this.returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || lastRoute || '/report-hours';
     this.reportApi.me().subscribe({
       next: (me) => {
+        // Almacenar la sesión tal cual viene del backend (ya incluye employeeId)
         this.reportState.setSession(me);
         if (me?.authenticated) {
           this.router.navigateByUrl(this.returnUrl);
@@ -61,20 +60,33 @@ export class LoginComponent implements OnInit {
     const { username, password } = this.form.value;
     this.loading = true;
 
-    this.facade.login(username, password).subscribe({
+    // Usar directamente reportApi para login con cookies
+    this.reportApi.login({ login: username, password }).subscribe({
       next: () => {
-        // Después del login, obtener /auth/me para poblar el estado y navegar
-        this.reportApi.me().subscribe({
-          next: (me) => {
-            this.reportState.setSession(me);
-            this.router.navigateByUrl(this.returnUrl || localStorage.getItem('lastRoute') || '/proyectos');
-            this.loading = false;
-          },
-          error: () => {
-            this.errorMsg = 'Error obteniendo sesión después del login';
-            this.loading = false;
-          }
-        });
+        // El backend estableció las cookies (auth-token, username, role, employeeId, etc.)
+        // El navegador las enviará automáticamente en cada petición con withCredentials: true
+        
+        // Pequeño delay para asegurar que las cookies se hayan establecido
+        setTimeout(() => {
+          // Después del login exitoso, obtener /auth/me para poblar el estado completo
+          this.reportApi.me().subscribe({
+            next: (me) => {
+              // Almacenar la sesión completa (ya viene con employeeId desde el backend)
+              this.reportState.setSession(me);
+              
+              if (me.authenticated) {
+                this.router.navigateByUrl(this.returnUrl || '/report-hours');
+              } else {
+                this.errorMsg = 'Sesión no autenticada después del login';
+              }
+              this.loading = false;
+            },
+            error: () => {
+              this.errorMsg = 'Error obteniendo sesión después del login';
+              this.loading = false;
+            }
+          });
+        }, 100);
       },
       error: () => {
         this.errorMsg = 'Usuario/contraseña inválidos';

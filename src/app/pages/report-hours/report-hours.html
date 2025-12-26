@@ -1,1 +1,27 @@
-<p>report-hours works!</p>
+<div class="report-hours">
+
+  <!-- FILTERS -->
+  <section class="report-section">
+    <div class="section-body">
+      <app-report-hours-filters
+        [projects]="projects"
+        [myEmployeeId]="employeeId"
+        [isAdminOrOwner]="isAdminOrOwner"
+        (projectsFiltered)="onProjectsFiltered($event)">
+      </app-report-hours-filters>
+    </div>
+  </section>
+
+  <!-- PROJECT CARDS -->
+  <section class="report-section report-section--flush">
+    <div class="section-body">
+      <div *ngIf="!loadingProjects">
+        <app-project-cards
+          [projects]="filteredProjects"
+          (projectSelected)="onProjectSelected($event)">
+        </app-project-cards>
+      </div>
+    </div>
+  </section>
+
+</div>

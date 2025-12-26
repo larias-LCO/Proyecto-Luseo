@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "ng serve --ssl --ssl-key ssl/localhost-key.pem --ssl-cert ssl/localhost.pem",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
@@ -37,8 +37,10 @@
     "@fullcalendar/list": "^6.1.4",
     "@fullcalendar/timegrid": "^6.1.4",
     "@stomp/stompjs": "^7.2.1",
+    "@tailwindcss/vite": "^4.1.18",
     "rxjs": "~7.8.0",
     "sockjs-client": "^1.6.1",
+    "tailwindcss": "^4.1.18",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"
   },
