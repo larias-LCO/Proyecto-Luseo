@@ -1,7 +1,9 @@
 .projects-container {
   display: flex;
   flex-direction: column;
-  text-align: center
+  text-align: center;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  padding: 0px 0px 0px 6px;
 }
 
 /* Empty state: centered, larger icon and text */
