@@ -12,7 +12,7 @@ interface SubTaskCache {
 @Injectable({ providedIn: 'root' })
 export class SubTaskService {
 
-  private readonly CACHE_TTL = 3 * 60 * 1000; // 3 min
+  private readonly CACHE_TTL = 5 * 60 * 1000; // 5 min
   private cache: SubTaskCache | null = null;
 
   constructor(private http: HttpClient) {}

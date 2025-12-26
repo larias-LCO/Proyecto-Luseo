@@ -53,6 +53,31 @@ export class InternalTaskLogService {
       );
   }
 
+  // ========= UPDATE =========
+  update(
+    logId: number,
+    payload: Partial<InternalTaskLog> ): Observable<InternalTaskLog> {
+    return this.http
+      .put<InternalTaskLog>(
+        `${environment.apiUrl}/internal-task-logs/${logId}`,
+        payload
+      )
+      .pipe(
+        tap(() => this.clearCache())
+      );
+  }
+
+  // ========= DELETE =========
+  delete (logId: number): Observable<void> {
+    return this.http
+      .delete<void>(
+        `${environment.apiUrl}/internal-task-logs/${logId}`
+      )
+      .pipe(
+        tap(() => this.clearCache())
+      );
+  }
+
   // ========= FILTERS =========
   filterByEmployee(
     logs: InternalTaskLog[],

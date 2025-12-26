@@ -13,4 +13,13 @@ export interface InternalTaskLog {
   // Empleado
   createdByEmployeeId: number;
   createdByEmployeeName: string;
+
+  // Snapshot organizacional
+  snapshotJobpositionId: number;
+  snapshotJobpositionName: string;
+
+  snapshotDepartmentId: number;
+  snapshotDepartmentName: string;
+
+  snapshotBillablerate: number;
 }
