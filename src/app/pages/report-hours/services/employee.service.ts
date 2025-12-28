@@ -68,7 +68,7 @@ export class EmployeeService {
   }
 
   // =====================================================
-  // POST: Crear empleado (si lo usas luego)
+  // POST: Crear empleado
   // =====================================================
   create(employee: Partial<Employee>): Observable<Employee> {
     return this.http.post<Employee>(this.baseUrl, employee, {

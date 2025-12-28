@@ -50,6 +50,24 @@ export class SubTaskService {
       );
   }
 
+  // ========= EDIT =========
+  edit(subTask: SubTask): Observable<SubTask> {
+    return this.http
+      .put<SubTask>(`${environment.apiUrl}/sub-tasks/${subTask.id}`, subTask)
+      .pipe(
+        tap(() => this.clearCache())
+      );
+  }
+
+  // ========= DELETE =========
+  delete(id: number): Observable<void> {
+    return this.http
+      .delete<void>(`${environment.apiUrl}/sub-tasks/${id}`)
+      .pipe(
+        tap(() => this.clearCache())
+      );
+  }
+
   // ========= FILTERS (PUROS) =========
   filterByEmployee(subtasks: SubTask[], employeeId: number): SubTask[] {
     return subtasks.filter(s => s.createdByEmployeeId === employeeId);

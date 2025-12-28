@@ -11,6 +11,7 @@ export class SubTaskCategoryService {
 
   constructor(private http: HttpClient) {}
 
+  // ========= LOAD ALL =========
   getAll(forceRefresh = false): Observable<SubTaskCategory[]> {
     if (!forceRefresh && this.cache) {
       return of(this.cache);
@@ -20,6 +21,35 @@ export class SubTaskCategoryService {
       .get<SubTaskCategory[]>(`${environment.apiUrl}/subtask-categories`)
       .pipe(
         tap(data => (this.cache = data))
+      );
+  }
+
+  // ========= CREATE =========
+  create (subTaskCategory: SubTaskCategory): Observable<SubTaskCategory> {
+    return this.http
+      .post<SubTaskCategory>(`${environment.apiUrl}/subtask-categories`, subTaskCategory)
+      .pipe(
+        tap(() => this.clearCache())
+      );
+  }
+
+
+  // ========= EDIT =========
+  edit (subTaskCategory: SubTaskCategory): Observable<SubTaskCategory> {
+    return this.http
+      .put<SubTaskCategory>(`${environment.apiUrl}/subtask-categories/${subTaskCategory.id}`, subTaskCategory)
+      .pipe(
+        tap(() => this.clearCache())
+      );
+  }
+
+
+  // ========= DELETE =========
+  delete (id: number): Observable<void> {
+    return this.http
+      .delete<void>(`${environment.apiUrl}/subtask-categories/${id}`)
+      .pipe(
+        tap(() => this.clearCache())
       );
   }
 

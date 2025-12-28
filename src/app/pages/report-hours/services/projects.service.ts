@@ -47,6 +47,33 @@ export class ProjectService {
     );
   }
 
+  // ========= CREATE =========
+  create(payload: Partial<Project>): Observable<Project> {
+    return this.http
+      .post<Project>(`${environment.apiUrl}/projects`, payload)
+      .pipe(
+        tap(() => this.clearCache())
+      );
+  }
+
+  // ========= EDIT =========
+  edit(project: Project): Observable<Project> {
+    return this.http
+      .put<Project>(`${environment.apiUrl}/projects/${project.id}`, project)
+      .pipe(
+        tap(() => this.clearCache())
+      );
+  }
+
+  // ========= DELETE =========
+  delete(id: number): Observable<void> {
+    return this.http
+      .delete<void>(`${environment.apiUrl}/projects/${id}`)
+      .pipe(
+        tap(() => this.clearCache())
+      );
+  }
+
   /**
    * Limpiar cache (logout, cambio de cuenta, etc)
    */
