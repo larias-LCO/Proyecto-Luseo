@@ -24,6 +24,7 @@ export class Filters implements OnInit, OnChanges {
   @Input() isAdminOrOwner = false;
 
   @Output() projectsFiltered = new EventEmitter<Project[]>();
+  @Output() timeEntryFiltersChanged = new EventEmitter<any>();
 
   // Initialize filters so OnChanges can safely update `filters.year`
   filters: ReportHoursFilters = {
@@ -32,6 +33,8 @@ export class Filters implements OnInit, OnChanges {
     onlyMyReports: false
   };
   availableYears: number[] = [];
+
+  @Input() employees: { id: number; name: string }[] = [];
 
   ngOnInit(): void {
     // initialize filters; actual availableYears may arrive later via @Input
@@ -80,6 +83,10 @@ export class Filters implements OnInit, OnChanges {
     );
 
     this.projectsFiltered.emit(result);
+
+    // Emit time entry filters so parent/services can consume them.
+    // Date ranges are handled by the calendar; do not include them here.
+    this.timeEntryFiltersChanged.emit({ ...this.filters });
   }
 
   /**
@@ -90,6 +97,7 @@ export class Filters implements OnInit, OnChanges {
 
     // reset search text
     (this.filters as any).searchText = '';
+    // Do not reset calendar date ranges here (calendar manages them)
 
     // reset year to current if available, otherwise first available or current
     if (this.availableYears && this.availableYears.length > 0) {

@@ -36,11 +36,30 @@
         </label>
       </div>
 
+      <!-- ONLY MY REPORTS -->
+      <div class="filter-item">
+        <label>
+          <input
+            type="checkbox"
+            [ngModel]="filters.onlyMyReports"
+            (ngModelChange)="filters.onlyMyReports = $event; applyFilters()"
+          />
+          Only my reports
+        </label>
+      </div>
+
+      <!-- NOTE: Date range inputs removed — date ranges are handled by the calendar renderer -->
+
       <!-- ADMIN: Filtrar por empleado -->
       <ng-container *ngIf="isAdminOrOwner">
         <div class="filter-item select">
-          <select disabled>
-            <option>Employee reports [Inhabilitado]</option>
+          <select
+            [ngModel]="filters.selectedEmployeeId"
+            (ngModelChange)="filters.selectedEmployeeId = $event; applyFilters()"
+            [disabled]="!employees || employees.length === 0"
+          >
+            <option [ngValue]="undefined">All employees</option>
+            <option *ngFor="let emp of employees" [ngValue]="emp.id">{{ emp.name }}</option>
           </select>
         </div>
       </ng-container>

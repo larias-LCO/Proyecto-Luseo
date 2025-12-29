@@ -7,7 +7,9 @@
         [projects]="projects"
         [myEmployeeId]="employeeId"
         [isAdminOrOwner]="isAdminOrOwner"
-        (projectsFiltered)="onProjectsFiltered($event)">
+        (projectsFiltered)="onProjectsFiltered($event)"
+        (timeEntryFiltersChanged)="onTimeEntryFiltersChanged($event)"
+        [employees]="employeesList">
       </app-report-hours-filters>
     </div>
   </section>
@@ -21,6 +23,13 @@
           (projectSelected)="onProjectSelected($event)">
         </app-project-cards>
       </div>
+    </div>
+  </section>
+
+  <!-- CALENDAR -->
+  <section class="report-section">
+    <div class="section-body">
+      <app-calendar [entries]="timeEntries"></app-calendar>
     </div>
   </section>
 

@@ -4,49 +4,19 @@ import { InternalTaskLog } from '../models/internal-task-log.model';
 import { TimeEntry } from '../models/time-entry.model';
 import { TimeMetrics } from '../models/metrics.model';
 import { ReportHoursFilters } from '../models/filters.model';
+import { mapToTimeEntries } from '../utils/mappers/time-entry.mapper';
 
 @Injectable({ providedIn: 'root' })
 export class ReportHoursDataService {
 
-  /**
-   * Convierte SubTasks + InternalTaskLogs
-   * en una sola lista homogénea para UI
-   */
   buildTimeEntries(
     subTasks: SubTask[],
     internalLogs: InternalTaskLog[]
   ): TimeEntry[] {
-
-    const subTaskEntries: TimeEntry[] = subTasks.map(st => ({
-      id: st.id,
-      type: 'SUB_TASK',
-      date: st.issueDate,
-      hours: st.actualHours,
-      title: st.name,
-      userId: st.createdByEmployeeId,
-      userName: st.createdByEmployeeName,
-      projectId: st.projectId,
-      projectName: st.projectName
-    }));
-
-    const internalEntries: TimeEntry[] = internalLogs.map(log => ({
-      id: log.id,
-      type: 'INTERNAL_TASK',
-      date: log.logDate,
-      hours: log.reportHours,
-      title: log.internalTaskName,
-      userId: log.createdByEmployeeId,
-      userName: log.createdByEmployeeName
-    }));
-
-    return [...subTaskEntries, ...internalEntries];
+    return mapToTimeEntries(subTasks, internalLogs);
   }
 
-  /**
-   * Calcula métricas generales de tiempo
-   */
   calculateMetrics(entries: TimeEntry[]): TimeMetrics {
-
     const internalHours = entries
       .filter(e => e.type === 'INTERNAL_TASK')
       .reduce((sum, e) => sum + e.hours, 0);
@@ -62,9 +32,6 @@ export class ReportHoursDataService {
     };
   }
 
-  /**
-   * Aplica filtros de UI
-   */
   applyFilters(
     entries: TimeEntry[],
     filters: ReportHoursFilters,
