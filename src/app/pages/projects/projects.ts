@@ -168,12 +168,12 @@ constructor(
   
   // --- Inicialización ---
   async ngOnInit() {
-    // Verificar autenticación antes de cargar datos
-    const authState = this.auth.getState();
-    if (!authState.authenticated || !authState.token) {
-      window.location.href = '/login';
-      return;
-    }
+    // // Verificar autenticación antes de cargar datos
+    // const authState = this.auth.getState();
+    // if (!authState.authenticated || !authState.token) {
+    //   window.location.href = '/login';
+    //   return;
+    // }
  
 // --- Configuración de WebSocket para actualizaciones en tiempo real ---
 

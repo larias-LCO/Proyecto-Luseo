@@ -17,6 +17,8 @@ import { ReportHoursDataService } from './services/report-hours-data.service';
 import { EmployeeService } from './services/employee.service';
 
 import { AuthStateService } from './auth/services/auth-state.service';
+import { HeaderComponent } from "../../core/components/header/header";
+import { SubmenuComponent } from "../../core/components/submenu/submenu";
 
 @Component({
   selector: 'app-report-hours',
@@ -26,8 +28,10 @@ import { AuthStateService } from './auth/services/auth-state.service';
     NgIf,
     ProjectCards,
     Filters,
-    Calendar
-  ],
+    Calendar,
+    HeaderComponent,
+    SubmenuComponent
+],
   templateUrl: './report-hours.html',
   styleUrls: ['./report-hours.scss']
 })

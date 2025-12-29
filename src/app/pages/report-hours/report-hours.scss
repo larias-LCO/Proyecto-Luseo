@@ -3,7 +3,11 @@
 	display: flex;
 	flex-direction: column;
 	gap: 14px;
-	padding: 12px;
+	// padding: 12px;
+  /* Evitar superposición con header (70px) y sidebar (250px) */
+  margin-top: 70px;
+  margin-left: 250px;
+  padding: 24px;
 }
 
 .report-section {

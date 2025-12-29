@@ -1,129 +1,85 @@
 .sidebar {
-  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  width: 220px;
+  height: 100vh;
+  background: #ffffff;
+  border-right: 1px solid #e5e7eb;
+  padding: 12px 8px;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont;
   position: fixed;
-  top: 70px; /* ⚠️ debe coincidir exactamente con la altura real del header */
-  left: 0;
-  width: 250px;
-  height: calc(100vh - 70px); /* ⚠️ resta la misma altura */
-  background-color: #fff;
-  border-right: 1px solid #ddd;
-  padding-top: 60px;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  z-index: 900; /* para que esté debajo del header */
+  top: 120px; /* ⚠️ debe coincidir exactamente con la altura real del header */
 }
-
-/* Contenedor del grupo principal + submenú */
-.menu-container {
-  width: 100%;
-  text-align: center;
-  position: relative;
-}
-
-// Botones principales
-.menu-item {
-  width: 80%;
-  text-align: center;
-  font-weight: bold;
-  color: #002060;
-  padding: 10px;
-  margin: 5px auto;
-  border: 2px solid transparent;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.menu-item:hover {
-.sidebar {
-  position: fixed;
-  top: 70px;
-  left: 0;
-  width: 250px;
-  height: calc(100vh - 70px);
-  background: rgba(255,255,255,0.92);
-  -webkit-backdrop-filter: saturate(1.2) blur(8px);
-  backdrop-filter: saturate(1.2) blur(8px);
-  border-right: 1px solid #e9eef5;
-  padding-top: 40px;
-  box-shadow: 2px 0 14px rgba(2, 18, 46, 0.06);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  z-index: 900;
-}
-  border-color: #FFD700; /* amarillo brillante */
-}
-
-/* Submenú animado */
-.submenu {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  width: 80%;
-  overflow: hidden;
-  max-height: 0; /* empieza cerrado */
-  opacity: 0;
-  transform: translateY(-5px);
-  transition: all 0.9s cubic-bezier(0.4, 0, 0.2, 1);
- //aqui manejo el tiempo de la transicion
-.menu-item {
-  width: 84%;
-  text-align: center;
-  font-weight: 800;
-  color: #0b2a5b;
-  padding: 12px 10px;
-  margin: 8px auto;
-  border: 1px solid #e0e6ef;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  background: #fff;
-  box-shadow: 0 4px 10px rgba(2,18,46,0.06);
-}
-.menu-item:hover { background: #f7faff; border-color: #cad6ec; transform: translateY(-1px); }
-}
-
-
-/* Mostrar el submenú al pasar el cursor */
-.menu-container:hover .submenu {
-  max-height: 500px; /* suficiente para mostrar todo */
-  opacity: 1;
-  transform: translateY(0);
-}
-
-
-/* Estilo de los enlaces del submenú */
-.submenu {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  width: 84%;
-  overflow: hidden;
-  max-height: 0;
-  opacity: 0;
-  transform: translateY(-5px);
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.submenu li {
-  padding: 6px 0 0 45px;
-  border-bottom: 1px solid #eee;
-}
-.submenu li { padding: 8px 0 0 45px; border-bottom: 1px dashed #e9eef5; }
-
-.submenu a {
-  text-decoration: none;
-  color: rgb(49, 49, 49);
-  transition: color 0.3s;
-  font-size: 18px;
+// .sidebar {
+//   font-family: 'Times New Roman', Times, serif;
+//   position: fixed;
+//   top: 70px; /* ⚠️ debe coincidir exactamente con la altura real del header */
+//   left: 0;
+//   width: 250px;
+//   height: calc(100vh - 70px); /* ⚠️ resta la misma altura */
+//   background-color: #fff;
+//   border-right: 1px solid #ddd;
+//   padding-top: 60px;
+//   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+//   display: flex;
+//   flex-direction: column;
+//   align-items: center;
+//   z-index: 900; /* para que esté debajo del header */
+// }
+/* Secciones */
+.sidebar-label {
+  margin: 18px 12px 8px;
+  font-size: 11px;
   font-weight: 600;
-
+  color: #9ca3af;
+  letter-spacing: 0.08em;
 }
 
-.submenu a:hover {
-.submenu a { text-decoration: none; color: #0b2a5b; transition: color 0.2s; font-size: 16px; font-weight: 600; }
-.submenu a:hover { color: #1350b6; }
-  color: #FFD700;
+/* Items */
+.sidebar-item {
+  width: 100%;
+  height: 44px;
+  padding: 0 12px;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: #111827;
+
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
 }
+
+/* Íconos */
+.sidebar-item .icon {
+  width: 30px;
+  text-align: center;
+  opacity: 0.75;
+}
+
+/* Hover */
+.sidebar-item:hover {
+  background: #f3f4f6;
+}
+
+/* Activo */
+.sidebar-item.active {
+  background: #e5e7eb;
+  font-weight: 600;
+}
+
+/* Report con flecha */
+.sidebar-item.has-child .arrow {
+  margin-left: auto;
+  opacity: 0.6;
+}
+
+
+
+
