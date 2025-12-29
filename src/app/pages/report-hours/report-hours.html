@@ -1,5 +1,7 @@
-<div class="report-hours">
+<app-header></app-header>
+<app-submenu></app-submenu>
 
+<div class="report-hours">
   <!-- FILTERS -->
   <section class="report-section">
     <div class="section-body">
@@ -29,7 +31,89 @@
   <!-- CALENDAR -->
   <section class="report-section">
     <div class="section-body">
-      <app-calendar [entries]="timeEntries"></app-calendar>
+      <!-- Event template for FullCalendar (handles subtask, holiday, internal) -->
+      <ng-template #eventTpl let-arg>
+        <!-- Holiday -->
+        <ng-container *ngIf="arg.event.extendedProps?.isHoliday; else notHoliday">
+          <div [ngClass]="['rh-event','rh-event--holiday', (arg.event.extendedProps?.countryCode === 'CO' ? 'rh-event--holiday-co' : 'rh-event--holiday-us')]">
+            <div class="rh-event__head">
+              <span class="rh-event__flag">{{ arg.event.extendedProps?.countryCode === 'CO' ? '🇨🇴' : '🇺🇸' }}</span>
+              <span class="rh-event__country">{{ arg.event.extendedProps?.countryName }}</span>
+            </div>
+            <div class="rh-event__title">🎉 {{ arg.event.extendedProps?.originalName || (arg.event.title ? (arg.event.title.replace((arg.event.extendedProps?.countryCode === 'CO' ? '🇨🇴' : '🇺🇸'), '') ) : '') }}</div>
+            <div class="rh-event__note">🚫 No Working Day</div>
+          </div>
+        </ng-container>
+
+        <ng-template #notHoliday>
+          <!-- Internal task -->
+          <ng-container *ngIf="arg.event.extendedProps?.isInternalTask; else subtaskTpl">
+            <div class="rh-event rh-event--internal">
+              <div class="rh-event__head">
+                <span class="rh-event__title">📝 {{ arg.event.extendedProps?.description || arg.event.extendedProps?.categoryName }}</span>
+                <span class="rh-event__badge">INTERNAL</span>
+              </div>
+
+              <div class="rh-event__meta">
+                <span class="rh-event__hours">⏱️ {{ arg.event.extendedProps?.hours }}h</span>
+              </div>
+
+              <div class="rh-event__footer">
+                <div class="rh-event__project">
+                  <span class="rh-icon">📂</span>
+                  <span class="rh-text" title="{{ arg.event.extendedProps?.categoryName }}">{{ arg.event.extendedProps?.categoryName }}</span>
+                </div>
+                <ng-container *ngIf="arg.event.extendedProps?.createdBy">
+                  <div class="rh-event__creator">
+                    <span class="rh-icon">👤</span>
+                    <span class="rh-text" title="{{ arg.event.extendedProps?.createdBy }}">{{ arg.event.extendedProps?.createdBy }}</span>
+                  </div>
+                </ng-container>
+              </div>
+            </div>
+          </ng-container>
+
+          <!-- Subtask default -->
+          <ng-template #subtaskTpl>
+            <div class="rh-event rh-event--subtask">
+              <div class="rh-event__head">
+                <span class="rh-event__title">💼 {{ arg.event.title }}</span>
+                <ng-container [ngSwitch]="arg.event.extendedProps?.tag">
+                  <span *ngSwitchCase="'FIRE_PROTECTION'" class="rh-badge rh-badge--fire">🔥 FIRE</span>
+                  <span *ngSwitchCase="'PEER_REVIEW'" class="rh-badge rh-badge--review">👁️ REVIEW</span>
+                </ng-container>
+              </div>
+
+              <div class="rh-event__meta">
+                <span class="rh-event__hours">⏱️ {{ arg.event.extendedProps?.hours }}h</span>
+              </div>
+
+              <div class="rh-event__footer">
+                <div class="rh-event__project">
+                  <span class="rh-icon">🏢</span>
+                  <span class="rh-text" title="{{ arg.event.extendedProps?.projectCode }}">{{ arg.event.extendedProps?.projectCode }}</span>
+                  -
+                  <span class="rh-text" title="{{ arg.event.extendedProps?.projectName }}">{{ arg.event.extendedProps?.projectName }}</span>
+                </div>
+                <ng-container *ngIf="arg.event.extendedProps?.categoryName">
+                  <div class="rh-event__project">
+                    <span class="rh-icon">📂</span>
+                    <span class="rh-text" title="{{ arg.event.extendedProps?.categoryName }}">{{ arg.event.extendedProps?.categoryName }}</span>
+                  </div>
+                </ng-container>
+                <ng-container *ngIf="arg.event.extendedProps?.createdBy">
+                  <div class="rh-event__creator">
+                    <span class="rh-icon">👤</span>
+                    <span class="rh-text" title="{{ arg.event.extendedProps?.createdBy }}">{{ arg.event.extendedProps?.createdBy }}</span>
+                  </div>
+                </ng-container>
+              </div>
+            </div>
+          </ng-template>
+        </ng-template>
+      </ng-template>
+
+      <app-calendar [entries]="timeEntries" [eventTemplate]="eventTpl"></app-calendar>
     </div>
   </section>
 

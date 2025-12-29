@@ -6,7 +6,8 @@
   </div>
 
   <div class="header-right">
-    <div *ngIf="isAuthenticated()" class="user-section">
+    <!-- Show user info when either cookies provide a username or the auth state is authenticated -->
+    <div *ngIf="isAuthenticated() || username()" class="user-section">
       <span class="header-avatar" aria-hidden="true">{{ initials() }}</span>
       <span class="username">{{ username() }}</span>
       <button class="logout-btn" (click)="logout()" title="Cerrar sesión">Salir</button>
