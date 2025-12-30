@@ -4,13 +4,24 @@
     <div class="separator"></div>
     <h1 class="title">Luseo Engineering</h1>
   </div>
-
+ 
   <div class="header-right">
-    <!-- Show user info when either cookies provide a username or the auth state is authenticated -->
-    <div *ngIf="isAuthenticated() || username()" class="user-section">
+    <div *ngIf="isAuthenticated()" class="user-section">
       <span class="header-avatar" aria-hidden="true">{{ initials() }}</span>
       <span class="username">{{ username() }}</span>
-      <button class="logout-btn" (click)="logout()" title="Cerrar sesión">Salir</button>
+       <div class="separator"></div>
+
+      <button class="logout-btn" (click)="logout()" title="Cerrar sesión">
+  Salir
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+       stroke="currentColor" stroke-width="2" stroke-linecap="round"
+       stroke-linejoin="round">
+    <path d="m16 17 5-5-5-5" />
+    <path d="M21 12H9" />
+    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+  </svg>
+</button>
+
     </div>
   </div>
 </header>

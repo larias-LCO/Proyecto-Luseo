@@ -4,6 +4,13 @@
 	display: flex;
 	flex-direction: column;
 	gap: 14px;
+<<<<<<< HEAD
+	// padding: 12px;
+  /* Evitar superposición con header (70px) y sidebar (250px) */
+  margin-top: 70px;
+  margin-left: 250px;
+  padding: 24px;
+=======
 	padding: 12px;
 
 	/* account for fixed header and sidebar */
@@ -13,6 +20,7 @@
 	margin-top: var(--header-height);
 	margin-left: var(--sidebar-width);
 	width: calc(100% - var(--sidebar-width));
+>>>>>>> f660e32ca04aa0819c99ee0f9dfa0c483cdcb72f
 }
 
 .report-section {

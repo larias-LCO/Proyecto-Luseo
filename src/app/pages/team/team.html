@@ -97,11 +97,7 @@
 
 </form>  <!--  ahora el form se cierra correctamente -->
 
-    
-
-    
-
-
+  
   <!-- Status / error -->
   <div class="row status-row">
     <span class="muted" *ngIf="!error && !loading">{{ filtered.length }} resultados</span>
@@ -109,105 +105,89 @@
     <span class="error" *ngIf="error">{{ error }}</span>
   </div>
 
-  <!-- Table -->
-  <div class="table-wrap">
-    <table class="team-table" *ngIf="!loading && filtered.length >= 0">
-      <thead>
-       <tr>
-          <th class="col-name">Name</th>
-          <th class="col-dept">Department</th>
-          <th class="col-office">Office</th>
-          <th class="col-pos">Position</th>
-          <th class="col-rate text-right">Rate (per hour)</th>
-          <th class="col-role text-center">Role</th>
-          <th class="col-state text-center">State</th>
-          <th class="col-actions text-right" *ngIf="canEditDelete">Actions</th>
-        </tr>
-      </thead>
-        <tbody>
-        <tr *ngFor="let m of pagedResults">
-          <!-- Nombre -->
-          <td class="td-name" title="{{ m.name }}">
-            {{ (m.name ?? '(Sin nombre)') }}
-          </td>
+  
 
-          <!-- Departamento -->
-          <td class="td-dept" title="{{ m.departmentName }}">
-            {{ m.departmentName ?? '-' }}
-          </td>
+<!-- Cards grid -->
+<div class="cards-grid" *ngIf="!loading">
 
-          <!-- Oficina -->
-          <td class="td-office" title="{{ m.officeName }}">
-            {{ m.officeName ?? '-' }}
-          </td>
+  <div class="employee-card" *ngFor="let m of pagedResults">
 
-          <!-- Posición -->
-          <td class="td-pos" title="{{ m.jobPositionName }}">
-            {{ m.jobPositionName ?? '-' }}
-          </td>
+    <!-- Header -->
+    <div class="card-header">
+      <div class="avatar">
+        {{ getInitials(m.name) }}
+      </div>
 
-          <!-- Tarifa (alineada a la derecha, con formato si tienes uno) -->
-          <td class="td-rate text-right">
-            {{ m.billableRate != null ? (m.billableRate | number:'1.0-2') : '-' }}
-          </td>
+      <div class="user-info">
+        <div class="name" title="{{ m.name }}">
+          {{ m.name || '(Sin nombre)' }}
+        </div>
+        <div class="position">
+          {{ m.jobPositionName || '-' }}
+        </div>
+      </div>
 
-          <!-- Rol (badge, uppercase) -->
-          <td class="td-role text-center">
-            <span
-              class="role-badge"
-              [ngClass]="{
-                'role-admin': getEmployeeRoles(m).includes('ADMIN'),
-                'role-owner': getEmployeeRoles(m).includes('OWNER'),
-                'role-user': getEmployeeRoles(m).includes('USER')
-              }">
-              {{ (getEmployeeRoles(m)[0] || (m.accountRole ?? (m.roles?.[0] || '-'))) | uppercase }}
-            </span>
-          </td>
+      <span
+        class="state-badge"
+        [ngClass]="{
+          'state-active': m.state === 'ACTIVE',
+          'state-inactive': m.state === 'INACTIVE'
+        }">
+        {{ m.state }}
+      </span>
+    </div>
 
-          <!-- Estado (badge, uppercase) -->
-          <td class="td-state text-center">
-            <span
-              class="state-badge"
-              [ngClass]="{
-                'state-active': (m.state || '') === 'ACTIVE',
-                'state-inactive': (m.state || '') === 'INACTIVE'
-              }">
-              {{ (m.state ?? '-') | uppercase }}
-            </span>
-          </td>
+    <!-- Body -->
+    <div class="card-body">
+      <div class="info-row">
+        <span>Department</span>
+        <strong>{{ m.departmentName || '-' }}</strong>
+      </div>
 
-          <!-- Acciones (alineadas a la derecha) -->
-          <td class="td-actions text-right" *ngIf="canEditDelete">
-            <ng-container *ngIf="!(isAdmin && getEmployeeRoles(m).includes('OWNER')); else noActions">
-              <button
-                class="btn-action btn-edit"
-                (click)="abrirModal(m)"
-                [title]="'Editar'"
-                aria-label="Edit {{m.name}}"
-              >
-                ✏️ Edit
-              </button>
-              <button
-                class="btn-action btn-delete"
-                (click)="eliminarEmpleado(m.id)"
-                [title]="'Delete'"
-                aria-label="Delete {{m.name}}"
-              >
-                🗑️ Delete
-              </button>
-            </ng-container>
-            <ng-template #noActions>
-              <span class="muted">—</span>
-            </ng-template>
-          </td>
-        </tr>
+      <div class="info-row">
+        <span>Office</span>
+        <strong>{{ m.officeName || '-' }}</strong>
+      </div>
 
-        <tr *ngIf="!pagedResults.length">
-          <td colspan="8" class="muted">No hay resultados</td>
-        </tr>
-      </tbody>
-    </table>
+      <div class="info-row">
+        <span>Billable Rate</span>
+        <strong>
+          {{ m.billableRate != null ? ('$' + (m.billableRate | number:'1.0-2')) : '-' }}
+        </strong>
+      </div>
+
+      <span
+        class="role-badge"
+        [ngClass]="{
+          'role-admin': getEmployeeRoles(m).includes('ADMIN'),
+          'role-owner': getEmployeeRoles(m).includes('OWNER'),
+          'role-user': getEmployeeRoles(m).includes('USER')
+        }">
+        {{ getEmployeeRoles(m)[0] }}
+      </span>
+    </div>
+
+    <!-- Actions -->
+    <div class="card-actions" *ngIf="canEditDelete">
+      <ng-container *ngIf="!(isAdmin && getEmployeeRoles(m).includes('OWNER')); else noActions">
+        <button class="btn-edit" (click)="abrirModal(m)">✏️ Edit</button>
+        <button class="btn-delete" (click)="eliminarEmpleado(m.id)">🗑️ Delete</button>
+      </ng-container>
+
+      <ng-template #noActions>
+        <span class="muted">—</span>
+      </ng-template>
+    </div>
+
   </div>
+
+  <!-- Empty -->
+  <div class="empty" *ngIf="!pagedResults.length">
+    No hay resultados
+  </div>
+
+</div>
+
 
   <!-- Pagination -->
   <div class="pagination" *ngIf="totalPages > 1">

@@ -362,6 +362,19 @@ export class TeamComponent implements OnInit, OnDestroy {
     return [...new Set([...mapped, ...singles].map(x => String(x).toUpperCase()))];
   }
 
+  getInitials(name?: string | null): string {
+    const s = (name ?? '').toString().trim();
+    if (!s) return '?';
+    const parts = s.split(/\s+/).filter(Boolean);
+    if (parts.length >= 2) {
+      const first = parts[0].charAt(0) || '';
+      const last = parts[parts.length - 1].charAt(0) || '';
+      return (first + last).toUpperCase();
+    }
+    // single word: take first two characters
+    return s.slice(0, 2).toUpperCase();
+  }
+
   // ------------------ Select options population ------------------
   populateStateOptions() {
     // no necesita DOM directo, solo prepara valores en catalogs or in template we can compute distinct states

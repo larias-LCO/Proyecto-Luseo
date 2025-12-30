@@ -9,5 +9,8 @@ import { RouterLink } from '@angular/router';
   templateUrl: './submenu.html',
   styleUrls: ['./submenu.scss']
 })
-export class SubmenuComponent {}
+export class SubmenuComponent {
+
+  
+}
 

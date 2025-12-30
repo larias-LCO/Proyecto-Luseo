@@ -14,15 +14,17 @@ export class AuthGuard implements CanActivate {
   ) {}
 
   canActivate() {
-    if (this.state.isAuthenticated) return true;
+  //   if (this.state.isAuthenticated) return true;
 
-    return this.api.me().pipe(
-      tap(me => this.state.setSession(me)),
-      map(() => true),
-      catchError(() => {
-        this.router.navigate(['/login']);
-        return of(false);
-      })
-    );
+  //   return this.api.me().pipe(
+  //     tap(me => this.state.setSession(me)),
+  //     map(() => true),
+  //     catchError(() => {
+  //       this.router.navigate(['/login']);
+  //       return of(false);
+  //     })
+  //   );
+  // }
+  return true;
   }
 }
