@@ -19,4 +19,13 @@ export class HolidayService {
       `${environment.apiUrl}/holidays/all/${year}`
     );
   }
+
+  /**
+   * Get current+next year holidays in a single call
+   */
+  getCurrent(): Observable<HolidaysResponse> {
+    return this.http.get<HolidaysResponse>(
+      `${environment.apiUrl}/holidays/current`
+    );
+  }
 }

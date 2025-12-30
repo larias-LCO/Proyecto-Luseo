@@ -17,7 +17,12 @@ export function mapSubTasksToTimeEntries(
     userId: st.createdByEmployeeId,
     userName: st.createdByEmployeeName,
     projectId: st.projectId,
-    projectName: st.projectName
+    projectCode: st.projectCode,
+    projectName: st.projectName,
+    // extras for calendar templates
+    tag: st.tag,
+    categoryName: st.subTaskCategoryName,
+    createdBy: st.createdByEmployeeName
   }));
 }
 
@@ -35,6 +40,11 @@ export function mapInternalLogsToTimeEntries(
     title: log.internalTaskName,
     userId: log.createdByEmployeeId,
     userName: log.createdByEmployeeName
+    ,
+    // extras for calendar templates
+    description: log.description,
+    categoryName: log.internalTaskName,
+    createdBy: log.createdByEmployeeName
   }));
 }
 

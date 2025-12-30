@@ -1,4 +1,4 @@
-<div class="report-calendar">
+<div class="report-calendar" [style.height.px]="calendarHeight">
 	<full-calendar [options]="calendarOptions">
 		<ng-template #eventContent let-arg>
 			<ng-container *ngIf="eventTemplate; else defaultTpl">

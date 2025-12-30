@@ -92,15 +92,12 @@ export class ReportHours implements OnInit, OnDestroy {
           next: logs => {
             // Build unified time entries
             const built = this.reportHoursDataService.buildTimeEntries(subs, logs);
-
-            // Load holidays for current year and append as time-entry-like objects
-            this.holidayService.getByYear(new Date().getFullYear()).subscribe({
+            // Load holidays for current and next year and append as time-entry-like objects
+            this.holidayService.getCurrent().subscribe({
               next: holidaysResp => {
                 const holidayEntries = mapHolidaysToTimeEntries(holidaysResp);
                 this.allTimeEntries = [...built, ...holidayEntries];
                 this.timeEntries = [...this.allTimeEntries];
-                console.info('[ReportHours] Loaded holidays:', holidayEntries.length, 'total entries:', this.allTimeEntries.length);
-
                 // proceed to build employees list below
                 this.loadEmployeesList(this.allTimeEntries);
               },

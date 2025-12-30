@@ -99,6 +99,7 @@ export class Filters implements OnInit, OnChanges {
     (this.filters as any).searchText = '';
     // Do not reset calendar date ranges here (calendar manages them)
 
+    (this.filters as any).selectedEmployeeId = undefined;
     // reset year to current if available, otherwise first available or current
     if (this.availableYears && this.availableYears.length > 0) {
       this.filters.year = this.availableYears.includes(currentYear)

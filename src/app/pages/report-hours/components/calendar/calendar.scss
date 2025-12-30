@@ -1,3 +1,68 @@
+	.report-calendar {
+		/* make calendar take configured height and let FullCalendar manage its own scrollers */
+		width: 100%;
+
+		/* ensure FullCalendar scroller is visible */
+		.fc {
+			height: 100%;
+		}
+
+		/* general scroller inside FullCalendar */
+		.fc-scroller {
+			overflow: auto;
+		}
+
+		/* Month view: limit per-day event list height and enable per-day scrolling when many events exist */
+			/* Make each day cell a column so header stays and events area can flex/scroll */
+			/* Constrain the month grid height so rows don't expand with content */
+			.fc .fc-daygrid {
+				height: calc(100% - 56px); /* leave space for headerToolbar/title; tweak if needed */
+				display: flex;
+				flex-direction: column;
+			}
+
+			.fc .fc-daygrid-body {
+				flex: 1 1 auto;
+				min-height: 0;
+				display: block;
+				overflow: hidden;
+			}
+
+			.fc .fc-daygrid-row {
+				display: flex;
+				flex: 1 1 0;
+				min-height: 0;
+			}
+
+			.fc .fc-daygrid-day-frame {
+				display: flex;
+				flex-direction: column;
+				min-height: 0; /* allow children to shrink inside the cell */
+				flex: 1 1 0;
+			}
+
+			.fc .fc-daygrid-day-top {
+				/* keep date header visible and prevent it from shrinking */
+				flex: 0 0 auto;
+			}
+
+			.fc .fc-daygrid-day-events {
+				flex: 1 1 auto;
+				max-height: 96px; /* show ~3 items, adjust if needed */
+				overflow-y: auto !important;
+				-webkit-overflow-scrolling: touch;
+			}
+
+		/* Make event cards inside scroller not expand outside their cell */
+		.fc .fc-daygrid-event {
+			box-sizing: border-box;
+		}
+
+		/* Week view: ensure the calendar content area is scrollable if content exceeds fixed height */
+		.fc .fc-timegrid-body, .fc .fc-daygrid-body {
+			overflow: auto;
+		}
+	}
 /* holiday styling to make them stand out in the calendar */
 .holiday {
 	background-color: #f8f9fa !important;

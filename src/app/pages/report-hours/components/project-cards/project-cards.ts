@@ -1,12 +1,12 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgIf, NgFor } from '@angular/common';
 import { Project } from '../../models/project.model';
 import { mapProjectToCard, ProjectCardVM } from '../../utils/mappers/project.mapper';
 
 @Component({
   selector: 'app-project-cards',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, NgIf, NgFor],
   templateUrl: './project-cards.html',
   styleUrls: ['./project-cards.scss']
 })
