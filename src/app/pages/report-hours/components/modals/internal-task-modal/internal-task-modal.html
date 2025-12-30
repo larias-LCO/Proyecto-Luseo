@@ -57,7 +57,9 @@
             </div>
 
             <div class="entry-actions">
-              <button type="button" class="btn btn-secondary small" (click)="removeEntry(i)" [disabled]="entries.length <= 1">Remove</button>
+              <app-icon-button title="Remove" (clicked)="entries.length > 1 && removeEntry(i)" [class.disabled]="entries.length <= 1">
+                <app-archive-icon [size]="16"></app-archive-icon>
+              </app-icon-button>
             </div>
 
             <hr *ngIf="i < entries.length - 1">
@@ -65,15 +67,16 @@
         </div>
 
         <div class="form-controls">
-          <button type="button" class="btn btn-link" (click)="addEntry()">+ Add another</button>
+          <app-icon-button title="Add another" (clicked)="addEntry()">
+            <app-plus-icon [size]="18"></app-plus-icon>
+            <span style="margin-left:8px"></span>
+          </app-icon-button>
         </div>
       </form>
     </div>
 
     <div class="modal-footer">
-      <button class="btn btn-secondary" (click)="cancel()">Close</button>
       <button class="btn btn-primary" [disabled]="form.invalid" (click)="saveAll()">💾 Save Reports</button>
     </div>
   </div>
 </div>
-<p>internal-task-modal works!</p>

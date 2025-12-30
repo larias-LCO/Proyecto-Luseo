@@ -17,7 +17,14 @@
         <div
           class="project-card"
           *ngFor="let project of cards"
-          (click)="selectProject(project.id)"
+          (pointerdown)="onCardPointerDown($event, project.id)"
+          (mousedown)="onCardPointerDown($event, project.id)"
+          (click)="onCardClick(project.id)"
+          (contextmenu)="onCardRightClick($event, project.id)"
+          (keydown.enter)="onCardClick(project.id)"
+          tabindex="0"
+          role="button"
+          [attr.aria-label]="project.name"
         >
 
           <div class="top-bar"></div>

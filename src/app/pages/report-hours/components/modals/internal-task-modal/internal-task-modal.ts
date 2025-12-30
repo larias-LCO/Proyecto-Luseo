@@ -2,25 +2,36 @@ import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators, AbstractControl } from '@angular/forms';
 import { InternalTaskService } from '../../../../../pages/report-hours/services/internal-task-category.service';
+import { InternalTaskLogService } from '../../../../../pages/report-hours/services/internal-tasks.service';
+import { NotificationService } from '../../../../../core/services/notification.service';
+import { IconButtonComponent } from '../../../../../core/components/animated-icons/icon-button.component';
+import { PlusIconComponent } from '../../../../../core/components/animated-icons/plus-icon.component';
+import { ArchiveIconComponent } from '../../../../../core/components/animated-icons/archive-icon.component';
 
 @Component({
   selector: 'app-internal-task-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, IconButtonComponent, PlusIconComponent, ArchiveIconComponent],
   templateUrl: './internal-task-modal.html',
   styleUrls: ['./internal-task-modal.scss']
 })
 export class InternalTaskModal {
   @Input() allInternalTasks: any[] = [];
-  @Input() myRole = '';
+  @Input() myRole: string | null = null;
   @Input() myEmployeeId?: number | string;
 
   @Output() save = new EventEmitter<any[]>();
-  @Output() close = new EventEmitter<void>();
+  // emit boolean: true => changes saved, false => closed without changes
+  @Output() close = new EventEmitter<boolean>();
 
   form: FormGroup;
 
-  constructor(private fb: FormBuilder, private internalTaskService: InternalTaskService) {
+  constructor(
+    private fb: FormBuilder,
+    private internalTaskService: InternalTaskService,
+    private internalTaskLogService: InternalTaskLogService,
+    private notification: NotificationService
+  ) {
     this.form = this.fb.group({
       entries: this.fb.array([this.createEntryGroup()])
     });
@@ -111,14 +122,56 @@ export class InternalTaskModal {
       };
     });
 
-    // emit array of created entries
-    this.save.emit(payload);
-      // After emitting saved payload, reset form to a single empty entry so
-      // the user can create more reports (but while editing without saving,
-      // the data stays intact).
+    // Perform API calls here (modal owns creation logic)
+    const calls = payload.map(p => {
+      const internalTaskId = p.subTaskId || p.mainTaskId;
+      const task = (this.allInternalTasks || []).find((t: any) => String(t.id) === String(internalTaskId));
+      const createPayload: any = {
+        logDate: p.date,
+        reportHours: p.hours,
+        description: p.description || '',
+        internalTaskId: Number(internalTaskId),
+        internalTaskName: task ? task.name : ''
+      };
+      // Attach creator id when available (backend often requires this)
       try {
-        this.form.setControl('entries', this.fb.array([this.createEntryGroup()]));
+        if (this.myEmployeeId !== undefined && this.myEmployeeId !== null && this.myEmployeeId !== '') {
+          createPayload.createdByEmployeeId = Number(this.myEmployeeId);
+        }
       } catch (e) {}
+      try { console.log('[InternalTaskModal] createPayload:', createPayload); } catch (e) {}
+      return this.internalTaskLogService.create(createPayload);
+    });
+
+    import('rxjs').then(rx => {
+      const { forkJoin } = rx;
+      forkJoin(calls).subscribe({
+        next: () => {
+          try { this.notification.show(`Saved ${payload.length} report(s)`, 'success', 4000); } catch (e) {}
+          // reset form
+          try { this.form.setControl('entries', this.fb.array([this.createEntryGroup()])); } catch (e) {}
+          // close modal (parent should refresh entries)
+          try { this.close.emit(true); } catch (e) {}
+        },
+        error: (err) => {
+          console.error('[InternalTaskModal] Failed to create internal task logs', err);
+          try { console.debug('[InternalTaskModal] create error response:', err && err.error ? err.error : err); } catch (e) {}
+          let serverMsg = 'Unknown error';
+          try {
+            if (err && err.error) {
+              if (typeof err.error === 'string') {
+                serverMsg = err.error;
+              } else {
+                serverMsg = err.error.message || JSON.stringify(err.error);
+              }
+            } else if (err && err.message) {
+              serverMsg = err.message;
+            }
+          } catch (e) { serverMsg = 'Unknown error'; }
+          try { this.notification.show(`Failed to save: ${serverMsg}`, 'error', 9000); } catch (e) {}
+        }
+      });
+    });
   }
 
   // Close when clicking on overlay background
@@ -130,6 +183,6 @@ export class InternalTaskModal {
   }
 
   cancel(): void {
-    this.close.emit();
+    this.close.emit(false);
   }
 }

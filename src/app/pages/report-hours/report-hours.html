@@ -22,7 +22,8 @@
       <div *ngIf="!loadingProjects">
         <app-project-cards
           [projects]="filteredProjects"
-          (projectSelected)="onProjectSelected($event)">
+
+          (cardRightClick)="handleProjectCardClick($event)">
         </app-project-cards>
       </div>
     </div>
@@ -115,16 +116,32 @@
 
       <div class="calendar-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
         <div></div>
-        <button class="btn btn-primary" style="background: linear-gradient(135deg, #06b6d4, #0ea5a4); padding:8px 14px; border-radius:8px;" (click)="openInternalModal()">📝 New Internal Task</button>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <button class="btn btn-primary" style="background: linear-gradient(135deg, #06b6d4, #0ea5a4); padding:8px 14px; border-radius:8px;" (click)="openInternalModal()">📝 New Internal Task</button>
+        </div>
       </div>
 
-      <app-calendar [entries]="timeEntries" [eventTemplate]="eventTpl"></app-calendar>
+      <app-calendar [entries]="timeEntries" [eventTemplate]="eventTpl" (eventClick)="onCalendarEventClick($event)"></app-calendar>
+      
+      <!-- Edit modal -->
+      <app-internal-task-edit-modal *ngIf="showEditModal" [log]="selectedLog" [allInternalTasks]="internalTasks" [myRole]="authState.role" [myEmployeeId]="employeeId" (close)="handleEditModalClose($event)"></app-internal-task-edit-modal>
+
+      <app-subtask-edit-modal *ngIf="showSubtaskEditModal" [subtask]="selectedSubtask" [projects]="projects" [subTaskCategories]="subTaskCategories" [myRole]="authState.role" [myEmployeeId]="employeeId" (close)="handleSubtaskEditModalClose($event)"></app-subtask-edit-modal>
 
       <app-internal-task-modal *ngIf="showInternalModal"
         [allInternalTasks]="internalTasks"
-        (save)="onInternalModalSave($event)"
-        (close)="showInternalModal = false">
+        [myEmployeeId]="employeeId"
+        (close)="handleInternalModalClose($event)">
       </app-internal-task-modal>
+
+      <app-subtask-modal *ngIf="showSubtaskModal"
+        [projects]="projects"
+        [subTaskCategories]="subTaskCategories"
+        [myEmployeeId]="employeeId"
+        [myRole]="authState.role"
+        [presetProjectId]="projectModalPreset"
+        (close)="handleSubtaskModalClose($event)">
+      </app-subtask-modal>
     </div>
   </section>
 

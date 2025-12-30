@@ -54,7 +54,11 @@
 
 .project-card {
   cursor: pointer;
+  pointer-events: auto;
   position: relative;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
   overflow: hidden;
   border-radius: 10px;
   background: linear-gradient(180deg, rgba(6,128,228,0.03), rgba(79,209,197,0.02));
@@ -180,3 +184,6 @@
   }
   .projects-scroll-wrapper { max-height: 50vh; }
 }
+
+/* Ensure children don't block pointer events */
+.project-card * { pointer-events: auto; }

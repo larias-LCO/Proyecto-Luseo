@@ -1,1 +1,94 @@
-<p>subtask-modal works!</p>
+<div class="modal-overlay" (click)="cancel()">
+	<div class="modal" style="max-width:760px;" (click)="$event.stopPropagation()">
+		<div class="modal-header">
+			<div>
+				<h2 class="modal-title">📝 Create Subtask Reports</h2>
+				<div class="modal-sub">Create one or more subtask reports</div>
+			</div>
+			<button class="modal-close" (click)="cancel()">&times;</button>
+		</div>
+
+		<div class="modal-body">
+			<form [formGroup]="form">
+				<div formArrayName="entries">
+					<div *ngFor="let entry of entries.controls; let i = index" [formGroupName]="i" class="entry-row">
+						<div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+							<div class="form-group">
+									<label for="project-{{i}}">Project <span class="req">*</span></label>
+									<!-- If a preset project id was provided, hide the selector and keep the control value -->
+									<div *ngIf="presetProjectId === undefined || presetProjectId === null">
+										<select id="project-{{i}}" name="projectId-{{i}}" formControlName="projectId" class="form-input" autocomplete="off">
+											<option value="">-- Select project --</option>
+											<option *ngFor="let p of projects" [value]="p.id">{{p.projectCode}} - {{p.name}}</option>
+										</select>
+									</div>
+									<div *ngIf="presetProjectId !== undefined && presetProjectId !== null">
+										<input id="project-{{i}}" name="projectId-{{i}}" type="hidden" formControlName="projectId">
+										<div class="preset-project">
+											<span style="font-weight:700">Prefilled project:</span>
+											<span style="margin-left:8px">{{ presetProjectLabel || 'N/A - Unknown Project' }}</span>
+										</div>
+									</div>
+								</div>
+
+							<div class="form-group">
+								<label for="category-{{i}}">Category <span class="req">*</span></label>
+								<select id="category-{{i}}" name="subTaskCategoryId-{{i}}" formControlName="subTaskCategoryId" class="form-input" autocomplete="off">
+									<option value="">-- Select category --</option>
+									<option *ngFor="let c of filteredCategories" [value]="c.id">{{c.name}}</option>
+								</select>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label for="name-{{i}}">Description <span class="req">*</span></label>
+							<textarea id="name-{{i}}" name="name-{{i}}" formControlName="name" class="form-input" rows="2" placeholder="Describe the task..." autocomplete="off"></textarea>
+						</div>
+
+						<div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+							<div class="form-group">
+								<label for="hours-{{i}}">Hours <span class="req">*</span></label>
+								<input id="hours-{{i}}" name="actualHours-{{i}}" type="number" formControlName="actualHours" class="form-input" step="0.01" min="0.01" autocomplete="off">
+							</div>
+
+							<div class="form-group">
+								<label for="date-{{i}}">Date <span class="req">*</span></label>
+								<input id="date-{{i}}" name="issueDate-{{i}}" type="date" formControlName="issueDate" class="form-input" autocomplete="off">
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label for="tag-{{i}}">Tag</label>
+							<select id="tag-{{i}}" name="tag-{{i}}" formControlName="tag" class="form-input" autocomplete="off">
+								<option value="">None</option>
+								<option value="FIRE_PROTECTION">🔥 Fire Protection</option>
+								<option value="PEER_REVIEW">👁️ Peer Review</option>
+							</select>
+						</div>
+
+						<div class="entry-actions">
+							<app-icon-button title="Remove" (clicked)="removeEntry(i)">
+								<app-archive-icon [size]="16"></app-archive-icon>
+							</app-icon-button>
+						</div>
+
+						<hr *ngIf="i < entries.length - 1">
+					</div>
+				</div>
+
+				<div class="form-controls">
+					<app-icon-button title="Add another" (clicked)="addEntry()">
+						<app-plus-icon [size]="18"></app-plus-icon>
+						<span style="margin-left:8px"></span>
+					</app-icon-button>
+				</div>
+			</form>
+		</div>
+
+		<div class="modal-footer">
+			<app-icon-button title="Save" (clicked)="saveAll()">
+				<app-file-check-icon [size]="20"></app-file-check-icon>
+			</app-icon-button>
+		</div>
+	</div>
+</div>

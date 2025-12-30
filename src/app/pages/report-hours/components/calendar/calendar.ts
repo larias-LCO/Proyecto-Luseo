@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges, TemplateRef, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, TemplateRef, ChangeDetectorRef, Output, EventEmitter } from '@angular/core';
 import { CommonModule, NgIf } from '@angular/common';
 import { FullCalendarModule } from '@fullcalendar/angular';
 import { CalendarOptions, EventInput } from '@fullcalendar/core';
@@ -20,6 +20,7 @@ export class Calendar implements OnChanges {
   @Input() entries: TimeEntry[] = [];
 
   @Input() eventTemplate?: TemplateRef<any> | null;
+  @Output() eventClick = new EventEmitter<any>();
 
   /** Calendar fixed height in pixels (default 600) */
   @Input() calendarHeight = 800;
@@ -136,6 +137,13 @@ export class Calendar implements OnChanges {
         } catch (e) {
           // ignore
         }
+      },
+      // called when an event is clicked
+      eventClick: (arg: any) => {
+        try {
+          // emit the raw event payload to parent
+          this.eventClick.emit(arg && arg.event ? arg.event : arg);
+        } catch (e) {}
       },
       // cleanup when view is destroyed
       viewWillUnmount: (arg: any) => {

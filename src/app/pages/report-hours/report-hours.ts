@@ -11,7 +11,11 @@ import { ProjectCards } from './components/project-cards/project-cards';
 import { Filters } from './components/filters/filters';
 import { Calendar } from './components/calendar/calendar';
 import { InternalTaskModal } from './components/modals/internal-task-modal/internal-task-modal';
+import { InternalTaskEditModal } from './components/modals/internal-task-edit-modal/internal-task-edit-modal';
+import { SubtaskModal } from './components/modals/subtask-modal/subtask-modal';
+import { SubtaskEditModal } from './components/modals/subtask-edit-modal/subtask-edit-modal';
 import { SubTaskService } from './services/sub-task.service';
+import { SubTaskCategoryService } from './services/sub-task-category.service';
 import { InternalTaskService } from './services/internal-task-category.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { InternalTaskCategory } from './models/internal-task-category.model';
@@ -35,6 +39,9 @@ import { SubmenuComponent } from "../../core/components/submenu/submenu";
     Filters,
     Calendar,
     InternalTaskModal,
+    InternalTaskEditModal,
+    SubtaskModal,
+    SubtaskEditModal,
     HeaderComponent,
     SubmenuComponent
 ],
@@ -58,12 +65,23 @@ export class ReportHours implements OnInit, OnDestroy {
   // Time entries for the calendar (can include holidays -> use any)
   timeEntries: any[] = [];
   private allTimeEntries: any[] = [];
+  private rawInternalLogs: any[] = [];
   subTasks: any[] = [];
   internalTasks: any[] = [];
+  subTaskCategories: any[] = [];
+  // subtask modal state
+  showSubtaskModal = false;
+  showSubtaskEditModal = false;
+  selectedSubtask: any = null;
+  projectModalPreset?: number | undefined;
   private lastTimeEntryFilters: any = {};
   showInternalModal = false;
+  showEditModal = false;
+  selectedLog: any = null;
   employeesList: { id: number; name: string }[] = [];
   private authSub?: Subscription;
+  private _globalPointerListener?: any;
+  
 
   constructor(
     private projectsService: ProjectService,
@@ -76,10 +94,34 @@ export class ReportHours implements OnInit, OnDestroy {
     private notification: NotificationService,
     private employeeService: EmployeeService,
     private holidayService: HolidayService
+    ,
+    private subTaskCategoryService: SubTaskCategoryService
   ) {}
 
   ngOnInit(): void {
     this.loadProjects();
+
+    // preload subtask categories for modals
+    try {
+      this.subTaskCategoryService.getAll().subscribe({ next: cats => { this.subTaskCategories = cats || []; }, error: () => { this.subTaskCategories = []; } });
+    } catch (e) { this.subTaskCategories = []; }
+
+    // Project card clicks handled via Angular output `(cardClick)` binding.
+
+    // Diagnostic: global pointerdown listener to detect topmost element at click location
+    try {
+      this._globalPointerListener = (ev: any) => {
+        try {
+          const x = ev && typeof ev.clientX === 'number' ? ev.clientX : null;
+          const y = ev && typeof ev.clientY === 'number' ? ev.clientY : null;
+          if (x !== null && y !== null) {
+            const top = document.elementFromPoint(x, y) as HTMLElement | null;
+            try { console.debug('[ReportHours global] pointerdown', { x, y, top: top ? (top.tagName + (top.className ? ' .' + top.className : '')) : null }); } catch (e) {}
+          }
+        } catch (e) {}
+      };
+      window.addEventListener('pointerdown', this._globalPointerListener as EventListener);
+    } catch (e) {}
 
     // Initialize employeeId/isAdmin from current auth state (if available)
     this.employeeId = this.authState.employeeId ?? undefined;
@@ -106,6 +148,7 @@ export class ReportHours implements OnInit, OnDestroy {
         } catch (e) { this.internalTasks = []; }
         this.internalTaskLogService.getAll().subscribe({
           next: logs => {
+            this.rawInternalLogs = logs || [];
             // Build unified time entries
             const built = this.reportHoursDataService.buildTimeEntries(subs, logs);
             // Load holidays for current and next year and append as time-entry-like objects
@@ -169,37 +212,98 @@ export class ReportHours implements OnInit, OnDestroy {
     this.showInternalModal = true;
   }
 
-  onInternalModalSave(payload: any[]): void {
-    if (!payload || !payload.length) return;
-    const calls = payload.map(p => {
-      const internalTaskId = p.subTaskId || p.mainTaskId;
-      const task = (this.internalTasks || []).find((t: any) => String(t.id) === String(internalTaskId));
-      const createPayload: any = {
-        logDate: p.date,
-        reportHours: p.hours,
-        description: p.description || '',
-        internalTaskId: Number(internalTaskId),
-        internalTaskName: task ? task.name : ''
-      };
-      return this.internalTaskLogService.create(createPayload);
-    });
+  onCalendarEventClick(evt: any): void {
+    try {
+      // Normalize incoming event (could be arg.event or the event object itself)
+      const eventObj = (evt && evt.event) ? evt.event : evt;
+      const eventId = eventObj && eventObj.id ? eventObj.id : (evt && evt.id ? evt.id : null);
+      // try to find original time entry by id
+      let entry: any = null;
+      if (eventId != null) {
+        entry = (this.allTimeEntries || []).find((it: any) => String(it.id) === String(eventId));
+      }
+      const extended = (eventObj && (eventObj as any).extendedProps) ? (eventObj as any).extendedProps : (eventObj || {});
 
-    import('rxjs').then(rx => {
-      const { forkJoin } = rx;
-      forkJoin(calls).subscribe({
-        next: () => {
-          this.showInternalModal = false;
-          // refresh entries
-          try { this.loadTimeEntries(); } catch (e) {}
-          try { this.notification.show(`Saved ${payload.length} report(s)`, 'success', 4000); } catch (e) {}
-        },
-        error: (err) => {
-          console.error('Failed to create internal task logs', err);
-          try { this.notification.show('Failed to save internal task reports', 'error', 5000); } catch (e) {}
-        }
-      });
-    });
+      // detect internal tasks vs subtask events
+      const isInternal = Boolean((extended && extended.isInternalTask) || (entry && entry.type === 'INTERNAL_TASK'));
+      const isSubTask = Boolean((extended && extended.isSubTask) || (entry && entry.type === 'SUB_TASK'));
+
+      if (isInternal) {
+        // prefer the raw internal log (includes internalTaskId/internalTaskName)
+        let raw = null;
+        try {
+          const eid = eventId != null ? String(eventId) : null;
+          if (eid && this.rawInternalLogs && this.rawInternalLogs.length) {
+            raw = (this.rawInternalLogs || []).find((r: any) => String(r.id) === String(eid));
+          }
+        } catch (e) { raw = null; }
+        this.selectedLog = raw || extended || entry || null;
+        this.showEditModal = true;
+        return;
+      }
+
+      if (isSubTask) {
+        // prefer raw subtask object from loaded subTasks
+        let rawSub = null;
+        try {
+          const eid = eventId != null ? String(eventId) : null;
+          if (eid && this.subTasks && this.subTasks.length) {
+            rawSub = (this.subTasks || []).find((s: any) => String(s.id) === String(eid));
+          }
+        } catch (e) { rawSub = null; }
+        this.selectedSubtask = rawSub || extended || entry || null;
+        this.showSubtaskEditModal = true;
+        return;
+      }
+    } catch (err) {
+      console.error('Failed to open edit modal from event click', err);
+    }
   }
+  handleInternalModalClose(changed?: boolean): void {
+    this.showInternalModal = false;
+    if (changed) {
+      try { this.loadTimeEntries(); } catch (e) {}
+    }
+  }
+
+  handleEditModalClose(changed?: boolean): void {
+    this.showEditModal = false;
+    this.selectedLog = null;
+    if (changed) {
+      try { this.loadTimeEntries(); } catch (e) {}
+    }
+  }
+
+  openSubtaskModal(): void {
+    this.projectModalPreset = undefined;
+    this.showSubtaskModal = true;
+  }
+
+  handleProjectCardClick(projectId: number): void {
+    // Open the create modal prefilled for the clicked project **without** changing the project list
+    try { console.log('[ReportHours] received card click ->', projectId); } catch (e) {}
+    this.projectModalPreset = projectId;
+    this.showSubtaskModal = true;
+    try { this.cd.detectChanges(); } catch (e) {}
+  }
+
+  handleSubtaskModalClose(changed?: boolean): void {
+    this.showSubtaskModal = false;
+    this.projectModalPreset = undefined;
+    if (changed) {
+      try { this.loadTimeEntries(); } catch (e) {}
+    }
+  }
+
+  handleSubtaskEditModalClose(changed?: boolean): void {
+    this.showSubtaskEditModal = false;
+    this.selectedSubtask = null;
+    if (changed) {
+      try { this.loadTimeEntries(); } catch (e) {}
+    }
+  }
+
+  
 
   /** Carga proyectos */
   private loadProjects(): void {
@@ -358,5 +462,6 @@ export class ReportHours implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.authSub?.unsubscribe();
+    try { if (this._globalPointerListener) { window.removeEventListener('pointerdown', this._globalPointerListener as EventListener); } } catch (e) {}
   }
 }
