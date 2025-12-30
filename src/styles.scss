@@ -24,3 +24,309 @@
 .btn-open:hover::after {
 	opacity: 1;
 }
+/* Theme variables are defined lower in the file; remove these small duplicates to avoid conflicts. */
+
+body {
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* View transition for theme switch (circular mask expanding from top-left) */
+:root {
+	--expo-out: cubic-bezier(.19,1,.22,1);
+}
+
+::view-transition-group(root) {
+	animation-timing-function: var(--expo-out);
+}
+
+::view-transition-new(root) {
+	mask: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><defs><filter id="blur"><feGaussianBlur stdDeviation="2"/></filter></defs><circle cx="0" cy="0" r="18" fill="white" filter="url(%23blur)"/></svg>') top left / 0 no-repeat;
+	mask-origin: content-box;
+	animation: scale 1s;
+	animation-fill-mode: both;
+	transform-origin: top left;
+}
+
+::view-transition-old(root),
+.dark::view-transition-old(root) {
+	animation: scale 1s;
+	animation-fill-mode: both;
+	transform-origin: top left;
+	z-index: -1;
+}
+
+@keyframes scale {
+	to {
+		mask-size: 350vmax;
+	}
+}
+
+/* Sidebar hover variables (set per-theme below) */
+/* default values will be provided in :root and :root.dark further down */
+
+
+/* Theme variables and broad overrides to ensure all components follow the theme */
+:root {
+	--bg: #ffffff;
+	--surface: #ffffff; /* header, sidebar backgrounds (light mode = white) */
+	--card-bg: #ffffff; /* cards and panels */
+	--text: #0b1220;
+	--muted: #6b7280;
+	--border: rgba(15, 23, 42, 0.06);
+	--accent: #2563eb;
+	--avatar-bg: linear-gradient(135deg, #295bff, #7192ff); /* original avatar gradient in light mode */
+	--avatar-text: #ffffff;
+	--btn-bg: #ffffff;
+	--btn-text: #0b1220;
+	--elevation: 0 6px 18px rgba(2,6,23,0.12);
+	--sidebar-hover: rgba(219,234,254,1);
+	--sidebar-hover-text: #001dbe;
+	--input-border: #eceaea; /* visible border for filters/inputs in light mode */
+	--card-alt-bg: linear-gradient(135deg, #f4f8ff, #e6f2ff); /* alternate card background (light) */
+	--card-alt-text: var(--text);
+}
+
+/* Dark theme values */
+:root.dark, html.dark {
+	--bg: #071227;
+	--surface: #081226; /* slightly different for header/sidebar */
+	--card-bg: #0b1724;
+	--text: #e6eef8;
+	--muted: #9aa8ba;
+	--border: rgba(255,255,255,0.06);
+	--accent: #7cb7ff;
+	--avatar-bg: #0084ff;
+	--avatar-text: #ffffff;
+	--btn-bg: transparent;
+	--btn-text: #e6eef8;
+	--elevation: 0 6px 18px rgba(2,6,23,0.6);
+	--sidebar-hover: rgba(96,165,250,0.12);
+	--sidebar-hover-text: #0b101a;
+
+	/* Dark-mode sidebar hover: subtle bluish overlay and light text for contrast */
+	--sidebar-hover: rgb(84, 155, 248);
+	--sidebar-hover-text: var(--surface);
+	--input-border: rgba(255,255,255,0.08); /* softer border in dark mode */
+	--card-alt-bg: #2b2b2b; /* alternate card background (dark) */
+	--card-alt-text: white;
+	--azul-de-fondo: #97bdfd;
+}
+
+/* Smooth theme transitions */
+html, body, .header, .sidebar, .project-card, .gt-card, .card,  .card-footer, .sidebar-item, button {
+	transition: background-color 220ms var(--expo-out), color 220ms var(--expo-out), border-color 220ms var(--expo-out), box-shadow 220ms var(--expo-out);
+}
+
+.pager, .btn-pager{
+	background: var(--card-bg) !important;
+	border: 1 px solid var(--border) !important;	
+}
+.pager-info{
+	color: var(--muted) !important;
+}
+
+
+/* Global application backgrounds/text */
+body {
+	background: var(--bg) !important;
+	color: var(--text) !important;
+}
+
+/* Header */
+.header {
+	background: var(--surface) !important;
+	color: var(--text) !important;
+	border-bottom: 1px solid var(--border) !important;
+}
+.header .username, .header .logout-btn, .header .theme-btn, .header button {
+	color: var(--btn-text) !important;
+}
+
+// .title{
+// 	color: var(--btn-text) !important;
+// }
+
+.header-avatar {
+	background:rgb(58, 127, 255);
+	color: var(--avatar-text) !important;
+}
+
+/* Sidebar / submenu */
+.sidebar {
+	background: var(--surface) !important;
+	color: var(--text) !important;
+	border-right: 1px solid var(--border) !important;
+}
+.sidebar .sidebar-label, .sidebar .text {
+	color: var(--text) !important;
+}
+.sidebar .sidebar-item {
+	color: var(--text) !important;
+	background: transparent !important;
+	border: none !important;
+}
+.sidebar svg {
+	stroke: var(--text) !important;
+	fill: none !important;
+	color: var(--text) !important;
+}
+
+
+
+/* Cards, project tiles, shared task cards */
+.project-card,
+.gt-card,
+.gt-card-mini{
+  background: var(--card-bg) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: var(--elevation) !important;
+}
+
+/* Avoid forcing color inheritance globally — let components control colors via variables */
+
+/* Inputs, selects and buttons */
+input, textarea, select {
+	background: var(--card-bg) !important;
+	color: var(--text) !important;
+	border: 1px solid var(--input-border) !important;
+}
+/* Ensure filter inputs/selects have a clear border color (team page filters) */
+.filter-search input,
+.filter-item select,
+.filters-row select {
+	border: 1px solid var(--input-border) !important;
+	background: var(--card-bg) !important;
+	color: var(--surface);
+}
+
+.filter-item label{
+	color: var(--avatar-text);
+}
+
+/* Strong enforcement for light mode filter borders (fixes cases where other rules override) */
+html:not(.dark) .filter-search input,
+html:not(.dark) .filter-item select,
+html:not(.dark) .filters-row select {
+	border: 1px solid #eceaea !important;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.04) !important;
+	background: #ffffff !important;
+}
+button, .btn, .btn-open, .logout-btn, .theme-btn {
+	/* Prefer component-level backgrounds; only provide sane defaults here without !important */
+	background: transparent;
+	color: var(--btn-text);
+	border: 1px solid transparent;
+}
+
+/* SVG icons that used hard-coded black/blue — force to theme color */
+svg {
+	stroke: currentColor !important;
+	fill: none !important;
+	color: inherit !important;
+}
+
+/* Sidebar hover/active using variables so themes behave correctly */
+:root .sidebar .sidebar-item:hover,
+html .sidebar .sidebar-item:hover {
+	background: var(--sidebar-hover) !important;
+	color: var(--sidebar-hover-text) !important;
+}
+:root .sidebar .sidebar-item:hover .text,
+html .sidebar .sidebar-item:hover .text {
+	color: var(--sidebar-hover-text) !important;
+}
+:root .sidebar .sidebar-item.active,
+html .sidebar .sidebar-item.active {
+	background: var(--sidebar-hover) !important;
+}
+:root .sidebar .sidebar-item.active .text,
+html .sidebar .sidebar-item.active .text {
+	color: var(--sidebar-hover-text) !important;
+}
+
+/* Ensure SVG icons inside sidebar items also adopt the hover text color */
+:root .sidebar .sidebar-item:hover svg,
+html .sidebar .sidebar-item:hover svg,
+:root .sidebar .sidebar-item.active svg,
+html .sidebar .sidebar-item.active svg {
+	stroke: var(--sidebar-hover-text) !important;
+	color: var(--sidebar-hover-text) !important;
+}
+
+/* Keep view-transition rules at end */
+::view-transition-group(root) {
+	animation-timing-function: var(--expo-out);
+}
+
+::view-transition-new(root) {
+	mask: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><defs><filter id="blur"><feGaussianBlur stdDeviation="2"/></filter></defs><circle cx="0" cy="0" r="18" fill="white" filter="url(%23blur)"/></svg>') top left / 0 no-repeat;
+	mask-origin: content-box;
+	animation: scale 1s;
+	animation-fill-mode: both;
+	transform-origin: top left;
+}
+
+::view-transition-old(root),
+.dark::view-transition-old(root) {
+	animation: scale 1s;
+	animation-fill-mode: both;
+	transform-origin: top left;
+	z-index: -1;
+}
+
+@keyframes scale {
+	to {
+		mask-size: 350vmax;
+	}
+}
+
+/* Do not force employee-card colors here — they use variables defined above. */
+
+/* Ensure light-mode explicit rules (when html doesn't have .dark) to restore original light styles */
+html:not(.dark) .avatar {
+	background: var(--avatar-bg) !important;
+	color: var(--avatar-text) !important;
+}
+
+html:not(.dark) .employee-card {
+	box-shadow: 0 6px 16px rgba(0,0,0,0.05) !important;
+	background: var(--card-bg) !important;
+}
+
+html:not(.dark) .employee-card:hover {
+	box-shadow: 0 18px 45px rgba(0,0,0,0.1) !important;
+}
+
+html:not(.dark) .buttons-group button {
+	background: linear-gradient(180deg, #0d3d8c, #0b2a5b) !important;
+	box-shadow: 0 4px 10px rgba(13,61,140,0.2) !important;
+}
+
+/* Make filter labels light in dark mode across the app */
+html.dark .filter-search label,
+html.dark .filters-row label,
+html.dark .filter-item label {
+  color: var(--text) !important;
+}
+
+/* Project card info text should be light in dark mode */
+html.dark .project-card,
+:root.dark .project-card .card-info,
+body.dark .project-card .card-info {
+	color: var(--text) !important;
+}
+
+//faltan todos los textos de las tarjetas de proyectos en modo oscuro, cuando pongo los textos en modo oscuro no se aplican a las tarjetas de proyectos o se ponen blancos y no se ven en modo claro
+
+.title-filters, .schedule, .schedule2{
+	  color: var(--text);
+	  background: var(--card-bg) !important;
+}
+
+.category-filter{
+	  color: var(--avatar-bg);
+	  background: var(--card-alt-bg) !important;
+}
+

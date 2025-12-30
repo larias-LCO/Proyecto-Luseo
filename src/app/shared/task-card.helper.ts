@@ -20,6 +20,12 @@ export function createTaskCard(task: any, options: any = {}): HTMLElement {
   card.style.overflow = 'hidden';
   card.style.transition = 'transform 0.15s ease, box-shadow 0.15s ease, opacity 0.3s ease';
 
+  // Detect theme
+  const darkMode = (typeof document !== 'undefined') && document.documentElement.classList.contains('dark');
+  const docStyles = (typeof window !== 'undefined') ? getComputedStyle(document.documentElement) : null;
+  const themeCardBg = docStyles ? (docStyles.getPropertyValue('--card-bg') || '').trim() : '';
+  const themeText = docStyles ? (docStyles.getPropertyValue('--text') || '').trim() : '';
+
   // Estilos especiales para holidays (festivos)
   let isHoliday = !!task.isHoliday;
   let countryCode = task.countryCode;
@@ -36,10 +42,23 @@ export function createTaskCard(task: any, options: any = {}): HTMLElement {
       card.style.border = `2px solid ${darkenColor('#FBBF24', 20)}`;
     }
   } else {
-    // Use category color as background, with fallback to white
-    const categoryColor = task.taskCategoryColorHex || '#ffffff';
-    card.style.background = categoryColor;
-    card.style.border = `3px solid ${darkenColor(categoryColor, 20)}`;
+    // Use category color as background, with fallback to theme card background
+    const categoryColor = (task.taskCategoryColorHex || '').trim() || '';
+    if (darkMode) {
+      // In dark mode, prefer theme card background for neutral categories
+      if (!categoryColor || categoryColor === '#ffffff' || categoryColor.toLowerCase() === 'white') {
+        card.style.background = themeCardBg || '#0b1724';
+        card.style.border = `1px solid ${docStyles?.getPropertyValue('--border') || 'rgba(255,255,255,0.06)'} `;
+      } else {
+        card.style.background = categoryColor;
+        card.style.border = `3px solid ${darkenColor(categoryColor, 20)}`;
+      }
+    } else {
+      // light mode
+      card.style.background = categoryColor || (themeCardBg || '#ffffff');
+      const borderCol = categoryColor ? darkenColor(categoryColor, 20) : (docStyles?.getPropertyValue('--border') || 'rgba(15, 23, 42, 0.06)');
+      card.style.border = `3px solid ${borderCol}`;
+    }
   }
 
   // Add visual separator for project type (top border with specific color - light tones)
@@ -53,13 +72,18 @@ export function createTaskCard(task: any, options: any = {}): HTMLElement {
     }
   }
 
-  // Calculate text color based on background brightness
+  // Calculate text color based on background brightness + theme
   let textColor = '#222222';
   if (isHoliday && countryCode === 'US') textColor = '#1e3a8a';
   else if (isHoliday && countryCode === 'CO') textColor = '#000000';
   else {
-    const categoryColor = task.taskCategoryColorHex || '#ffffff';
+    const categoryColor = task.taskCategoryColorHex || (themeCardBg || '#ffffff');
     textColor = getContrastColor(categoryColor);
+  }
+  // In dark mode, prefer theme text color when computed text is dark
+  if (darkMode) {
+    const computedThemeText = themeText || '#e6eef8';
+    if (textColor === '#222222' || textColor.toLowerCase() === '#222222') textColor = computedThemeText;
   }
   card.style.color = textColor;
 
@@ -79,9 +103,9 @@ export function createTaskCard(task: any, options: any = {}): HTMLElement {
       <div style="display:flex; flex-direction:column; gap:3px;">
         <div style="padding: 2px 4px; border-radius: 6px; display:flex; align-items:center; gap:8px;">
           <span style="font-size:20px; color:${textColor}">${countryFlag}</span>
-          <span style="font-size:10px; font-weight:700; color:${textColor}; background:rgba(255,255,255,0.95); padding:2px 6px; border-radius:4px; text-transform:uppercase; letter-spacing:0.5px;">${countryName}</span>
+          <span style="font-size:10px; font-weight:700; color:${textColor}; background: ${darkMode ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.95)'}; padding:2px 6px; border-radius:4px; text-transform:uppercase; letter-spacing:0.5px;">${countryName}</span>
         </div>
-        <div style="padding: 2px 4px; border-radius: 6px; display:flex; flex-direction:column; gap:3px;">
+          <div style="padding: 2px 4px; border-radius: 6px; display:flex; flex-direction:column; gap:3px;">
           <div style="display:flex; gap:4px; align-items:flex-start; font-weight:700;">
             <span>🎉</span>
             <div style="font-size:12px; flex:1; line-height:1.2; color: ${textColor}; text-shadow: 1px 1px 2px ${textColor === '#ffffff' ? 'rgba(0,0,0,0.3)' : 'rgba(255,255,255,0.3)'}; padding-right:40px;">${escapeHtml(holidayName)}</div>
@@ -130,7 +154,7 @@ export function createTaskCard(task: any, options: any = {}): HTMLElement {
     return card;
   }
 
-  const statusConfig: Record<string, { text: string; color: string; bg: string; icon: string }> = {
+    const statusConfig: Record<string, { text: string; color: string; bg: string; icon: string }> = {
     'IN_PROGRESS': { text: 'In Progress', color: '#1e40af', bg: '#dbeafe', icon: '⏱️' },
     'COMPLETED': { text: 'Completed', color: '#065f46', bg: '#d1fae5', icon: '✅' },
     'PAUSED': { text: 'Paused', color: '#92400e', bg: '#fef3c7', icon: '⛔' }

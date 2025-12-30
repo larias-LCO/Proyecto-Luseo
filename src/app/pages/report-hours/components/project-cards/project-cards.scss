@@ -73,6 +73,16 @@
   background: linear-gradient(180deg, rgba(6,128,228,0.05), rgba(79,209,197,0.03));
 }
 
+/* Alternate background for compact project-cards grid */
+.project-card.alt {
+  background: var(--card-alt-bg);
+  color: var(--card-alt-text);
+}
+.project-card.alt:hover {
+  box-shadow: 0 12px 36px rgba(79,140,255,0.12);
+  border-color: rgba(0,67,190,0.7);
+}
+
 .top-bar {
   height: 3px;
   background: linear-gradient(135deg, var(--primary, #5ca8ff), #072c4a, var(--primary-dark, #0b1220));

@@ -34,7 +34,11 @@
 }
 
 /* Items */
+// BASE DEL ITEM
 .sidebar-item {
+  position: relative;
+  overflow: hidden;
+  text-align: left;
   width: 100%;
   height: 44px;
   padding: 0 12px;
@@ -53,7 +57,39 @@
   color: #111827;
 
   cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease;
+  transition: background 0.5s ease, color 0.5s ease;
+}
+
+
+// Contenido encima del fondo animado
+.sidebar-item svg,
+.sidebar-item .text {
+  position: relative;
+  z-index: 2;
+}
+
+// Fondo animado (derecha → izquierda)
+.sidebar-item::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;                 /* empieza desde la derecha */
+  width: 0;
+  height: 100%;
+  background-color: #dbeafe; /* azul claro */
+  transition: width 0.5s ease;
+  z-index: 1;
+}
+
+
+.sidebar-item:hover::before {
+  width: 100%;
+}
+
+.sidebar-item:hover .text,
+.sidebar-item.active .text {
+  color: #001dbe;
+  font-weight: 600;
 }
 
 /* Íconos */
@@ -65,7 +101,7 @@
 
 /* Hover */
 .sidebar-item:hover {
-  background: #f3f4f6;
+  background: #9ed3ff;
 }
 
 /* Activo */
@@ -78,6 +114,31 @@
 .sidebar-item.has-child .arrow {
   margin-left: auto;
   opacity: 0.6;
+}
+
+/* Dark-mode styles applied ONLY to .sidebar-item */
+:root.dark .sidebar-item::before,
+html.dark .sidebar-item::before {
+  background-color: rgba(96,165,250,0.14); /* light blue accent in dark */
+}
+
+/* Hover uses a soft light-blue */
+:root.dark .sidebar-item:hover,
+html.dark .sidebar-item:hover {
+  background: rgba(96,165,250,0.12); /* azul claro */
+}
+
+:root.dark .sidebar-item:hover .text,
+html.dark .sidebar-item:hover .text,
+:root.dark .sidebar-item.active .text,
+html.dark .sidebar-item.active .text {
+  color: rgb(0, 0, 75); /* match --accent (light blue) */
+  font-weight: 600;
+}
+
+:root.dark .sidebar-item.active,
+html.dark .sidebar-item.active {
+  background: rgba(96,165,250,0.16);
 }
 
 

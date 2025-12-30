@@ -28,6 +28,8 @@ export class HeaderComponent {
   private lastResolvedEmployeeId?: number | null = null;
  
   constructor() {
+  // ... código existente ...
+  this.applySavedTheme();
     // subscribe to report-hours auth state (used by the login page)
     try {
       const reportAuth = inject(ReportAuthState);
@@ -45,6 +47,8 @@ export class HeaderComponent {
     }, 1000) as unknown as number;
     // attempt resolution once immediately
     void this.resolveFullNameIfNeeded();
+    // apply saved theme (light/dark)
+    this.applySavedTheme();
   }
  
   isAuthenticated = computed(() => {
@@ -155,4 +159,32 @@ toggleNotifications() {
   this.showNotifications = !this.showNotifications;
 }
 
+  applySavedTheme() {
+    try {
+      const saved = localStorage.getItem('theme');
+      if (saved === 'dark') document.documentElement.classList.add('dark');
+      else document.documentElement.classList.remove('dark');
+    } catch (e) {
+      // ignore
+    }
+  }
+
+  toggleTheme() {
+    const switchTheme = () => {
+      document.documentElement.classList.toggle('dark');
+      const isDark = document.documentElement.classList.contains('dark');
+      try { localStorage.setItem('theme', isDark ? 'dark' : 'light'); } catch (e) {}
+    };
+
+    // TypeScript may not know about startViewTransition — cast to any
+    const docAny = document as any;
+    if (!docAny.startViewTransition) {
+      switchTheme();
+      return;
+    }
+    docAny.startViewTransition(switchTheme);
+  }
+
+
 }
+

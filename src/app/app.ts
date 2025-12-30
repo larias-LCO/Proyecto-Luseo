@@ -10,4 +10,6 @@ import { FormsModule } from '@angular/forms';
   imports: [RouterOutlet, FormsModule],
   template: `<router-outlet></router-outlet>`
 })
-export class AppComponent {}
+export class AppComponent {
+  
+}

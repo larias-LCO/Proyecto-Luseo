@@ -154,45 +154,67 @@
    
 
 
-    <div class="table-wrap">
-      <table class="project-table" aria-label="Projects list">
-        <thead>
-          <tr>
-            <th>Project Code</th>
-            <th>Project Name</th>
-            <th>Client</th>
-            <th>Type</th>
-            <th>Office</th>
-            <th>Scope</th>
-            <th>Software</th>
-            <th>Estado</th>
-            <th>PMs</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngIf="projects.length === 0">
-            <td class="muted" colspan="9">No results</td>
-          </tr>
-  <tr *ngFor="let p of projects; trackBy: trackByProject"
+   <div class="projects-grid">
+
+  <div
+    class="project-card"
+    *ngFor="let p of projects; trackBy: trackByProject"
     (click)="openProjectDetails(p)"
-    class="clickable-row">
+  >
 
-    <td>{{ p.projectCode || '-' }}</td>
-    <td>{{ p.name || '-' }}</td>
-    <td>{{ p.clientName || '-' }}</td>
-    <td>{{ displayEnum(p.projectType) || '-' }}</td>
-    <td>{{ p.officeName || '-' }}</td>
-    <td>{{ displayEnum(p.scope) || '-' }}</td>
-    <td>{{ p.softwareName || '-' }}</td>
-    <td>
-      <span class="status-pill {{ statusToClass(p.status) }}">{{ p.status || '-' }}</span>
-    </td>
-    <td>{{ p.pmNames || '-' }}</td>
-
-    
-        </tbody>
-      </table>
+    <!-- Header -->
+    <div class="card-header">
+      <span class="project-code">{{ p.projectCode || '-' }}</span>
+      <span class="status-pill {{ statusToClass(p.status) }}">
+        {{ p.status || '-' }}
+      </span>
     </div>
+
+    <!-- Title -->
+    <h3 class="project-name">{{ p.name || '-' }}</h3>
+
+    <!-- Info grid -->
+    <div class="card-info">
+      <div>
+        <span class="label">Client</span>
+        <span class="value">{{ p.clientName || '-' }}</span>
+      </div>
+
+      <div>
+        <span class="label">Type</span>
+        <span class="value">{{ displayEnum(p.projectType) || '-' }}</span>
+      </div>
+
+      <div>
+        <span class="label">Office</span>
+        <span class="value">{{ p.officeName || '-' }}</span>
+      </div>
+
+      <div>
+        <span class="label">Scope</span>
+        <span class="value">{{ displayEnum(p.scope) || '-' }}</span>
+      </div>
+
+      <div>
+        <span class="label">Software</span>
+        <span class="value">{{ p.softwareName || '-' }}</span>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="card-footer">
+      <span class="label">PMs</span>
+      <span class="value">{{ p.pmNames || '-' }}</span>
+    </div>
+
+  </div>
+
+  <div *ngIf="projects.length === 0" class="empty-state">
+    No results
+  </div>
+
+</div>
+
 
 
 <app-project-details
