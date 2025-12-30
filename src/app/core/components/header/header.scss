@@ -1,13 +1,13 @@
-
-
 header {
   font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  /* allow customization via CSS variables */
+  --header-height: 70px;
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   z-index: 1000;
-  height: 70px;
+  height: var(--header-height);
   display: flex;
   align-items: center;
   justify-content: space-between;

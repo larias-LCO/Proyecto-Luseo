@@ -15,6 +15,8 @@ import { SubTaskService } from './services/sub-task.service';
 import { InternalTaskLogService } from './services/internal-tasks.service';
 import { ReportHoursDataService } from './services/report-hours-data.service';
 import { EmployeeService } from './services/employee.service';
+import { HolidayService } from './services/holiday.service';
+import { mapHolidaysToTimeEntries } from './utils/mappers/holiday.mapper';
 
 import { AuthStateService } from './auth/services/auth-state.service';
 import { HeaderComponent } from "../../core/components/header/header";
@@ -46,9 +48,9 @@ export class ReportHours implements OnInit, OnDestroy {
   loadingProjects = false;
   employeeId?: number;
   isAdminOrOwner = false;
-  // Time entries for the calendar
-  timeEntries: TimeEntry[] = [];
-  private allTimeEntries: TimeEntry[] = [];
+  // Time entries for the calendar (can include holidays -> use any)
+  timeEntries: any[] = [];
+  private allTimeEntries: any[] = [];
   employeesList: { id: number; name: string }[] = [];
   private authSub?: Subscription;
 
@@ -61,7 +63,8 @@ export class ReportHours implements OnInit, OnDestroy {
     private subTaskService: SubTaskService,
     private internalTaskLogService: InternalTaskLogService,
     private reportHoursDataService: ReportHoursDataService,
-    private employeeService: EmployeeService
+    private employeeService: EmployeeService,
+    private holidayService: HolidayService
   ) {}
 
   ngOnInit(): void {
@@ -89,36 +92,27 @@ export class ReportHours implements OnInit, OnDestroy {
           next: logs => {
             // Build unified time entries
             const built = this.reportHoursDataService.buildTimeEntries(subs, logs);
-            this.allTimeEntries = built;
-            this.timeEntries = [...built];
 
-            // Build employee list from entries considering role/department
-            const myRole = (this.authState.role as 'OWNER' | 'ADMIN' | 'USER') ?? 'USER';
-            const isCoordinator = (this.authState.authorities || []).some(a => typeof a === 'string' && a.toLowerCase().includes('coordinator'));
+            // Load holidays for current year and append as time-entry-like objects
+            this.holidayService.getByYear(new Date().getFullYear()).subscribe({
+              next: holidaysResp => {
+                const holidayEntries = mapHolidaysToTimeEntries(holidaysResp);
+                this.allTimeEntries = [...built, ...holidayEntries];
+                this.timeEntries = [...this.allTimeEntries];
+                console.info('[ReportHours] Loaded holidays:', holidayEntries.length, 'total entries:', this.allTimeEntries.length);
 
-            this.employeeService.getEmployeeDepartmentMap().subscribe({
-              next: map => {
-                // convert Map to Record<number, number>
-                const record: Record<number, number> = {};
-                map.forEach((v, k) => { record[k] = v ?? 0; });
-
-                const myDepartmentId = this.employeeId ? (map.get(this.employeeId) ?? undefined) : undefined;
-
-                this.employeesList = buildEmployeesWithReports(this.allTimeEntries, {
-                  myRole,
-                  isCoordinator,
-                  myDepartmentId,
-                  employeeDepartmentMap: record
-                });
+                // proceed to build employees list below
+                this.loadEmployeesList(this.allTimeEntries);
               },
               error: () => {
-                this.employeesList = buildEmployeesWithReports(this.allTimeEntries, {
-                  myRole,
-                  isCoordinator,
-                  employeeDepartmentMap: {}
-                });
+                this.allTimeEntries = built;
+                this.timeEntries = [...built];
+                console.warn('[ReportHours] Failed to load holidays, continuing without them');
+                this.loadEmployeesList(this.allTimeEntries);
               }
             });
+
+            // employees list will be built after holidays are appended
           },
           error: () => {
             this.allTimeEntries = [];
@@ -151,6 +145,34 @@ export class ReportHours implements OnInit, OnDestroy {
         this.projects = [];
         this.filteredProjects = [];
         this.loadingProjects = false;
+      }
+    });
+  }
+
+  private loadEmployeesList(entries: any[]): void {
+    const myRole = (this.authState.role as 'OWNER' | 'ADMIN' | 'USER') ?? 'USER';
+    const isCoordinator = (this.authState.authorities || []).some(a => typeof a === 'string' && a.toLowerCase().includes('coordinator'));
+
+    this.employeeService.getEmployeeDepartmentMap().subscribe({
+      next: map => {
+        const record: Record<number, number> = {};
+        map.forEach((v, k) => { record[k] = v ?? 0; });
+
+        const myDepartmentId = this.employeeId ? (map.get(this.employeeId) ?? undefined) : undefined;
+
+        this.employeesList = buildEmployeesWithReports(entries, {
+          myRole,
+          isCoordinator,
+          myDepartmentId,
+          employeeDepartmentMap: record
+        });
+      },
+      error: () => {
+        this.employeesList = buildEmployeesWithReports(entries, {
+          myRole,
+          isCoordinator,
+          employeeDepartmentMap: {}
+        });
       }
     });
   }

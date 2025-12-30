@@ -7,7 +7,7 @@ import { TasksPage } from './pages/task/task';
 import { ReportHours } from './pages/report-hours/report-hours';
 
 export const routes: Routes = [
-  // { path: '', redirectTo: 'proyectos', pathMatch: 'full' },
+  { path: '', redirectTo: 'report-hours', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
   { path: 'team', component: TeamComponent, canActivate: [ReportAuthGuard] },
   { path: 'proyectos', component: ProjectsPage, canActivate: [ReportAuthGuard] },

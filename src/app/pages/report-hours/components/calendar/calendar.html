@@ -1,3 +1,16 @@
 <div class="report-calendar">
-	<full-calendar [options]="calendarOptions"></full-calendar>
+	<full-calendar [options]="calendarOptions">
+		<ng-template #eventContent let-arg>
+			<ng-container *ngIf="eventTemplate; else defaultTpl">
+				<ng-container *ngTemplateOutlet="eventTemplate; context: { $implicit: arg }"></ng-container>
+			</ng-container>
+
+			<ng-template #defaultTpl>
+				<div class="fc-event-custom">
+					<div class="fc-event-title">{{ arg.event.title }}</div>
+					<div class="fc-event-meta">{{ arg.event.extendedProps?.userName }} — {{ arg.event.extendedProps?.hours }}h</div>
+				</div>
+			</ng-template>
+		</ng-template>
+	</full-calendar>
 </div>

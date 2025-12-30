@@ -3,11 +3,23 @@
 	display: flex;
 	flex-direction: column;
 	gap: 14px;
+<<<<<<< HEAD
 	// padding: 12px;
   /* Evitar superposición con header (70px) y sidebar (250px) */
   margin-top: 70px;
   margin-left: 250px;
   padding: 24px;
+=======
+	padding: 12px;
+
+	/* account for fixed header and sidebar */
+	--header-height: 70px;
+	--sidebar-width: 250px;
+
+	margin-top: var(--header-height);
+	margin-left: var(--sidebar-width);
+	width: calc(100% - var(--sidebar-width));
+>>>>>>> f660e32ca04aa0819c99ee0f9dfa0c483cdcb72f
 }
 
 .report-section {
@@ -53,6 +65,13 @@
 	.report-section { padding: 8px; border-radius: 8px; }
 }
 
+@media (max-width: 720px) {
+	.report-hours {
+		margin-left: 0;
+		width: 100%;
+	}
+}
+
 /* Variant: remove inner padding (use for full-bleed components like grid) */
 .report-section--flush {
   padding: 0;
@@ -61,4 +80,166 @@
 .report-section--flush .section-body {
   padding: 0;
 }
+
+/* Event card styles for calendar templates */
+.rh-event {
+	padding: 6px 8px;
+	line-height: 1.3;
+	min-height: 80px;
+	border-radius: 6px;
+}
+
+.rh-event--internal {
+	background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+
+/* Ensure all text inside calendar event cards is black */
+.rh-event,
+.rh-event * {
+  color: #000 !important;
+}
+	border-left: 4px solid #059669;
+	color: #064e3b;
+}
+
+.rh-event__head {
+	font-weight: 700;
+	font-size: 13px;
+	margin-bottom: 4px;
+	display: flex;
+	align-items: center;
+}
+
+.rh-event__title {
+	flex: 1;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.rh-event__badge {
+	background: rgba(255,255,255,0.9);
+	padding: 2px 6px;
+	border-radius: 4px;
+	font-size: 9px;
+	font-weight: 700;
+	margin-left: 4px;
+	color: #000000; /* neutral by default; modifiers override */
+}
+
+.rh-event__meta {
+	font-size: 11px;
+	margin-bottom: 3px;
+}
+
+.rh-event__hours {
+	background: rgba(255,255,255,0.9);
+	padding: 2px 6px;
+	border-radius: 4px;
+	font-weight: 700;
+	display: inline-block;
+	color: #000000; /* neutral */
+}
+
+.rh-event__footer {
+	font-size: 10px;
+	margin-top: 4px;
+	border-top: 1px solid rgba(255,255,255,0.5);
+	padding-top: 3px;
+	color: #065f46;
+}
+
+.rh-event__project,
+.rh-event__creator {
+	color: #0b1220;
+	margin-bottom: 2px;
+	display: flex;
+	align-items: center;
+	gap: 3px;
+}
+
+.rh-icon { font-weight: 600; }
+.rh-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Holiday styles */
+.rh-event--holiday {
+	padding: 8px 10px;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+	border-radius: 6px;
+	color: #111827;
+}
+
+.rh-event--holiday-co {
+	background: linear-gradient(135deg, #edc600 10%, #0008ed, #e30707);
+	border-left: 4px solid #f59e0b;
+	color: #000;
+}
+
+.rh-event--holiday-us {
+	background: linear-gradient(135deg, #e30707, #ffffff, #0008ed);
+	border-left: 4px solid #3b82f6;
+	color: #1e3a8a;
+}
+
+.rh-event--holiday .rh-event__head {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	margin-bottom: 4px;
+}
+
+.rh-event__flag { font-size: 20px; }
+.rh-event__country {
+	font-size: 9px;
+	font-weight: 700;
+	background: rgba(255,255,255,0.95);
+	padding: 2px 6px;
+	border-radius: 4px;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+}
+
+.rh-event--holiday .rh-event__title {
+	font-weight: 700;
+	font-size: 13px;
+	line-height: 1.3;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+}
+
+.rh-event--holiday .rh-event__note {
+	margin-top: 4px;
+	font-size: 10px;
+	font-weight: 600;
+	opacity: 0.9;
+}
+
+/* Subtask specific styles */
+.rh-event--subtask {
+	background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+	border-left: 4px solid #6366f1;
+	color: #312e81;
+	padding: 6px 8px;
+	min-height: 80px;
+	border-radius: 6px;
+}
+
+.rh-badge {
+	background: rgba(255,255,255,0.9);
+	padding: 2px 6px;
+	border-radius: 4px;
+	font-size: 9px;
+	font-weight: 700;
+	margin-left: 4px;
+}
+.rh-badge--fire { color: #dc2626; }
+.rh-badge--review { color: #f59e0b; }
+
+
 
