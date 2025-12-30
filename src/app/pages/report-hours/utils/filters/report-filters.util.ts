@@ -1,5 +1,6 @@
 import { TimeEntry } from '../../models/time-entry.model';
 import { ReportHoursFilters } from '../../models/filters.model';
+import { isEntryVisible, isHolidayEntry } from '../permissions/report-permissions.util';
 
 export function filterTimeEntriesByRole(
   entries: TimeEntry[],
@@ -13,37 +14,29 @@ export function filterTimeEntriesByRole(
   }
 ): TimeEntry[] {
 
-  let result = [...entries];
+  // Ensure holidays are always returned regardless of role/filters
+  const holidays = entries.filter(isHolidayEntry);
+  let nonHolidays = entries.filter(e => !isHolidayEntry(e));
 
-  // 1️⃣ Explicit filters FIRST
+  // 1️⃣ Explicit filters FIRST (apply only to non-holiday entries)
   if (filters.onlyMyReports) {
-    return result.filter(e => e.userId === context.myEmployeeId);
+    nonHolidays = nonHolidays.filter(e => e.userId === context.myEmployeeId);
   }
 
   if (filters.selectedEmployeeId) {
-    return result.filter(e => e.userId === filters.selectedEmployeeId);
+    nonHolidays = nonHolidays.filter(e => e.userId === filters.selectedEmployeeId);
   }
 
-  // 2️⃣ Role-based visibility
-  if (context.myRole === 'OWNER') {
-    return result;
-  }
+  // 2️⃣ Apply role/permission visibility using centralized helper
+  const visible = nonHolidays.filter(e => isEntryVisible(e, {
+    myEmployeeId: context.myEmployeeId,
+    myRole: context.myRole,
+    isCoordinator: context.isCoordinator,
+    myDepartmentId: context.myDepartmentId,
+    employeeDepartmentMap: context.employeeDepartmentMap
+  }));
 
-  if (
-    context.myRole === 'ADMIN' &&
-    context.isCoordinator &&
-    context.myDepartmentId
-  ) {
-    return result.filter(e => {
-      const empDept = context.employeeDepartmentMap[e.userId];
-      const isSameDept = empDept === context.myDepartmentId;
-      const isOwn = e.userId === context.myEmployeeId;
-      return isSameDept || isOwn;
-    });
-  }
-
-  // 3️⃣ Default user
-  return result.filter(e => e.userId === context.myEmployeeId);
+  return [...visible, ...holidays];
 }
 
 export function filterTimeEntriesByDateRange(

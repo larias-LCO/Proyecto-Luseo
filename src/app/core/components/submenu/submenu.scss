@@ -1,13 +1,13 @@
 .sidebar {
   font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   position: fixed;
-  top: 70px; /* ⚠️ debe coincidir exactamente con la altura real del header */
+  top: var(--header-height);
   left: 0;
-  width: 250px;
-  height: calc(100vh - 70px); /* ⚠️ resta la misma altura */
+  width: var(--sidebar-width);
+  height: calc(100vh - var(--header-height));
   background-color: #fff;
   border-right: 1px solid #ddd;
-  padding-top: 60px;
+  padding-top: 16px;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
   display: flex;
   align-items: center;
@@ -97,6 +97,11 @@
   max-height: 500px; /* suficiente para mostrar todo */
   opacity: 1;
   transform: translateY(0);
+}
+
+/* Ensure sidebar collapses on narrow screens and doesn't overlap content */
+@media (max-width: 768px) {
+  .sidebar { width: 0; overflow: hidden; padding: 0; border: none; box-shadow: none; }
 }
 
 

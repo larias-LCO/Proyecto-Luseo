@@ -5,13 +5,16 @@ import { CommonModule, NgIf } from '@angular/common';
 import { ProjectService } from './services/projects.service';
 import { ChangeDetectorRef } from '@angular/core';
 import { Project } from './models/project.model';
-import { TimeEntry } from './models/time-entry.model';
 import { buildEmployeesWithReports } from './utils/filters/employee-filters.util';
 
 import { ProjectCards } from './components/project-cards/project-cards';
 import { Filters } from './components/filters/filters';
 import { Calendar } from './components/calendar/calendar';
+import { InternalTaskModal } from './components/modals/internal-task-modal/internal-task-modal';
 import { SubTaskService } from './services/sub-task.service';
+import { InternalTaskService } from './services/internal-task-category.service';
+import { NotificationService } from '../../core/services/notification.service';
+import { InternalTaskCategory } from './models/internal-task-category.model';
 import { InternalTaskLogService } from './services/internal-tasks.service';
 import { ReportHoursDataService } from './services/report-hours-data.service';
 import { EmployeeService } from './services/employee.service';
@@ -31,6 +34,7 @@ import { SubmenuComponent } from "../../core/components/submenu/submenu";
     ProjectCards,
     Filters,
     Calendar,
+    InternalTaskModal,
     HeaderComponent,
     SubmenuComponent
 ],
@@ -48,21 +52,28 @@ export class ReportHours implements OnInit, OnDestroy {
   loadingProjects = false;
   employeeId?: number;
   isAdminOrOwner = false;
+  employeeDepartmentMap: Record<number, number> = {};
+  myDepartmentId?: number;
+  isCoordinatorFlag?: boolean;
   // Time entries for the calendar (can include holidays -> use any)
   timeEntries: any[] = [];
   private allTimeEntries: any[] = [];
+  subTasks: any[] = [];
+  internalTasks: any[] = [];
+  private lastTimeEntryFilters: any = {};
+  showInternalModal = false;
   employeesList: { id: number; name: string }[] = [];
   private authSub?: Subscription;
-
-  
 
   constructor(
     private projectsService: ProjectService,
     public authState: AuthStateService,
     private cd: ChangeDetectorRef,
     private subTaskService: SubTaskService,
+    private internalTaskService: InternalTaskService,
     private internalTaskLogService: InternalTaskLogService,
     private reportHoursDataService: ReportHoursDataService,
+    private notification: NotificationService,
     private employeeService: EmployeeService,
     private holidayService: HolidayService
   ) {}
@@ -88,6 +99,11 @@ export class ReportHours implements OnInit, OnDestroy {
     // Load subtasks, internal logs and employees, then build time entries
     this.subTaskService.getAll().subscribe({
       next: subs => {
+        this.subTasks = subs || [];
+        // load internal tasks categories used by modal
+        try {
+          this.internalTaskService.getAll().subscribe({ next: (its: InternalTaskCategory[]) => { this.internalTasks = its || []; }, error: () => { this.internalTasks = []; } });
+        } catch (e) { this.internalTasks = []; }
         this.internalTaskLogService.getAll().subscribe({
           next: logs => {
             // Build unified time entries
@@ -97,13 +113,38 @@ export class ReportHours implements OnInit, OnDestroy {
               next: holidaysResp => {
                 const holidayEntries = mapHolidaysToTimeEntries(holidaysResp);
                 this.allTimeEntries = [...built, ...holidayEntries];
-                this.timeEntries = [...this.allTimeEntries];
+                // Apply initial permission-aware filtering (use last applied filters, default empty)
+                const myRoleInit = (this.authState.role as 'OWNER' | 'ADMIN' | 'USER') ?? 'USER';
+                const isCoordInit = (this.authState.authorities || []).some((a: any) => typeof a === 'string' && a.toLowerCase().includes('coordinator'));
+                this.timeEntries = this.reportHoursDataService.applyFilters(
+                  this.allTimeEntries,
+                  this.lastTimeEntryFilters || {},
+                  {
+                    myEmployeeId: this.employeeId,
+                    myRole: myRoleInit,
+                    isCoordinator: isCoordInit,
+                    myDepartmentId: this.myDepartmentId,
+                    employeeDepartmentMap: this.employeeDepartmentMap
+                  }
+                );
                 // proceed to build employees list below
                 this.loadEmployeesList(this.allTimeEntries);
               },
               error: () => {
                 this.allTimeEntries = built;
-                this.timeEntries = [...built];
+                const myRoleInit2 = (this.authState.role as 'OWNER' | 'ADMIN' | 'USER') ?? 'USER';
+                const isCoordInit2 = (this.authState.authorities || []).some((a: any) => typeof a === 'string' && a.toLowerCase().includes('coordinator'));
+                this.timeEntries = this.reportHoursDataService.applyFilters(
+                  this.allTimeEntries,
+                  this.lastTimeEntryFilters || {},
+                  {
+                    myEmployeeId: this.employeeId,
+                    myRole: myRoleInit2,
+                    isCoordinator: isCoordInit2,
+                    myDepartmentId: this.myDepartmentId,
+                    employeeDepartmentMap: this.employeeDepartmentMap
+                  }
+                );
                 console.warn('[ReportHours] Failed to load holidays, continuing without them');
                 this.loadEmployeesList(this.allTimeEntries);
               }
@@ -121,6 +162,42 @@ export class ReportHours implements OnInit, OnDestroy {
         this.allTimeEntries = [];
         this.timeEntries = [];
       }
+    });
+  }
+
+  openInternalModal(): void {
+    this.showInternalModal = true;
+  }
+
+  onInternalModalSave(payload: any[]): void {
+    if (!payload || !payload.length) return;
+    const calls = payload.map(p => {
+      const internalTaskId = p.subTaskId || p.mainTaskId;
+      const task = (this.internalTasks || []).find((t: any) => String(t.id) === String(internalTaskId));
+      const createPayload: any = {
+        logDate: p.date,
+        reportHours: p.hours,
+        description: p.description || '',
+        internalTaskId: Number(internalTaskId),
+        internalTaskName: task ? task.name : ''
+      };
+      return this.internalTaskLogService.create(createPayload);
+    });
+
+    import('rxjs').then(rx => {
+      const { forkJoin } = rx;
+      forkJoin(calls).subscribe({
+        next: () => {
+          this.showInternalModal = false;
+          // refresh entries
+          try { this.loadTimeEntries(); } catch (e) {}
+          try { this.notification.show(`Saved ${payload.length} report(s)`, 'success', 4000); } catch (e) {}
+        },
+        error: (err) => {
+          console.error('Failed to create internal task logs', err);
+          try { this.notification.show('Failed to save internal task reports', 'error', 5000); } catch (e) {}
+        }
+      });
     });
   }
 
@@ -155,16 +232,83 @@ export class ReportHours implements OnInit, OnDestroy {
         const record: Record<number, number> = {};
         map.forEach((v, k) => { record[k] = v ?? 0; });
 
-        const myDepartmentId = this.employeeId ? (map.get(this.employeeId) ?? undefined) : undefined;
+        this.employeeDepartmentMap = record;
+        this.myDepartmentId = this.employeeId ? (map.get(this.employeeId) ?? undefined) : undefined;
 
         this.employeesList = buildEmployeesWithReports(entries, {
           myRole,
           isCoordinator,
-          myDepartmentId,
+          myDepartmentId: this.myDepartmentId,
           employeeDepartmentMap: record
         });
+        // Try to determine coordinator status from employee record (prefer job position)
+        if (this.employeeId) {
+          this.employeeService.getById(this.employeeId).subscribe({
+            next: emp => {
+              const pos = (emp && emp.jobPositionName) ? String(emp.jobPositionName).toLowerCase() : '';
+              this.isCoordinatorFlag = pos.includes('coordinator') || pos.includes('coord');
+              // Re-apply filters now that we have department map and job position
+              try {
+                this.timeEntries = this.reportHoursDataService.applyFilters(
+                  this.allTimeEntries,
+                  this.lastTimeEntryFilters || {},
+                  {
+                    myEmployeeId: this.employeeId,
+                    myRole,
+                    isCoordinator: this.isCoordinatorFlag ?? isCoordinator,
+                    myDepartmentId: this.myDepartmentId,
+                    employeeDepartmentMap: this.employeeDepartmentMap
+                  }
+                );
+                try { this.cd.detectChanges(); } catch {}
+              } catch (err) {
+                console.error('Failed to re-apply filters after loading employee record', err);
+              }
+            },
+            error: () => {
+              // Fallback: keep computed `isCoordinator` from authorities
+              this.isCoordinatorFlag = isCoordinator;
+              try {
+                this.timeEntries = this.reportHoursDataService.applyFilters(
+                  this.allTimeEntries,
+                  this.lastTimeEntryFilters || {},
+                  {
+                    myEmployeeId: this.employeeId,
+                    myRole,
+                    isCoordinator: this.isCoordinatorFlag,
+                    myDepartmentId: this.myDepartmentId,
+                    employeeDepartmentMap: this.employeeDepartmentMap
+                  }
+                );
+                try { this.cd.detectChanges(); } catch {}
+              } catch (err) {
+                console.error('Failed to re-apply filters after employee lookup error', err);
+              }
+            }
+          });
+        } else {
+          // Re-apply filters now that we have department map (important for admin+coordinator)
+        try {
+          this.timeEntries = this.reportHoursDataService.applyFilters(
+            this.allTimeEntries,
+            this.lastTimeEntryFilters || {},
+            {
+              myEmployeeId: this.employeeId,
+                myRole,
+                isCoordinator,
+              myDepartmentId: this.myDepartmentId,
+              employeeDepartmentMap: this.employeeDepartmentMap
+            }
+          );
+          try { this.cd.detectChanges(); } catch {}
+        } catch (err) {
+          console.error('Failed to re-apply filters after loading department map', err);
+        }
+        }
       },
       error: () => {
+        this.employeeDepartmentMap = {};
+        this.myDepartmentId = undefined;
         this.employeesList = buildEmployeesWithReports(entries, {
           myRole,
           isCoordinator,
@@ -182,30 +326,26 @@ export class ReportHours implements OnInit, OnDestroy {
   }
 
   onTimeEntryFiltersChanged(filters: any): void {
-    // Apply filters to allTimeEntries using ReportHoursDataService
-    // Import service via relative path and create a service instance via injector pattern
+    // Delegate filtering to ReportHoursDataService which preserves holidays
     try {
-      // Dynamic import of service class and create using Injector from Angular isn't straightforward here.
-      // Instead, perform simple in-place filtering matching ReportHoursDataService.applyFilters logic to avoid DI complexities.
-      let result = [...this.allTimeEntries];
+      // store last used filters so we can re-apply them when department map arrives
+      this.lastTimeEntryFilters = filters || {};
 
-      if (filters.onlyMyReports && this.employeeId) {
-        result = result.filter((e: any) => e.userId === this.employeeId);
-      }
+      const myRole = (this.authState.role as 'OWNER' | 'ADMIN' | 'USER') ?? 'USER';
+      const authIsCoord = (this.authState.authorities || []).some((a: any) => typeof a === 'string' && a.toLowerCase().includes('coordinator'));
+      const isCoordinator = this.isCoordinatorFlag ?? authIsCoord;
 
-      if (filters.selectedEmployeeId) {
-        result = result.filter((e: any) => e.userId === filters.selectedEmployeeId);
-      }
-
-      if (filters.searchText) {
-        const text = filters.searchText.toLowerCase();
-        result = result.filter((e: any) =>
-          (e.title || '').toLowerCase().includes(text) ||
-          (e.userName || '').toLowerCase().includes(text)
-        );
-      }
-
-      this.timeEntries = result;
+      this.timeEntries = this.reportHoursDataService.applyFilters(
+        this.allTimeEntries,
+        this.lastTimeEntryFilters,
+        {
+          myEmployeeId: this.employeeId,
+          myRole,
+          isCoordinator,
+          myDepartmentId: this.myDepartmentId,
+          employeeDepartmentMap: this.employeeDepartmentMap
+        }
+      );
       try { this.cd.detectChanges(); } catch {}
     } catch (err) {
       console.error('Failed to apply time entry filters', err);

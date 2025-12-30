@@ -1,10 +1,5 @@
 <app-header></app-header>
 <app-submenu></app-submenu>
-<<<<<<< HEAD
-
-<div class="report-hours">
-=======
->>>>>>> f660e32ca04aa0819c99ee0f9dfa0c483cdcb72f
 
 <div class="report-hours">
   <!-- FILTERS -->
@@ -118,7 +113,18 @@
         </ng-template>
       </ng-template>
 
+      <div class="calendar-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <div></div>
+        <button class="btn btn-primary" style="background: linear-gradient(135deg, #06b6d4, #0ea5a4); padding:8px 14px; border-radius:8px;" (click)="openInternalModal()">📝 New Internal Task</button>
+      </div>
+
       <app-calendar [entries]="timeEntries" [eventTemplate]="eventTpl"></app-calendar>
+
+      <app-internal-task-modal *ngIf="showInternalModal"
+        [allInternalTasks]="internalTasks"
+        (save)="onInternalModalSave($event)"
+        (close)="showInternalModal = false">
+      </app-internal-task-modal>
     </div>
   </section>
 

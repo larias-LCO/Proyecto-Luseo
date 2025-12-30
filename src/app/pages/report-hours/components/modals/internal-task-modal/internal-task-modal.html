@@ -1,1 +1,79 @@
+<div class="modal-overlay" (click)="onOverlayClick($event)">
+  <div class="modal" style="max-width: 760px;">
+    <div class="modal-header">
+      <div>
+        <h2 class="modal-title">📝 Report Internal Task</h2>
+        <div class="modal-sub">Report time for internal company activities</div>
+      </div>
+      <button class="modal-close" (click)="cancel()">&times;</button>
+    </div>
+
+    <div class="modal-body">
+      <form [formGroup]="form" (ngSubmit)="saveAll()">
+        <div formArrayName="entries">
+          <div *ngFor="let entry of entries.controls; let i = index" [formGroupName]="i" class="entry-row">
+            <div class="grid-2">
+              <div class="form-group">
+                <label>Category <span class="req">*</span></label>
+                <select formControlName="mainTaskId" class="form-input" (change)="onMainChange(i)">
+                  <option value="">-- Select a category --</option>
+                  <option *ngFor="let t of getMainTasks()" [value]="t.id">{{t.name}}</option>
+                </select>
+                <div class="field-error" *ngIf="entry.get('mainTaskId')?.touched && entry.get('mainTaskId')?.invalid">Category is required</div>
+              </div>
+
+              <div class="form-group" *ngIf="getSubtasksFor(entry.get('mainTaskId')?.value).length > 0">
+                <label>Subcategory</label>
+                <select formControlName="subTaskId" class="form-input">
+                  <option value="">-- No subcategory --</option>
+                  <option *ngFor="let s of getSubtasksFor(entry.get('mainTaskId')?.value)" [value]="s.id">{{s.name}}</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Description</label>
+              <textarea formControlName="description" class="form-input" rows="2" placeholder="Describe what you worked on..."></textarea>
+            </div>
+
+            <div class="grid-2">
+              <div class="form-group">
+                <label>Hours Worked <span class="req">*</span></label>
+                <input type="number" formControlName="hours" class="form-input" step="0.01" min="0.01" placeholder="e.g., 2.5">
+                <div class="field-error" *ngIf="entry.get('hours')?.touched && entry.get('hours')?.errors">
+                  <div *ngIf="entry.get('hours')?.errors?.['required']">Hours are required</div>
+                  <div *ngIf="entry.get('hours')?.errors?.['min']">Minimum 0.01 hours</div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Date <span class="req">*</span></label>
+                <input type="date" formControlName="date" class="form-input">
+                <div class="field-error" *ngIf="entry.get('date')?.touched && entry.get('date')?.errors">
+                  <div *ngIf="entry.get('date')?.errors?.['required']">Date is required</div>
+                  <div *ngIf="entry.get('date')?.errors?.['weekend']">Weekends are not allowed</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="entry-actions">
+              <button type="button" class="btn btn-secondary small" (click)="removeEntry(i)" [disabled]="entries.length <= 1">Remove</button>
+            </div>
+
+            <hr *ngIf="i < entries.length - 1">
+          </div>
+        </div>
+
+        <div class="form-controls">
+          <button type="button" class="btn btn-link" (click)="addEntry()">+ Add another</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="cancel()">Close</button>
+      <button class="btn btn-primary" [disabled]="form.invalid" (click)="saveAll()">💾 Save Reports</button>
+    </div>
+  </div>
+</div>
 <p>internal-task-modal works!</p>

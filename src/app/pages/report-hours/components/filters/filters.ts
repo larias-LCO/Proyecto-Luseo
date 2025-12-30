@@ -6,6 +6,7 @@ import { AuthStateService } from '../../auth/services/auth-state.service';
 import { Project } from '../../models/project.model';
 import { ReportHoursFilters } from '../../models/filters.model';
 import { applyProjectFilters, getAvailableProjectYears } from '../../utils/filters/project-filters.util';
+import { ɵEmptyOutletComponent } from "@angular/router";
 
 @Component({
   selector: 'app-report-hours-filters',
