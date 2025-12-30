@@ -1,0 +1,132 @@
+	.report-calendar {
+		/* make calendar take configured height and let FullCalendar manage its own scrollers */
+		width: 100%;
+
+		/* ensure FullCalendar scroller is visible */
+		.fc {
+			height: 100%;
+		}
+
+		/* general scroller inside FullCalendar */
+		.fc-scroller {
+			overflow: auto;
+		}
+
+		/* Month view: limit per-day event list height and enable per-day scrolling when many events exist */
+			/* Make each day cell a column so header stays and events area can flex/scroll */
+			/* Constrain the month grid height so rows don't expand with content */
+			.fc .fc-daygrid {
+				height: calc(100% - 56px); /* leave space for headerToolbar/title; tweak if needed */
+				display: flex;
+				flex-direction: column;
+			}
+
+			.fc .fc-daygrid-body {
+				flex: 1 1 auto;
+				min-height: 0;
+				display: block;
+				overflow: hidden;
+			}
+
+			.fc .fc-daygrid-row {
+				display: flex;
+				flex: 1 1 0;
+				min-height: 0;
+			}
+
+			.fc .fc-daygrid-day-frame {
+				display: flex;
+				flex-direction: column;
+				min-height: 0; /* allow children to shrink inside the cell */
+				flex: 1 1 0;
+			}
+
+			.fc .fc-daygrid-day-top {
+				/* keep date header visible and prevent it from shrinking */
+				flex: 0 0 auto;
+			}
+
+			.fc .fc-daygrid-day-events {
+				flex: 1 1 auto;
+				max-height: 96px; /* show ~3 items, adjust if needed */
+				overflow-y: auto !important;
+				-webkit-overflow-scrolling: touch;
+			}
+
+		/* Make event cards inside scroller not expand outside their cell */
+		.fc .fc-daygrid-event {
+			box-sizing: border-box;
+		}
+
+		/* Week view: ensure the calendar content area is scrollable if content exceeds fixed height */
+		.fc .fc-timegrid-body, .fc .fc-daygrid-body {
+			overflow: auto;
+		}
+	}
+/* holiday styling to make them stand out in the calendar */
+.holiday {
+	background-color: #f8f9fa !important;
+	border-left: 4px solid #ffc107 !important;
+}
+
+.holiday-CO {
+	border-left-color: #e55353 !important;
+}
+
+.holiday-US {
+	border-left-color: #17a2b8 !important;
+}
+
+/* Additional non-invasive visual styles: modernize container, metrics cards and badges
+	 IMPORTANT: do NOT change any `max-height` or `overflow` rules used above for scrolling. */
+.report-calendar {
+	/* subtle modern container visual (keeps layout unchanged) */
+	border-radius: 10px;
+	padding: 8px;
+	background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+	box-shadow: 0 8px 24px rgba(2,6,23,0.06);
+}
+
+.calendar-stats {
+	display: flex;
+	gap: 12px;
+	margin-bottom: 10px;
+	align-items: stretch;
+}
+.calendar-stats-item {
+	flex: 1 1 0;
+	padding: 12px 14px;
+	border-radius: 10px;
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	background: transparent; /* per-type backgrounds applied below */
+	box-shadow: 0 6px 18px rgba(2,6,23,0.04);
+	border-left: 4px solid transparent;
+}
+.calendar-stats-item .calendar-stats-label { font-weight:700; font-size:13px; color:#0b1220; }
+.calendar-stats-item .calendar-stats-value { font-weight:800; font-size:18px; color:#041028; }
+.calendar-stats-item .calendar-stats-sublabel { font-size:12px; color:#475569; }
+.calendar-stats-item.project { border-left-color: #6366f1; background: rgba(99, 101, 241, 0.219); }
+.calendar-stats-item.internal { border-left-color: #059669; background: rgba(5, 150, 104, 0.192); }
+.calendar-stats-item.total { border-left-color: #f59e0b; background: rgba(245, 159, 11, 0.171); }
+
+/* Event cards visual polish (does not affect container scrolling) */
+.fc .fc-daygrid-event {
+	border-radius: 8px;
+	padding: 6px 8px;
+	margin: 6px 6px 4px 6px;
+	background: #ffffff;
+	box-shadow: 0 6px 14px rgba(2,6,23,0.04);
+	transition: transform .12s ease, box-shadow .12s ease;
+}
+.fc .fc-daygrid-event:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(2,6,23,0.08); }
+
+/* Small per-day badges (visual only) */
+.fc-day-badge-wrapper { position: absolute; top: 8px; right: 8px; z-index: 6; pointer-events: none; }
+.fc-day-badges { display:flex; gap:8px; align-items:center; background: rgba(255,255,255,0.9); padding:4px; border-radius:8px; box-shadow: 0 6px 12px rgba(2,6,23,0.04); }
+.fc-day-badge { display:flex; align-items:center; gap:6px; font-size:11px; padding:4px 8px; border-radius:8px; font-weight:700; color:#021028; }
+.fc-day-badge.project { background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%); border-left: 3px solid #6366f1; }
+.fc-day-badge.internal { background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); border-left: 3px solid #059669; }
+
+

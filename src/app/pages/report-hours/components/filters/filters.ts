@@ -6,6 +6,7 @@ import { AuthStateService } from '../../auth/services/auth-state.service';
 import { Project } from '../../models/project.model';
 import { ReportHoursFilters } from '../../models/filters.model';
 import { applyProjectFilters, getAvailableProjectYears } from '../../utils/filters/project-filters.util';
+import { ɵEmptyOutletComponent } from "@angular/router";
 
 @Component({
   selector: 'app-report-hours-filters',
@@ -99,6 +100,7 @@ export class Filters implements OnInit, OnChanges {
     (this.filters as any).searchText = '';
     // Do not reset calendar date ranges here (calendar manages them)
 
+    (this.filters as any).selectedEmployeeId = undefined;
     // reset year to current if available, otherwise first available or current
     if (this.availableYears && this.availableYears.length > 0) {
       this.filters.year = this.availableYears.includes(currentYear)

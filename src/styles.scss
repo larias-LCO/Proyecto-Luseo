@@ -24,6 +24,7 @@
 .btn-open:hover::after {
 	opacity: 1;
 }
+
 /* Theme variables are defined lower in the file; remove these small duplicates to avoid conflicts. */
 
 body {
@@ -328,5 +329,23 @@ body.dark .project-card .card-info {
 .category-filter{
 	  color: var(--avatar-bg);
 	  background: var(--card-alt-bg) !important;
+}
+
+
+
+/* Global header spacing so fixed header doesn't cover page content */
+:root {
+	--header-height: 70px;
+	--sidebar-width: 250px;
+}
+
+body {
+	padding-top: var(--header-height);
+	padding-left: var(--sidebar-width);
+}
+
+@media (max-width: 576px) {
+	:root { --header-height: 56px; --sidebar-width: 0px; }
+	body { padding-top: var(--header-height); padding-left: var(--sidebar-width); }
 }
 

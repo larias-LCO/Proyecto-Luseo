@@ -37,18 +37,18 @@
       </div>
 
       <!-- ONLY MY REPORTS -->
-      <div class="filter-item">
+      <ng-container *ngIf="isAdminOrOwner">
+        <div class="filter-item" >
         <label>
           <input
             type="checkbox"
             [ngModel]="filters.onlyMyReports"
             (ngModelChange)="filters.onlyMyReports = $event; applyFilters()"
-          />
-          Only my reports
-        </label>
-      </div>
-
-      <!-- NOTE: Date range inputs removed — date ranges are handled by the calendar renderer -->
+            />
+            Only my reports
+          </label>
+        </div>
+      </ng-container>
 
       <!-- ADMIN: Filtrar por empleado -->
       <ng-container *ngIf="isAdminOrOwner">

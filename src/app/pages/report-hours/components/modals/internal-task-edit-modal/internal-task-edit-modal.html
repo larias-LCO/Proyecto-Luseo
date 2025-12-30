@@ -1,0 +1,52 @@
+<div class="modal-overlay">
+  <div class="modal" style="max-width:580px;">
+    <div class="modal-header">
+      <h2 class="modal-title">📝 Edit Internal Task</h2>
+      <button class="modal-close" (click)="cancel()">&times;</button>
+    </div>
+
+    <div class="modal-body">
+      <form [formGroup]="form">
+        <div class="form-group">
+          <label>Category</label>
+          <input type="text" class="form-input" [value]="displayCategory" disabled>
+        </div>
+
+        <div class="form-group">
+          <label>Description</label>
+          <textarea formControlName="description" rows="3" class="form-input"></textarea>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div class="form-group">
+            <label>Hours <span style="color:var(--danger);">*</span></label>
+            <input type="number" formControlName="reportHours" step="0.01" min="0.01" class="form-input">
+          </div>
+
+          <div class="form-group">
+            <label>Date <span style="color:var(--danger);">*</span></label>
+            <input type="date" formControlName="logDate" class="form-input">
+          </div>
+        </div>
+        
+        <div *ngIf="log?.createdByEmployeeName" class="form-group">
+          <label>Created By</label>
+          <input type="text" class="form-input" [value]="log.createdByEmployeeName" disabled>
+        </div>
+      </form>
+    </div>
+
+    <div class="modal-footer">
+      <ng-container *ngIf="canDelete">
+        <app-icon-button title="Delete" (clicked)="deleteLog()">
+          <app-archive-icon [size]="20"></app-archive-icon>
+        </app-icon-button>
+      </ng-container>
+      <ng-container *ngIf="canEdit">
+        <app-icon-button title="Save" (clicked)="saveChanges()">
+          <app-file-check-icon [size]="20"></app-file-check-icon>
+        </app-icon-button>
+      </ng-container>
+    </div>
+  </div>
+</div>

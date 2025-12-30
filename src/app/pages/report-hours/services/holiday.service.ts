@@ -14,8 +14,18 @@ export class HolidayService {
    * No crea, no edita, no elimina
    */
   getByYear(year: number): Observable<HolidaysResponse> {
+    // backend exposes combined endpoint at /holidays/all/{year}
     return this.http.get<HolidaysResponse>(
-      `${environment.apiUrl}/holidays/${year}`
+      `${environment.apiUrl}/holidays/all/${year}`
+    );
+  }
+
+  /**
+   * Get current+next year holidays in a single call
+   */
+  getCurrent(): Observable<HolidaysResponse> {
+    return this.http.get<HolidaysResponse>(
+      `${environment.apiUrl}/holidays/current`
     );
   }
 }

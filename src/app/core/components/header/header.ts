@@ -153,11 +153,11 @@ export class HeaderComponent {
   }
 
   notificationCount = 3;
-showNotifications = false;
+  showNotifications = false;
 
-toggleNotifications() {
-  this.showNotifications = !this.showNotifications;
-}
+  toggleNotifications() {
+    this.showNotifications = !this.showNotifications;
+  }
 
   applySavedTheme() {
     try {
