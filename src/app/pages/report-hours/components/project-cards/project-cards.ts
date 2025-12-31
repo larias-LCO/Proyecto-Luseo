@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule, NgIf, NgFor } from '@angular/common';
 import { Project } from '../../models/project.model';
 import { mapProjectToCard, ProjectCardVM } from '../../utils/mappers/project.mapper';
@@ -10,58 +10,44 @@ import { mapProjectToCard, ProjectCardVM } from '../../utils/mappers/project.map
   templateUrl: './project-cards.html',
   styleUrls: ['./project-cards.scss']
 })
-export class ProjectCards {
+export class ProjectCards implements OnInit, OnChanges {
   @Input() projects: Project[] = [];
-  @Output() cardClick = new EventEmitter<number>();
-  @Output() cardRightClick = new EventEmitter<number>();
+  @Output() cardClick = new EventEmitter<Project>();
 
-  get cards(): ProjectCardVM[] {
-    return this.projects.map(mapProjectToCard);
+  // Property instead of getter to avoid excessive re-evaluation
+  cards: ProjectCardVM[] = [];
+
+  ngOnInit(): void {
+    console.log('[ProjectCards] 🎉 Component initialized');
+    console.log('[ProjectCards] 📊 Projects received:', this.projects?.length || 0);
+    this.updateCards();
   }
 
-  private _lastEmitAt = 0;
-  private _lastEmitId?: number;
-
-  private _shouldEmit(id: number): boolean {
-    const now = Date.now();
-    if (this._lastEmitId === id && (now - this._lastEmitAt) < 300) return false;
-    this._lastEmitAt = now; this._lastEmitId = id; return true;
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['projects']) {
+      console.log('[ProjectCards] 🔄 Projects changed, updating cards');
+      this.updateCards();
+    }
   }
 
-  onCardClick(id: number) {
-    if (!this._shouldEmit(id)) return;
-    try { console.debug('[ProjectCards] onCardClick', id); } catch (e) {}
-    this.cardClick.emit(id);
+  private updateCards(): void {
+    this.cards = this.projects.map(mapProjectToCard);
+    console.log('[ProjectCards] 📋 Cards updated, count:', this.cards.length);
   }
 
-  onCardPointerDown(ev: PointerEvent | MouseEvent | any, id: number) {
-    try {
-      const button = (ev && typeof ev.button === 'number') ? ev.button : 0;
-      // diagnostic: log topmost element at pointer location to detect overlays
-      try {
-        const x = (ev && typeof ev.clientX === 'number') ? ev.clientX : null;
-        const y = (ev && typeof ev.clientY === 'number') ? ev.clientY : null;
-        if (x !== null && y !== null) {
-          try {
-            const top = document.elementFromPoint(x, y) as HTMLElement | null;
-            console.debug('[ProjectCards] elementFromPoint', { x, y, top: top ? (top.tagName + (top.className ? ' .' + top.className : '')) : null });
-          } catch (e) {}
-        }
-      } catch (e) {}
-
-      if (button === 0) {
-        if (this._shouldEmit(id)) {
-          try { console.debug('[ProjectCards] onCardPointerDown (left)', id); } catch (e) {}
-          this.cardClick.emit(id);
-        }
-      }
-    } catch (e) {}
-  }
-
-  onCardRightClick(ev: MouseEvent, id: number) {
-    try { ev.preventDefault(); } catch (e) {}
-    if (!this._shouldEmit(id)) return;
-    try { console.debug('[ProjectCards] onCardRightClick', id); } catch (e) {}
-    this.cardRightClick.emit(id);
+  handleClick(projectId: number): void {
+    console.log('[ProjectCards] ✅ Card clicked!', { projectId });
+    
+    // Find the full project object (same logic as JS version)
+    const project = this.projects.find(p => p.id === projectId);
+    
+    if (project) {
+      console.log('[ProjectCards] 📦 Found project:', project);
+      console.log('[ProjectCards] 📤 Emitting cardClick event with full project object');
+      this.cardClick.emit(project);
+      console.log('[ProjectCards] ✅ Event emitted successfully');
+    } else {
+      console.error('[ProjectCards] ❌ Project not found for ID:', projectId);
+    }
   }
 }

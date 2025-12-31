@@ -80,9 +80,7 @@ export class ReportHours implements OnInit, OnDestroy {
   selectedLog: any = null;
   employeesList: { id: number; name: string }[] = [];
   private authSub?: Subscription;
-  private _globalPointerListener?: any;
   
-
   constructor(
     private projectsService: ProjectService,
     public authState: AuthStateService,
@@ -99,29 +97,13 @@ export class ReportHours implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    console.log('[ReportHours] 🚀 Component initialized');
     this.loadProjects();
 
     // preload subtask categories for modals
     try {
       this.subTaskCategoryService.getAll().subscribe({ next: cats => { this.subTaskCategories = cats || []; }, error: () => { this.subTaskCategories = []; } });
     } catch (e) { this.subTaskCategories = []; }
-
-    // Project card clicks handled via Angular output `(cardClick)` binding.
-
-    // Diagnostic: global pointerdown listener to detect topmost element at click location
-    try {
-      this._globalPointerListener = (ev: any) => {
-        try {
-          const x = ev && typeof ev.clientX === 'number' ? ev.clientX : null;
-          const y = ev && typeof ev.clientY === 'number' ? ev.clientY : null;
-          if (x !== null && y !== null) {
-            const top = document.elementFromPoint(x, y) as HTMLElement | null;
-            try { console.debug('[ReportHours global] pointerdown', { x, y, top: top ? (top.tagName + (top.className ? ' .' + top.className : '')) : null }); } catch (e) {}
-          }
-        } catch (e) {}
-      };
-      window.addEventListener('pointerdown', this._globalPointerListener as EventListener);
-    } catch (e) {}
 
     // Initialize employeeId/isAdmin from current auth state (if available)
     this.employeeId = this.authState.employeeId ?? undefined;
@@ -135,6 +117,8 @@ export class ReportHours implements OnInit, OnDestroy {
 
     // Load time entries and employees
     this.loadTimeEntries();
+    
+    console.log('[ReportHours] ✅ Component initialization complete');
   }
 
   private loadTimeEntries(): void {
@@ -279,11 +263,23 @@ export class ReportHours implements OnInit, OnDestroy {
     this.showSubtaskModal = true;
   }
 
-  handleProjectCardClick(projectId: number): void {
-    // Open the create modal prefilled for the clicked project **without** changing the project list
-    try { console.log('[ReportHours] received card click ->', projectId); } catch (e) {}
-    this.projectModalPreset = projectId;
+  handleProjectCardClick(project: any): void {
+    console.log('[ReportHours] 📥 RECEIVED card click event from ProjectCards!');
+    console.log('[ReportHours] 📦 Project data:', project);
+    console.log('[ReportHours] 🔧 Setting projectModalPreset to:', project.id);
+    console.log('[ReportHours] 🚪 Opening subtask modal...');
+    
+    // Set the project ID for the modal (same as JS: openSubtaskModal(project))
+    this.projectModalPreset = project.id;
     this.showSubtaskModal = true;
+    
+    console.log('[ReportHours] ✅ Modal state updated:', { 
+      projectModalPreset: this.projectModalPreset, 
+      showSubtaskModal: this.showSubtaskModal,
+      projectCode: project.projectCode,
+      projectName: project.name
+    });
+    
     try { this.cd.detectChanges(); } catch (e) {}
   }
 
@@ -424,6 +420,7 @@ export class ReportHours implements OnInit, OnDestroy {
 
   /** Recibe proyectos ya filtrados desde FiltersComponent */
   onProjectsFiltered(projects: Project[]): void {
+    console.log('[ReportHours] 📋 Projects filtered, count:', projects?.length || 0);
     this.filteredProjects = projects;
     // Force change detection in case parent view doesn't update
     try { this.cd.detectChanges(); } catch {}
@@ -462,6 +459,5 @@ export class ReportHours implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.authSub?.unsubscribe();
-    try { if (this._globalPointerListener) { window.removeEventListener('pointerdown', this._globalPointerListener as EventListener); } } catch (e) {}
   }
 }

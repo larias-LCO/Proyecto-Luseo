@@ -22,8 +22,7 @@
       <div *ngIf="!loadingProjects">
         <app-project-cards
           [projects]="filteredProjects"
-
-          (cardRightClick)="handleProjectCardClick($event)">
+          (cardClick)="handleProjectCardClick($event)">
         </app-project-cards>
       </div>
     </div>

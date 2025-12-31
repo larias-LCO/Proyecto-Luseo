@@ -5,6 +5,7 @@
 	flex-direction: column;
 	gap: 14px;
 }
+
 .report-section {
 	/* lightweight card wrapper for each section/component */
 	background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.005));
@@ -58,10 +59,20 @@
 /* Variant: remove inner padding (use for full-bleed components like grid) */
 .report-section--flush {
   padding: 0;
+  overflow: visible; /* Ensure nothing blocks child elements */
 }
 
 .report-section--flush .section-body {
   padding: 0;
+  overflow: visible; /* Ensure clickable elements aren't clipped */
+  position: relative; /* Ensure proper stacking context */
+  z-index: 1; /* Ensure cards are above any background elements */
+}
+
+/* Ensure divs inside section-body don't block clicks */
+.report-section--flush .section-body > div {
+  position: relative;
+  z-index: inherit;
 }
 
 /* Event card styles for calendar templates */
@@ -74,7 +85,6 @@
 
 .rh-event--internal {
 	background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
-
 /* Ensure all text inside calendar event cards is black */
 .rh-event,
 .rh-event * {
@@ -192,7 +202,6 @@
 	overflow: hidden;
 	text-overflow: ellipsis;
 	display: -webkit-box;
-	-webkit-line-clamp: 2;
 	-webkit-box-orient: vertical;
 }
 
