@@ -1,6 +1,45 @@
 .sidebar {
   font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   position: fixed;
+<<<<<<< HEAD
+  top: 120px; /* ⚠️ debe coincidir exactamente con la altura real del header */
+}
+// .sidebar {
+//   font-family: 'Times New Roman', Times, serif;
+//   position: fixed;
+//   top: 70px; /* ⚠️ debe coincidir exactamente con la altura real del header */
+//   left: 0;
+//   width: 250px;
+//   height: calc(100vh - 70px); /* ⚠️ resta la misma altura */
+//   background-color: #fff;
+//   border-right: 1px solid #ddd;
+//   padding-top: 60px;
+//   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+//   display: flex;
+//   flex-direction: column;
+//   align-items: center;
+//   z-index: 900; /* para que esté debajo del header */
+// }
+/* Secciones */
+.sidebar-label {
+  margin: 18px 12px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #9ca3af;
+  letter-spacing: 0.08em;
+}
+
+/* Items */
+// BASE DEL ITEM
+.sidebar-item {
+  position: relative;
+  overflow: hidden;
+  text-align: left;
+  width: 100%;
+  height: 44px;
+  padding: 0 12px;
+
+=======
   top: var(--header-height);
   left: 0;
   width: var(--sidebar-width);
@@ -9,6 +48,7 @@
   border-right: 1px solid #ddd;
   padding-top: 16px;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+>>>>>>> b0a3159333f0a3fbe43f1a74b2c24efd0d5d1a74
   display: flex;
   align-items: center;
   z-index: 900; /* para que esté debajo del header */
@@ -38,7 +78,43 @@
   color: #111827;
 
   cursor: pointer;
+<<<<<<< HEAD
+  transition: background 0.5s ease, color 0.5s ease;
+}
+
+
+// Contenido encima del fondo animado
+.sidebar-item svg,
+.sidebar-item .text {
+  position: relative;
+  z-index: 2;
+}
+
+// Fondo animado (derecha → izquierda)
+.sidebar-item::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;                 /* empieza desde la derecha */
+  width: 0;
+  height: 100%;
+  background-color: #dbeafe; /* azul claro */
+  transition: width 0.5s ease;
+  z-index: 1;
+}
+
+
+.sidebar-item:hover::before {
+  width: 100%;
+}
+
+.sidebar-item:hover .text,
+.sidebar-item.active .text {
+  color: #001dbe;
+  font-weight: 600;
+=======
   transition: all 0.3s ease;
+>>>>>>> b0a3159333f0a3fbe43f1a74b2c24efd0d5d1a74
 }
 
 .menu-item:hover {
@@ -91,12 +167,18 @@
 .menu-item:hover { background: #f7faff; border-color: #cad6ec; transform: translateY(-1px); }
 }
 
+<<<<<<< HEAD
+/* Hover */
+.sidebar-item:hover {
+  background: #9ed3ff;
+=======
 
 /* Mostrar el submenú al pasar el cursor */
 .menu-container:hover .submenu {
   max-height: 500px; /* suficiente para mostrar todo */
   opacity: 1;
   transform: translateY(0);
+>>>>>>> b0a3159333f0a3fbe43f1a74b2c24efd0d5d1a74
 }
 
 /* Ensure sidebar collapses on narrow screens and doesn't overlap content */
@@ -135,6 +217,31 @@
 .sidebar-item.has-child .arrow {
   margin-left: auto;
   opacity: 0.6;
+}
+
+/* Dark-mode styles applied ONLY to .sidebar-item */
+:root.dark .sidebar-item::before,
+html.dark .sidebar-item::before {
+  background-color: rgba(96,165,250,0.14); /* light blue accent in dark */
+}
+
+/* Hover uses a soft light-blue */
+:root.dark .sidebar-item:hover,
+html.dark .sidebar-item:hover {
+  background: rgba(96,165,250,0.12); /* azul claro */
+}
+
+:root.dark .sidebar-item:hover .text,
+html.dark .sidebar-item:hover .text,
+:root.dark .sidebar-item.active .text,
+html.dark .sidebar-item.active .text {
+  color: rgb(0, 0, 75); /* match --accent (light blue) */
+  font-weight: 600;
+}
+
+:root.dark .sidebar-item.active,
+html.dark .sidebar-item.active {
+  background: rgba(96,165,250,0.16);
 }
 
 
