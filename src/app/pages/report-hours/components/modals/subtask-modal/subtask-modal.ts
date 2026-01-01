@@ -36,10 +36,6 @@ export class SubtaskModal implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
-    console.log('[SubtaskModal] 🚀 Modal initialized');
-    console.log('[SubtaskModal] 📥 Received presetProjectId:', this.presetProjectId);
-    console.log('[SubtaskModal] 📋 Available projects:', this.projects?.length || 0);
-    
     if (!this.subTaskCategories || !this.subTaskCategories.length) {
       try {
         this.subTaskCategoryService.getAll().subscribe({ next: cats => this.subTaskCategories = cats || [], error: () => this.subTaskCategories = [] });
@@ -50,9 +46,7 @@ export class SubtaskModal implements OnInit, OnChanges {
     try {
       const pid = (this.presetProjectId === undefined || this.presetProjectId === null) ? undefined : Number(this.presetProjectId);
       if (pid !== undefined) {
-        console.log('[SubtaskModal] ✅ Setting preset project ID to:', pid);
         this.form.setControl('entries', this.fb.array([this.createEntryGroup(pid)]));
-        console.log('[SubtaskModal] ✅ Form entry created with preset project');
       }
     } catch (e) {
       console.error('[SubtaskModal] ❌ Error setting preset project:', e);
@@ -63,23 +57,18 @@ export class SubtaskModal implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['presetProjectId']) {
-      console.log('[SubtaskModal] 🔄 presetProjectId changed:', changes['presetProjectId']);
       try {
         const pid = (this.presetProjectId === undefined || this.presetProjectId === null) ? undefined : Number(this.presetProjectId);
-        console.log('[SubtaskModal] 🔧 Parsed project ID:', pid);
-        
         // Update all existing entry controls to use the new preset (or leave as-is if undefined)
         (this.entries.controls || []).forEach((c: AbstractControl) => {
           try { 
             if (pid !== undefined) { 
               c.get('projectId')?.setValue(pid, { emitEvent: false });
-              console.log('[SubtaskModal] ✅ Updated entry projectId to:', pid);
             } 
           } catch (e) {}
         });
         // If there were no entries, create one
         if (!this.entries || this.entries.length === 0) {
-          console.log('[SubtaskModal] 📝 Creating new entry with preset project');
           this.form.setControl('entries', this.fb.array([this.createEntryGroup(pid)]));
         }
       } catch (e) {
@@ -98,11 +87,9 @@ export class SubtaskModal implements OnInit, OnChanges {
     if (this.presetProjectId === undefined || this.presetProjectId === null) return;
     try {
       const pid = Number(this.presetProjectId);
-      console.log('[SubtaskModal] 🔍 Looking for project with ID:', pid);
       const found = (this.projects || []).find(p => Number(p.id) === pid);
       if (found) {
         this.presetProjectLabel = `${found.projectCode || 'N/A'} - ${found.name || 'Unknown Project'}`;
-        console.log('[SubtaskModal] ✅ Found project label:', this.presetProjectLabel);
       } else {
         console.warn('[SubtaskModal] ⚠️ Project not found in projects array');
       }

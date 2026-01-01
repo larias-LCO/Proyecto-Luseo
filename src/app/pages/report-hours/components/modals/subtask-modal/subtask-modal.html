@@ -1,9 +1,9 @@
-<div class="modal-overlay" (click)="cancel()">
-	<div class="modal" style="max-width:760px;" (click)="$event.stopPropagation()">
+<div class="subtask-modal-overlay" (click)="cancel()">
+	<div class="subtask-modal" style="max-width:900px;" (click)="$event.stopPropagation()">
 		<div class="modal-header">
 			<div>
-				<h2 class="modal-title">📝 Create Subtask Reports</h2>
-				<div class="modal-sub">Create one or more subtask reports</div>
+				<h2 class="modal-title">📝 Create Reports</h2>
+				<div class="modal-sub">Create one or more reports for project</div>
 			</div>
 			<button class="modal-close" (click)="cancel()">&times;</button>
 		</div>
@@ -68,7 +68,7 @@
 
 						<div class="entry-actions">
 							<app-icon-button title="Remove" (clicked)="removeEntry(i)">
-								<app-archive-icon [size]="16"></app-archive-icon>
+								<app-archive-icon [size]="25"></app-archive-icon>
 							</app-icon-button>
 						</div>
 
@@ -78,17 +78,16 @@
 
 				<div class="form-controls">
 					<app-icon-button title="Add another" (clicked)="addEntry()">
-						<app-plus-icon [size]="18"></app-plus-icon>
+						<app-plus-icon [size]="25"></app-plus-icon>
 						<span style="margin-left:8px"></span>
 					</app-icon-button>
 				</div>
 			</form>
 		</div>
-
-		<div class="modal-footer">
-			<app-icon-button title="Save" (clicked)="saveAll()">
-				<app-file-check-icon [size]="20"></app-file-check-icon>
-			</app-icon-button>
-		</div>
+			<div class="modal-footer">
+				<app-icon-button title="Save" (clicked)="saveAll()">
+					<app-file-check-icon [size]="25"></app-file-check-icon>
+				</app-icon-button>
+			</div>
 	</div>
 </div>

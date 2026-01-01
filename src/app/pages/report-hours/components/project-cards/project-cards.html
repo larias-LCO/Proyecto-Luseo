@@ -10,13 +10,20 @@
       [attr.data-card-id]="card.id"
       [attr.aria-label]="'Report hours for ' + card.name"
     >
-      <strong>{{ card.code }}</strong>
-      <p>{{ card.name }}</p>
-      <small>PM: {{ card.pmName }}</small>
+      <div class="card-head">
+        <div class="card-icon" aria-hidden="true">📁</div>
+        <div class="card-meta">
+          <strong class="card-code">{{ card.code }}</strong>
+          <p class="card-name">{{ card.name }}</p>
+        </div>
+      </div>
+      <div class="card-footer"><small>PM: {{ card.pmName }}</small></div>
     </button>
   </div>
   
-  <p *ngIf="cards.length === 0" style="padding: 20px; text-align: center; color: #666;">
-    No projects available. Try adjusting your filters.
-  </p>
+  <div *ngIf="cards.length === 0" class="empty-state">
+    <div class="empty-icon">📂</div>
+    <div class="empty-text">No projects found</div>
+    <div class="empty-sub">Try adjusting your filters or create a new project</div>
+  </div>
 </div>

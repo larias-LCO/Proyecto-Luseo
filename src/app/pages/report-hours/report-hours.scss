@@ -94,6 +94,21 @@
 	color: #064e3b;
 }
 
+/* Make internal and subtask calendar events appear clickable */
+.rh-event--internal,
+.rh-event--subtask {
+	cursor: pointer;
+	transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.rh-event--internal:hover,
+.rh-event--subtask:hover,
+.rh-event--internal:focus,
+.rh-event--subtask:focus {
+	transform: translateY(-4px);
+	box-shadow: 0 10px 22px rgba(2,6,23,0.12);
+}
+
 .rh-event__head {
 	font-weight: 700;
 	font-size: 13px;
