@@ -1,7 +1,6 @@
 .sidebar {
   font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   position: fixed;
-<<<<<<< HEAD
   top: 120px; /* ⚠️ debe coincidir exactamente con la altura real del header */
 }
 // .sidebar {
@@ -39,7 +38,6 @@
   height: 44px;
   padding: 0 12px;
 
-=======
   top: var(--header-height);
   left: 0;
   width: var(--sidebar-width);
@@ -48,7 +46,7 @@
   border-right: 1px solid #ddd;
   padding-top: 16px;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
->>>>>>> b0a3159333f0a3fbe43f1a74b2c24efd0d5d1a74
+
   display: flex;
   align-items: center;
   z-index: 900; /* para que esté debajo del header */
@@ -78,7 +76,6 @@
   color: #111827;
 
   cursor: pointer;
-<<<<<<< HEAD
   transition: background 0.5s ease, color 0.5s ease;
 }
 
@@ -112,9 +109,6 @@
 .sidebar-item.active .text {
   color: #001dbe;
   font-weight: 600;
-=======
-  transition: all 0.3s ease;
->>>>>>> b0a3159333f0a3fbe43f1a74b2c24efd0d5d1a74
 }
 
 .menu-item:hover {
@@ -167,18 +161,18 @@
 .menu-item:hover { background: #f7faff; border-color: #cad6ec; transform: translateY(-1px); }
 }
 
-<<<<<<< HEAD
+
 /* Hover */
 .sidebar-item:hover {
   background: #9ed3ff;
-=======
+
 
 /* Mostrar el submenú al pasar el cursor */
 .menu-container:hover .submenu {
   max-height: 500px; /* suficiente para mostrar todo */
   opacity: 1;
   transform: translateY(0);
->>>>>>> b0a3159333f0a3fbe43f1a74b2c24efd0d5d1a74
+
 }
 
 /* Ensure sidebar collapses on narrow screens and doesn't overlap content */
@@ -246,4 +240,4 @@ html.dark .sidebar-item.active {
 
 
 
-
+}
