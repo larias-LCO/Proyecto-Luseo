@@ -161,6 +161,19 @@
 	background: #cfe0f7 !important; /* azul un poco más intenso al hacer hover */
 }
 
+/* Dark-mode overrides for this component: use host-context to apply when ancestor has .dark */
+:host-context(.dark) ::ng-deep .fc .fc-day-today,
+:host-context(.dark) ::ng-deep .fc .fc-day-today .fc-daygrid-day-frame,
+:host-context(.dark) ::ng-deep .fc .fc-day-today .fc-daygrid-day-number {
+	background: var(--sidebar-hover) !important;
+	color: var(--sidebar-hover-text) !important;
+	border-radius: 8px;
+}
+:host-context(.dark) ::ng-deep .fc .fc-daygrid-day:hover {
+	background: var(--sidebar-hover) !important;
+	color: var(--sidebar-hover-text) !important;
+}
+
 :host ::ng-deep .fc .fc-daygrid-day {
 	background: transparent !important;
 	cursor: pointer;

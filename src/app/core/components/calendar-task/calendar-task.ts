@@ -124,7 +124,7 @@ export class CalendarTask {
         if (dateStr && allEvents.length > 0) {
           taskCount = allEvents.filter((ev: any) => ev.startStr?.slice(0, 10) === dateStr).length;
         }
-        const card = createTaskCard(t, { taskCount });
+        const card = createTaskCard(t, { taskCount, calendarCard: true });
         return { domNodes: [card] };
       } catch {
         return { domNodes: [document.createTextNode(arg.event.title || '')] };
