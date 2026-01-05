@@ -1,3 +1,7 @@
+import 'bootstrap/dist/css/bootstrap.css';
+import 'bootstrap-icons/font/bootstrap-icons.css';
+import bootstrap5Plugin from '@fullcalendar/bootstrap5';
+
 import { CalendarOptions } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
@@ -6,7 +10,8 @@ import listPlugin from '@fullcalendar/list';
 export function getWeekCalendarOptions(): CalendarOptions {
   return {
     initialView: 'dayGridWeek',
-    plugins: [dayGridPlugin, interactionPlugin, listPlugin],
+    plugins: [dayGridPlugin, interactionPlugin, listPlugin, bootstrap5Plugin],
+    themeSystem: 'bootstrap5',
     headerToolbar: {
       left: 'prev,next today',
       center: 'title',
@@ -20,6 +25,13 @@ export function getWeekCalendarOptions(): CalendarOptions {
     dayMaxEventRows: false,
     dayMaxEvents: false,
     selectable: true
+    ,
+    // Add stable class names so component-level CSS can target calendar parts reliably
+    dayCellClassNames: ['rh-day-cell'],
+    eventClassNames: (arg) => {
+      // ensure every rendered event gets a stable class we can target
+      return ['rh-fc-event'];
+    }
   } as CalendarOptions;
 }
 

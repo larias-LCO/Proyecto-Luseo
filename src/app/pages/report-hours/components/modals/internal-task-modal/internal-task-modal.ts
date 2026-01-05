@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators, AbstractControl } from '@angular/forms';
 import { InternalTaskService } from '../../../../../pages/report-hours/services/internal-task-category.service';
@@ -15,10 +15,11 @@ import { ArchiveIconComponent } from '../../../../../core/components/animated-ic
   templateUrl: './internal-task-modal.html',
   styleUrls: ['./internal-task-modal.scss']
 })
-export class InternalTaskModal {
+export class InternalTaskModal implements OnInit, OnChanges {
   @Input() allInternalTasks: any[] = [];
   @Input() myRole: string | null = null;
   @Input() myEmployeeId?: number | string;
+  @Input() presetEntry?: any;
 
   @Output() save = new EventEmitter<any[]>();
   // emit boolean: true => changes saved, false => closed without changes
@@ -48,6 +49,23 @@ export class InternalTaskModal {
       } catch (e) {
         this.allInternalTasks = [];
       }
+    }
+  }
+
+  ngOnChanges(changes: any): void {
+    if (changes && changes['presetEntry'] && changes['presetEntry'].currentValue) {
+      try {
+        const e = changes['presetEntry'].currentValue;
+        const g = this.createEntryGroup();
+        g.patchValue({
+          mainTaskId: e.mainTaskId || e.internalTaskId || '',
+          subTaskId: e.subTaskId || '',
+          description: e.description || '',
+          hours: e.hours || e.reportHours || null,
+          date: e.date || e.start || this.todayStr()
+        }, { emitEvent: false });
+        this.form.setControl('entries', this.fb.array([g]));
+      } catch (err) { console.error('[InternalTaskModal] ❌ Error applying presetEntry', err); }
     }
   }
 

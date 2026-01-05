@@ -1,45 +1,33 @@
-<nav class="sidebar">
-  <!-- PANEL -->
-  <div class="menu-container">
+<nav class="sidebar" [class.collapsed]="collapsed">
+  <button class="sidebar-toggle" (click)="toggle()" aria-label="Toggle menu">
+    <span class="chev" aria-hidden="true">▸</span>
+  </button>
 
-    <div class="menu-items">
+  <div class="sidebar-inner">
+    <div class="sidebar-label">RECORDED TIMES</div>
 
+    <div class="sidebar-section">
+      <button class="sidebar-item" routerLink="/report-hours" routerLinkActive="active">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><path d="M12 2a10 10 0 0 1 7.38 16.75"/><path d="M12 6v6l4 2"/><path d="M2.5 8.875a10 10 0 0 0-.5 3"/><path d="M2.83 16a10 10 0 0 0 2.43 3.4"/><path d="M4.636 5.235a10 10 0 0 1 .891-.857"/><path d="M8.644 21.42a10 10 0 0 0 7.631-.38"/></svg>
+        <span class="text">REPORT HOURS</span>
+      </button>
 
-<nav class="sidebar" >
-
-  <!-- <div class="sidebar-section">
-    <button class="sidebar-item" routerLink="/tasks" routerLinkActive="active">
-      <span class="icon">🧾</span>
-      <span class="text">TASKS</span>
-    </button> -->
- <div class="sidebar-label">RECORDED TIMES</div>
- <div class="sidebar-section"> 
-    <button class="sidebar-item" routerLink="/report-hours" routerLinkActive="active">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" color="#001dbe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clock-fading-icon lucide-clock-fading"><path d="M12 2a10 10 0 0 1 7.38 16.75"/><path d="M12 6v6l4 2"/><path d="M2.5 8.875a10 10 0 0 0-.5 3"/><path d="M2.83 16a10 10 0 0 0 2.43 3.4"/><path d="M4.636 5.235a10 10 0 0 1 .891-.857"/><path d="M8.644 21.42a10 10 0 0 0 7.631-.38"/></svg>
-      <span class="text">REPORT HOURS</span>
-    </button>
-
-    <button class="sidebar-item" routerLink="/tasks" routerLinkActive="active">
-      <!-- <span class="icon">📅</span> -->
-       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" color="#001dbe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar-clock-icon lucide-calendar-clock"><path d="M16 14v2.2l1.6 1"/><path d="M16 2v4"/><path d="M21 7.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3.5"/><path d="M3 10h5"/><path d="M8 2v4"/><circle cx="16" cy="16" r="6"/></svg>
-      <span class="text">SCHEDULE</span>
-    </button>
-  </div>
-
-  <!-- PROJECT HUB -->
-  <div class="menu-container">
-    <div class="menu-item">
-      <span>PROJECT HUB</span>
+      <button class="sidebar-item" routerLink="/tasks" routerLinkActive="active">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><path d="M16 14v2.2l1.6 1"/><path d="M16 2v4"/><path d="M21 7.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3.5"/><path d="M3 10h5"/><path d="M8 2v4"/><circle cx="16" cy="16" r="6"/></svg>
+        <span class="text">SCHEDULE</span>
+      </button>
     </div>
-    <ul class="submenu">
-      <li><a routerLink="/proyectos">Projects</a></li>
-      <li><a routerLink="/tasks">Tasks</a></li>
-    </ul>
-  </div>
 
-  <!-- OTRAS SECCIONES -->
-  <div class="menu-item">
-    <span>WORKLOAD</span>
-  </div>
+    <div class="menu-block">
+      <div class="menu-item">PROJECT HUB</div>
+      <ul class="submenu">
+        <li><a routerLink="/proyectos">Projects</a></li>
+        <li><a routerLink="/tasks">Tasks</a></li>
+      </ul>
+    </div>
 
+    <div class="menu-block">
+      <div class="menu-item">WORKLOAD</div>
+    </div>
+  </div>
 </nav>

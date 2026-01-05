@@ -21,6 +21,7 @@ export class SubtaskModal implements OnInit, OnChanges {
   @Input() subTaskCategories: any[] = [];
   @Input() myRole?: string | null = null;
   @Input() presetProjectId?: number | string;
+  @Input() presetEntry?: any;
   @Input() myEmployeeId?: number | string;
   @Output() close = new EventEmitter<boolean>();
 
@@ -42,14 +43,25 @@ export class SubtaskModal implements OnInit, OnChanges {
       } catch (e) { this.subTaskCategories = []; }
     }
 
-    // Ensure initial entries respect preset project if provided
+    // Ensure initial entries respect preset project or preset entry if provided
     try {
       const pid = (this.presetProjectId === undefined || this.presetProjectId === null) ? undefined : Number(this.presetProjectId);
-      if (pid !== undefined) {
+      if (this.presetEntry) {
+        const g = this.createEntryGroup(pid);
+        g.patchValue({
+          projectId: this.presetEntry.projectId || pid || '',
+          subTaskCategoryId: this.presetEntry.subTaskCategoryId || '',
+          name: this.presetEntry.name || '',
+          actualHours: this.presetEntry.actualHours || this.presetEntry.hours || null,
+          issueDate: this.presetEntry.issueDate || this.todayStr(),
+          tag: this.presetEntry.tag || ''
+        }, { emitEvent: false });
+        this.form.setControl('entries', this.fb.array([g]));
+      } else if (pid !== undefined) {
         this.form.setControl('entries', this.fb.array([this.createEntryGroup(pid)]));
       }
     } catch (e) {
-      console.error('[SubtaskModal] ❌ Error setting preset project:', e);
+      console.error('[SubtaskModal] ❌ Error setting preset project/entry:', e);
     }
 
     try { this.updatePresetProjectLabel(); } catch (e) {}
@@ -74,6 +86,24 @@ export class SubtaskModal implements OnInit, OnChanges {
       } catch (e) {
         console.error('[SubtaskModal] ❌ Error in ngOnChanges:', e);
       }
+    }
+    if (changes['presetEntry']) {
+      try {
+        const entry = changes['presetEntry'].currentValue;
+        if (entry) {
+          const pid = (this.presetProjectId === undefined || this.presetProjectId === null) ? entry.projectId : Number(this.presetProjectId);
+          const g = this.createEntryGroup(pid);
+          g.patchValue({
+            projectId: entry.projectId || pid || '',
+            subTaskCategoryId: entry.subTaskCategoryId || '',
+            name: entry.name || entry.title || '',
+            actualHours: entry.actualHours || entry.hours || null,
+            issueDate: entry.issueDate || entry.start || this.todayStr(),
+            tag: entry.tag || ''
+          }, { emitEvent: false });
+          this.form.setControl('entries', this.fb.array([g]));
+        }
+      } catch (e) { console.error('[SubtaskModal] ❌ Error applying presetEntry in ngOnChanges', e); }
     }
     if (changes['projects']) {
       try { this.updatePresetProjectLabel(); } catch (e) {}

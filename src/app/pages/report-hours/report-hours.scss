@@ -247,3 +247,116 @@
 }
 .rh-badge--fire { color: #dc2626; }
 .rh-badge--review { color: #f59e0b; }
+
+/* Loading overlay used for page-level async operations */
+.rh-loading-overlay {
+	position: fixed;
+	inset: 0; /* top:0; right:0; bottom:0; left:0 */
+	background: rgba(11,17,32,0.36);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 12000; /* high so it sits above calendar and other modals */
+	pointer-events: auto;
+}
+
+.rh-loading-spinner {
+	width: 96px;
+	height: 96px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: var(--primary, #0d1ca1);
+	background: rgba(255,255,255,0.02);
+	border-radius: 12px;
+	padding: 12px;
+	box-shadow: 0 10px 30px rgba(2,6,23,0.24);
+}
+
+/* Ensure spinner is readable on small screens */
+@media (max-width: 640px) {
+	.rh-loading-spinner { width: 72px; height: 72px; }
+}
+
+/* Animated interactions for the New Internal Task button */
+.calendar-header .btn-primary {
+	position: relative;
+	overflow: hidden;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	transition: transform 160ms cubic-bezier(.2,.9,.2,1), box-shadow 200ms ease, opacity 120ms ease;
+	will-change: transform;
+	cursor: pointer;
+}
+
+.calendar-header .btn-primary:hover {
+	transform: translateY(-3px) scale(1.02);
+	box-shadow: 0 12px 28px rgba(2,6,23,0.14);
+}
+
+.calendar-header .btn-primary:active {
+	transform: translateY(0) scale(0.98);
+	box-shadow: 0 6px 14px rgba(2,6,23,0.12);
+}
+
+/* Simple CSS ripple using pseudo-element (activates on :active) */
+.calendar-header .btn-primary::after {
+	content: '';
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	width: 12px;
+	height: 12px;
+	background: currentColor;
+	border-radius: 50%;
+	transform: translate(-50%, -50%) scale(1);
+	opacity: 0;
+	pointer-events: none;
+	transition: transform 420ms cubic-bezier(.2,.9,.2,1), opacity 420ms ease;
+}
+
+.calendar-header .btn-primary:active::after {
+	transform: translate(-50%, -50%) scale(8);
+	opacity: 0.12;
+	transition: transform 120ms linear, opacity 120ms linear;
+}
+
+/* Duplicate button inside event cards: look like plain text but stand out */
+.rh-event__actions {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.rh-dup-btn {
+	background: transparent;
+	border: none;
+	padding: 0;
+	margin: 0;
+	color: rgba(11,17,32,0.8);
+	font-size: 12px;
+	font-weight: 600;
+	line-height: 1;
+	cursor: pointer;
+	text-decoration: none;
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	border-radius: 4px;
+	transition: color 160ms ease, background-color 160ms ease, text-decoration-color 160ms ease, transform 120ms ease;
+}
+
+.rh-dup-btn:hover,
+.rh-dup-btn:focus {
+	color: var(--primary, #0b6fb1);
+	text-decoration: underline;
+	background-color: rgba(11,17,32,0.03);
+	transform: translateY(-1px);
+	outline: none;
+}
+
+.rh-dup-btn:active {
+	transform: translateY(0);
+	opacity: 0.95;
+}

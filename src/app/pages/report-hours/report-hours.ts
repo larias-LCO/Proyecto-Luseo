@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { CommonModule, NgIf } from '@angular/common';
+import { CommonModule, NgIf,} from '@angular/common';
 
 import { ProjectService } from './services/projects.service';
 import { ChangeDetectorRef } from '@angular/core';
@@ -69,6 +69,9 @@ export class ReportHours implements OnInit, OnDestroy {
   subTasks: any[] = [];
   internalTasks: any[] = [];
   subTaskCategories: any[] = [];
+  loading = false; // general-purpose loading flag for overlays
+  subtaskPresetEntry: any = null;
+  internalPresetEntry: any = null;
   // subtask modal state
   showSubtaskModal = false;
   showSubtaskEditModal = false;
@@ -97,7 +100,6 @@ export class ReportHours implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    console.log('[ReportHours] 🚀 Component initialized');
     this.loadProjects();
 
     // preload subtask categories for modals
@@ -117,8 +119,6 @@ export class ReportHours implements OnInit, OnDestroy {
 
     // Load time entries and employees
     this.loadTimeEntries();
-    
-    console.log('[ReportHours] ✅ Component initialization complete');
   }
 
   private loadTimeEntries(): void {
@@ -193,7 +193,11 @@ export class ReportHours implements OnInit, OnDestroy {
   }
 
   openInternalModal(): void {
-    this.showInternalModal = true;
+    this.loading = true;
+    // open modal after a brief simulated load so spinner is visible
+    setTimeout(() => {
+      try { this.showInternalModal = true; this.loading = false; this.cd.detectChanges(); } catch (e) {}
+    }, 450);
   }
 
   onCalendarEventClick(evt: any): void {
@@ -208,12 +212,18 @@ export class ReportHours implements OnInit, OnDestroy {
       }
       const extended = (eventObj && (eventObj as any).extendedProps) ? (eventObj as any).extendedProps : (eventObj || {});
 
+      // If it's a holiday, do nothing (visual-only)
+      if (extended && extended.isHoliday) {
+        return;
+      }
+
       // detect internal tasks vs subtask events
       const isInternal = Boolean((extended && extended.isInternalTask) || (entry && entry.type === 'INTERNAL_TASK'));
       const isSubTask = Boolean((extended && extended.isSubTask) || (entry && entry.type === 'SUB_TASK'));
 
       if (isInternal) {
-        // prefer the raw internal log (includes internalTaskId/internalTaskName)
+        // show loading only for actionable events; set data now and open modal after spinner
+        this.loading = true;
         let raw = null;
         try {
           const eid = eventId != null ? String(eventId) : null;
@@ -222,12 +232,12 @@ export class ReportHours implements OnInit, OnDestroy {
           }
         } catch (e) { raw = null; }
         this.selectedLog = raw || extended || entry || null;
-        this.showEditModal = true;
+        setTimeout(() => { try { this.showEditModal = true; this.loading = false; this.cd.detectChanges(); } catch (e) {} }, 450);
         return;
       }
 
       if (isSubTask) {
-        // prefer raw subtask object from loaded subTasks
+        this.loading = true;
         let rawSub = null;
         try {
           const eid = eventId != null ? String(eventId) : null;
@@ -236,15 +246,58 @@ export class ReportHours implements OnInit, OnDestroy {
           }
         } catch (e) { rawSub = null; }
         this.selectedSubtask = rawSub || extended || entry || null;
-        this.showSubtaskEditModal = true;
+        setTimeout(() => { try { this.showSubtaskEditModal = true; this.loading = false; this.cd.detectChanges(); } catch (e) {} }, 450);
         return;
       }
     } catch (err) {
       console.error('Failed to open edit modal from event click', err);
+      this.loading = false;
+    }
+  }
+
+  duplicateCalendarEntry(eventObj: any, evt?: MouseEvent): void {
+    try {
+      if (evt) evt.stopPropagation();
+      const extended = (eventObj && eventObj.extendedProps) ? eventObj.extendedProps : (eventObj || {});
+      if (!extended || extended.isHoliday) return;
+
+      // Prepare spinner and open the appropriate creation modal with preset data
+      if (extended.isInternalTask) {
+        this.loading = true;
+        // build preset for internal modal
+        this.internalPresetEntry = {
+          mainTaskId: extended.internalTaskId || extended.internalTaskId || '',
+          subTaskId: extended.internalTaskId || '',
+          description: extended.description || extended.internalTaskName || '',
+          hours: extended.hours || 0,
+          date: extended.start || extended.date || new Date().toISOString().slice(0,10)
+        };
+        setTimeout(() => { try { this.showInternalModal = true; this.loading = false; this.cd.detectChanges(); } catch (e) {} }, 450);
+        return;
+      }
+
+      if (extended.isSubTask) {
+        this.loading = true;
+        // build preset for subtask modal
+        this.subtaskPresetEntry = {
+          projectId: extended.projectId || undefined,
+          subTaskCategoryId: extended.subTaskCategoryId || extended.subTaskCategoryId || '',
+          name: extended.name || extended.title || '',
+          actualHours: extended.hours || 0,
+          issueDate: extended.start || extended.date || new Date().toISOString().slice(0,10),
+          tag: extended.tag || ''
+        };
+        setTimeout(() => { try { this.showSubtaskModal = true; this.loading = false; this.cd.detectChanges(); } catch (e) {} }, 450);
+        return;
+      }
+    } catch (err) {
+      console.error('Failed to duplicate calendar entry', err);
+      this.loading = false;
     }
   }
   handleInternalModalClose(changed?: boolean): void {
     this.showInternalModal = false;
+    this.internalPresetEntry = null;
     if (changed) {
       try { this.loadTimeEntries(); } catch (e) {}
     }
@@ -259,33 +312,32 @@ export class ReportHours implements OnInit, OnDestroy {
   }
 
   openSubtaskModal(): void {
+    this.loading = true;
     this.projectModalPreset = undefined;
     this.showSubtaskModal = true;
+    setTimeout(() => { try { this.loading = false; this.cd.detectChanges(); } catch (e) {} }, 450);
   }
 
   handleProjectCardClick(project: any): void {
-    console.log('[ReportHours] 📥 RECEIVED card click event from ProjectCards!');
-    console.log('[ReportHours] 📦 Project data:', project);
-    console.log('[ReportHours] 🔧 Setting projectModalPreset to:', project.id);
-    console.log('[ReportHours] 🚪 Opening subtask modal...');
-    
-    // Set the project ID for the modal (same as JS: openSubtaskModal(project))
+    // show a brief loading overlay and open modal after simulated load
+    this.loading = true;
+    // Prepare preset immediately so modal has data when it opens
     this.projectModalPreset = project.id;
-    this.showSubtaskModal = true;
-    
-    console.log('[ReportHours] ✅ Modal state updated:', { 
-      projectModalPreset: this.projectModalPreset, 
-      showSubtaskModal: this.showSubtaskModal,
-      projectCode: project.projectCode,
-      projectName: project.name
-    });
-    
-    try { this.cd.detectChanges(); } catch (e) {}
+
+    // Open modal after spinner has been visible for a short duration
+    setTimeout(() => {
+      try {
+        this.showSubtaskModal = true;
+        this.loading = false;
+        this.cd.detectChanges();
+      } catch (e) {}
+    }, 450);
   }
 
   handleSubtaskModalClose(changed?: boolean): void {
     this.showSubtaskModal = false;
     this.projectModalPreset = undefined;
+    this.subtaskPresetEntry = null;
     if (changed) {
       try { this.loadTimeEntries(); } catch (e) {}
     }
@@ -298,8 +350,6 @@ export class ReportHours implements OnInit, OnDestroy {
       try { this.loadTimeEntries(); } catch (e) {}
     }
   }
-
-  
 
   /** Carga proyectos */
   private loadProjects(): void {
@@ -420,7 +470,6 @@ export class ReportHours implements OnInit, OnDestroy {
 
   /** Recibe proyectos ya filtrados desde FiltersComponent */
   onProjectsFiltered(projects: Project[]): void {
-    console.log('[ReportHours] 📋 Projects filtered, count:', projects?.length || 0);
     this.filteredProjects = projects;
     // Force change detection in case parent view doesn't update
     try { this.cd.detectChanges(); } catch {}

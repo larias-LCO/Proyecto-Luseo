@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgIf, NgFor } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { SubTaskService } from '../../../../../pages/report-hours/services/sub-task.service';
 import { NotificationService } from '../../../../../core/services/notification.service';
@@ -11,7 +11,7 @@ import { FileCheckIconComponent } from '../../../../../core/components/animated-
 @Component({
   selector: 'app-subtask-edit-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, IconButtonComponent, ArchiveIconComponent, FileCheckIconComponent],
+  imports: [CommonModule, ReactiveFormsModule, IconButtonComponent, ArchiveIconComponent, FileCheckIconComponent, NgIf, NgFor],
   templateUrl: './subtask-edit-modal.html',
   styleUrls: ['./subtask-edit-modal.scss']
 })

@@ -10,7 +10,10 @@ import { RouterLink } from '@angular/router';
   styleUrls: ['./submenu.scss']
 })
 export class SubmenuComponent {
+  collapsed = false;
 
-  
+  toggle(): void {
+    this.collapsed = !this.collapsed;
+  }
 }
 
