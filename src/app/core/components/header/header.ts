@@ -6,6 +6,7 @@ import { getAuthFromCookies } from '../../utils/cookie.utils';
 import { AuthService as ReportApiAuthService } from '../../../pages/report-hours/auth/services/auth-api.service';
 import { AuthStateService as ReportAuthState } from '../../../pages/report-hours/auth/services/auth-state.service';
 import { Subscription } from 'rxjs';
+import { SubmenuService } from '../../services/submenu.service';
  
 @Component({
   selector: 'app-header',
@@ -16,6 +17,7 @@ import { Subscription } from 'rxjs';
 })
 export class HeaderComponent {
   private auth = inject(AuthService);
+  private submenu = inject(SubmenuService);
   private cookieState = signal(getAuthFromCookies());
   private reportSession = signal<any>(null);
   private reportSub?: Subscription;
@@ -158,6 +160,10 @@ showNotifications = false;
 toggleNotifications() {
   this.showNotifications = !this.showNotifications;
 }
+
+  toggleSubmenu() {
+    try { this.submenu.toggle(); } catch (e) { /* ignore */ }
+  }
 
   applySavedTheme() {
     try {

@@ -181,7 +181,19 @@ body {
 	color: var(--text) !important;
 }
 
-:root.dark .team-container h1, .project-container h1, .task-container h1, .project-code, .label{
+:root.dark    .project-code,   .label{
+	color: var(--accent) !important;
+}
+
+:root.dark .team-container h1{
+	color: var(--accent) !important;
+}
+
+:root.dark .project-container h1{
+	color: var(--accent) !important;
+}
+
+:root.dark .task-container h1{
 	color: var(--accent) !important;
 }
 
