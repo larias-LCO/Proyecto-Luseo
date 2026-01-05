@@ -459,7 +459,6 @@ html.dark .fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number {
 	  background: var(--card-alt-bg) !important;
 }
 
-<<<<<<< HEAD
 :root.dark .state-active {
   background-color: var(--verde-fondo-claro);
   color: var(--verde-letra);
@@ -480,7 +479,7 @@ html.dark .fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number {
 
 :root.dark .status-pill {
 	background: var(--sidebar-hover);
-=======
+}
 
 
 /* Global header spacing so fixed header doesn't cover page content */
@@ -497,6 +496,5 @@ body {
 @media (max-width: 576px) {
 	:root { --header-height: 56px; --sidebar-width: 0px; }
 	body { padding-top: var(--header-height); padding-left: var(--sidebar-width); }
->>>>>>> a263cbdbfd458874206c61f65e8ebb17c9a2dc2d
 }
 
