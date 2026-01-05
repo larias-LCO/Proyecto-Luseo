@@ -1,60 +1,33 @@
-.projects-container {
-  display: flex;
-  flex-direction: column;
-  text-align: center;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-  padding: 0px 0px 0px 6px;
+.cards-wrapper {
+  padding: 15px;
+  position: relative; /* Ensure proper stacking context */
+  z-index: 10; /* Ensure cards are above any background layers */
 }
 
-/* Empty state: centered, larger icon and text */
-.projects-container .empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 20px 12px;
-  min-height: 220px; /* ensure it occupies similar space to cards grid */
-  text-align: center;
-  color: rgba(11,18,32,0.8);
+.cards-wrapper h3 {
+  margin: 0 0 15px 0;
+  font-size: 16px;
 }
 
-.projects-container .empty-state .icon {
-  font-size: 150px;
-  line-height: 1;
-  margin-bottom: 12px;
-}
-
-.projects-container .empty-state .title {
-  font-size: 20px;
-  font-weight: 700;
-  margin-bottom: 6px;
-}
-
-.projects-container .empty-state .subtitle {
-  font-size: 18px;
-  color: rgba(11,18,32,0.6);
-}
-
-/* Scrollable grid wrapper (compact) */
-.projects-scroll-wrapper {
-  max-height: 60vh;
-  overflow-y: auto;
-  padding-right: 6px;
-}
-
-.projects-grid {
+.cards-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, 220px); /* narrower cards for compact layout */
-  grid-auto-rows: 180px; /* slightly shorter cards */
-  gap: 12px;
-  justify-content: start;
-  align-items: start;
-  text-align: left;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 15px;
+  position: relative; /* Ensure proper stacking context */
+}
+
+.card-item {
+  background: white;
+  border: 2px solid #ccc;
 }
 
 .project-card {
   cursor: pointer;
+  pointer-events: auto;
   position: relative;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
   overflow: hidden;
   border-radius: 10px;
   background: linear-gradient(180deg, rgba(6,128,228,0.03), rgba(79,209,197,0.02));
@@ -83,110 +56,105 @@
   border-color: rgba(0,67,190,0.7);
 }
 
-.top-bar {
-  height: 3px;
-  background: linear-gradient(135deg, var(--primary, #5ca8ff), #072c4a, var(--primary-dark, #0b1220));
+.cards-wrapper {
+  padding: 14px;
+  position: relative;
 }
 
-/* Selected / active state: visible border and subtle highlight */
-.project-card:active,
-.project-card:focus-within,
-.project-card.selected {
+.cards-wrapper h3 {
+  margin: 0 0 12px 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #0b1220;
+}
+
+.cards-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+  position: relative;
+}
+
+.card-item {
+  background: #ffffff;
+  border: 1px solid rgba(11,18,32,0.06);
+  border-radius: 10px;
+  padding: 14px;
+  text-align: left;
+  transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  box-shadow: 0 6px 14px rgba(6, 10, 15, 0.02);
+}
+
+.card-item:hover,
+.card-item:focus {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 28px rgba(6, 10, 15, 0.08);
+  border-color: rgba(3,102,214,0.12);
+  background: #fbfdff;
   outline: none;
-  border: 2px solid var(--primary, #4f8cff);
-  box-shadow: 0 12px 34px rgba(79,140,255,0.12);
 }
 
-.card-header {
-  padding: 10px 8px 8px 8px;
-  background: rgba(255,255,255,0.01);
-  border-bottom: 1px solid rgba(0,0,0,0.06);
-}
-
-.card-body {
-  padding: 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.project-code {
-  display: inline-block;
-  font-size: 11px;
-  color: rgba(0, 0, 0, 0.75);
+.card-item:active {
+  transform: translateY(-2px) scale(0.998);
   background: rgba(6,128,228,0.10);
   text-align: center;
   border-radius: 8px;
-  padding: 4px 8px;
-  font-weight: 700;
-  margin-bottom: 4px;
+  padding: 15px;
+  text-align: left;
+  transition: all 0.2s;
+  cursor: pointer;
+  user-select: none;
+  position: relative; /* Ensure card is positioned correctly */
+  z-index: 1; /* Ensure card is clickable */
+  pointer-events: auto; /* Explicitly enable pointer events */
 }
 
-.project-name {
-  font-size: 14px;
-  margin: 0;
-  padding: 2px 0;
-  font-weight: 700;
-  color: #0b1220;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.card-item:hover {
+  border-color: #0066cc;
+  background: #f5f5f5;
+  transform: translateY(-2px);
 }
 
-.pm-box {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  margin-top: 4px; /* keep PM close to title, but separated enough */
-}
-
-.avatar {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  color: #071226;
-  background: linear-gradient(90deg, #6b8cff, #4fd1c5); /* subtler blue-cyan */
+.card-item strong {
+  display: block;
+  color: #0b5ed7;
+  margin-bottom: 8px;
   font-size: 13px;
-  box-shadow: inset 0 -2px 6px rgba(0,0,0,0.06);
+  letter-spacing: 0.2px;
 }
 
-.pm-info .label {
-  font-size: 11px;
-  color: rgba(12, 12, 12, 0.65);
+.card-item p {
+  margin: 0 0 8px 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.25;
+  min-height: 36px;
 }
 
-.pm-info .name {
+.card-item small {
+  color: #6b7280;
   font-size: 12px;
-  color: rgba(0, 0, 0, 0.85);
 }
 
-.footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-top: 8px;
-  color: rgba(3, 3, 3, 0.72);
-  font-size: 12px;
-  border-top: 1px solid rgba(0,0,0,0.04);
-  margin-top: 6px;
-}
+/* Card improvements */
+.card-head { display: flex; gap: 12px; align-items: center; }
+.card-icon { width: 48px; height: 48px; display:flex; align-items:center; justify-content:center; font-size:24px; background: linear-gradient(135deg,#eef2ff,#f8fafc); border-radius:10px; border:1px solid rgba(11,18,32,0.04); }
+.card-meta { flex: 1; min-width: 0 }
+.card-code { color: #0b5ed7; font-size: 13px; margin-bottom: 6px; display:block; font-weight:700 }
+.card-name { margin:0 0 6px 0; font-size:14px; font-weight:600; color:#0f172a; line-height:1.2; min-height:36px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap }
+.card-footer { display:flex; justify-content:space-between; align-items:center; margin-top:8px }
 
-/* subtle separation effect for sections */
-.project-card .card-header,
-.project-card .card-body,
-.project-card .footer {
-  background-clip: padding-box;
-}
+/* Empty state */
+.empty-state { padding: 36px; text-align: center; color: #475569; display:flex; flex-direction:column; gap:12px; align-items:center }
+.empty-icon { font-size:100px; }
+.empty-text { font-size:18px; font-weight:700 }
+.empty-sub { font-size:13px; color:#64748b }
 
-/* Responsive: allow grid to adapt on small screens (compact) */
-@media (max-width: 720px) {
-  .projects-grid {
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-    grid-auto-rows: auto;
-  }
-  .projects-scroll-wrapper { max-height: 50vh; }
+/* Accessibility: keyboard focus */
+.card-item:focus-visible {
+  box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
 }

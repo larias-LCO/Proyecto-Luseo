@@ -155,11 +155,11 @@ export class HeaderComponent {
   }
 
   notificationCount = 3;
-showNotifications = false;
+  showNotifications = false;
 
-toggleNotifications() {
-  this.showNotifications = !this.showNotifications;
-}
+  toggleNotifications() {
+    this.showNotifications = !this.showNotifications;
+  }
 
   toggleSubmenu() {
     try { this.submenu.toggle(); } catch (e) { /* ignore */ }

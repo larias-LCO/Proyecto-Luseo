@@ -4,6 +4,7 @@ import { InternalTaskLog } from '../models/internal-task-log.model';
 import { TimeEntry } from '../models/time-entry.model';
 import { TimeMetrics } from '../models/metrics.model';
 import { ReportHoursFilters } from '../models/filters.model';
+import { filterEntriesByPermissions, isHolidayEntry } from '../utils/permissions/report-permissions.util';
 import { mapToTimeEntries } from '../utils/mappers/time-entry.mapper';
 
 @Injectable({ providedIn: 'root' })
@@ -35,27 +36,46 @@ export class ReportHoursDataService {
   applyFilters(
     entries: TimeEntry[],
     filters: ReportHoursFilters,
-    currentEmployeeId?: number
+    context?: {
+      myEmployeeId?: number;
+      myRole?: 'OWNER' | 'ADMIN' | 'USER';
+      isCoordinator?: boolean;
+      myDepartmentId?: number;
+      employeeDepartmentMap?: Record<number, number>;
+    }
   ): TimeEntry[] {
 
-    let result = [...entries];
+    // Separate holidays so they can always be included
+    const holidays = entries.filter(isHolidayEntry);
+    let nonHolidays = entries.filter(e => !isHolidayEntry(e));
 
-    if (filters.onlyMyReports && currentEmployeeId) {
-      result = result.filter(e => e.userId === currentEmployeeId);
+    // Apply UI filters (onlyMyReports, selectedEmployeeId, search) to non-holiday entries
+    if (filters.onlyMyReports && context?.myEmployeeId != null) {
+      nonHolidays = nonHolidays.filter(e => e.userId === context.myEmployeeId);
     }
 
     if (filters.selectedEmployeeId) {
-      result = result.filter(e => e.userId === filters.selectedEmployeeId);
+      nonHolidays = nonHolidays.filter(e => e.userId === filters.selectedEmployeeId);
     }
 
     if (filters.searchText) {
       const text = filters.searchText.toLowerCase();
-      result = result.filter(e =>
-        e.title.toLowerCase().includes(text) ||
-        e.userName.toLowerCase().includes(text)
+      nonHolidays = nonHolidays.filter(e =>
+        (e.title || '').toLowerCase().includes(text) ||
+        (e.userName || '').toLowerCase().includes(text)
       );
     }
 
-    return result;
+    // Enforce permission rules centrally
+    const permitted = filterEntriesByPermissions(nonHolidays, {
+      myEmployeeId: context?.myEmployeeId,
+      myRole: context?.myRole,
+      isCoordinator: context?.isCoordinator,
+      myDepartmentId: context?.myDepartmentId,
+      employeeDepartmentMap: context?.employeeDepartmentMap
+    });
+
+    // Merge permitted non-holidays with all holidays (holidays always visible)
+    return [...permitted, ...holidays];
   }
 }

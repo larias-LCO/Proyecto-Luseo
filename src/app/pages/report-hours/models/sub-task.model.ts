@@ -15,6 +15,7 @@ export interface SubTask {
 
   // Proyecto (tabla relacionada)
   projectId: number;
+  projectCode: string;
   projectName: string;
 
   // Empleado creador (tabla relacionada)

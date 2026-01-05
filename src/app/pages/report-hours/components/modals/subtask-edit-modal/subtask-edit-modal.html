@@ -1,0 +1,70 @@
+<div class="subtask-edit-modal-overlay" (click)="cancel()">
+  <div class="subtask-edit-modal" style="max-width:640px;" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2 class="modal-title">✏️ Edit Report</h2>
+      <button class="modal-close" (click)="cancel()">&times;</button>
+    </div>
+
+    <div class="modal-body">
+      <form [formGroup]="form">
+        <div class="form-group">
+          <label for="edit-project">Project</label>
+          <select id="edit-project" name="projectId" formControlName="projectId" class="form-input" autocomplete="off">
+            <option *ngFor="let p of projects" [value]="p.id">{{p.projectCode}} - {{p.name}}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="edit-category">Category</label>
+          <select id="edit-category" name="subTaskCategoryId" formControlName="subTaskCategoryId" class="form-input" autocomplete="off">
+            <option *ngFor="let c of filteredCategories" [value]="c.id">{{c.name}}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="edit-name">Description</label>
+          <textarea id="edit-name" name="name" formControlName="name" class="form-input" rows="2" placeholder="Describe the task..." autocomplete="off"></textarea>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div class="form-group">
+            <label for="edit-hours">Hours</label>
+            <input id="edit-hours" name="actualHours" type="number" formControlName="actualHours" class="form-input" step="0.01" min="0.01" autocomplete="off">
+          </div>
+          <div class="form-group">
+            <label for="edit-date">Date</label>
+            <input id="edit-date" name="issueDate" type="date" formControlName="issueDate" class="form-input" autocomplete="off">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="edit-tag">Tag</label>
+          <select id="edit-tag" name="tag" formControlName="tag" class="form-input" autocomplete="off">
+            <option value="">None</option>
+            <option value="FIRE_PROTECTION">🔥 Fire Protection</option>
+            <option value="PEER_REVIEW">👁️ Peer Review</option>
+          </select>
+        </div>
+      </form>
+
+      <div class="form-group">
+        <label>Created by</label>
+        <input type="text" class="form-input" [value]="subtask?.createdByEmployeeName || ''" disabled>
+      </div>
+
+    </div>
+
+    <div class="modal-footer">
+      <ng-container *ngIf="canDelete">
+        <app-icon-button title="Delete" (clicked)="deleteSubtask()">
+          <app-archive-icon [size]="25"></app-archive-icon>
+        </app-icon-button>
+      </ng-container>
+      <ng-container *ngIf="canEdit">
+        <app-icon-button title="Save" (clicked)="saveChanges()">
+          <app-file-check-icon [size]="25"></app-file-check-icon>
+        </app-icon-button>
+      </ng-container>
+    </div>
+  </div>
+</div>
