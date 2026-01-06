@@ -6,11 +6,10 @@
   padding: 12px 8px;
   font-family: system-ui, -apple-system, BlinkMacSystemFont;
   position: fixed;
-  top: 95px; /* ⚠️ debe coincidir exactamente con la altura real del header */
+  top: 100px; /* altura del header */
+  left: 0; /* siempre pegado al lado izquierdo */
   z-index: 1200;
   overflow: visible;
-  // border-radius: 12px;
-
 }
 
 .filters-scroll {

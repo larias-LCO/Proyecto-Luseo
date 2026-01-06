@@ -21,9 +21,10 @@
 .team-container {
   font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   /* Evitar superposición con header (70px) y sidebar (250px) */
-  margin-top: 70px;
-  margin-left: 250px;
+  margin-top: -10px;
+  margin-left: 10px;
   padding: 24px;
+  
 }
 
 .team-container h1 {
@@ -537,3 +538,5 @@ select:focus {
   color: var(--muted);
   padding: 40px;
 }
+
+

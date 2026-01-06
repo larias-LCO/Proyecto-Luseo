@@ -1,6 +1,16 @@
 <!-- ✅ Coloca tus componentes de encabezado -->
 <app-header></app-header>
-<app-submenu></app-submenu>
+<app-submenu class="menu" [class.open]="isMenuOpen$ | async" ></app-submenu>
+
+<app-menu-filters-team
+  [departments]="catalogs?.departments ?? []"
+  [positions]="catalogs?.jobs ?? []"
+  [offices]="catalogs?.offices ?? []"
+  [roles]="roleFilterOptions"
+  [states]="stateOptions"
+  (filtersChange)="onFiltersChange($event)"
+  (toggleSubmenu)="isMenuOpen = !isMenuOpen"></app-menu-filters-team>
+
 
 <!-- ✅ Contenedor principal del TEAM -->
 <div class="team-container">
@@ -8,17 +18,17 @@
     <h1>Team</h1>
   
 
-  <!-- Filters form (Reactive) -->
-<form [formGroup]="filterForm" class="filters-form" (ngSubmit)="$event.preventDefault()">
+  <!-- Filters form (Reactive)
+<form [formGroup]="filterForm" class="filters-form" (ngSubmit)="$event.preventDefault()"> -->
 
   <!-- Buscar por nombre -->
-  <div class="filter-search">
+  <!-- <div class="filter-search">
     <label>Search by name</label>
   <input id="searchInput" type="text" placeholder="Ej: Carlos, Herrera" formControlName="q" />
     <div class="muted">Partial search, case and accent insensitive. Filters locally.</div>
-  </div>
+  </div> -->
 
-  <!-- Filtros horizontales -->
+  <!-- Filtros horizontales
  <div class="filters-row">
   <div class="filter-item">
     <label>Department</label>
@@ -28,9 +38,9 @@
         {{ d.name ?? d }}
       </option>
     </select>
-  </div>
+  </div> -->
 
-  <div class="filter-item">
+  <!-- <div class="filter-item">
     <label>Position</label>
     <select formControlName="job">
       <option value="">All</option>
@@ -38,9 +48,9 @@
         {{ j.name ?? j }}
       </option>
     </select>
-  </div>
+  </div> -->
 
-  <div class="filter-item">
+  <!-- <div class="filter-item">
     <label>Office</label>
     <select formControlName="office">
       <option value="">All</option>
@@ -48,17 +58,17 @@
         {{ o.name ?? o }}
       </option>
     </select>
-  </div>
+  </div> -->
 
-  <div class="filter-item">
+  <!-- <div class="filter-item">
     <label>Role</label>
     <select formControlName="role">
       <option value="">All</option>
       <option *ngFor="let r of roleFilterOptions" [value]="r">{{ r }}</option>
     </select>
-  </div>
+  </div> -->
 
-  <div class="filter-item">
+  <!-- <div class="filter-item">
     <label>State</label>
     <select formControlName="state">
       <option value="">All</option>
@@ -66,7 +76,7 @@
       <option value="INACTIVE">Inactive</option>
     </select>
   </div>
-</div>
+</div> -->
 
 
   <!--  botones dentro del form -->
@@ -87,6 +97,9 @@
       [allowedRoles]="allowedRoleOptions"
       (created)="refreshData()"
     ></app-fagregar-miembro>
+
+
+
     <button type="button" (click)="refreshData()" [disabled]="loading">Update Data</button>
     <button type="button" (click)="filterForm.reset({ q: '', department: '', job: '', office: '', state: '', role: '', size: pageSizes[0] })">
       Clean filters
@@ -95,7 +108,9 @@
   </div>
 </div>
 
-</form>  <!--  ahora el form se cierra correctamente -->
+
+
+<!-- </form>   ahora el form se cierra correctamente -->
 
   
   <!-- Status / error -->

@@ -14,10 +14,12 @@ import { EmployeeApi } from './team-api';
 import { filterEmployees } from './team-utils';
 import { VALID_PAGE_SIZES, getInitialPageSize, readFiltersFromUrl, syncFiltersToUrl } from './team-pagination';
 import { AuthService } from '../../core/services/auth.service';
+import { SubmenuService } from '../../core/services/submenu.service';
 import { SubmenuComponent } from "../../core/components/submenu/submenu";
 import { HeaderComponent } from "../../core/components/header/header";
 import { FagregarMiembroComponent } from '../../core/components/fagregar-miembro/fagregar-miembro';
 import { WebsocketService } from '../../core/services/websocket.service';
+import { MenuFiltersTeam } from "../team/menu-filters-team/menu-filters-team";
 
 type Employee = any;
 type Filters = { query: string; department: string; jobPosition: string; office: string; state: string; role: string };
@@ -25,17 +27,20 @@ type Filters = { query: string; department: string; jobPosition: string; office:
 @Component({
   selector: 'app-team',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, EditarMiembroComponent, SubmenuComponent, HeaderComponent, FagregarMiembroComponent, ConfirmModalComponent],
+  imports: [CommonModule, ReactiveFormsModule, EditarMiembroComponent, SubmenuComponent, HeaderComponent, FagregarMiembroComponent, ConfirmModalComponent, MenuFiltersTeam],
   templateUrl: './team.html',
   styleUrls: ['./team.scss']
 })
 export class TeamComponent implements OnInit, OnDestroy {
+
     showAlert = false;
     alertMessage = '';
     confirmDeleteId: string | number | null = null;
     confirmDeleteName: string = '';
   private auth = inject(AuthService);
   private ws = inject(WebsocketService);
+  private submenuService = inject(SubmenuService);
+  isMenuOpen$ = this.submenuService.open$;
   private api!: EmployeeApi;
   private fb = new FormBuilder();
   constructor() {
@@ -48,6 +53,130 @@ export class TeamComponent implements OnInit, OnDestroy {
       role: [''],
       size: ['']
     });
+  }
+
+    //MENU TOGGLE- MENU PRINCIPAL DE PAGINA
+isMenuOpen = false;
+
+toggleMenu() {
+  this.isMenuOpen = !this.isMenuOpen;
+}
+
+  onFiltersChange(filters: any) {
+    console.log('Filtros recibidos desde menu:', filters);
+    
+    // Guardar los arrays de filtros para filtrado múltiple
+    this.activeFilters = {
+      departments: filters.departmentId || [],
+      positions: filters.positionId || [],
+      offices: filters.officeId || [],
+      states: filters.stateId || [],
+      roles: filters.rolesId || [],
+      searchText: filters.searchText || ''
+    };
+    
+    // Aplicar filtros
+    this.page = 1;
+    this.applyFiltersMultiple();
+    this.updateUrlFromActiveFilters();
+  }
+  
+  // Nuevo objeto para almacenar filtros activos
+  activeFilters = {
+    departments: [] as any[],
+    positions: [] as any[],
+    offices: [] as any[],
+    states: [] as any[],
+    roles: [] as any[],
+    searchText: ''
+  };
+  
+  // Nueva función de filtrado múltiple
+  applyFiltersMultiple(): void {
+    const q = this.normalizeText(this.activeFilters.searchText);
+    
+    this.filtered = this.employees.filter(e => {
+      // Filtro de texto
+      if (q && !this.matchesByTokens(e.name, q)) return false;
+      
+      // Filtro de departamentos (múltiple)
+      if (this.activeFilters.departments.length > 0) {
+        const deptId = e.departmentId ?? e.department?.id;
+        if (!this.activeFilters.departments.includes(deptId)) return false;
+      }
+      
+      // Filtro de posiciones (múltiple)
+      if (this.activeFilters.positions.length > 0) {
+        const posId = e.jobPositionId ?? e.jobPosition?.id;
+        if (!this.activeFilters.positions.includes(posId)) return false;
+      }
+      
+      // Filtro de oficinas (múltiple)
+      if (this.activeFilters.offices.length > 0) {
+        const offId = e.officeId ?? e.office?.id;
+        if (!this.activeFilters.offices.includes(offId)) return false;
+      }
+      
+      // Filtro de estados (múltiple)
+      if (this.activeFilters.states.length > 0) {
+        if (!this.activeFilters.states.includes(e.state)) return false;
+      }
+      
+      // Filtro de roles (múltiple)
+      if (this.activeFilters.roles.length > 0) {
+        const empRoles = this.getEmployeeRoles(e).map(r => r.toUpperCase());
+        const hasRole = this.activeFilters.roles.some(roleId => empRoles.includes(roleId));
+        if (!hasRole) return false;
+      }
+      
+      return true;
+    });
+    
+    // Ordenar por nombre
+    this.filtered.sort((a: any, b: any) => (a.name ?? '').localeCompare(b.name ?? '', 'es', { sensitivity: 'base' }));
+    
+    // Ajustar página
+    const tp = this.totalPages;
+    if (this.page > tp) this.page = tp;
+    if (this.page < 1) this.page = 1;
+  }
+  
+  // Funciones auxiliares para filtrado de texto
+  private normalizeText(str: string): string {
+    if (!str) return '';
+    return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\s+/g, ' ').trim();
+  }
+  
+  private matchesByTokens(employeeName: string, query: string): boolean {
+    const nameNorm = this.normalizeText(employeeName);
+    const tokens = query ? query.split(' ') : [];
+    if (tokens.length === 0) return true;
+    return tokens.every(t => nameNorm.includes(t));
+  }
+  
+  // Actualizar URL desde filtros activos
+  private updateUrlFromActiveFilters() {
+    syncFiltersToUrl({
+      q: this.activeFilters.searchText || undefined,
+      department: this.activeFilters.departments.length === 1 ? String(this.activeFilters.departments[0]) : undefined,
+      job: this.activeFilters.positions.length === 1 ? String(this.activeFilters.positions[0]) : undefined,
+      office: this.activeFilters.offices.length === 1 ? String(this.activeFilters.offices[0]) : undefined,
+      state: this.activeFilters.states.length === 1 ? this.activeFilters.states[0] : undefined,
+      role: this.activeFilters.roles.length === 1 ? this.activeFilters.roles[0] : undefined,
+      page: this.page > 1 ? String(this.page) : undefined,
+      size: VALID_PAGE_SIZES.includes(this.pageSize) ? String(this.pageSize) : undefined
+    });
+  }
+  
+  // Helper para mapear array de IDs a string de nombres
+  private mapArrayToString(ids: any[], catalog: any[]): string {
+    if (!ids || ids.length === 0) return '';
+    if (ids.length === 1) {
+      const item = catalog.find(c => c.id === ids[0] || c === ids[0]);
+      return item ? (item.name || item) : '';
+    }
+    // Si hay múltiples, por ahora retornamos vacío (o se puede implementar filtrado múltiple)
+    return '';
   }
 
   // Permissions
@@ -73,7 +202,15 @@ export class TeamComponent implements OnInit, OnDestroy {
   catalogs: { departments: any[]; jobs: any[]; offices: any[] } = { departments: [], jobs: [], offices: [] };
   allowedRoleOptions: string[] = [];
   // Filter options should always allow filtering by any role
-  roleFilterOptions: string[] = ['USER', 'ADMIN', 'OWNER'];
+  roleFilterOptions = [
+    { id: 'USER', name: 'USER' },
+    { id: 'ADMIN', name: 'ADMIN' },
+    { id: 'OWNER', name: 'OWNER' }
+  ];
+  stateOptions = [
+    { id: 'ACTIVE', name: 'Active' },
+    { id: 'INACTIVE', name: 'Inactive' }
+  ];
 
   // UI
   loading = false;
@@ -384,4 +521,7 @@ export class TeamComponent implements OnInit, OnDestroy {
   populateRoleOptions() {
     // kept for compatibility
   }
+
+
+
 }

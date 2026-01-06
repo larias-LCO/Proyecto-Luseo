@@ -1,0 +1,73 @@
+.filters-container{
+  width: 250px;
+  height: 100vh;
+  background: #ffffff;
+  border-right: 1px solid #e5e7eb;
+  padding: 12px 8px;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont;
+  position: fixed;
+  top: 100px; /* altura del header */
+  left: 0; /* siempre pegado al lado izquierdo */
+  z-index: 1200;
+  overflow: visible;
+}
+
+.filters-scroll {
+  height: 85%;
+  overflow-y: auto;
+  padding: 5px;
+}
+
+.mf-search, .mf-section h4{
+  // gap: 8px;
+  margin-bottom: 5px;
+  font-size: 15px;
+  margin-top: 30px;
+  
+}
+
+.mf-search h4{
+  font-size: 16px;
+}
+
+.mf-search h4, .mf-section h4{
+  margin-bottom: 10px;
+  margin-left: 3px;
+}
+.mf-search input{
+  width: 90%;
+  height: 20px;
+  padding: 6px 8px;
+  border: 1px solid #acacac;
+  border-radius: 6px;
+  font-size: 13px;
+
+}
+
+.mf-search input:focus{
+  outline: none;
+  border-color: #f6f33b;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+}
+
+.mf-section input{
+  cursor: pointer;
+
+}
+
+.checkbox-item{
+  display: flex;           /* 👈 fuerza vertical */
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  font-size: 15px;
+  cursor: pointer;
+
+}
+
+/* Collapsible section header and caret */
+.mf-section { margin-bottom: 5px; }
+.mf-section-header { display:flex; align-items:center; gap:8px; cursor:pointer; user-select:none; }
+.mf-section-header .caret { display:inline-block; transition: transform 200ms ease; transform-origin: center; color: #004db1; margin-top: 8px;}
+.mf-section-header .caret.open { transform: rotate(90deg); }
+.mf-section-body { padding-left: 18px; margin-top:6px;}

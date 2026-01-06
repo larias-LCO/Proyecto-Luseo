@@ -498,3 +498,24 @@ body {
 	body { padding-top: var(--header-height); padding-left: var(--sidebar-width); }
 }
 
+:root.dark .filters-container{
+	background: var(--surface) !important;
+}
+
+:root.dark .submenu-btn{
+	background: var(--surface) !important;
+	color: var(--avatar-bg) !important;
+}
+
+:root.dark .submenu-btn:hover{
+	border: 1px solid var(--amarillo-resaltador) !important;
+	box-shadow: var(--amarillo-resaltador) 0 0 8px !important;
+}
+
+:root.dark .menu-icon{
+	color: var(--avatar-text) !important;
+}
+
+.mf-search input{
+	background: var(--card-bg) !important;
+}
