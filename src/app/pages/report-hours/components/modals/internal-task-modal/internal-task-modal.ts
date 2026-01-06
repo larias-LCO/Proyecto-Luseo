@@ -195,7 +195,7 @@ export class InternalTaskModal implements OnInit, OnChanges {
   // Close when clicking on overlay background
   onOverlayClick(evt: MouseEvent): void {
     const target = evt.target as HTMLElement | null;
-    if (target && target.classList && target.classList.contains('modal-overlay')) {
+    if (target && target.classList && (target.classList.contains('modal-overlay') || target.classList.contains('rh-internal-modal-overlay'))) {
       this.cancel();
     }
   }

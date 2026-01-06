@@ -1,4 +1,4 @@
-.modal-overlay {
+.rh-internal-modal-overlay {
   position: fixed;
   inset: 0;
   display: flex;
@@ -7,7 +7,7 @@
   background: rgba(0,0,0,0.45);
   z-index: 1200;
 }
-.modal {
+.rh-internal-modal {
   background: #fff;
   border-radius: 8px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.2);

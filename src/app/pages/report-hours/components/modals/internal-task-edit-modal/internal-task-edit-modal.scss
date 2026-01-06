@@ -1,23 +1,23 @@
-.modal-overlay {
-	position: fixed;
-	inset: 0;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	background: rgba(0,0,0,0.45);
-	z-index: 1200;
+.rh-internal-modal-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.45);
+  z-index: 1200;
 }
 
-.modal {
-	background: #fff;
-	border-radius: 10px;
-	box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-	width: 100%;
-	max-width: 800px;
-	padding: 0;
-	display: flex;
-	flex-direction: column;
-	max-height: calc(100vh - 80px);
+.rh-internal-modal {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  width: 100%;
+  max-width: 800px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 80px);
 }
 
 .modal-header {
