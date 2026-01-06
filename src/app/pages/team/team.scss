@@ -30,7 +30,7 @@
   font-size: 38px;
   font-weight: 700;
   margin-bottom: 20px;
-  color: #001cb9;
+ color: #001cb9;
 }
 
 // /* ====== TABLE ====== */
@@ -123,16 +123,16 @@
 // }
 
 /* ===== BADGES (ETIQUETAS) ===== */
-.role-badge,
-.state-badge {
-  padding: 5px 10px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 600;
-  display: inline-block;
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-}
+// .role-badge,
+// .state-badge {
+//   padding: 5px 10px;
+//   border-radius: 20px;
+//   font-size: 13px;
+
+//   display: inline-block;
+//   text-transform: uppercase;
+//   letter-spacing: 0.4px;
+// }
 
 /* ROLES */
 .role-admin {
@@ -491,8 +491,8 @@ select:focus {
   margin-top: 10px;
   padding: 4px 10px;
   border-radius: 999px;
-  font-size: 11px;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 700;
   text-transform: uppercase;
 }
 

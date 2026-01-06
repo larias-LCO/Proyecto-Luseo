@@ -1,7 +1,21 @@
 <!-- Page header and submenu -->
 <app-header></app-header>
-<app-submenu></app-submenu>
+<app-submenu class="menu" [class.open]="isMenuOpen"></app-submenu>
 
+  
+
+ <app-menu-filters-projects
+   [offices]="offices"
+   [clients]="clients"
+   [software]="software"
+   [departments]="departments"
+  [managerOptions]="managerOptionsAll"
+   [enums]="enums"
+   [pageSize]="pageSize"
+   (filtersChange)="onFiltersUpdated($event)"
+   (clear)="clearFilters()"
+   (toggleSubmenu)="isMenuOpen = !isMenuOpen"></app-menu-filters-projects>
+ 
 <!-- Hidden helper so static analyzers detect dynamic '.kv' usage  -->
 <div id="__util_classes" aria-hidden="true" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;">
   <span class="chip"></span>
@@ -14,116 +28,48 @@
 <div class="project-container">
     <h1 >Projects</h1>
 
+    <div *ngIf="isAdminOrOwner">
+    <p class="texto-descriptivo">
+ This page allows administrators and owners to comprehensively manage system projects. From here, they can create, edit, and delete projects, define key information, organize their status, and keep data up to date.
+<br>
+The interface is designed to facilitate efficient project control and administration, ensuring proper management and tracking. 🛠️</p>
+</div>
+
+<div *ngIf="isUserOnly">
+  <p class="texto-descriptivo">
+    This page is intended for view-only users. It allows you to view information on available projects and use search filters to quickly find projects of interest.
+Users cannot make modifications, ensuring data integrity while maintaining a clear and organized browsing experience.👀
+  </p>
+
+</div>
+
   <!-- <div class="row" style="margin-bottom:12px;">
   <button id="openCreate" class="btn btn-primary" type="button" [style.display]="isAdminOrOwner ? '' : 'none'">New project</button> -->
     <!-- <span class="muted">Create and manage projects with backend-paged filters.</span> -->
   <!-- </div> -->
 
-  <!-- FILTER SEARCH -->
-    <div class="filter-search">
-        <label for="f_q">Search</label>
-        <input id="f_q" placeholder="Name, code or client" [(ngModel)]="searchText" (ngModelChange)="onSearchChange($event)" (keyup.enter)="applySearchFromUI()" />
-      </div>
- 
-
-
-      <!-- //filtros horizontales -->
-       <!-- FILTRO Office -->
-<div class="filters-container">
-  <!-- Fila 1 -->
-  <div class="filter-item">
-    <label>Office</label>
-    <select [(ngModel)]="selectedOffice" (change)="applySearchFromUI()">
-      <option value="">All</option>
-      <option *ngFor="let office of offices" [value]="office.id">{{ office.name }}</option>
-    </select>
-  </div>
-
-      <!-- FILTRO CLIENTE -->
-      <div class="filter-item">
-        <label>Client</label>
-        <select [(ngModel)]="selectedClient" (change)="applySearchFromUI()">
-          <option value="">All</option>
-          <option *ngFor="let client of clients" [value]="client.id">{{ client.name }}</option>
-        </select>
-      </div>
-
-      <!-- FILTRO SOFTWARE -->
-    <div class="filter-item">
-        <label>Software</label>
-      <select [(ngModel)]="selectedSoftware" (change)="applySearchFromUI()">
-    <option value="">All</option>
-    <option *ngFor="let s of software" [value]="s.id">{{ s.name }}</option>
-  </select>
-</div>
-
-<!-- PROJECT MANAGER FILTER -->
-  <div class="filter-item">
-  <label>Project Manager</label>
-  <select [(ngModel)]="selectedManager" (change)="applySearchFromUI()">
-    <option value="">All</option>
-    <option *ngFor="let m of managerOptions" [value]="m.id">{{ m.name }}</option>
-  </select>
-  </div>
-
-      <!-- DEPARTAMENT FILTER -->
-      <div class="filter-item">
-          <label>Department</label>
-        <select [(ngModel)]="selectedDepartment" (change)="applySearchFromUI()">
-    <option value="">All</option>
-    <option *ngFor="let d of departments" [value]="d.id">{{ d.name }}</option>
-  </select>
-  </div>
-
-
-
-  <!-- ROW 2 FILTER STATUS-->
-  <div class="filter-item">
-     <label>Status</label>
-       <select [(ngModel)]="selectedStatus" (change)="applySearchFromUI()">
-          <option value="">All</option>
-         <option *ngFor="let s of statusList" [value]="s.value">{{ s.label }}</option>
-
-        </select>
-      </div>
-
-      <!-- FILTRO TYPE -->
-      <div class="filter-item">
-         <label>Type</label>
-        <select [(ngModel)]="selectedType" (change)="applySearchFromUI()">
-
-          <option value="">All</option>
-           <option *ngFor="let t of enums.type" [value]="t">{{ displayEnum(t) }}</option>
-        </select>
-      </div>
-
-      <!-- FILTRO SCOPE -->
-      <div class="filter-item">
-        <label>Scope</label>
-        <select [(ngModel)]="selectedScope" (change)="applySearchFromUI()">
-          <option value="">All</option>
-            <option *ngFor="let s of enums.scope" [value]="s">{{ displayEnum(s) }}</option>
-        </select>
-      </div>
-
-      <!-- FILTRO PAGE SIZE -->
-      <!-- Page Size + Botones en una sola fila -->
+  <!-- Filters moved to component above. Keep page-size and action buttons here -->
   <div class="filter-actions-group">
-    <div class="filter-item">
+    <!-- <div class="filter-item">
       <label>Page Size</label>
       <select [(ngModel)]="pageSize" (change)="onPageSizeChange()">
         <option value="10">10</option>
         <option value="20">20</option>
         <option value="30">30</option>
       </select>
-    </div>
+    </div> -->
     
- <div class="filters-actions">
+<!-- ================================================================================== -->
+    <!-- BOTONES DE CREAR PROYECTO Y LIMPIAR FILTROS MOVIDOS AL COMPONENTE DE FILTROS -->
+     <!-- ======================================================================================== -->
+    <div class="filters-actions">
       <button id="openCreate" class="btn-create" type="button" [style.display]="isAdminOrOwner ? '' : 'none'" (click)="openCreateModal()">Create New Project</button>
       <button id="refresh" class="btn btn-clear-filters" type="button" (click)="clearFilters()">Clean filters</button>
     </div>
+
+
+
   </div>
-</div>
 
     <!-- Create Project Modal Component (solo visible si isCreateOpen) -->
     <app-create-project *ngIf="isCreateOpen" (close)="closeCreateModal()"></app-create-project>

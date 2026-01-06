@@ -1,0 +1,121 @@
+
+<div class="filters-container">
+
+     <div class="filters-scroll">
+
+       <!-- <p>puedes seleccionar varios filtros y ver los resultados inemdiatamente</p> -->
+
+  <div class="mf-search">
+    <h4>Search</h4>
+    <input type="text" placeholder="Buscar..." [(ngModel)]="searchText" (ngModelChange)="onSearchChange($event)" />
+    
+  </div>
+
+ 
+    <div class="mf-section" *ngIf="offices?.length">
+      <div class="mf-section-header" (click)="toggleCollapse('offices')">
+        <span class="caret" [class.open]="!isCollapsed('offices')">▶</span>
+        <h4>Offices</h4>
+      </div>
+      <div class="mf-section-body" *ngIf="!isCollapsed('offices')">
+        <label class="checkbox-item" *ngFor="let o of offices">
+          <input type="checkbox" [checked]="selectedOffices.includes(o.id)" (change)="toggleSelection(selectedOffices, o.id)" /> {{o.name}}
+        </label>
+      </div>
+    </div>
+  
+    <div class="mf-section" *ngIf="clients?.length">
+      <div class="mf-section-header" (click)="toggleCollapse('clients')">
+        <span class="caret" [class.open]="!isCollapsed('clients')">▶</span>
+        <h4>Clients</h4>
+      </div>
+      <div class="mf-section-body" *ngIf="!isCollapsed('clients')">
+        <label class="checkbox-item" *ngFor="let c of clients">
+          <input type="checkbox" [checked]="selectedClients.includes(c.id)" (change)="toggleSelection(selectedClients, c.id)" /> {{c.name}}
+        </label>
+      </div>
+    </div>
+
+
+    <div class="mf-section" *ngIf="software?.length">
+      <div class="mf-section-header" (click)="toggleCollapse('software')">
+        <span class="caret" [class.open]="!isCollapsed('software')">▶</span>
+        <h4>Software</h4>
+      </div>
+      <div class="mf-section-body" *ngIf="!isCollapsed('software')">
+        <label class="checkbox-item" *ngFor="let s of software">
+          <input type="checkbox" [checked]="selectedSoftware.includes(s.id)" (change)="toggleSelection(selectedSoftware, s.id)" /> {{s.name}}
+        </label>
+      </div>
+    </div>
+
+  
+ 
+    <div class="mf-section" *ngIf="departments?.length">
+      <div class="mf-section-header" (click)="toggleCollapse('departments')">
+        <span class="caret" [class.open]="!isCollapsed('departments')">▶</span>
+        <h4>Departments</h4>
+      </div>
+      <div class="mf-section-body" *ngIf="!isCollapsed('departments')">
+        <label class="checkbox-item" *ngFor="let d of departments">
+          <input type="checkbox" [checked]="selectedDepartments.includes(d.id)" (change)="toggleSelection(selectedDepartments, d.id)" /> {{d.name}}
+        </label>
+      </div>
+    </div>
+
+
+    <div class="mf-section" *ngIf="managerOptions?.length">
+      <div class="mf-section-header" (click)="toggleCollapse('managers')">
+        <span class="caret" [class.open]="!isCollapsed('managers')">▶</span>
+        <h4>Project Manager</h4>
+      </div>
+      <div class="mf-section-body" *ngIf="!isCollapsed('managers')">
+        <label class="checkbox-item" *ngFor="let m of managerOptions">
+          <input type="checkbox" [checked]="selectedManagers.includes(m.id)" (change)="toggleSelection(selectedManagers, m.id)" /> {{m.name}}
+        </label>
+      </div>
+    </div>
+
+ 
+    <div class="mf-section" *ngIf="enums?.status?.length">
+      <div class="mf-section-header" (click)="toggleCollapse('status')">
+        <span class="caret" [class.open]="!isCollapsed('status')">▶</span>
+        <h4>Status</h4>
+      </div>
+      <div class="mf-section-body" *ngIf="!isCollapsed('status')">
+        <label class="checkbox-item" *ngFor="let s of enums.status">
+          <input type="checkbox" [checked]="selectedStatus.includes(s)" (change)="toggleSelection(selectedStatus, s)" /> {{display(s)}}
+        </label>
+      </div>
+    </div>
+
+ 
+    <div class="mf-section" *ngIf="enums?.type?.length">
+      <div class="mf-section-header" (click)="toggleCollapse('type')">
+        <span class="caret" [class.open]="!isCollapsed('type')">▶</span>
+        <h4>Type</h4>
+      </div>
+      <div class="mf-section-body" *ngIf="!isCollapsed('type')">
+        <label class="checkbox-item" *ngFor="let t of enums.type">
+          <input type="checkbox" [checked]="selectedTypes.includes(t)" (change)="toggleSelection(selectedTypes, t)" /> {{display(t)}}
+        </label>
+      </div>
+    </div>
+
+    <div class="mf-section" *ngIf="enums?.scope?.length">
+      <div class="mf-section-header" (click)="toggleCollapse('scope')">
+        <span class="caret" [class.open]="!isCollapsed('scope')">▶</span>
+        <h4>Scope</h4>
+      </div>
+      <div class="mf-section-body" *ngIf="!isCollapsed('scope')">
+        <label class="checkbox-item" *ngFor="let sc of enums.scope">
+          <input type="checkbox" [checked]="selectedScopes.includes(sc)" (change)="toggleSelection(selectedScopes, sc)" /> {{display(sc)}}
+        </label>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- <button type="button" (click)="clearAll()">Clear</button> -->
+ 
+
+

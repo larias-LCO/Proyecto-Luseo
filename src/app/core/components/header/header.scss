@@ -5,7 +5,7 @@ header {
   left: 0;
   width: 100%;
   z-index: 1000;
-  height: var(--header-height);
+  height: 70px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -216,3 +216,17 @@ header {
   background: rgba(59, 130, 246, 0.12);
   transform: translateY(-1px);
 }
+
+.submenu-btn{
+  display: grid;
+  place-items: center;
+  width: 45px;
+  height: 45px;
+  border-radius: 8px;
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: 0 3px 8px rgba(2,18,46,0.06);
+  cursor: pointer;
+}
+.submenu-btn svg{ width: 18px; height: 18px; fill: #334155 }
+.submenu-btn:hover{ transform: translateY(-1px); background: rgba(59,130,246,0.06) }

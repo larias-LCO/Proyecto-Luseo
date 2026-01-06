@@ -20,7 +20,7 @@ export function createTaskCard(task: any, options: any = {}): HTMLElement {
   card.style.overflow = 'hidden';
   card.style.transition = 'transform 0.15s ease, box-shadow 0.15s ease, opacity 0.3s ease';
 
-  // Detect theme
+  // Detect theme (kept for compatibility but cards will use consistent styling)
   const darkMode = (typeof document !== 'undefined') && document.documentElement.classList.contains('dark');
   const docStyles = (typeof window !== 'undefined') ? getComputedStyle(document.documentElement) : null;
   const themeCardBg = docStyles ? (docStyles.getPropertyValue('--card-bg') || '').trim() : '';
@@ -32,60 +32,78 @@ export function createTaskCard(task: any, options: any = {}): HTMLElement {
   if (isHoliday && countryCode) {
     // Gradiente de bandera según país
     if (countryCode === 'CO') {
-      card.style.background = 'linear-gradient(135deg, #edc600 10%, #0008ed 60%, #e30707 100%)';
-      card.style.border = '2.5px solid #f59e0b';
-    } else if (countryCode === 'US') {
-      card.style.background = 'linear-gradient(135deg, #e30707 0%, #ffffff 50%, #0008ed 100%)';
-      card.style.border = '2.5px solid #3b82f6';
-    } else {
-      card.style.background = '#FBBF24';
-      card.style.border = `2px solid ${darkenColor('#FBBF24', 20)}`;
-    }
-  } else {
-    // Use category color as background, with fallback to theme card background
-    const categoryColor = (task.taskCategoryColorHex || '').trim() || '';
-    if (darkMode) {
-      // In dark mode, prefer theme card background for neutral categories
-      if (!categoryColor || categoryColor === '#ffffff' || categoryColor.toLowerCase() === 'white') {
-        card.style.background = themeCardBg || '#0b1724';
-        card.style.border = `1px solid ${docStyles?.getPropertyValue('--border') || 'rgba(255,255,255,0.06)'} `;
+      if (options.calendarCard) {
+        card.style.setProperty('background', 'linear-gradient(135deg, #edc600 10%, #0008ed 60%, #e30707 100%)', 'important');
+        card.style.setProperty('border', '2.5px solid #f59e0b', 'important');
       } else {
-        card.style.background = categoryColor;
-        card.style.border = `3px solid ${darkenColor(categoryColor, 20)}`;
+        card.style.background = 'linear-gradient(135deg, #edc600 10%, #0008ed 60%, #e30707 100%)';
+        card.style.border = '2.5px solid #f59e0b';
+      }
+    } else if (countryCode === 'US') {
+      if (options.calendarCard) {
+        card.style.setProperty('background', 'linear-gradient(135deg, #e30707 0%, #ffffff 50%, #0008ed 100%)', 'important');
+        card.style.setProperty('border', '2.5px solid #3b82f6', 'important');
+      } else {
+        card.style.background = 'linear-gradient(135deg, #e30707 0%, #ffffff 50%, #0008ed 100%)';
+        card.style.border = '2.5px solid #3b82f6';
       }
     } else {
-      // light mode
-      card.style.background = categoryColor || (themeCardBg || '#ffffff');
-      const borderCol = categoryColor ? darkenColor(categoryColor, 20) : (docStyles?.getPropertyValue('--border') || 'rgba(15, 23, 42, 0.06)');
-      card.style.border = `3px solid ${borderCol}`;
+      if (options.calendarCard) {
+        card.style.setProperty('background', '#FBBF24', 'important');
+        card.style.setProperty('border', `2px solid ${darkenColor('#FBBF24', 20)}`, 'important');
+      } else {
+        card.style.background = '#FBBF24';
+        card.style.border = `2px solid ${darkenColor('#FBBF24', 20)}`;
+      }
+    }
+  } else {
+    const categoryColor = (task.taskCategoryColorHex || '').trim() || '';
+    // If this card is rendered inside the calendar, force consistent card styling
+    if (options.calendarCard) {
+      card.style.setProperty('background', categoryColor || '#ffffff', 'important');
+      const borderCol = categoryColor ? darkenColor(categoryColor, 20) : '#e2e8f0';
+      card.style.setProperty('border', `3px solid ${borderCol}`, 'important');
+    } else {
+      // Default behavior for non-calendar cards: respect theme variables
+      if (darkMode) {
+        if (!categoryColor || categoryColor === '#ffffff' || categoryColor.toLowerCase() === 'white') {
+          card.style.background = themeCardBg || '#0b1724';
+          card.style.border = `1px solid ${docStyles?.getPropertyValue('--border') || 'rgba(255,255,255,0.06)'} `;
+        } else {
+          card.style.background = categoryColor;
+          card.style.border = `3px solid ${darkenColor(categoryColor, 20)}`;
+        }
+      } else {
+        card.style.background = categoryColor || (themeCardBg || '#ffffff');
+        const borderCol = categoryColor ? darkenColor(categoryColor, 20) : (docStyles?.getPropertyValue('--border') || 'rgba(15, 23, 42, 0.06)');
+        card.style.border = `3px solid ${borderCol}`;
+      }
     }
   }
 
   // Add visual separator for project type (top border with specific color - light tones)
-  if (!isHoliday) {
+    if (!isHoliday) {
     if (task.projectType === 'COMMERCIAL') {
-      card.style.borderTop = '4px solid #7DD3FC';
+      if (options.calendarCard) card.style.setProperty('border-top', '4px solid #7DD3FC', 'important');
+      else card.style.borderTop = '4px solid #7DD3FC';
       card.setAttribute('data-project-type', 'COMMERCIAL');
     } else if (task.projectType === 'RESIDENTIAL') {
-      card.style.borderTop = '4px solid #6EE7B7';
+      if (options.calendarCard) card.style.setProperty('border-top', '4px solid #6EE7B7', 'important');
+      else card.style.borderTop = '4px solid #6EE7B7';
       card.setAttribute('data-project-type', 'RESIDENTIAL');
     }
   }
 
-  // Calculate text color based on background brightness + theme
+  // Calculate text color based on background brightness (consistent across themes)
   let textColor = '#222222';
   if (isHoliday && countryCode === 'US') textColor = '#1e3a8a';
   else if (isHoliday && countryCode === 'CO') textColor = '#000000';
   else {
-    const categoryColor = task.taskCategoryColorHex || (themeCardBg || '#ffffff');
+    const categoryColor = task.taskCategoryColorHex || '#ffffff';
     textColor = getContrastColor(categoryColor);
   }
-  // In dark mode, prefer theme text color when computed text is dark
-  if (darkMode) {
-    const computedThemeText = themeText || '#e6eef8';
-    if (textColor === '#222222' || textColor.toLowerCase() === '#222222') textColor = computedThemeText;
-  }
-  card.style.color = textColor;
+  if (options.calendarCard) card.style.setProperty('color', textColor, 'important');
+  else card.style.color = textColor;
 
   // Reduce opacity if task is COMPLETED
   if (task.status === 'COMPLETED') {
@@ -99,11 +117,14 @@ export function createTaskCard(task: any, options: any = {}): HTMLElement {
     // Usar el mismo estilo de tarjeta grande
     card.style.padding = '3px';
     card.style.cursor = 'pointer';
+    // Determine a subtle pill background matching the card (light on dark backgrounds)
+    const pillBg = (textColor === '#ffffff') ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
+    const pillStyle = `font-size:10px; font-weight:700; color:${textColor}; background: ${pillBg}; padding:2px 6px; border-radius:4px; text-transform:uppercase; letter-spacing:0.5px;`;
     card.innerHTML = `
       <div style="display:flex; flex-direction:column; gap:3px;">
         <div style="padding: 2px 4px; border-radius: 6px; display:flex; align-items:center; gap:8px;">
           <span style="font-size:20px; color:${textColor}">${countryFlag}</span>
-          <span style="font-size:10px; font-weight:700; color:${textColor}; background: ${darkMode ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.95)'}; padding:2px 6px; border-radius:4px; text-transform:uppercase; letter-spacing:0.5px;">${countryName}</span>
+          <span style="${pillStyle}">${countryName}</span>
         </div>
           <div style="padding: 2px 4px; border-radius: 6px; display:flex; flex-direction:column; gap:3px;">
           <div style="display:flex; gap:4px; align-items:flex-start; font-weight:700;">
@@ -253,11 +274,13 @@ export function createTaskCard(task: any, options: any = {}): HTMLElement {
   }
   card.addEventListener('mouseenter', () => {
     card.style.transform = 'translateY(-1px)';
-    card.style.boxShadow = '0 4px 10px rgba(0,0,0,0.12)';
+    if (options.calendarCard) card.style.setProperty('box-shadow', '0 4px 10px rgba(0,0,0,0.12)', 'important');
+    else card.style.boxShadow = '0 4px 10px rgba(0,0,0,0.12)';
   });
   card.addEventListener('mouseleave', () => {
     card.style.transform = 'translateY(0)';
-    card.style.boxShadow = 'none';
+    if (options.calendarCard) card.style.setProperty('box-shadow', 'none', 'important');
+    else card.style.boxShadow = 'none';
   });
   if (!options.skipHandlers) {
     card.style.cursor = 'pointer';

@@ -68,5 +68,162 @@
 /* responsive: hide sidebar on small screens by default (can be toggled) */
 @media (max-width: 768px) {
   .sidebar { transform: translateX(0); width: var(--sidebar-width); }
-  .sidebar.collapsed { transform: translateX(-100%); }
+  .sidebar.collapsed { transform: translateX(-100%); 
+  width: 220px;
+  height: 100vh;
+  background: #ffffff;
+  border-right: 1px solid #e5e7eb;
+  padding: 12px 8px;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont;
+  position: fixed;
+  top: 120px; /* ⚠️ debe coincidir exactamente con la altura real del header */
+  left: 0;
+  transform: translateX(0);
+  transition: transform 0.25s ease, opacity 0.25s ease;
+  opacity: 1;
+  z-index: 1650; /* default stacking */
+  }
+}
+
+/* When host has class 'menu' we treat it as overlay-controlled and hide by default */
+:host(.menu) .sidebar {
+  transform: translateX(-100%);
+  opacity: 0;
+}
+
+:host(.menu.open) .sidebar {
+  transform: translateX(0);
+  opacity: 1;
+}
+// .sidebar {
+//   font-family: 'Times New Roman', Times, serif;
+//   position: fixed;
+//   top: 70px; /* ⚠️ debe coincidir exactamente con la altura real del header */
+//   left: 0;
+//   width: 250px;
+//   height: calc(100vh - 70px); /* ⚠️ resta la misma altura */
+//   background-color: #fff;
+//   border-right: 1px solid #ddd;
+//   padding-top: 60px;
+//   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+//   display: flex;
+//   flex-direction: column;
+//   align-items: center;
+//   z-index: 900; /* para que esté debajo del header */
+// }
+/* Secciones */
+.sidebar-label {
+  margin: 18px 12px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #9ca3af;
+  letter-spacing: 0.08em;
+}
+
+/* Items */
+// BASE DEL ITEM
+.sidebar-item {
+  position: relative;
+  overflow: hidden;
+  text-align: left;
+  width: 100%;
+  height: 44px;
+  padding: 0 12px;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: #111827;
+
+  cursor: pointer;
+  transition: background 0.5s ease, color 0.5s ease;
+}
+
+
+// Contenido encima del fondo animado
+.sidebar-item svg,
+.sidebar-item .text {
+  position: relative;
+  z-index: 2;
+}
+
+// Fondo animado (derecha → izquierda)
+.sidebar-item::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;                 /* empieza desde la derecha */
+  width: 0;
+  height: 100%;
+  background-color: #dbeafe; /* azul claro */
+  transition: width 0.5s ease;
+  z-index: 1;
+}
+
+
+.sidebar-item:hover::before {
+  width: 100%;
+}
+
+.sidebar-item:hover .text,
+.sidebar-item.active .text {
+  color: #001dbe;
+  font-weight: 600;
+}
+
+/* Íconos */
+.sidebar-item .icon {
+  width: 30px;
+  text-align: center;
+  opacity: 0.75;
+}
+
+/* Hover */
+.sidebar-item:hover {
+  background: #9ed3ff;
+}
+
+/* Activo */
+.sidebar-item.active {
+  background: #e5e7eb;
+  font-weight: 600;
+}
+
+/* Report con flecha */
+.sidebar-item.has-child .arrow {
+  margin-left: auto;
+  opacity: 0.6;
+}
+
+/* Dark-mode styles applied ONLY to .sidebar-item */
+:root.dark .sidebar-item::before,
+html.dark .sidebar-item::before {
+  background-color: rgba(96,165,250,0.14); /* light blue accent in dark */
+}
+
+/* Hover uses a soft light-blue */
+:root.dark .sidebar-item:hover,
+html.dark .sidebar-item:hover {
+  background: rgba(96,165,250,0.12); /* azul claro */
+}
+
+:root.dark .sidebar-item:hover .text,
+html.dark .sidebar-item:hover .text,
+:root.dark .sidebar-item.active .text,
+html.dark .sidebar-item.active .text {
+  color: rgb(0, 0, 75); /* match --accent (light blue) */
+  font-weight: 600;
+}
+
+:root.dark .sidebar-item.active,
+html.dark .sidebar-item.active {
+  background: rgba(96,165,250,0.16);
 }

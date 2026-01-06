@@ -1,4 +1,5 @@
 import { Injectable, signal } from '@angular/core';
+// import { environment } from '../../../../environment';
 
 export type AuthState = {
   authenticated: boolean;
@@ -14,6 +15,7 @@ export class AuthService {
   private usernameKey = 'auth.username';
   private rolesKey = 'auth.roles';
   private apiBase = 'https://api-pruebas.luseoeng.com';
+  // private apiBase = environment.apiBase;
 
   state = signal<AuthState>({ authenticated: false });
 

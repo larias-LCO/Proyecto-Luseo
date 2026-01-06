@@ -112,6 +112,15 @@ body {
 	--card-alt-bg: #2b2b2b; /* alternate card background (dark) */
 	--card-alt-text: white;
 	--azul-de-fondo: #97bdfd;
+	--amarillo-resaltador: #ebd660;
+	--verde-fondo-claro: #b7f79a;
+	--verde-letra: #0f5132;
+	
+	
+}
+
+:root.dark .title{
+	color: var(--btn-text);
 }
 
 /* Smooth theme transitions */
@@ -173,7 +182,21 @@ body {
 	color: var(--text) !important;
 }
 
+:root.dark    .project-code,   .label{
+	color: var(--accent) !important;
+}
 
+:root.dark .team-container h1{
+	color: var(--accent) !important;
+}
+
+:root.dark .project-container h1{
+	color: var(--accent) !important;
+}
+
+:root.dark .task-container h1{
+	color: var(--accent) !important;
+}
 
 /* Cards, project tiles, shared task cards */
 .project-card,
@@ -206,6 +229,23 @@ input, textarea, select {
 	color: var(--avatar-text);
 }
 
+
+/* Dark-mode fixes: remove bright inner highlight on filter controls */
+html.dark .filters-container .filter-item select,
+html.dark .filters-container .filter-item input {
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), inset 0 -6px 12px rgba(0,0,0,0.12) !important;
+  border: 1px solid rgba(255,255,255,0.06) !important;
+  background: var(--card-bg) !important;
+  color: var(--text) !important;
+}
+
+html.dark .filters-container .filter-item select:focus,
+html.dark .filters-container .filter-item input:focus,
+html.dark .filters-container .filter-item select:focus-visible,
+html.dark .filters-container .filter-item input:focus-visible {
+  box-shadow: 0 0 0 4px rgba(10,88,202,0.06), inset 0 1px 6px rgba(0,0,0,0.12) !important;
+}
+
 /* Strong enforcement for light mode filter borders (fixes cases where other rules override) */
 html:not(.dark) .filter-search input,
 html:not(.dark) .filter-item select,
@@ -216,6 +256,35 @@ html:not(.dark) .filters-row select {
 }
 button, .btn, .btn-open, .logout-btn, .theme-btn {
 	/* Prefer component-level backgrounds; only provide sane defaults here without !important */
+
+/* Make filter borders yellow when interacted with in dark mode */
+/* Dark-mode: highlight filter controls when focused/active. Support both .filter-item and .filter-group structures */
+html.dark .filters-container .filter-item:focus-within,
+html.dark .filters-container .filter-item select:focus,
+html.dark .filters-container .filter-item select:active,
+html.dark .filters-container .filter-group:focus-within,
+html.dark .filters-container .filter-group select:focus,
+html.dark .filters-container .filter-group select:active,
+html.dark .filter-search input:focus,
+html.dark .filters-row select:focus,
+html.dark .filter-item select:focus-visible,
+html.dark .filter-search input:focus-visible,
+html.dark .project-select:focus,
+html.dark .search-input:focus,
+html.dark #project-filter:focus,
+html.dark #category-filter:focus,
+html.dark #creator-filter:focus {
+	border-color: var(--amarillo-resaltador) !important;
+	box-shadow: 0 0 12px rgba(235,214,96,0.28) !important;
+	outline: none !important;
+}
+
+/* Also ensure select/input elements show yellow border while their parent has focus-within */
+html.dark .filters-container .filter-item:focus-within select,
+html.dark .filters-container .filter-group:focus-within select,
+html.dark .filters-container .filter-group:focus-within input {
+	border-color: var(--amarillo-resaltador) !important;
+}
 	background: transparent;
 	color: var(--btn-text);
 	border: 1px solid transparent;
@@ -312,7 +381,25 @@ html.dark .filter-item label {
   color: var(--text) !important;
 }
 
-/* Project card info text should be light in dark mode */
+/* Dark-mode: focus on filter controls — yellow border + smooth transition */
+html.dark .filter-item select,
+html.dark .filter-search input,
+html.dark .filters-row select {
+	transition: border-color 220ms cubic-bezier(.19,1,.22,1), box-shadow 200ms cubic-bezier(.19,1,.22,1), background-color 220ms cubic-bezier(.19,1,.22,1);
+}
+
+html.dark .filter-item select:focus,
+html.dark .filter-search input:focus,
+html.dark .filters-row select:focus,
+html.dark .filter-item select:focus-visible,
+html.dark .filter-search input:focus-visible,
+html.dark .filters-row select:focus-visible {
+	border-color: var(--amarillo-resaltador) !important;
+	box-shadow: 0 0 10px rgba(235,214,96,0.28) !important; /* soft yellow glow */
+	outline: none !important;
+}
+
+/* El texto de información de la tarjeta del proyecto debe ser claro en el modo oscuro */
 html.dark .project-card,
 :root.dark .project-card .card-info,
 body.dark .project-card .card-info {
@@ -326,11 +413,73 @@ body.dark .project-card .card-info {
 	  background: var(--card-bg) !important;
 }
 
+:root.dark .schedule h2, .schedule2 h2{
+	color: var(--accent) !important;
+}
+
+/* FullCalendar: make day headers and day numbers match dark page background */
+html.dark .fc .fc-col-header, html.dark .fc .fc-col-header-cell, html.dark .fc .fc-col-header-cell * {
+	background: var(--card-bg) !important;
+	color: var(--accent) !important;
+}
+
+html.dark .fc .fc-daygrid-day-top, html.dark .fc .fc-daygrid-day-number, html.dark .fc .fc-daygrid-day-top * {
+	background: var(--card-bg) !important;
+	color: var(--accent) !important;
+}
+
+html.dark .fc .fc-scrollgrid, html.dark .fc .fc-daygrid-day-frame, html.dark .fc td {
+	border-color: rgba(255,255,255,0.06) !important;
+}
+
+/* toolbar title / controls contrast in dark mode */
+html.dark .fc .fc-toolbar, html.dark .fc .fc-toolbar-chunk, html.dark .fc .fc-toolbar-title {
+	background: transparent !important;
+	color: var(--accent) !important;
+}
+
+/* Dark-mode: make hover over a day and the "today" marker use the same highlight */
+html.dark .fc .fc-daygrid-day:hover,
+html.dark .fc td.fc-day:hover,
+html.dark .fc .fc-daygrid-day.fc-day-today,
+html.dark .fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-top {
+	background: var(--sidebar-hover) !important;
+	color: var(--sidebar-hover-text) !important;
+}
+
+
+
+html.dark .fc .fc-daygrid-day:hover .fc-daygrid-day-number,
+html.dark .fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number {
+	color: var(--sidebar-hover-text) !important;
+}
+
 .category-filter{
 	  color: var(--avatar-bg);
 	  background: var(--card-alt-bg) !important;
 }
 
+:root.dark .state-active {
+  background-color: var(--verde-fondo-claro);
+  color: var(--verde-letra);
+  
+}
+
+:root.dark .state-inactive{
+	background: rgb(250, 158, 158);
+}
+
+:root.dark .value{
+	color: var(--avatar-text);
+}
+
+:root.dark .project-name{
+	color: var(--amarillo-resaltador);
+}
+
+:root.dark .status-pill {
+	background: var(--sidebar-hover);
+}
 
 
 /* Global header spacing so fixed header doesn't cover page content */

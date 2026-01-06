@@ -2,50 +2,63 @@
   <div class="logo-section">
     <img src="../../../../assets/img-icons/LOGO_LUSEO_ENGINEERING.png" alt="Logo" class="logo" loading="eager" decoding="async">
     <div class="separator"></div>
+    <!-- SUBMENU TOGGLE (moved from filters) -->
+  <button class="submenu-btn" (click)="toggleSubmenu()" title="Abrir menú">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 50 50"><path d="M 0 9 L 0 11 L 50 11 L 50 9 Z M 0 24 L 0 26 L 50 26 L 50 24 Z M 0 39 L 0 41 L 50 41 L 50 39 Z"></path></svg>
+  </button>
+
+  <div class="separator"></div>
     <h1 class="title">Luseo Engineering</h1>
   </div>
  
   <div class="header-right">
-    <!-- BOTON OSCURO/CLARO -->
-    <button class="theme-btn" (click)="toggleTheme()" title="Alternar tema">
-    <!-- icono sol/luna (ejemplo) -->
-    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" color="#001dbe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-moon-icon lucide-moon"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>
-    </button>
-  </div>
-  <div class="separator"></div>
 
-  <!-- CAMPANA DE NOTIFICACIONES -->
-  <button class="notification-btn"
+    <!-- BOTON OSCURO/CLARO -->
+<button class="theme-btn" (click)="toggleTheme()" title="Alternar tema">
+  <!-- icono sol/luna (ejemplo) -->
+<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" color="#001dbe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-moon-icon lucide-moon"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>
+</button>
+
+<div class="separator"></div>
+
+  
+
+
+
+<!-- CAMPANA DE NOTIFICACIONES -->
+    <button class="notification-btn"
         (click)="toggleNotifications()"
         title="Notificaciones">
 
-      <!-- Icono campana -->
-      <svg class="notification-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" color="#001dbe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bell-ring-icon lucide-bell-ring"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M22 8c0-2.3-.8-4.3-2-6"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/><path d="M4 2C2.8 3.7 2 5.7 2 8"/></svg>
+  <!-- Icono campana -->
+<svg class="notification-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" color="#001dbe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bell-ring-icon lucide-bell-ring"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M22 8c0-2.3-.8-4.3-2-6"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/><path d="M4 2C2.8 3.7 2 5.7 2 8"/></svg>
 
-      <!-- Badge
-      <span *ngIf="notificationCount > 0" class="badge">
-        {{ notificationCount }}
-      </span> -->
-  </button>
+  <!-- Badge
+  <span *ngIf="notificationCount > 0" class="badge">
+    {{ notificationCount }}
+  </span> -->
+</button>
 
-  <div class="separator"></div>
-    <!-- LETRAS DE NOMBRE Y NOMBRE -->
+ <div class="separator"></div>
+
+<!-- LETRAS DE NOMBRE Y NOMBRE -->
     <!-- Show user info when either cookies provide a username or the auth state is authenticated -->
     <div *ngIf="isAuthenticated() || username()" class="user-section">
-      <div *ngIf="isAuthenticated()" class="user-section">
-        <span class="header-avatar" aria-hidden="true">{{ initials() }}</span>
-        <span class="username">{{ username() }}</span>
-        <div class="separator"></div>
-      </div>
+      <span class="header-avatar" aria-hidden="true">{{ initials() }}</span>
+      <span class="username">{{ username() }}</span>
+       <div class="separator"></div>
+
       <button class="logout-btn" (click)="logout()" title="Cerrar sesión">
-      Salir
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round"
-            stroke-linejoin="round">
-          <path d="m16 17 5-5-5-5" />
-          <path d="M21 12H9" />
-          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-        </svg>
-      </button>
+  Salir
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+       stroke="currentColor" stroke-width="2" stroke-linecap="round"
+       stroke-linejoin="round">
+    <path d="m16 17 5-5-5-5" />
+    <path d="M21 12H9" />
+    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+  </svg>
+</button>
+
     </div>
+  </div>
 </header>

@@ -10,6 +10,7 @@ import { HttpParams, HttpHeaders } from '@angular/common/http';
 import { HeaderComponent } from '../../core/components/header/header';
 import { SubmenuComponent } from '../../core/components/submenu/submenu';
 import { ProjectFiltersService } from '../../core/services/project-filters.service';
+import { SubmenuService } from '../../core/services/submenu.service';
 import { CreateProjectComponent } from '../../core/components/create-project/create-project';
 import { ProjectPayload } from '../../core/services/project.service';
 import { CreateEditHelper } from '../../shared/create-edit';
@@ -18,17 +19,27 @@ import { ProjectService } from '../../core/services/project.service';
 import { WebsocketService } from '../../core/services/websocket.service';
 import { debounceTime } from 'rxjs/operators';
 import { Subject, Subscription } from 'rxjs';
+import { MenuFiltersProjects } from "./components/menu-filters-projects/menu-filters-projects";
+// import { MenuFiltersProjects } from "../../core/components/menu-filters-projects/menu-filters-projects";
 
 
 @Component({
   selector: 'app-projects',
   standalone: true,
-  imports: [CommonModule, FormsModule, HttpClientModule, HeaderComponent, SubmenuComponent, CreateProjectComponent, ProjectDetailsComponent],
+  imports: [CommonModule, FormsModule, HttpClientModule, HeaderComponent, CreateProjectComponent, ProjectDetailsComponent, MenuFiltersProjects, SubmenuComponent],
   templateUrl: './projects.html',
   styleUrls: ['./projects.scss'],
   providers: [ProjectService],
 })
 export class ProjectsPage implements OnInit {
+
+  // header.component.ts (o donde esté el botón)
+isMenuOpen = false;
+
+toggleMenu() {
+  this.isMenuOpen = !this.isMenuOpen;
+}
+
 
   // WebSocket y subs para eventos en tiempo real
 
@@ -47,11 +58,15 @@ private subs = new Subscription();
   jobPositions: any[] = [];
   employees: Employee[] = [];
   managerOptions: { id: number, name: string }[] = [];
+  // Lista completa de managers (no debe ser reducida por filtros de proyectos)
+  managerOptionsAll: { id: number, name: string }[] = [];
+  // Opcional: lista derivada según proyectos cargados
+  managerOptionsFiltered: { id: number, name: string }[] = [];
   statusList = [
-    { value: 'CANCELLED', label: 'CANCELLED' },
-    { value: 'COMPLETED', label: 'COMPLETED' },
-    { value: 'IN_PROGRESS', label: 'IN PROGRESS' },
-    { value: 'PAUSED', label: 'PAUSED' }
+    { value: 'CANCELLED', label: 'Cancelled' },
+    { value: 'COMPLETED', label: 'Completed' },
+    { value: 'IN_PROGRESS', label: 'In Progress' },
+    { value: 'PAUSED', label: 'Paused' }
   ];
 
   // Filtros seleccionados
@@ -97,6 +112,7 @@ constructor(
     private http: HttpClient,
     private projectFiltersService: ProjectFiltersService,
     private projectService: ProjectService
+    , private submenuService: SubmenuService
   ) {
     // ✅ Aquí conectas correctamente el helper con el servicio
     this.createEdit = new CreateEditHelper(this.projectService);
@@ -109,7 +125,11 @@ constructor(
 
 
   
-
+onFiltersUpdated(filters: any) {
+  this.searchState.filters = filters;
+  this.searchState.page = 0;
+  this.loadProjects();
+}
   /**
    * Abre el modal de edición para el proyecto dado.
    * Puede delegar a un componente, helper o lógica global según arquitectura.
@@ -189,6 +209,11 @@ const wsDebounceSub = this.wsRefresh$
     this.loadProjects();
   });
 this.subs.add(wsDebounceSub);
+    // Subscribe to shared submenu open state
+    const submenuSub = this.submenuService.open$.subscribe(v => {
+      this.isMenuOpen = !!v;
+    });
+    this.subs.add(submenuSub);
  //=======================================================================
     
     // --- Inicialización de catálogos y proyectos ---
@@ -213,8 +238,10 @@ this.subs.add(wsDebounceSub);
     // Esperar a que los empleados estén cargados antes de pedir managers
     const managerOptionsRaw = await this.projectFiltersService.getManagerFilterOptions();
     console.log('[VALIDACIÓN] Opciones crudas de managerOptions:', managerOptionsRaw);
-    this.managerOptions = managerOptionsRaw.slice().sort(byName);
-    console.log('[VALIDACIÓN] ManagerOptions cargados (final):', this.managerOptions);
+    this.managerOptionsAll = (managerOptionsRaw || []).slice().sort(byName);
+    // mantener managerOptions por compatibilidad inicial
+    this.managerOptions = this.managerOptionsAll.slice();
+    console.log('[VALIDACIÓN] ManagerOptions cargados (final):', this.managerOptionsAll);
 
     // Validar coincidencias de IDs entre pmIds y empleados
     if (Array.isArray(this.managerOptions) && this.managerOptions.length === 0) {
@@ -368,11 +395,11 @@ closeProjectDetails() {
       }
     });
     // Busca los empleados que coinciden con esos IDs
-    this.managerOptions = this.employees
+    this.managerOptionsFiltered = this.employees
       .filter(e => pmIdSet.has(Number(e.id)))
       .map(e => ({ id: e.id, name: e.name }))
       .sort((a, b) => (a.name || '').localeCompare(b.name || '', undefined, { sensitivity: 'base' }));
-    this.debug('Managers disponibles (solo proyectos listados):', this.managerOptions);
+    this.debug('Managers disponibles (solo proyectos listados):', this.managerOptionsFiltered);
   }
 
   displayEnum(v: string | null | undefined): string {
@@ -462,9 +489,14 @@ onPageSizeChange() {
       sort: sort
     };
 
-    // Enviar solo claves canónicas para evitar combinar filtros con AND en el backend
+    // Enviar solo claves canónicas. Si el filtro es un array, convertir a CSV (adaptar si el backend espera otro formato)
     Object.entries(filters).forEach(([key, value]) => {
-      if (value !== null && value !== undefined && value !== '') {
+      if (value === null || value === undefined || value === '') return;
+      if (Array.isArray(value)) {
+        if (value.length === 0) return;
+        // Convertir arrays a CSV para parámetros repetidos (ajusta según la API)
+        query[key] = value.join(',');
+      } else {
         query[key] = value;
       }
     });

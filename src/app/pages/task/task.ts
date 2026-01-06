@@ -184,17 +184,24 @@ export async function onEditTaskClosed() {
 export function createCalendarLegend(tasks: Array<{ taskCategoryName?: string; taskCategoryColorHex?: string }>): HTMLDivElement {
   const legend = document.createElement('div');
   legend.className = 'calendar-legend';
-  legend.style.cssText = 'display: flex; flex-wrap: wrap; gap: 12px; align-items: center; padding: 12px 16px; background: linear-gradient(135deg, #f8fafc, #eef6ff); border-radius: 4px; margin-bottom: 16px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);';
+  const isDark = (typeof document !== 'undefined') && (document.documentElement.classList.contains('dark') || document.documentElement.classList.contains('dark-mode'));
+  legend.style.cssText = isDark
+    ? 'display:flex; flex-wrap:wrap; gap:12px; align-items:center; padding:12px 16px; background: var(--card-bg); border-radius:4px; margin-bottom:16px; border:1px solid rgba(255,255,255,0.06);'
+    : 'display: flex; flex-wrap: wrap; gap: 12px; align-items: center; padding: 12px 16px; background: linear-gradient(135deg, #f8fafc, #eef6ff); border-radius: 4px; margin-bottom: 16px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);';
 
   // Title
   const title = document.createElement('span');
   title.textContent = 'Legend:';
-  title.style.cssText = 'font-weight: 700; font-size: 13px; color: #334155; margin-right: 4px;';
+  title.style.cssText = isDark
+    ? 'font-weight:700; font-size:13px; color: var(--text); margin-right:4px;'
+    : 'font-weight: 700; font-size: 13px; color: #334155; margin-right: 4px;';
   legend.appendChild(title);
 
   // Project Types Section (solo si hay tareas con esos tipos)
   const projectTypesContainer = document.createElement('div');
-  projectTypesContainer.style.cssText = 'display: flex; gap: 8px; align-items: center; padding-right: 12px; border-right: 2px solid #cbd5e1;';
+  projectTypesContainer.style.cssText = isDark
+    ? 'display:flex; gap:8px; align-items:center; padding-right:12px; border-right:2px solid rgba(255,255,255,0.06);'
+    : 'display: flex; gap: 8px; align-items: center; padding-right: 12px; border-right: 2px solid #cbd5e1;';
   let hasCommercial = false;
   let hasResidential = false;
   (tasks || []).forEach((task: any) => {
@@ -204,13 +211,17 @@ export function createCalendarLegend(tasks: Array<{ taskCategoryName?: string; t
   if (hasCommercial) {
     const commercialBadge = document.createElement('span');
     commercialBadge.innerHTML = '🏢 Commercial';
-    commercialBadge.style.cssText = 'display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; background: #7DD3FC; color: #000000; border-radius: 4px; font-size: 12px; font-weight: 700; box-shadow: 0 1px 3px rgba(0,0,0,0.2);';
+    commercialBadge.style.cssText = isDark
+      ? 'display:inline-flex; align-items:center; gap:4px; padding:4px 10px; background:#7DD3FC; color:#000000; border-radius:4px; font-size:12px; font-weight:700; box-shadow: 0 1px 2px rgba(0,0,0,0.45);'
+      : 'display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; background: #7DD3FC; color: #000000; border-radius: 4px; font-size: 12px; font-weight: 700; box-shadow: 0 1px 3px rgba(0,0,0,0.2);';
     projectTypesContainer.appendChild(commercialBadge);
   }
   if (hasResidential) {
     const residentialBadge = document.createElement('span');
     residentialBadge.innerHTML = '🏠 Residential';
-    residentialBadge.style.cssText = 'display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; background: #6EE7B7; color: #000000; border-radius: 4px; font-size: 12px; font-weight: 700; box-shadow: 0 1px 3px rgba(0,0,0,0.2);';
+    residentialBadge.style.cssText = isDark
+      ? 'display:inline-flex; align-items:center; gap:4px; padding:4px 10px; background:#6EE7B7; color:#000000; border-radius:4px; font-size:12px; font-weight:700; box-shadow: 0 1px 2px rgba(0,0,0,0.45);'
+      : 'display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; background: #6EE7B7; color: #000000; border-radius: 4px; font-size: 12px; font-weight: 700; box-shadow: 0 1px 3px rgba(0,0,0,0.2);';
     projectTypesContainer.appendChild(residentialBadge);
   }
   if (hasCommercial || hasResidential) {
@@ -232,14 +243,11 @@ export function createCalendarLegend(tasks: Array<{ taskCategoryName?: string; t
   sortedCategories.forEach(([categoryName, colorHex]: [string, string]) => {
     const categoryBadge = document.createElement('span');
     categoryBadge.textContent = categoryName;
-    categoryBadge.style.cssText = `display: inline-flex; align-items: center; padding: 4px 10px; background: ${colorHex}; color: ${getContrastColor(colorHex)}; border-radius: 4px; font-size: 11px; font-weight: 700; border: 1px solid ${darkenColor(colorHex, 15)}; box-shadow: 0 1px 2px rgba(0,0,0,0.15);`;
+    const boxShadow = isDark ? '0 1px 2px rgba(255,255,255,0.04)' : '0 1px 2px rgba(0,0,0,0.15)';
+    categoryBadge.style.cssText = `display: inline-flex; align-items: center; padding: 4px 10px; background: ${colorHex}; color: ${getContrastColor(colorHex)}; border-radius: 4px; font-size: 11px; font-weight: 700; border: 1px solid ${darkenColor(colorHex, 15)}; box-shadow: ${boxShadow};`;
     categoriesContainer.appendChild(categoryBadge);
   });
   legend.appendChild(categoriesContainer);
-  return legend;
-
-  legend.appendChild(categoriesContainer);
-
   return legend;
 }
 
@@ -759,6 +767,12 @@ if (!state) {
 }
 
     }
+    // Setup filter highlighting so selects show yellow border in dark mode
+    try {
+      this.setupFilterHighlighting();
+    } catch (e) {
+      console.warn('setupFilterHighlighting failed', e);
+    }
     // Escuchar evento global para abrir modal de edición
     window.addEventListener('open-edit-task-modal', async (e: any) => {
       // Esperar a que Auth esté inicializado y los datos estén listos
@@ -898,6 +912,30 @@ if (!state) {
     setTimeout(() => restoreFullCalendarState(), 100);
   }
 
+  // Ensure filter selects get a persistent yellow border when focused/changed (dark-mode)
+  private setupFilterHighlighting(): void {
+    const ids = ['project-filter', 'category-filter', 'creator-filter'];
+    ids.forEach((id) => {
+      const el = document.getElementById(id) as HTMLElement | null;
+      if (!el) return;
+      let changed = false;
+      const applyYellow = () => {
+        const amarillo = (getComputedStyle(document.documentElement).getPropertyValue('--amarillo-resaltador') || '#ebd660').trim();
+        el.style.setProperty('border-color', amarillo, 'important');
+        el.style.setProperty('box-shadow', '0 0 12px rgba(235,214,96,0.28)', 'important');
+      };
+      const clearYellow = () => {
+        if (!changed) {
+          el.style.removeProperty('border-color');
+          el.style.removeProperty('box-shadow');
+        }
+      };
+      el.addEventListener('focus', applyYellow);
+      el.addEventListener('blur', clearYellow);
+      el.addEventListener('change', () => { changed = true; applyYellow(); });
+    });
+  }
+
 
 
   clearAllFilters(): void {
@@ -924,7 +962,7 @@ if (!state) {
       const t = arg.event.extendedProps && arg.event.extendedProps.task ? arg.event.extendedProps.task : arg.event;
       if (!t) return { domNodes: [document.createTextNode(arg.event.title || '')] };
       try {
-        const card = createTaskCard(t, { compact: true });
+        const card = createTaskCard(t, { compact: true, calendarCard: true });
         // Interceptar click en tarjeta de holiday para mostrar modal personalizado
         if (t && t.isHoliday && card) {
           card.style.cursor = 'pointer';
