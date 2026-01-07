@@ -1,4 +1,7 @@
-<button class="btn-agregar" (click)="abrirModal()"> Add New Member</button>
+<div class="tooltip">
+  <button class="btn-agregar" (click)="abrirModal()">Add New Member</button>
+  <span class="tooltip-text">Create a new member by assigning their data and corresponding role.</span>
+</div>
 
 <div class="modal-backdrop" *ngIf="mostrarModal">
   <div class="modal">
@@ -11,68 +14,74 @@
      
     <div *ngIf="paso === 1" class="form-grid">
       <div class="form-control">
-        <input type="text" placeholder="Nombre" formControlName="nombre"
+        <label >Name</label>
+        <input type="text" placeholder="Name" formControlName="nombre"
           [ngClass]="{ 'input-error': form.get('nombre')?.invalid && form.get('nombre')?.touched }">
         <small *ngIf="form.get('nombre')?.invalid && form.get('nombre')?.touched">
-          El nombre es obligatorio
+          The name is required
         </small>
       </div>
 
       <!-- DEPARTAMENTO -->
       <div class="form-control">
+        <label>Department</label>
         <select formControlName="departamento"
           [ngClass]="{ 'input-error': form.get('departamento')?.invalid && form.get('departamento')?.touched }">
-          <option value="" disabled>Seleccione un departamento</option>
+          <option value="" disabled>Select a department</option>
           <option *ngFor="let d of (catalogs?.departments || [])" [value]="d?.name || d?.label || d?.title || d?.descripcion">{{ d?.name || d?.label || d?.title || d?.descripcion }}</option>
         </select>
         <small *ngIf="form.get('departamento')?.invalid && form.get('departamento')?.touched">
-          Ingrese un departamento válido
+          Enter a valid department
         </small>
       </div>
 
 <!-- OFICINA -->
 <div class="form-control">
+  <label >Office</label>
   <select formControlName="oficina"
     [ngClass]="{ 'input-error': form.get('oficina')?.invalid && form.get('oficina')?.touched }">
-    <option value="" disabled>Seleccione una oficina</option>
+    <option value="" disabled>Select an office</option>
     <option *ngFor="let o of (catalogs?.offices || [])" [value]="o?.name || o?.label || o?.title || o?.descripcion">{{ o?.name || o?.label || o?.title || o?.descripcion }}</option>
   </select>
   <small *ngIf="form.get('oficina')?.invalid && form.get('oficina')?.touched">
-    Ingrese una oficina válida
+    Enter a valid office
   </small>
 </div>
 
 <!-- POSICIÓN -->
 <div class="form-control">
+  <label >Position</label>
   <select formControlName="posicion"
     [ngClass]="{ 'input-error': form.get('posicion')?.invalid && form.get('posicion')?.touched }">
-    <option value="" disabled>Seleccione una posición</option>
+    <option value="" disabled>Select a position</option>
     <option *ngFor="let j of (catalogs?.jobs || [])" [value]="j?.name || j?.label || j?.title || j?.descripcion">{{ j?.name || j?.label || j?.title || j?.descripcion }}</option>
   </select>
   <small *ngIf="form.get('posicion')?.invalid && form.get('posicion')?.touched">
-    Ingrese una posición válida
+    Enter a valid position
   </small>
 </div>
 
 <!-- ROL -->
 <div class="form-control">
+  <label >Role</label>
   <select formControlName="rol"
     [ngClass]="{ 'input-error': form.get('rol')?.invalid && form.get('rol')?.touched }">
-    <option value="" disabled>Seleccione un rol</option>
+    <option value="" disabled>Select a role</option>
   <option *ngFor="let r of filteredAllowedRoles" [value]="r">{{ r }}</option>
   </select>
   <small *ngIf="form.get('rol')?.invalid && form.get('rol')?.touched">
-    El rol es obligatorio
+    The role is required
   </small>
 </div>
 
       <!-- FIN LISTAS -->
 
       <div class="form-control">
-        <input type="number" placeholder="Tarifa facturable" formControlName="tarifa"
+        <label >Billable Rate</label>
+        <input type="number" placeholder="Billable Rate" formControlName="tarifa"
           [ngClass]="{ 'input-error': form.get('tarifa')?.invalid && form.get('tarifa')?.touched }">
         <small *ngIf="form.get('tarifa')?.invalid && form.get('tarifa')?.touched">
-          Ingrese una tarifa válida
+          Enter a valid rate
         </small>
       </div>
     </div>
@@ -80,21 +89,24 @@
     <!-- PASO 2 -->
     <div *ngIf="paso === 2" class="form-grid">
       <div>
-        <input type="text" placeholder="Usuario" formControlName="usuario"
+        <label >Username</label>
+        <input type="text" placeholder="Username" formControlName="usuario"
           [ngClass]="{ 'input-error': form.get('usuario')?.invalid && form.get('usuario')?.touched }">
-        <small *ngIf="form.get('usuario')?.invalid && form.get('usuario')?.touched">Este campo es obligatorio</small>
+        <small *ngIf="form.get('usuario')?.invalid && form.get('usuario')?.touched">This field is required</small>
       </div>
 
       <div class="form-control">
-        <input type="email" placeholder="Correo" formControlName="correo"
+        <label >Email</label>
+        <input type="email" placeholder="Email" formControlName="correo"
           [ngClass]="{ 'input-error': form.get('correo')?.invalid && form.get('correo')?.touched }">
         <small *ngIf="form.get('correo')?.invalid && form.get('correo')?.touched">
-          Ingrese un correo válido
+          Enter a valid email
         </small>
       </div>
 
       <div class="form-control password-group">
-        <input [type]="showPassword ? 'text' : 'password'" placeholder="Contraseña" formControlName="password"
+        <label>Password</label>
+        <input [type]="showPassword ? 'text' : 'password'" placeholder="Password" formControlName="password"
           [ngClass]="{ 'input-error': form.get('password')?.invalid && form.get('password')?.touched }">
         <button type="button" class="toggle-password" (click)="showPassword = !showPassword" tabindex="-1">
           <span *ngIf="!showPassword">👁️</span>
@@ -120,7 +132,7 @@
         </div>
       </form>
 
-    Modal de éxito
+    <!-- Modal de éxito -->
     <div *ngIf="showSuccessModal" class="success-modal">
       <div style="font-size:2.5rem;color:#10b981;">✔</div>
       <span> Miembro creado correctamente</span>

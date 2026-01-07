@@ -60,11 +60,15 @@ Users cannot make modifications, ensuring data integrity while maintaining a cle
     </div> -->
     
 <!-- ================================================================================== -->
-    <!-- BOTONES DE CREAR PROYECTO Y LIMPIAR FILTROS MOVIDOS AL COMPONENTE DE FILTROS -->
+    <!-- BOTON DE CREAR PROYECTO MOVIDO AL COMPONENTE DE FILTROS -->
      <!-- ======================================================================================== -->
     <div class="filters-actions">
-      <button id="openCreate" class="btn-create" type="button" [style.display]="isAdminOrOwner ? '' : 'none'" (click)="openCreateModal()">Create New Project</button>
-      <button id="refresh" class="btn btn-clear-filters" type="button" (click)="clearFilters()">Clean filters</button>
+      <div class="tooltip">
+        <button id="openCreate" class="btn-create" type="button"  [style.display]="isAdminOrOwner ? '' : 'none'" (click)="openCreateModal()">
+          Create New Project
+        </button>
+        <span class="tooltip-text">Create a new project to organize, plan and track your tasks.</span>
+      </div>
     </div>
 
 

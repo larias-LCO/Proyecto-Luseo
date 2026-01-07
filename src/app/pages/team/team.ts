@@ -180,10 +180,11 @@ toggleMenu() {
   }
 
   // Permissions
-  get isOwner() { return !!this.auth.hasRole?.('OWNER'); }
-  get isAdmin() { return !!this.auth.hasRole?.('ADMIN'); }
-    private tabId = String(Math.random()) + '-' + String(Date.now());
-  get isUser() { return !!this.auth.hasRole?.('USER'); }
+// ---- Traer los roles para autenticar (UI gating) ----
+  get isOwner(): boolean { try { return this.auth.hasRole('OWNER'); } catch { return false; } }
+  get isAdmin(): boolean { try { return this.auth.hasRole('ADMIN'); } catch { return false; } }
+  get isAdminOrOwner(): boolean { return this.isAdmin || this.isOwner; }
+  get isUser(): boolean { try { return this.auth.hasRole('USER'); } catch { return false; } }
   get canAddMember() { return this.isOwner || this.isAdmin; }
   get canEditDelete() { return this.isOwner || this.isAdmin; }
 
@@ -316,6 +317,16 @@ toggleMenu() {
   ngOnDestroy(): void {
     this.subs.unsubscribe();
   }
+
+
+get isUserOnly(): boolean {
+      try {
+        return this.auth.hasRole && this.auth.hasRole('USER');
+      } catch {
+        return false;
+      }
+    }
+
 
   // ------------------ Data loading ------------------
   async refreshData() {

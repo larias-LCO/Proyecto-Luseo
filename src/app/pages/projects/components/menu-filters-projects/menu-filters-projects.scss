@@ -1,6 +1,6 @@
 .filters-container{
   width: 290px;
-  height: 100vh;
+  height: 95vh;
   background: #ffffff;
   border-right: 1px solid #e5e7eb;
   padding: 12px 8px;
@@ -71,6 +71,151 @@
 .mf-section-header .caret { display:inline-block; transition: transform 200ms ease; transform-origin: center; color: #004db1; margin-top: 8px;}
 .mf-section-header .caret.open { transform: rotate(90deg); }
 .mf-section-body { padding-left: 18px; margin-top:6px;}
+
+/* Contenedor del botón de limpiar filtros */
+// .btn-clear-filters {
+//   display: flex;
+//   justify-content: center;
+//   margin-top: 10px;
+//   margin-left: 30px;
+//   margin-bottom: 10px;
+//   padding: 10px 0;
+//   width: 200px;
+//   height: 40px;
+//   cursor: pointer;
+// }
+
+/* Estilos del botón de limpiar filtros */
+/* From Uiverse.io by adamgiebl */ 
+// .btn-clear-filters {
+//   font-size: 14px;
+//     font-weight: 700;
+//   letter-spacing: 2px;
+//   text-transform: uppercase;
+//   display: inline-block;
+//   text-align: center;
+//   font-weight: bold;
+//   padding: 0.7em 2em;
+//   border: 1px solid #96989b;
+//   border-radius: 12px;
+//   position: relative;
+//   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.1);
+//   color: #0084ff;
+//   text-decoration: none;
+//   transition: 0.3s ease all;
+//   z-index: 1;
+// }
+
+// .btn-clear-filters:before {
+//   transition: 0.5s all ease;
+//   position: absolute;
+//   top: 0;
+//   left: 50%;
+//   right: 50%;
+//   bottom: 0;
+//   opacity: 0;
+//   content: '';
+//   background-color: #79bdfc;
+//   z-index: -1;
+//   border-radius: 12px;
+// }
+
+// .btn-clear-filters:hover, .btn-clear-filters:focus {
+//   color: white;
+// }
+
+// .btn-clear-filters:hover:before, .btn-clear-filters:focus:before {
+//   transition: 0.5s all ease;
+//   left: 0;
+//   right: 0;
+//   opacity: 1;
+// }
+
+// .btn-clear-filters:active {
+//   transform: scale(0.9);
+// }
+
+
+.btn-clear-filters {
+  --color: #0077ff;
+ --color2: #001cb9;
+  --border: #9fa4aa;
+  font-family: inherit;
+  display: inline-block;
+  width: 8em;
+  height: 2.6em;
+  line-height: 2.5em;
+  overflow: hidden;
+  cursor: pointer;
+  margin-left: 70px;
+  margin-top: 10px;
+  font-size: 17px;
+  font-weight: 700;
+  z-index: 1;
+  color: var(--color2);
+  border: 2px solid var(--color2);
+  border-radius: 6px;
+  position: relative;
+}
+
+.btn-clear-filters::before {
+  position: absolute;
+  content: "";
+  background: linear-gradient(#001cb9, #0077ff);
+  width: 200px;
+  height: 200px;
+  z-index: -1;
+  border-radius: 50%;
+}
+
+.btn-clear-filters:hover {
+  color: white;
+}
+
+.btn-clear-filters:before {
+  top: 100%;
+  left: 100%;
+  transition: 0.3s all;
+}
+
+.btn-clear-filters:hover::before {
+  top: -30px;
+  left: -30px;
+}
+
+
+// .btn-clear-filters{
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+//   outline: none;
+//   cursor: pointer;
+//   width: 150px;
+//   height: 40px;
+//   background-image: linear-gradient(to top, #D8D9DB 0%, #fff 80%, #FDFDFD 100%);
+//   border-radius: 30px;
+//   border: 1px solid #8F9092;
+//   transition: all 0.2s ease;
+//   font-family: "Source Sans Pro", sans-serif;
+//   font-size: 14px;
+//   font-weight: 600;
+//   color: #606060;
+//   text-shadow: 0 1px #fff;
+//   margin-left: 70px;
+//   margin-top: 10px;
+// }
+
+// .btn-clear-filters:hover {
+//   box-shadow: 0 4px 3px 1px #FCFCFC, 0 6px 8px #D6D7D9, 0 -4px 4px #CECFD1, 0 -6px 4px #FEFEFE, inset 0 0 3px 3px #CECFD1;
+// }
+
+// .btn-clear-filters:active {
+//   box-shadow: 0 4px 3px 1px #FCFCFC, 0 6px 8px #D6D7D9, 0 -4px 4px #CECFD1, 0 -6px 4px #FEFEFE, inset 0 0 5px 3px #999, inset 0 0 30px #aaa;
+// }
+
+// .btn-clear-filters:focus {
+//   box-shadow: 0 4px 3px 1px #fcfcfc, 0 6px 8px #D6D7D9, 0 -4px 4px #CECFD1, 0 -6px 4px #FEFEFE, inset 0 0 5px 3px #999, inset 0 0 30px #aaa;
+// }
 
 // .menu {
 //   position: fixed;

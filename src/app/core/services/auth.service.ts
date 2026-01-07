@@ -46,35 +46,57 @@ export class AuthService {
     this.apiBase = apiBase || '';
   }
 
-  private loadFromStorage() {
+  loadFromStorage() {
     const token = this.getStoredToken();
     const username = localStorage.getItem(this.usernameKey) || undefined;
     const rolesJson = localStorage.getItem(this.rolesKey);
-    let roles = rolesJson ? (JSON.parse(rolesJson) as string[]) : undefined;
+    let roles: string[] | undefined = undefined;
+    
+    // Intentar obtener roles desde localStorage primero
+    if (rolesJson) {
+      try {
+        const parsed = JSON.parse(rolesJson);
+        // Normalizar a array: si es string, convertir a array
+        if (typeof parsed === 'string') {
+          roles = [parsed];
+        } else if (Array.isArray(parsed)) {
+          roles = parsed;
+        }
+      } catch (e) {
+        console.warn('[AuthService] Error parsing roles from localStorage:', e);
+      }
+    }
+    
     // Fallback: try to decode roles and employeeId from JWT if not explicitly stored
     let employeeId: number | undefined = undefined;
     if (token) {
       const decoded = this.decodeJwt(token);
-      // Roles
-      const rawRoles = decoded?.roles
-        ?? decoded?.authorities
-        ?? decoded?.scopes
-        ?? decoded?.scope
-        ?? decoded?.role
-        ?? decoded?.claims?.roles;
-      if (Array.isArray(rawRoles)) {
-        roles = rawRoles.map((r: any) => typeof r === 'string' ? r : (r?.name || r?.role || r?.authority || r?.rol || r?.roleName || r?.label)).filter(Boolean);
-      } else if (typeof rawRoles === 'string') {
-        // could be comma/space separated
-        const parts = rawRoles.split(/[ ,]+/).map(s => s.trim()).filter(Boolean);
-        roles = parts.length ? parts : undefined;
+      
+      // Si no tenemos roles de localStorage, intentar obtenerlos del token
+      if (!roles) {
+        const rawRoles = decoded?.roles
+          ?? decoded?.authorities
+          ?? decoded?.scopes
+          ?? decoded?.scope
+          ?? decoded?.role
+          ?? decoded?.claims?.roles;
+        
+        if (Array.isArray(rawRoles)) {
+          roles = rawRoles.map((r: any) => typeof r === 'string' ? r : (r?.name || r?.role || r?.authority || r?.rol || r?.roleName || r?.label)).filter(Boolean);
+        } else if (typeof rawRoles === 'string' && rawRoles) {
+          // Si es un string simple, crear array con ese valor
+          roles = [rawRoles];
+        }
       }
+      
       // EmployeeId
       if (decoded && (decoded.employeeId !== undefined || decoded.employee_id !== undefined)) {
         employeeId = Number(decoded.employeeId ?? decoded.employee_id);
         if (isNaN(employeeId)) employeeId = undefined;
       }
     }
+    
+    console.log('[AuthService] Roles cargados:', roles);
     this.state.set({ authenticated: !!token, token: token || undefined, username, role: roles, employeeId });
   }
 
@@ -141,14 +163,28 @@ export class AuthService {
     const data = await res.json().catch(() => ({} as any));
     const token = data?.token || data?.accessToken || data?.jwt || '';
     const username = data?.username || login;
-    const roles: string[] | undefined = Array.isArray(data?.roles)
-      ? data.roles.map((r: any) => typeof r === 'string' ? r : (r?.name || r?.role || r?.authority || r?.rol || r?.roleName || r?.label)).filter(Boolean)
-      : (typeof data?.role === 'string' ? [data.role] : undefined);
+    
+    // Normalizar roles: siempre convertir a array
+    let roles: string[] | undefined = undefined;
+    if (Array.isArray(data?.roles)) {
+      roles = data.roles.map((r: any) => typeof r === 'string' ? r : (r?.name || r?.role || r?.authority || r?.rol || r?.roleName || r?.label)).filter(Boolean);
+    } else if (typeof data?.role === 'string' && data.role) {
+      // Si viene como string único, convertir a array
+      roles = [data.role];
+    } else if (typeof data?.roles === 'string' && data.roles) {
+      roles = [data.roles];
+    }
+    
     if (!token) throw new Error('Token missing in response');
     this.setStoredToken(token);
     localStorage.setItem(this.usernameKey, username);
-    if (roles) localStorage.setItem(this.rolesKey, JSON.stringify(roles));
-    else localStorage.removeItem(this.rolesKey);
+    if (roles) {
+      console.log('[AuthService] Guardando roles en localStorage:', roles);
+      localStorage.setItem(this.rolesKey, JSON.stringify(roles));
+    } else {
+      localStorage.removeItem(this.rolesKey);
+    }
+    
     // Decodificar employeeId del token si existe
     let employeeId: number | undefined = undefined;
     try {
@@ -158,6 +194,8 @@ export class AuthService {
         if (isNaN(employeeId)) employeeId = undefined;
       }
     } catch {}
+    
+    console.log('[AuthService] Login exitoso. Roles:', roles, 'EmployeeId:', employeeId);
     this.state.set({ authenticated: true, username, token, role: roles, employeeId });
   }
 
