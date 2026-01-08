@@ -7,6 +7,8 @@ import { NotificationService } from '../../../../../core/services/notification.s
 import { IconButtonComponent } from '../../../../../core/components/animated-icons/icon-button.component';
 import { PlusIconComponent } from '../../../../../core/components/animated-icons/plus-icon.component';
 import { ArchiveIconComponent } from '../../../../../core/components/animated-icons/archive-icon.component';
+import { timeToDecimal, decimalToTime } from '../../../utils/time-conversion.utils';
+import { hoursMinutesToDecimal, decimalToHoursMinutes } from '../../../utils/time-conversion.utils';
 
 @Component({
   selector: 'app-internal-task-modal',
@@ -22,8 +24,8 @@ export class InternalTaskModal implements OnInit, OnChanges {
   @Input() presetEntry?: any;
 
   @Output() save = new EventEmitter<any[]>();
-  // emit boolean: true => changes saved, false => closed without changes
-  @Output() close = new EventEmitter<boolean>();
+  // emit object: { changed: boolean, draft?: any[] }
+  @Output() close = new EventEmitter<any>();
 
   form: FormGroup;
 
@@ -56,15 +58,53 @@ export class InternalTaskModal implements OnInit, OnChanges {
     if (changes && changes['presetEntry'] && changes['presetEntry'].currentValue) {
       try {
         const e = changes['presetEntry'].currentValue;
-        const g = this.createEntryGroup();
-        g.patchValue({
-          mainTaskId: e.mainTaskId || e.internalTaskId || '',
-          subTaskId: e.subTaskId || '',
-          description: e.description || '',
-          hours: e.hours || e.reportHours || null,
-          date: e.date || e.start || this.todayStr()
-        }, { emitEvent: false });
-        this.form.setControl('entries', this.fb.array([g]));
+        // support either single-object preset or an array of drafts
+        if (Array.isArray(e)) {
+          const groups = (e || []).map((it: any) => {
+            const g = this.createEntryGroup();
+            const hoursValue = it.hours || it.reportHours;
+            let h = 0, m = 0;
+            if (typeof hoursValue === 'number') {
+              const result = decimalToHoursMinutes(hoursValue);
+              h = result.hours;
+              m = result.minutes;
+            } else if (typeof hoursValue === 'object') {
+              h = hoursValue.hours || 0;
+              m = hoursValue.minutes || 0;
+            }
+            g.patchValue({
+              mainTaskId: it.mainTaskId || it.internalTaskId || '',
+              subTaskId: it.subTaskId || '',
+              description: it.description || '',
+              hours: h,
+              minutes: m,
+              date: it.date || it.start || this.todayStr()
+            }, { emitEvent: false });
+            return g;
+          });
+          this.form.setControl('entries', this.fb.array(groups.length ? groups : [this.createEntryGroup()]));
+        } else {
+          const g = this.createEntryGroup();
+          const hoursValue = e.hours || e.reportHours;
+          let h = 0, m = 0;
+          if (typeof hoursValue === 'number') {
+            const result = decimalToHoursMinutes(hoursValue);
+            h = result.hours;
+            m = result.minutes;
+          } else if (typeof hoursValue === 'object') {
+            h = hoursValue.hours || 0;
+            m = hoursValue.minutes || 0;
+          }
+          g.patchValue({
+            mainTaskId: e.mainTaskId || e.internalTaskId || '',
+            subTaskId: e.subTaskId || '',
+            description: e.description || '',
+            hours: h,
+            minutes: m,
+            date: e.date || e.start || this.todayStr()
+          }, { emitEvent: false });
+          this.form.setControl('entries', this.fb.array([g]));
+        }
       } catch (err) { console.error('[InternalTaskModal] ❌ Error applying presetEntry', err); }
     }
   }
@@ -79,7 +119,8 @@ export class InternalTaskModal implements OnInit, OnChanges {
       mainTaskId: ['', Validators.required],
       subTaskId: [''],
       description: [''],
-      hours: [null, [Validators.required, Validators.min(0.01)]],
+      hours: [0, [Validators.required, Validators.min(0)]],
+      minutes: [0, [Validators.required, Validators.min(0), Validators.max(59)]],
       date: [this.todayStr(), [Validators.required, this.weekdayValidator]]
     });
   }
@@ -135,7 +176,7 @@ export class InternalTaskModal implements OnInit, OnChanges {
         mainTaskId: v.mainTaskId,
         subTaskId: v.subTaskId,
         description: v.description,
-        hours: Number(v.hours),
+        hours: hoursMinutesToDecimal(v.hours, v.minutes),
         date: v.date
       };
     });
@@ -169,7 +210,7 @@ export class InternalTaskModal implements OnInit, OnChanges {
           // reset form
           try { this.form.setControl('entries', this.fb.array([this.createEntryGroup()])); } catch (e) {}
           // close modal (parent should refresh entries)
-          try { this.close.emit(true); } catch (e) {}
+          try { this.close.emit({ changed: true }); } catch (e) {}
         },
         error: (err) => {
           console.error('[InternalTaskModal] Failed to create internal task logs', err);
@@ -201,6 +242,21 @@ export class InternalTaskModal implements OnInit, OnChanges {
   }
 
   cancel(): void {
-    this.close.emit(false);
+    // emit current draft so parent can keep it until an actual save occurs
+    try {
+      const draft = (this.entries.controls || []).map((c: AbstractControl) => {
+        const v: any = c.value;
+        return {
+          mainTaskId: v.mainTaskId,
+          subTaskId: v.subTaskId,
+          description: v.description,
+          hours: v.hours,
+          date: v.date
+        };
+      });
+      this.close.emit({ changed: false, draft });
+    } catch (e) {
+      this.close.emit({ changed: false });
+    }
   }
 }

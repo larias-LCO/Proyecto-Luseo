@@ -67,7 +67,7 @@
               <span class="rh-event__flag">{{ arg.event.extendedProps?.countryCode === 'CO' ? '🇨🇴' : '🇺🇸' }}</span>
               <span class="rh-event__country">{{ arg.event.extendedProps?.countryName }}</span>
             </div>
-            <div class="rh-event__title">🎉 {{ arg.event.extendedProps?.originalName || (arg.event.title ? (arg.event.title.replace((arg.event.extendedProps?.countryCode === 'CO' ? '🇨🇴' : '🇺🇸'), '') ) : '') }}</div>
+            <div class="rh-event__title">🎉 {{ arg.event.extendedProps?.localName || (arg.event.title ? (arg.event.title.replace((arg.event.extendedProps?.countryCode === 'CO' ? '🇨🇴' : '🇺🇸'), '') ) : '') }}</div>
             <div class="rh-event__note">🚫 No Working Day</div>
           </div>
         </ng-container>

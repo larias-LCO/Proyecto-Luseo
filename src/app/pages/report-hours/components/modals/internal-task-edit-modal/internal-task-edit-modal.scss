@@ -36,7 +36,7 @@
 	border-radius: 10px 10px 0 0;
 }
 
-.modal-title { margin: 0; }
+.modal-title, h2 { margin: 0; font-size: 18px;}
 
 .modal-body { padding: 16px; overflow-y: auto; }
 
@@ -64,7 +64,7 @@
 	border: 1px solid #e6e6e6;
 	border-radius: 8px;
 	background: #fff;
-	font-size: 14px;
+	font-size: 15px;
 	color: #111827;
 	box-sizing: border-box;
 }

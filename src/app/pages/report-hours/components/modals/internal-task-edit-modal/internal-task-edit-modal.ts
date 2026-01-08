@@ -7,6 +7,8 @@ import { firstValueFrom } from 'rxjs';
 import { IconButtonComponent } from '../../../../../core/components/animated-icons/icon-button.component';
 import { ArchiveIconComponent } from '../../../../../core/components/animated-icons/archive-icon.component';
 import { FileCheckIconComponent } from '../../../../../core/components/animated-icons/file-check-icon.component';
+import { timeToDecimal, decimalToTime } from '../../../utils/time-conversion.utils';
+import { hoursMinutesToDecimal, decimalToHoursMinutes } from '../../../utils/time-conversion.utils';
 
 @Component({
   selector: 'app-internal-task-edit-modal',
@@ -33,7 +35,8 @@ export class InternalTaskEditModal implements OnInit {
   ) {
     this.form = this.fb.group({
       description: [''],
-      reportHours: [0, [Validators.required, Validators.min(0.01)]],
+      hours: [0, [Validators.required, Validators.min(0)]],
+      minutes: [0, [Validators.required, Validators.min(0), Validators.max(59)]],
       logDate: ['', Validators.required]
     });
   }
@@ -45,9 +48,11 @@ export class InternalTaskEditModal implements OnInit {
       const hoursVal = (this.log.reportHours !== undefined && this.log.reportHours !== null) ? this.log.reportHours : (this.log.hours !== undefined ? this.log.hours : 0);
       const descVal = this.log.description || this.log.title || '';
       const dateStr = this.normalizeDate(dateVal);
+      const { hours, minutes } = decimalToHoursMinutes(hoursVal);
       this.form.patchValue({
         description: descVal,
-        reportHours: hoursVal,
+        hours: hours,
+        minutes: minutes,
         logDate: dateStr
       });
     }
@@ -97,6 +102,14 @@ export class InternalTaskEditModal implements OnInit {
     return `${y}-${m}-${day}`;
   }
 
+  // Close when clicking on overlay background
+  onOverlayClick(evt: MouseEvent): void {
+    const target = evt.target as HTMLElement | null;
+    if (target && target.classList && (target.classList.contains('modal-overlay') || target.classList.contains('rh-internal-modal-overlay'))) {
+      this.cancel();
+    }
+  }
+
   cancel(): void { this.close.emit(false); }
 
   async saveChanges(): Promise<void> {
@@ -116,7 +129,7 @@ export class InternalTaskEditModal implements OnInit {
 
     const payload: any = {
       logDate: v.logDate,
-      reportHours: Number(v.reportHours),
+      reportHours: hoursMinutesToDecimal(v.hours, v.minutes),
       description: v.description || ''
     };
 

@@ -297,8 +297,20 @@ export class ReportHours implements OnInit, OnDestroy {
   }
   handleInternalModalClose(changed?: boolean): void {
     this.showInternalModal = false;
-    this.internalPresetEntry = null;
+    // support structured result { changed: boolean, draft?: any[] }
+    if (changed && typeof changed === 'object') {
+      const res: any = changed;
+      if (res.changed) {
+        this.internalPresetEntry = null;
+        try { this.loadTimeEntries(); } catch (e) {}
+      } else if (res.draft) {
+        this.internalPresetEntry = res.draft;
+      }
+      return;
+    }
+    // legacy boolean handling
     if (changed) {
+      this.internalPresetEntry = null;
       try { this.loadTimeEntries(); } catch (e) {}
     }
   }
@@ -337,6 +349,18 @@ export class ReportHours implements OnInit, OnDestroy {
   handleSubtaskModalClose(changed?: boolean): void {
     this.showSubtaskModal = false;
     this.projectModalPreset = undefined;
+    // support structured result { changed: boolean, draft?: any[] }
+    if (changed && typeof changed === 'object') {
+      const res: any = changed;
+      if (res.changed) {
+        this.subtaskPresetEntry = null;
+        try { this.loadTimeEntries(); } catch (e) {}
+      } else if (res.draft) {
+        this.subtaskPresetEntry = res.draft;
+      }
+      return;
+    }
+    // legacy boolean handling
     this.subtaskPresetEntry = null;
     if (changed) {
       try { this.loadTimeEntries(); } catch (e) {}
