@@ -28,6 +28,11 @@ import { mapHolidaysToTimeEntries } from './utils/mappers/holiday.mapper';
 import { AuthStateService } from './auth/services/auth-state.service';
 import { HeaderComponent } from "../../core/components/header/header";
 import { SubmenuComponent } from "../../core/components/submenu/submenu";
+import { AlarmClockIconComponent } from '../../core/components/animated-icons/alarm-clock.component';
+import { HelpPanelService } from './services/help-panel.service';
+import { REPORT_HOURS_HELP } from './utils/report-hours-help.config';
+import { HelpPanelComponent } from './components/help-panel/help-panel';
+import { FloatingHelpButtonComponent } from './components/floating-help-button/floating-help-button';
 
 @Component({
   selector: 'app-report-hours',
@@ -43,7 +48,10 @@ import { SubmenuComponent } from "../../core/components/submenu/submenu";
     SubtaskModal,
     SubtaskEditModal,
     HeaderComponent,
-    SubmenuComponent
+    SubmenuComponent,
+    AlarmClockIconComponent,
+    HelpPanelComponent,
+    FloatingHelpButtonComponent
 ],
   templateUrl: './report-hours.html',
   styleUrls: ['./report-hours.scss']
@@ -94,12 +102,15 @@ export class ReportHours implements OnInit, OnDestroy {
     private reportHoursDataService: ReportHoursDataService,
     private notification: NotificationService,
     private employeeService: EmployeeService,
-    private holidayService: HolidayService
-    ,
-    private subTaskCategoryService: SubTaskCategoryService
+    private holidayService: HolidayService,
+    private subTaskCategoryService: SubTaskCategoryService,
+    private helpPanelService: HelpPanelService
   ) {}
 
   ngOnInit(): void {
+    // Configurar contenido de ayuda para esta página
+    this.helpPanelService.setContent(REPORT_HOURS_HELP);
+
     this.loadProjects();
 
     // preload subtask categories for modals
@@ -532,5 +543,8 @@ export class ReportHours implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.authSub?.unsubscribe();
+    // Limpiar el contenido de ayuda y cerrar el panel al salir de esta página
+    this.helpPanelService.close();
+    this.helpPanelService.setContent(null);
   }
 }

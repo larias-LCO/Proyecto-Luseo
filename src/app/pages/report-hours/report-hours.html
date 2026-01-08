@@ -148,8 +148,12 @@
 
       <div class="calendar-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
         <div></div>
-        <div style="display:flex; gap:8px; align-items:center;">
-          <button class="btn btn-primary" style="background: linear-gradient(135deg, #06b6d4, #0ea5a4); padding:8px 14px; border-radius:8px;" (click)="openInternalModal()">📝 New Internal Task</button>
+        <div class="internal-task-create">
+          <div class="report-hours-info-internal-task">
+            <span class="report-hours-info-internal-icon">🖊️ Internal Tasks (Non-billable)</span>
+            <span class="report-hours-info-internal-description">Report hours for internal company tasks (meetings, training, administrative work, etc.)</span>
+          </div>
+          <button class="btn btn-primary" style="background: linear-gradient(135deg, #065fd4, #0e3ea5); padding:8px 14px; border-radius:8px;" (click)="openInternalModal()"><app-alarm-clock-icon [size]="25"></app-alarm-clock-icon> Report Internal Task</button>
         </div>
       </div>
 
@@ -178,5 +182,9 @@
       </app-subtask-modal>
     </div>
   </section>
+
+  <!-- Sistema de Ayuda (solo visible en esta página) -->
+  <app-floating-help-button></app-floating-help-button>
+  <app-help-panel></app-help-panel>
 
 </div>

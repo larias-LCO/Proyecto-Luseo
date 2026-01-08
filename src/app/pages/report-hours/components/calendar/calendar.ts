@@ -6,12 +6,13 @@ import { TimeEntry } from '../../models/time-entry.model';
 import { mapTimeEntriesToEvents } from '../../utils/calendar/calendar-adapter.util';
 import { getWeekCalendarOptions } from '../../utils/calendar/calendar-view.util';
 import { computeMetrics } from '../../utils/metrics/report-metrics.util';
+import { AlarmClockIconComponent } from '../../../../core/components/animated-icons/alarm-clock.component';
 import { NgModel } from '@angular/forms';
 
 @Component({
   selector: 'app-calendar',
   standalone: true,
-  imports: [CommonModule, FullCalendarModule, NgIf],
+  imports: [CommonModule, FullCalendarModule, NgIf, AlarmClockIconComponent],
   templateUrl: './calendar.html',
   styleUrls: ['./calendar.scss']
 })

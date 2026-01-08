@@ -9,13 +9,14 @@ import { PlusIconComponent } from '../../../../../core/components/animated-icons
 import { ArchiveIconComponent } from '../../../../../core/components/animated-icons/archive-icon.component';
 import { FileCheckIconComponent } from '../../../../../core/components/animated-icons/file-check-icon.component';
 import { XIconComponent } from '../../../../../core/components/animated-icons/x-icon.component';
+import { AlarmClockIconComponent } from '../../../../../core/components/animated-icons/alarm-clock.component';
 import { timeToDecimal, decimalToTime } from '../../../utils/time-conversion.utils';
 import { hoursMinutesToDecimal, decimalToHoursMinutes } from '../../../utils/time-conversion.utils';
 
 @Component({
   selector: 'app-internal-task-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, IconButtonComponent, PlusIconComponent, ArchiveIconComponent, FileCheckIconComponent, XIconComponent],
+  imports: [CommonModule, ReactiveFormsModule, IconButtonComponent, PlusIconComponent, ArchiveIconComponent, FileCheckIconComponent, XIconComponent, AlarmClockIconComponent],
   templateUrl: './internal-task-modal.html',
   styleUrls: ['./internal-task-modal.scss']
 })

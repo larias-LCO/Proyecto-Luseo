@@ -1,0 +1,8 @@
+<button 
+  class="floating-help-button" 
+  (click)="toggleHelp()"
+  [class.active]="isOpen"
+  aria-label="Ayuda"
+  title="Ayuda">
+  <app-circle-help-icon [size]="32"></app-circle-help-icon>
+</button>

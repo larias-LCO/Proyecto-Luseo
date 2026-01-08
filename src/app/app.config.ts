@@ -1,6 +1,7 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZoneChangeDetection } from '@angular/core';
 import { HttpInterceptorFn, provideHttpClient, withInterceptors, withInterceptorsFromDi } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
+import { provideAnimations } from '@angular/platform-browser/animations';
 import { routes } from './app.routes';
 
 // Add Authorization header and common headers to all HttpClient requests
@@ -20,6 +21,7 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
+    provideAnimations(),
     // Provide HttpClient at the root with our auth interceptor and DI-based interceptors
     provideHttpClient(
       withInterceptors([authInterceptor]),

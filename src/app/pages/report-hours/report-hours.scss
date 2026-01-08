@@ -36,6 +36,28 @@
 	padding-top: 6px;
 }
 
+.internal-task-create{
+	display: flex;
+	align-items: center;
+	text-align: right;
+}
+
+.report-hours-info-internal-task{
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	margin-right: 16px;
+}
+.report-hours-info-internal-icon{
+	font-size: 20px;
+	font-weight: 700;
+	color: #0b1220;
+}
+.report-hours-info-internal-description{
+	font-size: 17px;
+	color: #374151;
+}
+
 /* Make sure embedded components have consistent spacing inside sections */
 .report-section .filters-container,
 .report-section .projects-container,
@@ -111,7 +133,7 @@
 
 .rh-event__head {
 	font-weight: 700;
-	font-size: 13px;
+	font-size: 17px;
 	margin-bottom: 4px;
 	display: flex;
 	align-items: center;
@@ -128,14 +150,14 @@
 	background: rgba(255,255,255,0.9);
 	padding: 2px 6px;
 	border-radius: 4px;
-	font-size: 9px;
+	font-size: 12px;
 	font-weight: 700;
 	margin-left: 4px;
 	color: #000000; /* neutral by default; modifiers override */
 }
 
 .rh-event__meta {
-	font-size: 11px;
+	font-size: 12px;
 	margin-bottom: 3px;
 }
 
@@ -149,7 +171,7 @@
 }
 
 .rh-event__footer {
-	font-size: 10px;
+	font-size: 12px;
 	margin-top: 4px;
 	border-top: 1px solid rgba(255,255,255,0.5);
 	padding-top: 3px;
