@@ -8,13 +8,14 @@ import { IconButtonComponent } from '../../../../../core/components/animated-ico
 import { PlusIconComponent } from '../../../../../core/components/animated-icons/plus-icon.component';
 import { ArchiveIconComponent } from '../../../../../core/components/animated-icons/archive-icon.component';
 import { FileCheckIconComponent } from '../../../../../core/components/animated-icons/file-check-icon.component';
+import { XIconComponent } from '../../../../../core/components/animated-icons/x-icon.component';
 import { timeToDecimal, decimalToTime } from '../../../utils/time-conversion.utils';
 import { hoursMinutesToDecimal, decimalToHoursMinutes } from '../../../utils/time-conversion.utils';
 
 @Component({
   selector: 'app-subtask-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, IconButtonComponent, PlusIconComponent, ArchiveIconComponent, FileCheckIconComponent],
+  imports: [CommonModule, ReactiveFormsModule, IconButtonComponent, PlusIconComponent, ArchiveIconComponent, FileCheckIconComponent, XIconComponent],
   templateUrl: './subtask-modal.html',
   styleUrls: ['./subtask-modal.scss']
 })

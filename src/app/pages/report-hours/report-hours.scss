@@ -1,6 +1,6 @@
 /* Page-level layout for Report Hours to separate embedded components */
 .report-hours {
-	font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+	font-family: var(--font-primary);
 	display: flex;
 	flex-direction: column;
 	gap: 14px;

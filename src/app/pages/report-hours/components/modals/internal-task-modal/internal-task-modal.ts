@@ -7,13 +7,15 @@ import { NotificationService } from '../../../../../core/services/notification.s
 import { IconButtonComponent } from '../../../../../core/components/animated-icons/icon-button.component';
 import { PlusIconComponent } from '../../../../../core/components/animated-icons/plus-icon.component';
 import { ArchiveIconComponent } from '../../../../../core/components/animated-icons/archive-icon.component';
+import { FileCheckIconComponent } from '../../../../../core/components/animated-icons/file-check-icon.component';
+import { XIconComponent } from '../../../../../core/components/animated-icons/x-icon.component';
 import { timeToDecimal, decimalToTime } from '../../../utils/time-conversion.utils';
 import { hoursMinutesToDecimal, decimalToHoursMinutes } from '../../../utils/time-conversion.utils';
 
 @Component({
   selector: 'app-internal-task-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, IconButtonComponent, PlusIconComponent, ArchiveIconComponent],
+  imports: [CommonModule, ReactiveFormsModule, IconButtonComponent, PlusIconComponent, ArchiveIconComponent, FileCheckIconComponent, XIconComponent],
   templateUrl: './internal-task-modal.html',
   styleUrls: ['./internal-task-modal.scss']
 })

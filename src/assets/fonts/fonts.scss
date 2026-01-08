@@ -1,0 +1,154 @@
+/* ========================================
+   APTOS CUSTOM FONT FAMILY
+   ======================================== */
+
+/* Aptos Regular */
+@font-face {
+  font-family: 'Aptos';
+  src: url('/assets/fonts/Aptos.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Aptos Italic */
+@font-face {
+  font-family: 'Aptos';
+  src: url('/assets/fonts/Aptos-Italic.ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Aptos Light */
+@font-face {
+  font-family: 'Aptos';
+  src: url('/assets/fonts/Aptos-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Aptos Light Italic */
+@font-face {
+  font-family: 'Aptos';
+  src: url('/assets/fonts/Aptos-Light-Italic.ttf') format('truetype');
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Aptos SemiBold */
+@font-face {
+  font-family: 'Aptos';
+  src: url('/assets/fonts/Aptos-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Aptos SemiBold Italic */
+@font-face {
+  font-family: 'Aptos';
+  src: url('/assets/fonts/Aptos-SemiBold-Italic.ttf') format('truetype');
+  font-weight: 600;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Aptos Bold */
+@font-face {
+  font-family: 'Aptos';
+  src: url('/assets/fonts/Aptos-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Aptos Bold Italic */
+@font-face {
+  font-family: 'Aptos';
+  src: url('/assets/fonts/Aptos-Bold-Italic.ttf') format('truetype');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Aptos ExtraBold */
+@font-face {
+  font-family: 'Aptos';
+  src: url('/assets/fonts/Aptos-ExtraBold.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Aptos ExtraBold Italic */
+@font-face {
+  font-family: 'Aptos';
+  src: url('/assets/fonts/Aptos-ExtraBold-Italic.ttf') format('truetype');
+  font-weight: 800;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Aptos Black */
+@font-face {
+  font-family: 'Aptos';
+  src: url('/assets/fonts/Aptos-Black.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Aptos Black Italic */
+@font-face {
+  font-family: 'Aptos';
+  src: url('/assets/fonts/Aptos-Black-Italic.ttf') format('truetype');
+  font-weight: 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Display / Narrow / Serif / Mono variants (subset) */
+@font-face {
+  font-family: 'Aptos Display';
+  src: url('/assets/fonts/Aptos-Display.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Aptos Narrow';
+  src: url('/assets/fonts/Aptos-Narrow.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Aptos Serif';
+  src: url('/assets/fonts/Aptos-Serif.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Aptos Mono';
+  src: url('/assets/fonts/Aptos-Mono.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Utility: set a CSS variable with primary font-family */
+:root {
+  --font-primary: 'Aptos', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'Liberation Sans', sans-serif;
+}
+
+/* Optional: small helper to apply primary font quickly */
+.font-aptos {
+  font-family: var(--font-primary) !important;
+}

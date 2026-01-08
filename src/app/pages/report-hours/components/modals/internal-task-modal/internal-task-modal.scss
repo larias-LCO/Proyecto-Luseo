@@ -32,9 +32,9 @@
   border-bottom: 1px solid #eee;
   color: white;
 }
-.modal-title { margin: 0; font-size: 18px; }
-.modal-sub { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
-.modal-close { background: transparent; border: none; font-size: 26px; line-height: 1; cursor: pointer; }
+.modal-title { margin: 0; font-size: 20px; font-weight: 600; }
+.modal-sub { font-size: 15px; color: var(--text-muted); margin-top: 4px; }
+.modal-close { background: transparent; border: none; font-size: 30px; line-height: 1; cursor: pointer; color: white;}
 .modal-body { padding: 16px 20px; overflow: auto; }
 .modal-footer { padding: 12px 20px; border-top: 1px solid #eee; display: flex; justify-content: flex-end; gap: 10px; }
 .form-group { margin-bottom: 12px; display: flex; flex-direction: column; }

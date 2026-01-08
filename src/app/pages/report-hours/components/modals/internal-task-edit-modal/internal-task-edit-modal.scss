@@ -36,7 +36,7 @@
 	border-radius: 10px 10px 0 0;
 }
 
-.modal-title, h2 { margin: 0; font-size: 18px;}
+.modal-title, h2 { margin: 0; font-size: 20px; font-weight: 600;}
 
 .modal-body { padding: 16px; overflow-y: auto; }
 
@@ -51,8 +51,8 @@
 .modal-close {
 	background: transparent;
 	border: none;
-	color: rgba(255, 255, 255, 0.6);
-	font-size: 22px;
+	color: white;
+	font-size: 30px;
 	cursor: pointer;
 }
 

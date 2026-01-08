@@ -5,7 +5,7 @@
         <h2 class="modal-title">📝 Report Internal Task</h2>
         <div class="modal-sub">Report time for internal company activities</div>
       </div>
-      <button class="modal-close" (click)="cancel()">&times;</button>
+      <button class="modal-close" (click)="cancel()"><app-x-icon [size]="25"></app-x-icon></button>
     </div>
 
     <div class="modal-body">
@@ -85,7 +85,9 @@
     </div>
 
     <div class="modal-footer">
-      <button class="btn btn-primary" [disabled]="form.invalid" (click)="saveAll()">💾 Save Reports</button>
+      <app-icon-button title="Save" (clicked)="saveAll()">
+					<app-file-check-icon [size]="25"></app-file-check-icon>
+				</app-icon-button>
     </div>
   </div>
 </div>

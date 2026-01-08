@@ -2,7 +2,7 @@
   --sidebar-width: 250px;
   --sidebar-collapsed-width: 64px;
   --header-height: 70px; /* default; can be overridden by page */
-  font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  font-family: var(--font-primary);
   position: fixed;
   top: var(--header-height);
   left: 0;
