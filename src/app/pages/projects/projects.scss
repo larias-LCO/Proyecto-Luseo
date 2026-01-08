@@ -111,13 +111,13 @@
       display: flex;
       flex-direction: column;
 
-      button {
-        padding: 8px 12px;
-        border: none;
-        border-radius: 6px;
-        font-size: 0.9rem;
-        cursor: pointer;
-      }
+      // button {
+      //   padding: 8px 12px;
+      //   border: none;
+      //   border-radius: 6px;
+      //   font-size: 0.9rem;
+      //   cursor: pointer;
+      // }
 
       .btn-secondary {
         background-color: #007bff;
@@ -160,12 +160,12 @@
     }
 
   /* Los botones se alinean al nivel de los filtros */
-.filters-actions {
-  display: flex;
-  gap: 10px;
-  // align-items: end;
-  margin-left: 150px;
-}
+// .filters-actions {
+//   display: flex;
+//   gap: 10px;
+//   // align-items: end;
+//   margin-left: 150px;
+// }
  
   /* Responsivo: En pantallas pequeñas se apilan */
   @media (max-width: 992px) {
@@ -367,53 +367,79 @@
 // }
 
 
-.btn-create {
-  --color: #0077ff;
-  --color2: #001cb9;
-  --border: #9fa4aa;
-  font-family: inherit;
-  display: inline-block;
-  width: 8em;
-  height: 2.6em;
-  line-height: 2.5em;
-  overflow: hidden;
-  cursor: pointer;
-  margin: 10px;
-  margin-left: 70px;
-  font-size: 17px;
-  font-weight: 700;
-  z-index: 1;
-  color: var(--color2);
-  border: 1px solid var(--color);
-  border-radius: 6px;
+/* From Uiverse.io by andrew-demchenk0 */ 
+.button {
   position: relative;
+  width: 220px;
+  height: 50px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  border: 1px solid #34974d;
+  background: linear-gradient(rgb(0, 52, 100),rgb(18, 98, 219));
+  border-radius: 8px;
+  margin-left: 50px;
+  margin-top: 10px;
 }
 
-.btn-create::before {
+.button, .button__icon, .button__text {
+  transition: all 0.3s;
+}
+
+.button .button__text {
+  transform: translateX(30px);
+  color: #fff;
+  font-weight: 600;
+  font-size: 17px;
+  margin-left: -15px;
+}
+
+.button .button__icon {
   position: absolute;
-  content: "";
-  background: var(--color);
-  width: 200px;
-  height: 200px;
-  z-index: -1;
-  border-radius: 50%;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: 39px;
+  background:transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
 }
 
-.btn-create:hover {
-  color: white;
+.button .svg {
+  width: 30px;
+  stroke: #fff !important;
+  color: #fff !important;
+  fill: none;
 }
 
-.btn-create:before {
-  top: 100%;
-  left: 100%;
-  transition: 0.3s all;
+.button .button__icon svg {
+  stroke: #fff !important;
+  color: #fff !important;
 }
 
-.btn-create:hover::before {
-  top: -30px;
-  left: -30px;
+.button:hover {
+  background: linear-gradient(rgb(0, 52, 100),rgb(18, 98, 219));
 }
 
+.button:hover .button__text {
+  color: transparent;
+}
+
+.button:hover .button__icon {
+  width: 100%;
+  right: 0;
+  color: #fff;
+}
+
+.button:active .button__icon {
+  background: linear-gradient(rgb(0, 52, 100),rgb(18, 98, 219));
+}
+
+.button:active {
+  border: 1px solid #16aaff;
+}
 
 /* ===== TOOLTIP ANIMADO ===== */
 .tooltip {

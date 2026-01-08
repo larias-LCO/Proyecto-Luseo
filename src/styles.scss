@@ -519,3 +519,17 @@ body {
 .mf-search input{
 	background: var(--card-bg) !important;
 }
+
+/* Material Dialog Overlay z-index fix */
+.cdk-overlay-container,
+.cdk-global-overlay-wrapper {
+  z-index: 2600 !important;
+}
+
+.cdk-overlay-backdrop {
+  z-index: 2600 !important;
+}
+
+.cdk-overlay-pane {
+  z-index: 2610 !important;
+}

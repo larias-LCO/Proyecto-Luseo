@@ -64,12 +64,24 @@ Users cannot make modifications, ensuring data integrity while maintaining a cle
      <!-- ======================================================================================== -->
     <div class="filters-actions">
       <div class="tooltip">
-        <button id="openCreate" class="btn-create" type="button"  [style.display]="isAdminOrOwner ? '' : 'none'" (click)="openCreateModal()">
+        <!-- <button id="openCreate" class="btn-create" type="button"  [style.display]="isAdminOrOwner ? '' : 'none'" (click)="openCreateModal()">
           Create New Project
         </button>
-        <span class="tooltip-text">Create a new project to organize, plan and track your tasks.</span>
+        <span class="tooltip-text">Create a new project to organize, plan and track your tasks.</span> -->
+
+
+        <!-- From Uiverse.io by andrew-demchenk0 --> 
+        <button id="openCreate" type="button" class="button" [style.display]="isAdminOrOwner ? '' : 'none'" (click)="openCreateModal()">
+        <span class="button__text"> Create New Project</span>
+        <span class="button__icon"><svg xmlns="http://www.w3.org/2000/svg"  width="24" viewBox="0 0 24 24" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" stroke="currentColor" height="24" fill="none" class="svg"><line y2="19" y1="5" x2="12" x1="12"></line><line y2="12" y1="12" x2="19" x1="5"></line></svg></span>
+          </button>
+          <span class="tooltip-text">Create a new project to organize, plan and track your tasks.</span>
       </div>
     </div>
+
+
+
+
 
 
 
