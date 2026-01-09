@@ -19,7 +19,7 @@
   display: flex !important;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 2500;
   padding: 24px;
   overflow: hidden;
 }
@@ -39,7 +39,7 @@
   flex-direction: column;
   font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   position: relative;
-  z-index: 1100;            /* 4. asegurar que esté encima de otros elementos */
+  z-index: 2520;            /* 4. asegurar que esté encima de otros elementos */
 }
 
 /* HEADER moderno con profundidad, blur y sutil brillo */
@@ -61,36 +61,91 @@
 
 /* Título */
 .modal-header #createTitle {
-  font-size: 1.15rem;
+  font-size: 22px;
   font-weight: 700;
   text-shadow: 0 1px 3px rgba(0,0,0,0.15);
-}
-
-/* Botón “Close” moderno */
-.modal-header #createClose {
-  background: rgba(255, 255, 255, 0.15);
-  color: #fff;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 10px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  transition: all 0.25s ease;
   display: flex;
   align-items: center;
-  gap: 6px;
-  box-shadow: 0 1px 2px rgba(255,255,255,0.2) inset;
-}
-.modal-header #createClose:hover {
-  background: rgba(255, 255, 255, 0.25);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  gap: 10px;
 }
 
+.modal-header #createTitle svg {
+  flex-shrink: 0;
+}
 
-.modal-header #createClose:active {
-  transform: scale(0.97);
-  background: rgba(255,255,255,0.3);
+/* From Uiverse.io by javierBarroso */ 
+.button {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: rgb(180, 83, 107);
+  border-radius: 50%;
+  transition: background 0.5s;
+  cursor: pointer;
+  margin-right: -5px;
+}
+
+.X {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 2em;
+  height: 1.5px;
+  background-color: rgb(255, 255, 255);
+  transform: translateX(-50%) rotate(45deg);
+}
+
+.Y {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 2em;
+  height: 1.5px;
+  background-color: #fff;
+  transform: translateX(-50%) rotate(-45deg);
+}
+
+.close {
+  position: absolute;
+  display: flex;
+  padding: 0.8rem 1.5rem;
+  align-items: center;
+  justify-content: center;
+  transform: translateX(-50%);
+  top: 40px;
+  left: 50%;
+  width: 20px;
+  height: 10px;
+  font-size: 14px;
+  background-color: rgb(19, 22, 24);
+  color: rgb(187, 229, 236);
+  border: none;
+  border-radius: 3px;
+  pointer-events: none;
+  opacity: 0;
+  
+
+}
+
+.button:hover {
+  background-color: rgb(204, 0, 0);
+}
+
+.button:active {
+  background-color: rgb(130, 0, 0);
+}
+
+.button:hover > .close {
+  animation: close 0.2s forwards 0.25s;
+}
+
+@keyframes close {
+  100% {
+    opacity: 1;
+  }
 }
 
 /* CUERPO con scroll independiente y padding interno (evita estar pegado) */
@@ -130,7 +185,7 @@ select:focus,
 textarea:focus {
   outline: none;
   border-color: #2563eb;
-  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.12);
+  box-shadow: 0 4px 10px rgba(255, 242, 171, 0.671);
   transform: translateY(-1px);
 }
 
@@ -318,7 +373,7 @@ textarea {
   grid-template-columns: 50% 50%;
   gap: 1rem;
   // margin-top: 0;
-  background-color: #f9fafb;
+  background-color: #ffffff;
   padding: 1.5rem;
   border-radius: 1rem;
 }
@@ -589,6 +644,7 @@ select[multiple] {
   font-weight: 700;
   font-size: 19px;
   color: #2c1d5a;
+
   margin-bottom: 0; // más cerca de la sección inferior
   position: relative;
   padding-bottom: 6px;
@@ -611,4 +667,34 @@ select[multiple] {
     background: linear-gradient(90deg, #1554ff 0%, #3766ff 60%, transparent 80%);
     border-radius: 4px;
   }
+}
+
+
+/* From Uiverse.io by cssbuttons-io */ 
+.btnccc {
+  padding: 15px ;
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-weight: 700;
+  color: #fff;
+  background-color: #0084ff;
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0px 8px 15px rgba(68, 116, 250, 0.295);
+  transition: all 0.3s ease 0s;
+  cursor: pointer;
+  outline: none;
+  margin-bottom: 15px;
+}
+
+.btnccc:hover {
+  background-color: #039259;
+  box-shadow: 0px 15px 20px rgba(46, 229, 157, 0.4);
+  color: #fff;
+  transform: translateY(-7px);
+}
+
+.btnccc:active {
+  transform: translateY(-1px);
 }

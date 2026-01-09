@@ -20,13 +20,14 @@ import { WebsocketService } from '../../core/services/websocket.service';
 import { debounceTime } from 'rxjs/operators';
 import { Subject, Subscription } from 'rxjs';
 import { MenuFiltersProjects } from "./components/menu-filters-projects/menu-filters-projects";
+import { MasIconComponent } from "../../core/components/animated-icons/mas-icon.component";
 // import { MenuFiltersProjects } from "../../core/components/menu-filters-projects/menu-filters-projects";
 
 
 @Component({
   selector: 'app-projects',
   standalone: true,
-  imports: [CommonModule, FormsModule, HttpClientModule, HeaderComponent, CreateProjectComponent, ProjectDetailsComponent, MenuFiltersProjects, SubmenuComponent],
+  imports: [CommonModule, FormsModule, HttpClientModule, HeaderComponent, CreateProjectComponent, ProjectDetailsComponent, MenuFiltersProjects, SubmenuComponent, MasIconComponent],
   templateUrl: './projects.html',
   styleUrls: ['./projects.scss'],
   providers: [ProjectService],

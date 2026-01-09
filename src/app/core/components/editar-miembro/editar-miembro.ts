@@ -171,14 +171,19 @@ export class EditarMiembroComponent implements OnInit, OnChanges {
       if (this.api && typeof (this.api as any).updateEmployee === 'function') {
         await (this.api as any).updateEmployee(payload.id ?? payload.employeeId ?? this.miembro.id, payload);
       } else {
-        // fallback básico con fetch
+        // fallback usando fetchWithAuth para enviar las credenciales
         const base = this.auth.getApiBase?.() ?? '';
         const id = payload.id ?? this.miembro.id;
-        await fetch(`${base.replace(/\/$/, '')}/employees/${id}`, {
+        const response = await this.auth.fetchWithAuth(`${base.replace(/\/$/, '')}/employees/${id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
+        
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.message || `Error ${response.status}: ${response.statusText}`);
+        }
       }
 
       // Mostrar modal de éxito

@@ -1,24 +1,49 @@
 <!-- ✅ Coloca tus componentes de encabezado -->
 <app-header></app-header>
-<app-submenu></app-submenu>
+<app-submenu class="menu" [class.open]="isMenuOpen$ | async" ></app-submenu>
+
+<app-menu-filters-team
+  [departments]="catalogs?.departments ?? []"
+  [positions]="catalogs?.jobs ?? []"
+  [offices]="catalogs?.offices ?? []"
+  [roles]="roleFilterOptions"
+  [states]="stateOptions"
+  (filtersChange)="onFiltersChange($event)"
+  (toggleSubmenu)="isMenuOpen = !isMenuOpen"></app-menu-filters-team>
+
 
 <!-- ✅ Contenedor principal del TEAM -->
 <div class="team-container">
   
     <h1>Team</h1>
+
+    <div *ngIf="isAdminOrOwner">
+    <p class="texto-descriptivo">
+ This page is intended solely for administrators and owners, who can create new members, edit existing member information, and delete members as necessary.
+ <br>
+Its objective is to facilitate the management and administration of users, ensuring that data is updated and that access is kept organized within the system.</p>
+</div>
+
+<div *ngIf="isUserOnly">
+  <p class="texto-descriptivo">
+    This page is intended for view-only users. It allows you to view information on available projects and use search filters to quickly find projects of interest.
+Users cannot make modifications, ensuring data integrity while maintaining a clear and organized browsing experience.👀
+  </p>
+
+</div>
   
 
-  <!-- Filters form (Reactive) -->
-<form [formGroup]="filterForm" class="filters-form" (ngSubmit)="$event.preventDefault()">
+  <!-- Filters form (Reactive)
+<form [formGroup]="filterForm" class="filters-form" (ngSubmit)="$event.preventDefault()"> -->
 
   <!-- Buscar por nombre -->
-  <div class="filter-search">
+  <!-- <div class="filter-search">
     <label>Search by name</label>
   <input id="searchInput" type="text" placeholder="Ej: Carlos, Herrera" formControlName="q" />
     <div class="muted">Partial search, case and accent insensitive. Filters locally.</div>
-  </div>
+  </div> -->
 
-  <!-- Filtros horizontales -->
+  <!-- Filtros horizontales
  <div class="filters-row">
   <div class="filter-item">
     <label>Department</label>
@@ -28,9 +53,9 @@
         {{ d.name ?? d }}
       </option>
     </select>
-  </div>
+  </div> -->
 
-  <div class="filter-item">
+  <!-- <div class="filter-item">
     <label>Position</label>
     <select formControlName="job">
       <option value="">All</option>
@@ -38,9 +63,9 @@
         {{ j.name ?? j }}
       </option>
     </select>
-  </div>
+  </div> -->
 
-  <div class="filter-item">
+  <!-- <div class="filter-item">
     <label>Office</label>
     <select formControlName="office">
       <option value="">All</option>
@@ -48,17 +73,17 @@
         {{ o.name ?? o }}
       </option>
     </select>
-  </div>
+  </div> -->
 
-  <div class="filter-item">
+  <!-- <div class="filter-item">
     <label>Role</label>
     <select formControlName="role">
       <option value="">All</option>
       <option *ngFor="let r of roleFilterOptions" [value]="r">{{ r }}</option>
     </select>
-  </div>
+  </div> -->
 
-  <div class="filter-item">
+  <!-- <div class="filter-item">
     <label>State</label>
     <select formControlName="state">
       <option value="">All</option>
@@ -66,40 +91,38 @@
       <option value="INACTIVE">Inactive</option>
     </select>
   </div>
-</div>
+</div> -->
 
 
   <!--  botones dentro del form -->
   <!-- 🔹 Fila inferior: Mostrar por página + Botones -->
-<div class="filters-row bottom-row">
-  <div class="filter-item small">
+<!-- <div class="filters-row bottom-row"> -->
+  <!-- <div class="filter-item small">
     <label>Show per page</label>
     <select formControlName="size">
       <option *ngFor="let s of pageSizes" [value]="s">{{ s }}</option>
     </select>
-  </div>
+  </div> -->
 
-  <div class="buttons-group">
-    <!-- Mostrar botón Agregar solo a ADMIN y OWNER -->
-    <app-fagregar-miembro
+  <app-fagregar-miembro
       *ngIf="canAddMember"
       [catalogs]="catalogs"
       [allowedRoles]="allowedRoleOptions"
       (created)="refreshData()"
     ></app-fagregar-miembro>
-    <button type="button" (click)="refreshData()" [disabled]="loading">Update Data</button>
-    <button type="button" (click)="filterForm.reset({ q: '', department: '', job: '', office: '', state: '', role: '', size: pageSizes[0] })">
-      Clean filters
-    </button>
-    
-  </div>
-</div>
 
-</form>  <!--  ahora el form se cierra correctamente -->
+    <button class="refresh" type="button"  (click)="refreshData()" [disabled]="loading">Update Data</button>
+  <!-- From Uiverse.io by andrew-demchenk0 --> 
+
+<!-- </div> -->
+
+
+
+<!-- </form>   ahora el form se cierra correctamente -->
 
   
   <!-- Status / error -->
-  <div class="row status-row">
+  <div class="row-status-row">
     <span class="muted" *ngIf="!error && !loading">{{ filtered.length }} resultados</span>
     <span class="muted" *ngIf="loading">Cargando empleados...</span>
     <span class="error" *ngIf="error">{{ error }}</span>
@@ -170,8 +193,24 @@
     <!-- Actions -->
     <div class="card-actions" *ngIf="canEditDelete">
       <ng-container *ngIf="!(isAdmin && getEmployeeRoles(m).includes('OWNER')); else noActions">
-        <button class="btn-edit" (click)="abrirModal(m)">✏️ Edit</button>
-        <button class="btn-delete" (click)="eliminarEmpleado(m.id)">🗑️ Delete</button>
+        <!-- <button class="btn-edit" (click)="abrirModal(m)">✏️ Edit</button> -->
+        <!-- From Uiverse.io by aaronross1 --> 
+<button class="edit-button" (click)="abrirModal(m)">
+  <svg class="edit-svgIcon" viewBox="0 0 512 512">
+                    <path d="M410.3 231l11.3-11.3-33.9-33.9-62.1-62.1L291.7 89.8l-11.3 11.3-22.6 22.6L58.6 322.9c-10.4 10.4-18 23.3-22.2 37.4L1 480.7c-2.5 8.4-.2 17.5 6.1 23.7s15.3 8.5 23.7 6.1l120.3-35.4c14.1-4.2 27-11.8 37.4-22.2L387.7 253.7 410.3 231zM160 399.4l-9.1 22.7c-4 3.1-8.5 5.4-13.3 6.9L59.4 452l23-78.1c1.4-4.9 3.8-9.4 6.9-13.3l22.7-9.1v32c0 8.8 7.2 16 16 16h32zM362.7 18.7L348.3 33.2 325.7 55.8 314.3 67.1l33.9 33.9 62.1 62.1 33.9 33.9 11.3-11.3 22.6-22.6 14.5-14.5c25-25 25-65.5 0-90.5L453.3 18.7c-25-25-65.5-25-90.5 0zm-47.4 168l-144 144c-6.2 6.2-16.4 6.2-22.6 0s-6.2-16.4 0-22.6l144-144c6.2-6.2 16.4-6.2 22.6 0s6.2 16.4 0 22.6z"></path>
+                  </svg> </button>
+
+
+
+        <!-- <button class="btn-delete" (click)="eliminarEmpleado(m.id)">🗑️ Delete</button> -->
+        <!-- From Uiverse.io by Tsiangana --> 
+<!-- From Uiverse.io by aaronross1 --> 
+<button class="delete-button" (click)="eliminarEmpleado(m.id)">
+  <svg class="delete-svgIcon" viewBox="0 0 448 512">
+                    <path d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"></path>
+                  </svg>
+</button>
+
       </ng-container>
 
       <ng-template #noActions>
@@ -223,4 +262,4 @@
     (cerrar)="cerrarModal()"
     (guardar)="guardarCambios($event)">
   </app-editar-miembro>
-</div>
+<!-- </div> -->

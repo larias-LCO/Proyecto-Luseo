@@ -31,8 +31,14 @@
 
   <!-- HEADER FIJO -->
   <div *ngIf="!isLoading && project" class="modal-header">
-    <div id="detail-title" style="font-weight:600">Project Details</div>
-    <button class="btn-close" type="button" (click)="closeModal()">Close</button>
+    <div id="detail-title"> <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-list-details"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M13 5h8" /><path d="M13 9h5" /><path d="M13 15h8" /><path d="M13 19h5" /><path d="M3 5a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -4" /><path d="M3 15a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -4" /></svg> Project Details</div>
+    <button class="button" (click)="closeModal()">
+  <span class="X"></span>
+  <span class="Y"></span>
+  <div class="close">Close</div>
+</button>
+
+
   </div>
 
   <div *ngIf="!isLoading && project" class="project-body">
@@ -49,27 +55,27 @@
  <div class="meta-grid">
 
   <div class="meta-card">
-    <label>Office</label>
+    <label> 📍 Office</label>
     <span>{{ project.officeName || '-' }}</span>
   </div>
 
   <div class="meta-card">
-    <label>Client</label>
+    <label> 👥 Client</label>
     <span>{{ project.clientName || '-' }}</span>
   </div>
 
   <div class="meta-card">
-    <label>Software</label>
+    <label> 💻 Software</label>
     <span>{{ project.softwareName || '-' }}</span>
   </div>
 
   <div class="meta-card">
-    <label>Type</label>
+    <label>🗂️  Type</label>
     <span>{{ project.projectType || '-' }}</span>
   </div>
 
   <div class="meta-card">
-    <label>Scope</label>
+    <label>🎯 Scope</label>
     <span>{{ project.scope || '-' }}</span>
   </div>
 
@@ -102,7 +108,7 @@
       <!--  METRICS SECTION (solo USER) -->
       <!-- ============================= -->
       <div *ngIf="roles && roles.length && roles[0].toUpperCase() === 'OWNER'" class="pd-section">
-        <h3 class="title-section">METRICS</h3>
+        <h3 class="title-section"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-chart-ppf"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M19 17c0 -6.075 -5.373 -11 -12 -11" /><path d="M3 3v18h18" /></svg>METRICS</h3>
         <div class="pd-metrics">
           <ng-container *ngIf="metricsList.length; else defaultMetrics">
             <div class="metric" *ngFor="let m of metricsList">
@@ -141,22 +147,22 @@
 <!--  DETAILS SECTION -->
 <!-- ============================= -->
 <div class="pd-section">
-  <h3 class="title-section">DETAILS</h3>
+  <h3 class="title-section"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-clear-all"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 6h12" /><path d="M6 12h12" /><path d="M4 18h12" /></svg>DETAILS</h3>
 
   <div class="pd-details">
 
     <div class="detail-card">
-      <label>PROJECT CODE</label>
+      <label>🏷️ PROJECT CODE</label>
       <span>{{ project.projectCode || '-' }}</span>
     </div>
 
     <div class="detail-card">
-      <label>AREA</label>
+      <label>📐 AREA</label>
       <span>{{ project.projectArea !== undefined && project.projectArea !== null && project.projectArea !== '' ? project.projectArea : '-' }}</span>
     </div>
 
     <div class="detail-card">
-      <label>AREA UNIT</label>
+      <label>🔢 AREA UNIT</label>
       <span>{{ project.areaUnit || '-' }}</span>
     </div>
 
@@ -171,12 +177,12 @@
 <!--  PEOPLE SECTION -->
 <!-- ============================= -->
 <div class="pd-section">
-  <h3 class="title-section">PEOPLE</h3>
+  <h3 class="title-section"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-users"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 7a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" /><path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /><path d="M21 21v-2a4 4 0 0 0 -3 -3.85" /></svg>PEOPLE</h3>
 
   <div class="pd-grid">
     <!-- Project Managers -->
     <div class="pair">
-      <label>PROJECT MANAGER(S)</label>
+      <label>👨‍💼 PROJECT MANAGER(S)</label>
       <div class="val">
   <ng-container *ngIf="pmSelected.length; else noPMs">
     <span *ngFor="let pm of pmSelected; let last = last">
@@ -189,7 +195,7 @@
 
     <!-- Team -->
     <div class="pair">
-      <label>TEAM</label>
+      <label>👥 TEAM</label>
       <div class="val">
   <ng-container *ngIf="team.length; else noTeam">
           <span *ngFor="let member of team" class="chip team">{{ employeeOptionLabel(member) }}</span>
@@ -204,7 +210,7 @@
 
   <!-- PHASES CARDS SECTION -->
   <div class="pd-section">
-    <h3 class="title-phases">PROJECT PHASES</h3>
+    <h3 class="title-phases"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-brand-asana"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 7a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" /><path d="M14 16a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" /><path d="M4 16a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" /></svg>PROJECT PHASES</h3>
     <div class="phases-container">
       <ng-container *ngIf="phases && phases.length > 0; else noPhases">
         <ng-container *ngFor="let phase of phases">
@@ -231,12 +237,12 @@
 <!-- DEPARTMENTS & ROLES -->
 <!-- ============================= -->
 <div class="pd-section">
-  <h3 class="title-section">DEPARTMENTS & ROLES</h3>
+  <h3 class="title-section"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-building-skyscraper"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 21l18 0" /><path d="M5 21v-14l8 -4v18" /><path d="M19 21v-10l-6 -4" /><path d="M9 9l0 .01" /><path d="M9 12l0 .01" /><path d="M9 15l0 .01" /><path d="M9 18l0 .01" /></svg>DEPARTMENTS & ROLES</h3>
   <div class="pd-grid">
 
     <!-- Departments -->
     <div class="pair">
-      <label>DEPARTMENTS PARTICIPATING</label>
+      <label>🏢 DEPARTMENTS PARTICIPATING</label>
       <div class="val">
         <ng-container *ngIf="assignedDeps.length; else noDeps">
           <span *ngFor="let dep of assignedDeps" class="chip">{{ dep }}</span>
@@ -249,7 +255,7 @@
 
     <!-- Roles -->
     <div class="pair">
-      <label>ROLES PARTICIPATING</label>
+      <label>🎭 ROLES PARTICIPATING</label>
       <div class="val">
         <ng-container *ngIf="assignedRoles.length; else noRoles">
           <span *ngFor="let role of assignedRoles" class="chip">{{ role }}</span>
@@ -268,7 +274,7 @@
 <hr class="pd-divider" />
 
 <div class="pd-section">
-  <h3 class="title-section">NOTES</h3>
+  <h3 class="title-section"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-notes"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 5a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2l0 -14" /><path d="M9 7l6 0" /><path d="M9 11l6 0" /><path d="M9 15l4 0" /></svg> NOTES</h3>
   <div class="note-box">
     {{ project.notes || 'No notes available.' }}
   </div>
@@ -279,18 +285,30 @@
 <!-- ============================= -->
 <!-- ACTIONS -->
 <!-- ============================= -->
-<div class="pd-actions row">
 
 <div class="pd-actions row">
-  <button class="btn-soft edit" (click)="openEditModal()">
+  <!-- <button class="btn-soft edit" (click)="openEditModal()">
     <span class="icon">✏️</span>
     Edit
-  </button>
+  </button> --> 
 
-  <button  class="btn-soft delete" (click)="deleteProject()">
+  <!-- From Uiverse.io by aaronross1 --> 
+<button class="edit-button" (click)="openEditModal()">
+  <svg class="edit-svgIcon" viewBox="0 0 512 512">
+                    <path d="M410.3 231l11.3-11.3-33.9-33.9-62.1-62.1L291.7 89.8l-11.3 11.3-22.6 22.6L58.6 322.9c-10.4 10.4-18 23.3-22.2 37.4L1 480.7c-2.5 8.4-.2 17.5 6.1 23.7s15.3 8.5 23.7 6.1l120.3-35.4c14.1-4.2 27-11.8 37.4-22.2L387.7 253.7 410.3 231zM160 399.4l-9.1 22.7c-4 3.1-8.5 5.4-13.3 6.9L59.4 452l23-78.1c1.4-4.9 3.8-9.4 6.9-13.3l22.7-9.1v32c0 8.8 7.2 16 16 16h32zM362.7 18.7L348.3 33.2 325.7 55.8 314.3 67.1l33.9 33.9 62.1 62.1 33.9 33.9 11.3-11.3 22.6-22.6 14.5-14.5c25-25 25-65.5 0-90.5L453.3 18.7c-25-25-65.5-25-90.5 0zm-47.4 168l-144 144c-6.2 6.2-16.4 6.2-22.6 0s-6.2-16.4 0-22.6l144-144c6.2-6.2 16.4-6.2 22.6 0s6.2 16.4 0 22.6z"></path>
+                  </svg>
+</button>
+
+<!-- From Uiverse.io by aaronross1 --> 
+<button class="delete-button" (click)="deleteProject()">
+  <svg class="delete-svgIcon" viewBox="0 0 448 512">
+                    <path d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"></path>
+                  </svg>
+</button>
+  <!-- <button  class="btn-soft delete" (click)="deleteProject()">
     <span class="icon">🗑️</span>
     Delete
-  </button>
+  </button> -->
 </div>
 
 

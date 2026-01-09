@@ -4,6 +4,7 @@ import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angula
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService as ReportAuthApi } from '../report-hours/auth/services/auth-api.service';
 import { AuthStateService as ReportAuthState } from '../report-hours/auth/services/auth-state.service';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -23,6 +24,7 @@ export class LoginComponent implements OnInit {
     private fb: FormBuilder,
     private reportApi: ReportAuthApi,
     private reportState: ReportAuthState,
+    private authService: AuthService,
     private router: Router,
     private route: ActivatedRoute
   ) {
@@ -41,6 +43,8 @@ export class LoginComponent implements OnInit {
       next: (me) => {
         // Almacenar la sesión tal cual viene del backend (ya incluye employeeId)
         this.reportState.setSession(me);
+        // Sincronizar con AuthService principal
+        this.syncAuthService(me);
         if (me?.authenticated) {
           this.router.navigateByUrl(this.returnUrl);
         }
@@ -49,6 +53,18 @@ export class LoginComponent implements OnInit {
         // no hay sesión activa; el usuario sigue en la página de login
       }
     });
+  }
+
+  private syncAuthService(me: any) {
+    // Sincronizar el AuthService principal con los datos de report-hours
+    if (me?.authenticated) {
+      const roles = me.role ? [me.role] : (me.authorities || []);
+      console.log('[LoginComponent] Sincronizando roles con AuthService:', roles);
+      localStorage.setItem('auth.username', me.username || '');
+      localStorage.setItem('auth.roles', JSON.stringify(roles));
+      // El AuthService se actualizará automáticamente al detectar cambios en storage
+      this.authService.loadFromStorage();
+    }
   }
 
   onSubmit() {
@@ -73,6 +89,8 @@ export class LoginComponent implements OnInit {
             next: (me) => {
               // Almacenar la sesión completa (ya viene con employeeId desde el backend)
               this.reportState.setSession(me);
+              // Sincronizar con AuthService principal
+              this.syncAuthService(me);
               
               if (me.authenticated) {
                 this.router.navigateByUrl(this.returnUrl || '/report-hours');

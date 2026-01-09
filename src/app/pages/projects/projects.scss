@@ -2,9 +2,9 @@
 
     .project-container {
   font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  /* Evitar superposición con header (70px) y sidebar (250px) */
-  margin-top: 70px;
-  margin-left: 300px;
+  /* Espacio para el panel de filtros (290px) a la izquierda */
+  margin-top: -10px;
+  margin-left: 45px;
   padding: 24px;
 }
 
@@ -111,13 +111,13 @@
       display: flex;
       flex-direction: column;
 
-      button {
-        padding: 8px 12px;
-        border: none;
-        border-radius: 6px;
-        font-size: 0.9rem;
-        cursor: pointer;
-      }
+      // button {
+      //   padding: 8px 12px;
+      //   border: none;
+      //   border-radius: 6px;
+      //   font-size: 0.9rem;
+      //   cursor: pointer;
+      // }
 
       .btn-secondary {
         background-color: #007bff;
@@ -160,12 +160,12 @@
     }
 
   /* Los botones se alinean al nivel de los filtros */
-.filters-actions {
-  display: flex;
-  gap: 10px;
-  // align-items: end;
-  margin-left: 150px;
-}
+// .filters-actions {
+//   display: flex;
+//   gap: 10px;
+//   // align-items: end;
+//   margin-left: 150px;
+// }
  
   /* Responsivo: En pantallas pequeñas se apilan */
   @media (max-width: 992px) {
@@ -310,55 +310,243 @@
 
 
 //BOTONSITO NEW PROJECT 
+/* From Uiverse.io by KhaledMatalkah */ 
+// .btn-create {
+//   display: inline-block;
+//   position: relative;
+//   padding: 15px;
+//   font-size: 16px;
+//   font-weight: bold;
+//   // text-transform: uppercase;
+//   color: #fff;
+//   background: linear-gradient(180deg, #0d3d8c, #0b2a5b);
+//   border: 1px solid #ddd017;
+//   border-radius: 12px;
+//   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1), inset 0px 2px 4px rgba(255, 255, 255, 0.2);
+//   text-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+//   cursor: pointer;
+//   overflow: hidden;
+//   transition: background-color 0.3s, transform 0.3s;
+// }
 
-.btn-create {
- margin-right: 5px;
- margin-left: 0;
+// .btn-create::before,
+// .btn-create::after {
+//   content: '';
+//   position: absolute;
+//   width: 100%;
+//   height: 100%;
+//   background: inherit;
+//   z-index: -1;
+//   transition: transform 0.3s;
+// }
+
+// .btn-create::before {
+//   top: 0;
+//   left: -100%;
+//   transform: skewX(-45deg);
+// }
+
+// .btn-create::after {
+//   bottom: 0;
+//   right: -100%;
+//   transform: skewX(45deg);
+// }
+
+// .btn-create:hover {
+//   background: linear-gradient(to bottom, #135ee9, #2b75ff);
+//   transform: translateY(-2px);
+//   box-shadow: 0px 6px 8px rgba(0, 195, 255, 0.2), inset 0px 2px 4px rgba(255, 255, 255, 0.1);
+// }
+
+// .btn-create:hover::before {
+//   transform: translateX(100%);
+// }
+
+// .btn-create:hover::after {
+//   transform: translateX(-100%);
+// }
+
+
+/* From Uiverse.io by andrew-demchenk0 */ 
+.button {
+  position: relative;
+  width: 220px;
+  height: 50px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  border: 1px solid #34974d;
+  background: linear-gradient(rgb(0, 52, 100),rgb(18, 98, 219));
+  border-radius: 8px;
+  margin-left: 50px;
+  margin-top: 10px;
+}
+
+.button, .button__icon, .button__text {
+  transition: all 0.3s;
+}
+
+.button .button__text {
+  transform: translateX(30px);
   color: #fff;
-  min-width: 150px;
-  height: 36px;
-  padding: 6px 14px;
-  font-size: 14px;
-  border-radius: 6px;
-  border: none;
-  background: linear-gradient(180deg, #2474f3, #1d3e74);
-  box-shadow: 0 4px 10px rgba(13,61,140,0.2);
-  cursor: pointer;
-  transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
-  margin-top: 10px;
-  z-index: 1200;
+  font-weight: 600;
+  font-size: 17px;
+  margin-left: -15px;
 }
 
-.btn-create:hover{
- background: linear-gradient(180deg,  #2474f3, #1d3e74);
-  box-shadow: 0 6px 12px rgba(11,42,91,0.3);
-  transform: translateY(-2px);
+.button .button__icon {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: 39px;
+  background:transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
 }
+
+.button .svg {
+  width: 30px;
+  stroke: #fff !important;
+  color: #fff !important;
+  fill: none;
+}
+
+.button .button__icon svg {
+  stroke: #fff !important;
+  color: #fff !important;
+}
+
+.button:hover {
+  background: linear-gradient(rgb(0, 52, 100),rgb(18, 98, 219));
+}
+
+.button:hover .button__text {
+  color: transparent;
+}
+
+.button:hover .button__icon {
+  width: 100%;
+  right: 0;
+  color: #fff;
+}
+
+.button:active .button__icon {
+  background: linear-gradient(rgb(0, 52, 100),rgb(18, 98, 219));
+}
+
+.button:active {
+  border: 1px solid #16aaff;
+}
+
 /* ===== TOOLTIP ANIMADO ===== */
+.tooltip {
+  position: relative;
+  display: inline-block;
+  margin-top: 30px;
+  margin-left: 1200px;
+  margin-bottom: -30px;
 
+  .tooltip-text {
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1f2937;
+    color: #fff;
+    padding: 5px ;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 8px;
+    white-space: normal;
+   width: 200px;
+    text-align: center;
+    line-height: 1.4;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
 
-.btn-clear-filters {
- margin-right: 6px;
-  color: black;
-  min-width: 120px;
-  height: 36px;
-  font-weight: 500;
-  padding: 6px 14px;
-  font-size: 14px;
-  border-radius: 6px;
-  border: none;
-  background: linear-gradient(180deg, #c5d8f3, #acb8cc);
-  box-shadow: 0 4px 10px rgba(13,61,140,0.2);
-  cursor: pointer;
-  transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
-  margin-top: 10px;
+  .tooltip-text::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: #1f2937;
+  }
+
+  &:hover .tooltip-text {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(-4px);
+  }
 }
 
-.btn-clear-filters:hover {
-  border-color: #9cafa2;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  transform: translateY(-2px);
-}
+
+// .btn-clear-filters {
+//  margin-right: 6px;
+//   color: black;
+//   min-width: 120px;
+//   height: 36px;
+//   font-weight: 500;
+//   padding: 6px 14px;
+//   font-size: 14px;
+//   border-radius: 6px;
+//   border: none;
+//   background: linear-gradient(180deg, #c5d8f3, #acb8cc);
+//   box-shadow: 0 4px 10px rgba(13,61,140,0.2);
+//   cursor: pointer;
+//   transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+//   margin-top: 10px;
+// }
+
+// .btn-clear-filters:hover {
+//   border-color: #9cafa2;
+//   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+//   transform: translateY(-2px);
+// }
+
+
+// .btn-clear-filters{
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+//   outline: none;
+//   cursor: pointer;
+//   width: 120px;
+//   height: 40px;
+//   background-image: linear-gradient(to top, #D8D9DB 0%, #fff 80%, #FDFDFD 100%);
+//   border-radius: 30px;
+//   border: 1px solid #8F9092;
+//   transition: all 0.2s ease;
+//   font-family: "Source Sans Pro", sans-serif;
+//   font-size: 14px;
+//   font-weight: 600;
+//   color: #606060;
+//   text-shadow: 0 1px #fff;
+// }
+
+// .btn-clear-filters:hover {
+//   box-shadow: 0 4px 3px 1px #FCFCFC, 0 6px 8px #D6D7D9, 0 -4px 4px #CECFD1, 0 -6px 4px #FEFEFE, inset 0 0 3px 3px #CECFD1;
+// }
+
+// .btn-clear-filters:active {
+//   box-shadow: 0 4px 3px 1px #FCFCFC, 0 6px 8px #D6D7D9, 0 -4px 4px #CECFD1, 0 -6px 4px #FEFEFE, inset 0 0 5px 3px #999, inset 0 0 30px #aaa;
+// }
+
+// .btn-clear-filters:focus {
+//   box-shadow: 0 4px 3px 1px #FCFCFC, 0 6px 8px #D6D7D9, 0 -4px 4px #CECFD1, 0 -6px 4px #FEFEFE, inset 0 0 5px 3px #999, inset 0 0 30px #aaa;
+// }
+
+
+
 
 
  /* Pager moved below toolbar: modern centered pager */

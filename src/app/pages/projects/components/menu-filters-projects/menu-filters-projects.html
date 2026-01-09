@@ -3,8 +3,6 @@
 
      <div class="filters-scroll">
 
-       <!-- <p>puedes seleccionar varios filtros y ver los resultados inemdiatamente</p> -->
-
   <div class="mf-search">
     <h4>Search</h4>
     <input type="text" placeholder="Buscar..." [(ngModel)]="searchText" (ngModelChange)="onSearchChange($event)" />
@@ -114,6 +112,8 @@
       </div>
     </div>
   </div>
+
+   <button id="refresh" class="btn-clear-filters" type="button" (click)="clearAll()">Clear filters</button>
 </div>
 <!-- <button type="button" (click)="clearAll()">Clear</button> -->
  

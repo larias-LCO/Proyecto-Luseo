@@ -8,15 +8,24 @@
   <div class="modal-container">
     <div class="modal-content" (click)="$event.stopPropagation()">
 
-      <h2 class="modal-title">Editar Miembro</h2>
+      <div class="modal-header">
+        <h1><svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-pencil-minus"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" /><path d="M13.5 6.5l4 4" /><path d="M16 19h6" /></svg>Edit Member</h1>
+        <!-- From Uiverse.io by javierBarroso --> 
+<button class="button" (click)="cerrarModal()">
+  <span class="X"></span>
+  <span class="Y"></span>
+  <div class="close">Close</div>
+</button>
 
-      
 
-      <form [formGroup]="form" (ngSubmit)="guardarCambios()" class="form-grid">
+      </div>
+
+      <div class="modal-body">
+        <form [formGroup]="form" (ngSubmit)="guardarCambios()" class="form-grid">
 
         <!-- Columna izquierda / derecha (placeholders) -->
          <div>
-         <label>Name</label>
+         <label> 👤 Name</label>
         <input
           type="text"
           formControlName="nombre"
@@ -27,7 +36,7 @@
 
 
         <div>
-          <label >Department</label>
+          <label > 🏢 Department</label>
         <select formControlName="departamento" class="form-input">
           <option value="">Department</option>
           <option *ngFor="let d of catalogs.departments" [value]="d.name">{{ d.name }}</option>
@@ -36,7 +45,7 @@
 
 
         <div>
-          <label>Office</label>
+          <label> 📍 Office</label>
         <select formControlName="oficina" class="form-input">
           <option value="">Office</option>
           <option *ngFor="let o of catalogs.offices" [value]="o.name">{{ o.name }}</option>
@@ -45,7 +54,7 @@
 
 
         <div>
-          <label>Job Position</label>
+          <label> 💼 Job Position</label>
         <select formControlName="posicion" class="form-input">
           <option value="">Posición</option>
           <option *ngFor="let j of catalogs.jobs" [value]="j.name">{{ j.name }}</option>
@@ -54,7 +63,7 @@
 
 
         <div>
-          <label>Rol</label>
+          <label> 🧑‍💼 Role</label>
         <select formControlName="rol" class="form-input">
           <option value="">Rol</option>
           <!-- Si el padre pasó allowedRoles ya filtrados, solo los mostramos; por seguridad, si ADMIN aparece OWNER lo deshabilitamos -->
@@ -63,7 +72,7 @@
         </div>
 
         <div>
-          <label>Billable Rate</label>
+          <label> 🪙 Billable Rate</label>
         <input
           type="number"
           formControlName="tarifa"
@@ -74,7 +83,7 @@
 
 
         <div>
-          <label>Estate</label>
+          <label>🟢🔴 Estate</label>
         <!-- Estado ocupa toda la fila -->
         <select formControlName="estado" class="form-input full-width">
           <option value="">State</option>
@@ -85,11 +94,56 @@
 
         <!-- Botones: full-width para alinear a la derecha -->
         <div class="modal-buttons full-width">
-          <button type="button" class="btn-cancelar" (click)="cerrarModal()">Cancelar</button>
-          <button type="submit" class="btn-guardar">Guardar cambios</button>
+          <!-- <button type="button" class="btn-cancelar" (click)="cerrarModal()">Cancelar</button> -->
+            <!-- From Uiverse.io by cssbuttons-io --> 
+
+<button class="noselect" (click)="cerrarModal()"><span class="text" >Cancelar</span></button>
+
+
+
+
+          <!-- <button type="submit" class="btn-guardar">Guardar cambios</button> -->
+
+        <!-- From Uiverse.io by ilkhoeri --> 
+<button class="action_has has_saved" aria-label="save" type="submit">
+  <svg
+    aria-hidden="true"
+    xmlns="http://www.w3.org/2000/svg"
+    width="20"
+    height="20"
+    stroke-linejoin="round"
+    stroke-linecap="round"
+    stroke-width="2"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+    fill="none"
+  >
+    <path
+      d="m19,21H5c-1.1,0-2-.9-2-2V5c0-1.1.9-2,2-2h11l5,5v11c0,1.1-.9,2-2,2Z"
+      stroke-linejoin="round"
+      stroke-linecap="round"
+      data-path="box"
+    ></path>
+    <path
+      d="M7 3L7 8L15 8"
+      stroke-linejoin="round"
+      stroke-linecap="round"
+      data-path="line-top"
+    ></path>
+    <path
+      d="M17 20L17 13L7 13L7 20"
+      stroke-linejoin="round"
+      stroke-linecap="round"
+      data-path="line-bottom"
+    ></path>
+  </svg><span class="texto">Guardar Cambios</span>
+</button> 
+
+
         </div>
 
       </form>
+      </div>
     </div>
   </div>
 </div>

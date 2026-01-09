@@ -7,15 +7,17 @@ import { AuthService as ReportApiAuthService } from '../../../pages/report-hours
 import { AuthStateService as ReportAuthState } from '../../../pages/report-hours/auth/services/auth-state.service';
 import { Subscription } from 'rxjs';
 import { SubmenuService } from '../../services/submenu.service';
+import { MenuIconComponent } from "../animated-icons/menu-icon.component";
  
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule ],
+  imports: [CommonModule, MenuIconComponent],
   templateUrl: './header.html',
   styleUrls: ['./header.scss']
 })
 export class HeaderComponent {
+
   private auth = inject(AuthService);
   private submenu = inject(SubmenuService);
   private cookieState = signal(getAuthFromCookies());
@@ -159,6 +161,10 @@ export class HeaderComponent {
 
   toggleNotifications() {
     this.showNotifications = !this.showNotifications;
+  }
+
+  isSubmenuOpen() {
+    return this.submenu['openSubject']?.value ?? false;
   }
 
   toggleSubmenu() {

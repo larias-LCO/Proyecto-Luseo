@@ -1,0 +1,183 @@
+.filters-container{
+  width: 250px;
+  height: 94vh;
+  background: #ffffff;
+  border-right: 1px solid #e5e7eb;
+  padding: 12px 8px;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont;
+  position: fixed;
+  top: 100px; /* altura del header */
+  left: 0; /* siempre pegado al lado izquierdo */
+  z-index: 1200;
+  overflow: visible;
+}
+
+.filters-scroll {
+  height: 85%;
+  overflow-y: auto;
+  padding: 5px;
+}
+
+.mf-search, .mf-section h4{
+  // gap: 8px;
+  margin-bottom: 5px;
+  font-size: 15px;
+  margin-top: 30px;
+  
+}
+
+.mf-search h4{
+  font-size: 16px;
+}
+
+.mf-search h4, .mf-section h4{
+  margin-bottom: 10px;
+  margin-left: 3px;
+}
+.mf-search input{
+  width: 90%;
+  height: 20px;
+  padding: 6px 8px;
+  border: 1px solid #acacac;
+  border-radius: 6px;
+  font-size: 13px;
+
+}
+
+.mf-search input:focus{
+  outline: none;
+  border-color: #f6f33b;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+}
+
+.mf-section input{
+  cursor: pointer;
+
+}
+
+.checkbox-item{
+  display: flex;           /* 👈 fuerza vertical */
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  font-size: 15px;
+  cursor: pointer;
+
+}
+
+/* Collapsible section header and caret */
+.mf-section { margin-bottom: 5px; }
+.mf-section-header { display:flex; align-items:center; gap:8px; cursor:pointer; user-select:none; }
+.mf-section-header .caret { display:inline-block; transition: transform 200ms ease; transform-origin: center; color: #004db1; margin-top: 8px;}
+.mf-section-header .caret.open { transform: rotate(90deg); }
+.mf-section-body { padding-left: 18px; margin-top:6px;}
+
+
+/* Contenedor del botón de limpiar filtros */
+// .btn-clear-filters {
+//   display: flex;
+//   justify-content: center;
+//   margin-top: 15px;
+//   margin-left: 20px;
+//   margin-bottom: 10px;
+//   padding: 10px 0;
+//   width: 200px;
+//   height: 40px;
+//   cursor: pointer;
+// }
+// /* Estilos del botón de limpiar filtros */
+// /* From Uiverse.io by adamgiebl */ 
+// .btn-clear-filters {
+//   font-size: 14px;
+//     font-weight: 700;
+//   letter-spacing: 2px;
+//   text-transform: uppercase;
+//   display: inline-block;
+//   text-align: center;
+//   font-weight: bold;
+//   padding: 0.7em 2em;
+//   border: 1px solid #96989b;
+//   border-radius: 12px;
+//   position: relative;
+//   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.1);
+//   color: #0084ff;
+//   text-decoration: none;
+//   transition: 0.3s ease all;
+//   z-index: 1;
+// }
+
+// .btn-clear-filters:before {
+//   transition: 0.5s all ease;
+//   position: absolute;
+//   top: 0;
+//   left: 50%;
+//   right: 50%;
+//   bottom: 0;
+//   opacity: 0;
+//   content: '';
+//   background-color: #79bdfc;
+//   z-index: -1;
+//   border-radius: 12px;
+// }
+
+// .btn-clear-filters:hover, .btn-clear-filters:focus {
+//   color: white;
+// }
+
+// .btn-clear-filters:hover:before, .btn-clear-filters:focus:before {
+//   transition: 0.5s all ease;
+//   left: 0;
+//   right: 0;
+//   opacity: 1;
+// }
+
+// .btn-clear-filters:active {
+//   transform: scale(0.9);
+// }
+
+.btn-clear-filters {
+  --color: #0077ff;
+ --color2: #001cb9;
+  --border: #9fa4aa;
+  font-family: inherit;
+  display: inline-block;
+  width: 8em;
+  height: 2.6em;
+  line-height: 2.5em;
+  overflow: hidden;
+  cursor: pointer;
+  margin-left: 50px;
+  margin-top: 15px;
+  font-size: 17px;
+  font-weight: 700;
+  z-index: 1;
+  color: var(--color2);
+  border: 2px solid var(--color2);
+  border-radius: 6px;
+  position: relative;
+}
+
+.btn-clear-filters::before {
+  position: absolute;
+  content: "";
+  background: linear-gradient(#001cb9, #0077ff);
+  width: 200px;
+  height: 200px;
+  z-index: -1;
+  border-radius: 50%;
+}
+
+.btn-clear-filters:hover {
+  color: white;
+}
+
+.btn-clear-filters:before {
+  top: 100%;
+  left: 100%;
+  transition: 0.3s all;
+}
+
+.btn-clear-filters:hover::before {
+  top: -30px;
+  left: -30px;
+}

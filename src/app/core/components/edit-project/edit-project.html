@@ -3,8 +3,13 @@
   <div class="modal-card">
 
     <div class="modal-header">
-      <h2 id="editTitle">Edit Project</h2>
-       <button id="createClose" (click)="onCancel()" aria-label="Close modal">Close</button>
+      <h2 id="editTitle"><svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-edit"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" /><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415" /><path d="M16 5l3 3" /></svg>Edit Project</h2>
+       <button class="button" (click)="onCancel()">
+  <span class="X"></span>
+  <span class="Y"></span>
+  <div class="close">Close</div>
+</button>
+
     </div>
 
 
@@ -20,17 +25,17 @@
     </div>
 
     <div>
-      <label>Name</label>
+      <label> 🏷️ Name</label>
       <input type="text" formControlName="name">
     </div>
 
     <div>
-      <label>Area</label>
+      <label>📐 Area</label>
       <input type="number" formControlName="projectArea">
     </div>
 
     <div>
-      <label>Area Unit</label>
+      <label>🔢 Area Unit</label>
       <select formControlName="areaUnit">
         <option *ngFor="let unit of ['SQUARE_FEET','SQUARE_METER']" [value]="unit">
           {{ unit.replace('_',' ') }}
@@ -39,7 +44,7 @@
     </div>
 
     <div>
-      <label>Type</label>
+      <label>🗂️ Type</label>
       <select formControlName="projectType">
         <option *ngFor="let t of ['COMMERCIAL','RESIDENTIAL']" [value]="t">
           {{ t.replace('_',' ') }}
@@ -48,7 +53,7 @@
     </div>
 
     <div>
-      <label>Status</label>
+      <label>🟢 Status</label>
       <select formControlName="status">
         <option *ngFor="let s of ['IN_PROGRESS','COMPLETED','ON_HOLD']" [value]="s">
           {{ s.replace('_',' ') }}
@@ -57,7 +62,7 @@
     </div>
 
     <div>
-      <label>Scope</label>
+      <label>🎯 Scope</label>
       <select formControlName="scope">
         <option *ngFor="let sc of ['NEW_BUILD','RENOVATION']" [value]="sc">
           {{ sc.replace('_',' ') }}
@@ -66,28 +71,28 @@
     </div>
 
     <div>
-      <label>Office</label>
+      <label>🏢 Office</label>
       <select formControlName="officeId">
         <option *ngFor="let o of offices" [value]="o.id">{{ o.name }}</option>
       </select>
     </div>
 
     <div>
-      <label>Client</label>
+      <label>👥 Client</label>
       <select formControlName="clientId">
         <option *ngFor="let c of clients" [value]="c.id">{{ c.name }}</option>
       </select>
     </div>
 
     <div>
-      <label>Software</label>
+      <label>💻 Software</label>
       <select formControlName="softwareId">
         <option *ngFor="let s of software" [value]="s.id">{{ s.name }}</option>
       </select>
     </div>
 
     <div>
-      <label for="p_phase">Project phase (optional)</label>
+      <label for="p_phase">🔄 Project phase (optional)</label>
       <select id="p_phase" formControlName="phaseId">
         <option value="">None (no changes)</option>
         <ng-container *ngFor="let group of phaseGroups">
@@ -114,14 +119,14 @@
     </div>
 
     <div style="grid-column: 1/-1;">
-      <label>Notes</label>
+      <label>📝 Notes</label>
       <textarea formControlName="notes"></textarea>
     </div>
 
   <!-- TEAM ASSIGNMENT SECTION -->
   <div style="grid-column: 1 / -1;">
     <h3 class="section-title">
-      <i class="bi bi-people-fill"></i> Team Assignment
+      <i class="bi bi-people-fill"></i>➕👥 Team Assignment
     </h3>
 
     <!-- CONTENEDOR 2 COLUMNAS: 50% Team, 50% PM -->
@@ -130,7 +135,7 @@
       <!-- LEFT: TEAM -->
       <div class="filter-team">
 
-        <label>Team</label>
+        <label>👥 Team</label>
 
         <div class="selected-box">
           <div *ngIf="teamSelectedEmployees.length; else noTeam">
@@ -172,7 +177,7 @@
       <!-- RIGHT: ASSIGNED PM(s) -->
       <div class="filter-pm">
 
-        <label>Assigned PM(s)</label>
+        <label>👨‍💼 Assigned PM(s)</label>
 
         <div class="selected-box">
           <div *ngIf="pmSelectedEmployees.length; else noPM">
@@ -216,10 +221,46 @@
  <div class="modal-footer">
   <!-- ACTION BUTTONS -->
   <div class="actions" style="margin-top:18px; display:flex; gap:12px;">
-    <button type="button" class="btn btn-outline" (click)="onCancel()">
-     <span class="icon">❌</span> Cancel</button>
-    <button type="button" class="btn btn-primary" (click)="onSave()">
-      <span class="icon">📝</span> Save Changes</button>
+    <!-- <button type="button" class="noselect" (click)="onCancel()"> -->
+      <button class="noselect" (click)="onCancel()"><span class="text" >Cancel</span></button>
+    
+
+    <!-- <button type="button" class="btn btn-primary" (click)="onSave()">
+      <span class="icon">📝</span> Save Changes</button> -->
+
+      <button class="action_has has_saved" aria-label="save" type="submit">
+  <svg
+    aria-hidden="true"
+    xmlns="http://www.w3.org/2000/svg"
+    width="20"
+    height="20"
+    stroke-linejoin="round"
+    stroke-linecap="round"
+    stroke-width="2"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+    fill="none"
+  >
+    <path
+      d="m19,21H5c-1.1,0-2-.9-2-2V5c0-1.1.9-2,2-2h11l5,5v11c0,1.1-.9,2-2,2Z"
+      stroke-linejoin="round"
+      stroke-linecap="round"
+      data-path="box"
+    ></path>
+    <path
+      d="M7 3L7 8L15 8"
+      stroke-linejoin="round"
+      stroke-linecap="round"
+      data-path="line-top"
+    ></path>
+    <path
+      d="M17 20L17 13L7 13L7 20"
+      stroke-linejoin="round"
+      stroke-linecap="round"
+      data-path="line-bottom"
+    ></path>
+  </svg><span class="texto">Guardar Cambios</span>
+</button> 
   </div>
 </div> <!-- end modal-footer -->
 

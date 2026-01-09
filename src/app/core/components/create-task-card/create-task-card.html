@@ -14,22 +14,27 @@
              (click)="$event.stopPropagation()">
 
         <div class="modal-header">
-            <div id="createTaskTitle">➕ Create New Task</div>
-            <button id="createClose" (click)="Cerrar()" aria-label="Close modal">✖</button>
+            <div id="createTaskTitle"><svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-file-plus"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2" /><path d="M12 11l0 6" /><path d="M9 14l6 0" /></svg> Create New Task</div>
+            <button class="button" (click)="Cerrar()">
+  <span class="X"></span>
+  <span class="Y"></span>
+  <div class="close">Close</div>
+</button>
+
         </div>
 
         <div class="modal-body">
             <form [formGroup]="form" (ngSubmit)="onSubmit()" style="display: flex; flex-direction: column; gap: 16px;">
                 <div class="formulario">
-                    <label>Task Name *</label>
+                    <label>📄 Task Name *</label>
                     <input type="text" formControlName="name" required style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px;">
                 </div>
                 <div class="formulario">
-                    <label>Description</label>
+                    <label>📝 Description</label>
                     <textarea formControlName="description" rows="3" style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px;"></textarea>
                 </div>
                 <div class="formulario">
-                    <label>Project</label>
+                    <label>🏢 Project</label>
                     <select formControlName="projectId" style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px;">
                         <option value="">None</option>
                         <ng-container *ngFor="let p of projects">
@@ -38,7 +43,7 @@
                     </select>
                 </div>
                 <div class="formulario">
-                    <label>Phase</label>
+                    <label> 🔄 Phase</label>
                     <select formControlName="projectPhaseId" style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px;">
                         <option value="">None / Select project first</option>
                         <ng-container *ngFor="let ph of phases">
@@ -47,7 +52,7 @@
                     </select>
                 </div>
                 <div class="formulario">
-                    <label>Category *</label>
+                    <label>🗂️ Category *</label>
                     <select formControlName="taskCategoryId" required style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px;">
                         <option value="">Select Category</option>
                         <ng-container *ngFor="let c of categories">
@@ -56,16 +61,16 @@
                     </select>
                 </div>
                 <div class="formulario">
-                    <label>Start Date (Issue Date)</label>
+                    <label>📅 Start Date (Issue Date)</label>
                     <input type="date" formControlName="issuedDate" style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px;">
                 </div>
                 <div class="formulario" *ngIf="showEndDate">
-                    <label>End Date (Vacations Only)</label>
+                    <label>📅✔️ End Date (Vacations Only)</label>
                     <input type="date" formControlName="endDate" style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px;">
                     <small style="color: #64748b; font-size: 12px;">Tasks will be created for each day in the range</small>
                 </div>
                 <div class="formulario">
-                    <label>Status *</label>
+                    <label>🟢 Status *</label>
                     <select formControlName="status" required style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px;">
                         <ng-container *ngFor="let s of statuses">
                             <option [value]="s">{{ s }}</option>
@@ -74,12 +79,19 @@
                 </div>
                 <div class="modal-footer">
                     <div class="botones-fin">
-                        <button type="button" class="btn-cerrar" (click)="Cerrar()">
+
+                         <button type="button" class="noselect" (click)="Cerrar()"><span class="text" >Cancel</span></button>
+                        <!-- <button type="button" class="btn-cerrar" (click)="Cerrar()">
                             <span class="icon">❌</span> Cancel
-                        </button>
-                        <button type="submit" class="btn-create" [disabled]="form.invalid">
+                        </button> -->
+
+
+                        <!-- <button type="submit" class="btn-create" [disabled]="form.invalid">
                             <span class="icon">📝</span> Create Task
-                        </button>
+                        </button> -->
+
+                        <!-- From Uiverse.io by cssbuttons-io --> 
+                        <button type="submit" class="btn-create" [disabled]="form.invalid"> Create Task</button>
                         
                     </div>
                     <div id="create-task-message" class="muted" [style.color]="messageColor" style="text-align:center; margin-top:8px;">{{ message }}</div>

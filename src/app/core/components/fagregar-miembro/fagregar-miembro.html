@@ -1,110 +1,133 @@
-<button class="btn-agregar" (click)="abrirModal()"> Add New Member</button>
+<div class="tooltip">
+  <button class="btn-agregar" (click)="abrirModal()">Add New Member</button>
+  <span class="tooltip-text">Create a new member by assigning their data and corresponding role.</span>
+</div>
 
 <div class="modal-backdrop" *ngIf="mostrarModal">
   <div class="modal">
-    <h2>Add New Member</h2>
-    <hr>
+    
+    <div class="modal-header">
+      <h1>
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+          <circle cx="9" cy="7" r="4"></circle>
+          <line x1="19" y1="8" x2="19" y2="14"></line>
+          <line x1="22" y1="11" x2="16" y2="11"></line>
+        </svg>
+        Add New Member
+      </h1>
+      <button class="button" (click)="cerrarModal()">
+  <span class="X"></span>
+  <span class="Y"></span>
+  <div class="close">Close</div>
+</button>
+    </div>
 
-    <form [formGroup]="form">
+    <div class="modal-body">
+      <form [formGroup]="form">
 
     <!-- PASO 1 -->
      
     <div *ngIf="paso === 1" class="form-grid">
       <div class="form-control">
-        <input type="text" placeholder="Nombre" formControlName="nombre"
+        <label > 👤 Name</label>
+        <input type="text" placeholder="Name" formControlName="nombre"
           [ngClass]="{ 'input-error': form.get('nombre')?.invalid && form.get('nombre')?.touched }">
         <small *ngIf="form.get('nombre')?.invalid && form.get('nombre')?.touched">
-          El nombre es obligatorio
+          The name is required
         </small>
       </div>
 
       <!-- DEPARTAMENTO -->
       <div class="form-control">
+        <label> 🏢 Department</label>
         <select formControlName="departamento"
           [ngClass]="{ 'input-error': form.get('departamento')?.invalid && form.get('departamento')?.touched }">
-          <option value="" disabled>Seleccione un departamento</option>
+          <option value="" disabled>Select a department</option>
           <option *ngFor="let d of (catalogs?.departments || [])" [value]="d?.name || d?.label || d?.title || d?.descripcion">{{ d?.name || d?.label || d?.title || d?.descripcion }}</option>
         </select>
         <small *ngIf="form.get('departamento')?.invalid && form.get('departamento')?.touched">
-          Ingrese un departamento válido
+          Enter a valid department
         </small>
       </div>
 
 <!-- OFICINA -->
 <div class="form-control">
+  <label > 📍 Office</label>
   <select formControlName="oficina"
     [ngClass]="{ 'input-error': form.get('oficina')?.invalid && form.get('oficina')?.touched }">
-    <option value="" disabled>Seleccione una oficina</option>
+    <option value="" disabled>Select an office</option>
     <option *ngFor="let o of (catalogs?.offices || [])" [value]="o?.name || o?.label || o?.title || o?.descripcion">{{ o?.name || o?.label || o?.title || o?.descripcion }}</option>
   </select>
   <small *ngIf="form.get('oficina')?.invalid && form.get('oficina')?.touched">
-    Ingrese una oficina válida
+    Enter a valid office
   </small>
 </div>
 
 <!-- POSICIÓN -->
 <div class="form-control">
+  <label >💼 Job Position</label>
   <select formControlName="posicion"
     [ngClass]="{ 'input-error': form.get('posicion')?.invalid && form.get('posicion')?.touched }">
-    <option value="" disabled>Seleccione una posición</option>
+    <option value="" disabled>Select a position</option>
     <option *ngFor="let j of (catalogs?.jobs || [])" [value]="j?.name || j?.label || j?.title || j?.descripcion">{{ j?.name || j?.label || j?.title || j?.descripcion }}</option>
   </select>
   <small *ngIf="form.get('posicion')?.invalid && form.get('posicion')?.touched">
-    Ingrese una posición válida
+    Enter a valid position
   </small>
 </div>
 
 <!-- ROL -->
 <div class="form-control">
+  <label >🧑‍💼 Role</label>
   <select formControlName="rol"
     [ngClass]="{ 'input-error': form.get('rol')?.invalid && form.get('rol')?.touched }">
-    <option value="" disabled>Seleccione un rol</option>
+    <option value="" disabled>Select a role</option>
   <option *ngFor="let r of filteredAllowedRoles" [value]="r">{{ r }}</option>
   </select>
   <small *ngIf="form.get('rol')?.invalid && form.get('rol')?.touched">
-    El rol es obligatorio
+    The role is required
   </small>
 </div>
 
       <!-- FIN LISTAS -->
 
       <div class="form-control">
-        <input type="number" placeholder="Tarifa facturable" formControlName="tarifa"
+        <label > 🪙 Billable Rate</label>
+        <input type="number" placeholder="Billable Rate" formControlName="tarifa"
           [ngClass]="{ 'input-error': form.get('tarifa')?.invalid && form.get('tarifa')?.touched }">
         <small *ngIf="form.get('tarifa')?.invalid && form.get('tarifa')?.touched">
-          Ingrese una tarifa válida
+          Enter a valid rate
         </small>
       </div>
     </div>
 
     <!-- PASO 2 -->
+     
     <div *ngIf="paso === 2" class="form-grid">
-      <div>
-        <input type="text" placeholder="Usuario" formControlName="usuario"
+      <div class="form-control">
+        <label >👤 Username</label>
+        <input type="text" placeholder="Username" formControlName="usuario"
           [ngClass]="{ 'input-error': form.get('usuario')?.invalid && form.get('usuario')?.touched }">
-        <small *ngIf="form.get('usuario')?.invalid && form.get('usuario')?.touched">Este campo es obligatorio</small>
+        <small *ngIf="form.get('usuario')?.invalid && form.get('usuario')?.touched">This field is required</small>
       </div>
 
       <div class="form-control">
-        <input type="email" placeholder="Correo" formControlName="correo"
+        <label >✉️ Email</label>
+        <input type="email" placeholder="Email" formControlName="correo"
           [ngClass]="{ 'input-error': form.get('correo')?.invalid && form.get('correo')?.touched }">
         <small *ngIf="form.get('correo')?.invalid && form.get('correo')?.touched">
-          Ingrese un correo válido
+          Enter a valid email
         </small>
       </div>
 
       <div class="form-control password-group">
-        <input [type]="showPassword ? 'text' : 'password'" placeholder="Contraseña" formControlName="password"
+        <label>🔒 Password</label>
+        <input [type]="showPassword ? 'text' : 'password'" placeholder="Password" formControlName="password"
           [ngClass]="{ 'input-error': form.get('password')?.invalid && form.get('password')?.touched }">
         <button type="button" class="toggle-password" (click)="showPassword = !showPassword" tabindex="-1">
           <span *ngIf="!showPassword">👁️</span>
-          <span *ngIf="showPassword"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-     xmlns="http://www.w3.org/2000/svg">
-  <path d="M3 3L21 21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-  <path d="M17.94 17.94C16.07 19.22 14.12 20 12 20C7 20 3 14 3 14C4.12 12.17 5.5 10.63 7.06 9.46M9.9 7.6C10.57 7.21 11.28 7 12 7C17 7 21 13 21 13C20.56 13.73 20.06 14.39 19.52 15"
-        stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-  <circle cx="12" cy="14" r="2" fill="currentColor"/>
-</svg>
+          <span *ngIf="showPassword">🚫
 </span>
         </button>
         <small *ngIf="form.get('password')?.invalid && form.get('password')?.touched">Mínimo 6 caracteres</small>
@@ -113,14 +136,48 @@
 
     <!-- BOTONES -->
     <div class="acciones">
-      <button class="cancelar" (click)="cerrarModal()">Cancelar</button>
-      <button class="atras" *ngIf="paso === 2" (click)="atras()">Atrás</button>
-      <button class="siguiente" *ngIf="paso === 1" (click)="siguiente()">Siguiente</button>
-      <button class="agregar" *ngIf="paso === 2" (click)="agregar()">Agregar</button>
+      <button class="cancelar" (click)="cerrarModal()">Cancel</button>
+      <!-- <button class="atras" *ngIf="paso === 2" (click)="atras()">Atrás</button> -->
+      <!-- From Uiverse.io by Jedi-hongbin --> 
+<button class="atras" *ngIf="paso === 2" (click)="atras()">
+ <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-arrow-left"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l14 0" /><path d="M5 12l6 6" /><path d="M5 12l6 -6" /></svg>
+  <div class="text">
+    Back
+  </div>
+</button>
+
+
+
+      <!-- <button class="siguiente" *ngIf="paso === 1" (click)="siguiente()">Siguiente</button> -->
+<button class="next-button" *ngIf="paso === 1" (click)="siguiente()">
+
+  
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75"></path>
+  </svg>
+
+  
+  <div class="text">
+    Next
+  </div>
+
+</button>
+
+
+  
+      <!-- <button class="agregar" *ngIf="paso === 2" (click)="agregar()">Create Member</button> -->
+<button class="agregar" *ngIf="paso === 2" (click)="agregar()"> <span>Create Member</span>
+</button>
+
+
+
+
+
         </div>
       </form>
+      </div>
 
-    Modal de éxito
+    <!-- Modal de éxito -->
     <div *ngIf="showSuccessModal" class="success-modal">
       <div style="font-size:2.5rem;color:#10b981;">✔</div>
       <span> Miembro creado correctamente</span>

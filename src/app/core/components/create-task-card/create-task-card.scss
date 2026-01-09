@@ -1,7 +1,10 @@
 /* Unificar tamaño de inputs, selects y textarea en el modal */
 .modal-card form input,
 .modal-card form select,
-.modal-card form textarea {
+.modal-card form textarea,
+.formulario input,
+.formulario select,
+.formulario textarea {
   width: 100%;
   min-width: 0;
   max-width: 100%;
@@ -11,6 +14,18 @@
   border-radius: 6px;
   font-size: 15px;
   margin-bottom: 8px;
+  transition: all 0.3s ease;
+}
+
+.modal-card form input:focus,
+.modal-card form select:focus,
+.modal-card form textarea:focus,
+.formulario input:focus,
+.formulario select:focus,
+.formulario textarea:focus {
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.3) !important;
+  background: #ffffff !important;
 }
 
 .modal-card form textarea {
@@ -46,8 +61,9 @@
     justify-content: center;
     align-items: center;
     animation: fadeIn .25s ease-out;
-    z-index: 1000;
+    z-index: 2500;
     padding: 24px;
+    
 }
 
  
@@ -70,7 +86,7 @@
   overflow: hidden;
   font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   position: relative;
-  z-index: 1100;                  /* 4. asegurar que esté encima de otros elementos */
+  z-index: 2520;                  /* 4. asegurar que esté encima de otros elementos */
 }
 
 @keyframes slideUp {
@@ -95,19 +111,80 @@
     font-weight: 600;
     margin-bottom: 15px;
 }
-
-.close-x {
-    background: transparent;
-    border: none;
-    font-size: 22px;
-    cursor: pointer;
-    color: #64748b;
+/* From Uiverse.io by javierBarroso */ 
+.button {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border: none;
+   background: rgb(180, 83, 107);
+  border-radius: 50%;
+  transition: background 0.5s;
+  cursor: pointer;
+  margin-right: -5px;
 }
 
-.close-x:hover {
-    color: black;
-    transform: scale(1.1);
+.X {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 2em;
+  height: 1.5px;
+  background-color: rgb(255, 255, 255);
+  transform: translateX(-50%) rotate(45deg);
 }
+
+.Y {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 2em;
+  height: 1.5px;
+  background-color: #fff;
+  transform: translateX(-50%) rotate(-45deg);
+}
+
+.close {
+  position: absolute;
+  display: flex;
+  padding: 0.8rem 1.5rem;
+  align-items: center;
+  justify-content: center;
+  transform: translateX(-50%);
+  top: 40px;
+  left: 50%;
+  width: 20px;
+  height: 10px;
+  font-size: 14px;
+  background-color: rgb(19, 22, 24);
+  color: rgb(187, 229, 236);
+  border: none;
+  border-radius: 3px;
+  pointer-events: none;
+  opacity: 0;
+
+}
+
+.button:hover {
+  background-color: rgb(204, 0, 0);
+}
+
+.button:active {
+  background-color: rgb(130, 0, 0);
+}
+
+.button:hover > .close {
+  animation: close 0.2s forwards 0.25s;
+}
+
+@keyframes close {
+  100% {
+    opacity: 1;
+  }
+}
+
 
 /* ============ FORMULARIO ============ */
 .formulario label {
@@ -123,6 +200,11 @@
     border-radius: 8px;
     border: 1px solid #cbd5e1;
     margin-top: 4px;
+}
+
+.formulario input:focus{
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(255, 242, 127, 0.808);
 }
 
 .botones-fin {
@@ -153,6 +235,13 @@
   font-size: 23px;
   font-weight: 700;
   text-shadow: 0 1px 3px rgba(0,0,0,0.15);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.modal-header #createTaskTitle svg {
+  flex-shrink: 0;
 }
 
 .modal-header #createClose {
@@ -222,7 +311,7 @@
 .formulario textarea:focus {
   outline: none;
   border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
+  box-shadow: 0 0 0 3px rgba(255, 253, 151, 0.61);
 }
 
 /* --- SMALL TEXT --- */
@@ -250,55 +339,106 @@
 }
 
 
-
-.btn-create {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 18px;
-  background-color: #e8f2ff;
-  color: #1371f5;
-  border: 1.5px solid #c6ddff;
-  border-radius: 6px;
-    cursor: pointer;
-    font-weight: 500;
-    transition: 0.2s ease;
-    padding: 8px 14px;
-    font-size: 14px;
-    font-weight: 600;
+/* From Uiverse.io by cssbuttons-io */ 
+.btn-create{
+ width: 160px;
+ height: 45px;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-weight: 700;
+  color: #fff;
+  background-color: #0077ff;
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0px 4px 10px rgba(71, 186, 253, 0.61);
+  transition: all 0.3s ease 0s;
+  cursor: pointer;
+  outline: none;
+  margin-right: -20px;
 }
 
 .btn-create:hover {
-  background-color: #d9eaff;
-  transform: translateY(-2px);
-  
+  background-color: #098553;
+  box-shadow: 0px 15px 20px rgba(46, 229, 156, 0.603);
+  color: #fff;
+  transform: translateY(-7px);
 }
+
+.btn-create:active {
+  transform: translateY(-1px);
+}
+
 
 
 /* ===== BOTÓN CREATE (estilo rojo suave tipo "Delete") ===== */
-.btn-cerrar {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 18px;
-    background: #ffe4e4;           /* rojo pastel */
-    color: #b91c1c;                /* rojo fuerte */
-    border: 1.5px solid #fecaca;     /* borde rojo suave */
-    border-radius: 10px;
-    cursor: pointer;
-    font-weight: 500;
-    transition: 0.2s ease;
-    font-weight: 600;
-    font-size: 14px;
+
+/* From Uiverse.io by cssbuttons-io */ 
+.noselect {
+ width: 100px;
+ height: 45px;
+ cursor: pointer;
+ display: flex;
+ align-items: center;
+ background: rgb(250, 101, 101);
+ border: none;
+ border-radius: 6px;
+ box-shadow: 0px 4px 10px rgba(255, 98, 98, 0.61);
+ transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.btn-cerrar:hover {
-    background: #ffd5d5;
-    transform: translateY(-2px);
+// .noselect, .noselect span {
+//  transition: 200ms;
+// }
+
+.noselect .text {
+ transform: translateX(35px);
+ color: rgb(26, 26, 26);
+font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-weight: 700;
+  margin-left: -24px;
+
 }
 
-/* ===== ICONO ===== */
-.icon {
-    font-size: 16px;
-    line-height: 1;
+// .noselect .icon {
+//  position: absolute;
+//  border-left: 1px solid #c41b1b;
+//  transform: translateX(110px);
+//  height: 40px;
+//  width: 40px;
+//  display: flex;
+//  align-items: center;
+//  justify-content: center;
+// }
+
+// .noselect svg {
+//  width: 15px;
+//  fill: #eee;
+
+// }
+
+.noselect:hover {
+ background: #ff4848;
+ transform: translateY(-7px);
+ box-shadow: 2px 2px 8px rgba(0,0,0,0.25);
 }
+
+.noselect:hover .text {
+ color: #fff;
+}
+
+// .noselect:hover .icon {
+//  width: 150px;
+//  border-left: none;
+//  transform: translateX(0);
+// }
+
+.noselect:focus {
+ outline: none;
+}
+
+// .noselect:active .icon svg {
+//  transform: scale(0.8);
+// }

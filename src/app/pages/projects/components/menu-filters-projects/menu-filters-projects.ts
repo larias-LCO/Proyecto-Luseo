@@ -93,6 +93,7 @@ export class MenuFiltersProjects {
     this.emitFilters();
   }
 
+
   emitFilters() {
     this.filtersChange.emit({
       officeId: this.selectedOffices,

@@ -509,7 +509,10 @@ private updateCanEdit(): void {
 
 // ✏️ Editar proyecto
   openEditModal() {
-    // Open the edit dialog on top of the details modal (do not close details first).
+    // Cerrar el modal de detalles primero
+    this.closeModal();
+    
+    // Open the edit dialog
     const openDialog = () => {
       const ref = this.dialog.open(EditProjectComponent, {
         width: '720px',

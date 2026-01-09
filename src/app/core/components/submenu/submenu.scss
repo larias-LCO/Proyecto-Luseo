@@ -76,7 +76,7 @@
   padding: 12px 8px;
   font-family: system-ui, -apple-system, BlinkMacSystemFont;
   position: fixed;
-  top: 120px; /* ⚠️ debe coincidir exactamente con la altura real del header */
+  top: 100px; /* ⚠️ debe coincidir exactamente con la altura real del header */
   left: 0;
   transform: translateX(0);
   transition: transform 0.25s ease, opacity 0.25s ease;

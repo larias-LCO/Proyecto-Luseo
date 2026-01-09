@@ -10,8 +10,13 @@
   <div *ngIf="visible">
     <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="createTitle" (click)="$event.stopPropagation()">
       <div class="modal-header">
-        <div id="createTitle" style="font-weight:600">Create project</div>
-        <button id="createClose" class="btn btn-secondary" type="button" (click)="closeModal()">Close</button>
+        <div id="createTitle" style="font-weight:600"><svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-square-plus"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 12h6" /><path d="M12 9v6" /><path d="M3 5a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-14" /></svg>Create project</div>
+        <button class="button" (click)="closeModal()">
+  <span class="X"></span>
+  <span class="Y"></span>
+  <div class="close">Close</div>
+</button>
+
       </div>
 
     <div id="createBody" class="modal-body">
@@ -28,40 +33,40 @@
             <span *ngIf="!projectCodeDuplicate" style="color:#10b981">✓ Código disponible</span>
           </small>
         </div>
-        <div><label for="p_name">Name</label><input id="p_name" name="p_name" [(ngModel)]="project.name" placeholder="Project name" /></div>
-        <div><label for="p_area">Area</label><input id="p_area" name="p_area" [(ngModel)]="project.projectArea" type="number" step="0.01" placeholder="0.00" /></div>
-        <div><label for="p_areaUnit">Area unit</label>
+        <div><label for="p_name">🏷️ Name</label><input id="p_name" name="p_name" [(ngModel)]="project.name" placeholder="Project name" /></div>
+        <div><label for="p_area">📐 Area</label><input id="p_area" name="p_area" [(ngModel)]="project.projectArea" type="number" step="0.01" placeholder="0.00" /></div>
+        <div><label for="p_areaUnit">🔢 Area unit</label>
           <select id="p_areaUnit" name="p_areaUnit" [(ngModel)]="project.areaUnit">
             <option *ngFor="let a of enums.areaUnit" [value]="a" >{{ a }}</option>
           </select>
         </div>
-        <div><label for="p_type">Type</label>
+        <div><label for="p_type"> 🗂️ Type</label>
           <select id="p_type" name="p_type" [(ngModel)]="project.projectType">
             <option *ngFor="let t of enums.type" [value]="t">{{ displayEnum(t) }}</option>
           </select>
         </div>
-        <div><label for="p_status">Status</label>
+        <div><label for="p_status">🟢 Status</label>
           <select id="p_status" name="p_status" [(ngModel)]="project.status">
             <option *ngFor="let s of enums.status" [value]="s">{{ displayEnum(s) }}</option>
           </select>
         </div>
-        <div><label for="p_scope">Scope</label>
+        <div><label for="p_scope">🎯 Scope</label>
           <select id="p_scope" name="p_scope" [(ngModel)]="project.scope">
             <option *ngFor="let s of enums.scope" [value]="s">{{ displayEnum(s) }}</option>
           </select>
         </div>
-  <div><label for="p_trackedTime">Time (h)</label><input id="p_trackedTime" name="p_trackedTime" [(ngModel)]="project.trackedTime" type="number" step="1" placeholder="0" /></div>
-        <div><label for="p_office">Office</label>
+  <div><label for="p_trackedTime">⏱️ Time (h)</label><input id="p_trackedTime" name="p_trackedTime" [(ngModel)]="project.trackedTime" type="number" step="1" placeholder="0" /></div>
+        <div><label for="p_office">🏢 Office</label>
           <select id="p_office" name="p_office" [(ngModel)]="project.officeId">
             <option *ngFor="let o of offices" [ngValue]="o.id">{{ o.name }}</option>
           </select>
         </div>
-        <div><label for="p_client">Client</label>
+        <div><label for="p_client">👥 Client</label>
           <select id="p_client" name="p_client" [(ngModel)]="project.clientId">
             <option *ngFor="let c of clients" [ngValue]="c.id">{{ c.name }}</option>
           </select>
         </div>
-        <div><label for="p_software">Software</label>
+        <div><label for="p_software">💻 Software</label>
           <select id="p_software" name="p_software" [(ngModel)]="project.softwareId">
             <option *ngFor="let s of software" [ngValue]="s.id">{{ s.name }}</option>
           </select>
@@ -69,7 +74,7 @@
 
 
          <div>
-           <label for="p_phase">Project phase (optional)</label>
+           <label for="p_phase">🔄 Project phase (optional)</label>
            <select id="p_phase" [(ngModel)]="project.phaseId">
              <option value="">None</option>
              <option *ngFor="let ph of phaseOptions" [value]="ph.value">{{ ph.label }}</option>
@@ -87,14 +92,14 @@
            <label for="p_phaseStartDate">Phase start date (optional)</label>
            <input id="p_phaseStartDate" type="date" [(ngModel)]="phaseStartDate" />
          </div>
-        <div style="grid-column:1/-1"><label for="p_notes">Notes</label><textarea id="p_notes" name="p_notes" [(ngModel)]="project.notes" placeholder="Notes or comments"></textarea></div>
+        <div style="grid-column:1/-1"><label for="p_notes">📝 Notes</label><textarea id="p_notes" name="p_notes" [(ngModel)]="project.notes" placeholder="Notes or comments"></textarea></div>
 
         
         <div class="two-column-grid" style="grid-column: 1 / -1;">
 
           <h3 class="section-title">
             <i class="bi bi-people-fill"></i>
-              Team Assignment</h3>
+              ➕👥 Team Assignment</h3>
 
           <!-- LEFT SIDE: Team -->
           <div class="filter-team">
@@ -178,7 +183,12 @@
           </div>
         </div> <!-- end two-column-grid -->
         <div class="footer-row" style="grid-column:1/-1; display:flex; justify-content:flex-end; gap:12px; margin-top:12px;">
-          <button id="p_create" class="btn btn-primary" type="button" (click)="onSubmit()">Create project</button>
+          <!-- <button id="p_create" class="btn btn-primary" type="button" (click)="onSubmit()">Create project</button> -->
+<!-- From Uiverse.io by cssbuttons-io --> 
+<button id="p_create" class="btnccc" type="button" (click)="onSubmit()"> Create project </button>
+
+
+
           <span id="p_msg" class="muted">{{ message }}</span>
         </div>
       </div> <!-- end .grid -->
