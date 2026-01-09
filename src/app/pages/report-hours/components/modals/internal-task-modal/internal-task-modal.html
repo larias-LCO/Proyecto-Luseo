@@ -67,7 +67,7 @@
 
             <div class="entry-actions">
               <app-icon-button title="Remove" (clicked)="entries.length > 1 && removeEntry(i)" [class.disabled]="entries.length <= 1">
-                <app-archive-icon [size]="16"></app-archive-icon>
+                <app-archive-icon [size]="25"></app-archive-icon>
               </app-icon-button>
             </div>
 
@@ -77,7 +77,7 @@
 
         <div class="form-controls">
           <app-icon-button title="Add another" (clicked)="addEntry()">
-            <app-plus-icon [size]="18"></app-plus-icon>
+            <app-plus-icon [size]="25"></app-plus-icon>
             <span style="margin-left:8px"></span>
           </app-icon-button>
         </div>
