@@ -1,3 +1,4 @@
+@use 'assets/fonts/fonts.scss';
 
 .btn-open[data-tooltip]::after {
 	content: attr(data-tooltip);
@@ -20,10 +21,6 @@
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
     
 }
-
-@import 'assets/fonts/fonts.scss';
-
-
 .btn-open:hover::after {
 	opacity: 1;
 }
