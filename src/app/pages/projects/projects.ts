@@ -27,7 +27,7 @@ import { MasIconComponent } from "../../core/components/animated-icons/mas-icon.
 @Component({
   selector: 'app-projects',
   standalone: true,
-  imports: [CommonModule, FormsModule, HttpClientModule, HeaderComponent, CreateProjectComponent, ProjectDetailsComponent, MenuFiltersProjects, SubmenuComponent, MasIconComponent],
+  imports: [CommonModule, FormsModule, HttpClientModule, HeaderComponent, CreateProjectComponent, ProjectDetailsComponent, MenuFiltersProjects, SubmenuComponent],
   templateUrl: './projects.html',
   styleUrls: ['./projects.scss'],
   providers: [ProjectService],

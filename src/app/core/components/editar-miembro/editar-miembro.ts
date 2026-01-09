@@ -9,9 +9,10 @@ import {
   SimpleChanges,
   inject
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgIf, NgForOf } from '@angular/common';
 import {
   ReactiveFormsModule,
+  FormsModule,
   FormBuilder,
   FormGroup,
   Validators
@@ -31,7 +32,7 @@ import { EmployeeApi } from '../../../pages/team/team-api'; // Ajusta la ruta si
 @Component({
   selector: 'app-editar-miembro',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, NgIf, NgForOf, ReactiveFormsModule, FormsModule],
   templateUrl: './editar-miembro.html',
   styleUrls: ['./editar-miembro.scss']
 })

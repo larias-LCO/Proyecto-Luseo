@@ -7,12 +7,11 @@ import { AuthService as ReportApiAuthService } from '../../../pages/report-hours
 import { AuthStateService as ReportAuthState } from '../../../pages/report-hours/auth/services/auth-state.service';
 import { Subscription } from 'rxjs';
 import { SubmenuService } from '../../services/submenu.service';
-import { MenuIconComponent } from "../animated-icons/menu-icon.component";
  
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, MenuIconComponent],
+  imports: [CommonModule],
   templateUrl: './header.html',
   styleUrls: ['./header.scss']
 })

@@ -7,7 +7,7 @@ import { SubmenuComponent } from '../../../core/components/submenu/submenu';
 @Component({
   selector: 'app-menu-filters-team',
   standalone: true,
-  imports: [CommonModule, FormsModule, SubmenuComponent],
+  imports: [CommonModule, FormsModule],
   templateUrl: './menu-filters-team.html',
   styleUrls: ['./menu-filters-team.scss']
 })
