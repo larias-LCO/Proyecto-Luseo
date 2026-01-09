@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators, AbstractControl } from '@angular/forms';
 import { InternalTaskService } from '../../../../../pages/report-hours/services/internal-task-category.service';
@@ -7,22 +7,28 @@ import { NotificationService } from '../../../../../core/services/notification.s
 import { IconButtonComponent } from '../../../../../core/components/animated-icons/icon-button.component';
 import { PlusIconComponent } from '../../../../../core/components/animated-icons/plus-icon.component';
 import { ArchiveIconComponent } from '../../../../../core/components/animated-icons/archive-icon.component';
+import { FileCheckIconComponent } from '../../../../../core/components/animated-icons/file-check-icon.component';
+import { XIconComponent } from '../../../../../core/components/animated-icons/x-icon.component';
+import { AlarmClockIconComponent } from '../../../../../core/components/animated-icons/alarm-clock.component';
+import { timeToDecimal, decimalToTime } from '../../../utils/time-conversion.utils';
+import { hoursMinutesToDecimal, decimalToHoursMinutes } from '../../../utils/time-conversion.utils';
 
 @Component({
   selector: 'app-internal-task-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, IconButtonComponent, PlusIconComponent, ArchiveIconComponent],
+  imports: [CommonModule, ReactiveFormsModule, IconButtonComponent, PlusIconComponent, ArchiveIconComponent, FileCheckIconComponent, XIconComponent, AlarmClockIconComponent],
   templateUrl: './internal-task-modal.html',
   styleUrls: ['./internal-task-modal.scss']
 })
-export class InternalTaskModal {
+export class InternalTaskModal implements OnInit, OnChanges {
   @Input() allInternalTasks: any[] = [];
   @Input() myRole: string | null = null;
   @Input() myEmployeeId?: number | string;
+  @Input() presetEntry?: any;
 
   @Output() save = new EventEmitter<any[]>();
-  // emit boolean: true => changes saved, false => closed without changes
-  @Output() close = new EventEmitter<boolean>();
+  // emit object: { changed: boolean, draft?: any[] }
+  @Output() close = new EventEmitter<any>();
 
   form: FormGroup;
 
@@ -51,6 +57,61 @@ export class InternalTaskModal {
     }
   }
 
+  ngOnChanges(changes: any): void {
+    if (changes && changes['presetEntry'] && changes['presetEntry'].currentValue) {
+      try {
+        const e = changes['presetEntry'].currentValue;
+        // support either single-object preset or an array of drafts
+        if (Array.isArray(e)) {
+          const groups = (e || []).map((it: any) => {
+            const g = this.createEntryGroup();
+            const hoursValue = it.hours || it.reportHours;
+            let h = 0, m = 0;
+            if (typeof hoursValue === 'number') {
+              const result = decimalToHoursMinutes(hoursValue);
+              h = result.hours;
+              m = result.minutes;
+            } else if (typeof hoursValue === 'object') {
+              h = hoursValue.hours || 0;
+              m = hoursValue.minutes || 0;
+            }
+            g.patchValue({
+              mainTaskId: it.mainTaskId || it.internalTaskId || '',
+              subTaskId: it.subTaskId || '',
+              description: it.description || '',
+              hours: h,
+              minutes: m,
+              date: it.date || it.start || this.todayStr()
+            }, { emitEvent: false });
+            return g;
+          });
+          this.form.setControl('entries', this.fb.array(groups.length ? groups : [this.createEntryGroup()]));
+        } else {
+          const g = this.createEntryGroup();
+          const hoursValue = e.hours || e.reportHours;
+          let h = 0, m = 0;
+          if (typeof hoursValue === 'number') {
+            const result = decimalToHoursMinutes(hoursValue);
+            h = result.hours;
+            m = result.minutes;
+          } else if (typeof hoursValue === 'object') {
+            h = hoursValue.hours || 0;
+            m = hoursValue.minutes || 0;
+          }
+          g.patchValue({
+            mainTaskId: e.mainTaskId || e.internalTaskId || '',
+            subTaskId: e.subTaskId || '',
+            description: e.description || '',
+            hours: h,
+            minutes: m,
+            date: e.date || e.start || this.todayStr()
+          }, { emitEvent: false });
+          this.form.setControl('entries', this.fb.array([g]));
+        }
+      } catch (err) { console.error('[InternalTaskModal] ❌ Error applying presetEntry', err); }
+    }
+  }
+
   private todayStr(): string {
     const t = new Date();
     return t.toISOString().split('T')[0];
@@ -61,7 +122,8 @@ export class InternalTaskModal {
       mainTaskId: ['', Validators.required],
       subTaskId: [''],
       description: [''],
-      hours: [null, [Validators.required, Validators.min(0.01)]],
+      hours: [0, [Validators.required, Validators.min(0)]],
+      minutes: [0, [Validators.required, Validators.min(0), Validators.max(59)]],
       date: [this.todayStr(), [Validators.required, this.weekdayValidator]]
     });
   }
@@ -117,7 +179,7 @@ export class InternalTaskModal {
         mainTaskId: v.mainTaskId,
         subTaskId: v.subTaskId,
         description: v.description,
-        hours: Number(v.hours),
+        hours: hoursMinutesToDecimal(v.hours, v.minutes),
         date: v.date
       };
     });
@@ -151,7 +213,7 @@ export class InternalTaskModal {
           // reset form
           try { this.form.setControl('entries', this.fb.array([this.createEntryGroup()])); } catch (e) {}
           // close modal (parent should refresh entries)
-          try { this.close.emit(true); } catch (e) {}
+          try { this.close.emit({ changed: true }); } catch (e) {}
         },
         error: (err) => {
           console.error('[InternalTaskModal] Failed to create internal task logs', err);
@@ -177,12 +239,27 @@ export class InternalTaskModal {
   // Close when clicking on overlay background
   onOverlayClick(evt: MouseEvent): void {
     const target = evt.target as HTMLElement | null;
-    if (target && target.classList && target.classList.contains('modal-overlay')) {
+    if (target && target.classList && (target.classList.contains('modal-overlay') || target.classList.contains('rh-internal-modal-overlay'))) {
       this.cancel();
     }
   }
 
   cancel(): void {
-    this.close.emit(false);
+    // emit current draft so parent can keep it until an actual save occurs
+    try {
+      const draft = (this.entries.controls || []).map((c: AbstractControl) => {
+        const v: any = c.value;
+        return {
+          mainTaskId: v.mainTaskId,
+          subTaskId: v.subTaskId,
+          description: v.description,
+          hours: v.hours,
+          date: v.date
+        };
+      });
+      this.close.emit({ changed: false, draft });
+    } catch (e) {
+      this.close.emit({ changed: false });
+    }
   }
 }

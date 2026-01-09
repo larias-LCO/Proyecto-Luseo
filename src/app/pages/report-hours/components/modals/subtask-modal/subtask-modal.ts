@@ -8,11 +8,15 @@ import { IconButtonComponent } from '../../../../../core/components/animated-ico
 import { PlusIconComponent } from '../../../../../core/components/animated-icons/plus-icon.component';
 import { ArchiveIconComponent } from '../../../../../core/components/animated-icons/archive-icon.component';
 import { FileCheckIconComponent } from '../../../../../core/components/animated-icons/file-check-icon.component';
+import { XIconComponent } from '../../../../../core/components/animated-icons/x-icon.component';
+import { AlarmClockIconComponent } from '../../../../../core/components/animated-icons/alarm-clock.component';
+import { timeToDecimal, decimalToTime } from '../../../utils/time-conversion.utils';
+import { hoursMinutesToDecimal, decimalToHoursMinutes } from '../../../utils/time-conversion.utils';
 
 @Component({
   selector: 'app-subtask-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, IconButtonComponent, PlusIconComponent, ArchiveIconComponent, FileCheckIconComponent],
+  imports: [CommonModule, ReactiveFormsModule, IconButtonComponent, PlusIconComponent, ArchiveIconComponent, FileCheckIconComponent, XIconComponent, AlarmClockIconComponent],
   templateUrl: './subtask-modal.html',
   styleUrls: ['./subtask-modal.scss']
 })
@@ -21,8 +25,10 @@ export class SubtaskModal implements OnInit, OnChanges {
   @Input() subTaskCategories: any[] = [];
   @Input() myRole?: string | null = null;
   @Input() presetProjectId?: number | string;
+  @Input() presetEntry?: any;
   @Input() myEmployeeId?: number | string;
-  @Output() close = new EventEmitter<boolean>();
+  // emit object: { changed: boolean, draft?: any[] }
+  @Output() close = new EventEmitter<any>();
 
   form: FormGroup;
 
@@ -42,14 +48,64 @@ export class SubtaskModal implements OnInit, OnChanges {
       } catch (e) { this.subTaskCategories = []; }
     }
 
-    // Ensure initial entries respect preset project if provided
+    // Ensure initial entries respect preset project or preset entry if provided
     try {
       const pid = (this.presetProjectId === undefined || this.presetProjectId === null) ? undefined : Number(this.presetProjectId);
-      if (pid !== undefined) {
+      if (this.presetEntry) {
+        // allow presetEntry to be either single object or array of drafts
+        if (Array.isArray(this.presetEntry)) {
+          const groups = (this.presetEntry || []).map((it: any) => {
+            const g = this.createEntryGroup(it.projectId !== undefined ? Number(it.projectId) : pid);
+            const hoursValue = it.actualHours || it.hours;
+            let h = 0, m = 0;
+            if (typeof hoursValue === 'number') {
+              const result = decimalToHoursMinutes(hoursValue);
+              h = result.hours;
+              m = result.minutes;
+            } else if (typeof hoursValue === 'object') {
+              h = hoursValue.hours || 0;
+              m = hoursValue.minutes || 0;
+            }
+            g.patchValue({
+              projectId: it.projectId || pid || '',
+              subTaskCategoryId: it.subTaskCategoryId || '',
+              name: it.name || it.title || '',
+              hours: h,
+              minutes: m,
+              issueDate: it.issueDate || it.start || this.todayStr(),
+              tag: it.tag || ''
+            }, { emitEvent: false });
+            return g;
+          });
+          this.form.setControl('entries', this.fb.array(groups.length ? groups : [this.createEntryGroup(pid)]));
+        } else {
+          const g = this.createEntryGroup(pid);
+          const hoursValue = this.presetEntry.actualHours || this.presetEntry.hours;
+          let h = 0, m = 0;
+          if (typeof hoursValue === 'number') {
+            const result = decimalToHoursMinutes(hoursValue);
+            h = result.hours;
+            m = result.minutes;
+          } else if (typeof hoursValue === 'object') {
+            h = hoursValue.hours || 0;
+            m = hoursValue.minutes || 0;
+          }
+          g.patchValue({
+            projectId: this.presetEntry.projectId || pid || '',
+            subTaskCategoryId: this.presetEntry.subTaskCategoryId || '',
+            name: this.presetEntry.name || this.presetEntry.title || '',
+            hours: h,
+            minutes: m,
+            issueDate: this.presetEntry.issueDate || this.todayStr(),
+            tag: this.presetEntry.tag || ''
+          }, { emitEvent: false });
+          this.form.setControl('entries', this.fb.array([g]));
+        }
+      } else if (pid !== undefined) {
         this.form.setControl('entries', this.fb.array([this.createEntryGroup(pid)]));
       }
     } catch (e) {
-      console.error('[SubtaskModal] ❌ Error setting preset project:', e);
+      console.error('[SubtaskModal] ❌ Error setting preset project/entry:', e);
     }
 
     try { this.updatePresetProjectLabel(); } catch (e) {}
@@ -74,6 +130,35 @@ export class SubtaskModal implements OnInit, OnChanges {
       } catch (e) {
         console.error('[SubtaskModal] ❌ Error in ngOnChanges:', e);
       }
+    }
+    if (changes['presetEntry']) {
+      try {
+        const entry = changes['presetEntry'].currentValue;
+        if (entry) {
+          const pid = (this.presetProjectId === undefined || this.presetProjectId === null) ? entry.projectId : Number(this.presetProjectId);
+          const g = this.createEntryGroup(pid);
+          const hoursValue = entry.actualHours || entry.hours;
+          let h = 0, m = 0;
+          if (typeof hoursValue === 'number') {
+            const result = decimalToHoursMinutes(hoursValue);
+            h = result.hours;
+            m = result.minutes;
+          } else if (typeof hoursValue === 'object') {
+            h = hoursValue.hours || 0;
+            m = hoursValue.minutes || 0;
+          }
+          g.patchValue({
+            projectId: entry.projectId || pid || '',
+            subTaskCategoryId: entry.subTaskCategoryId || '',
+            name: entry.name || entry.title || '',
+            hours: h,
+            minutes: m,
+            issueDate: entry.issueDate || entry.start || this.todayStr(),
+            tag: entry.tag || ''
+          }, { emitEvent: false });
+          this.form.setControl('entries', this.fb.array([g]));
+        }
+      } catch (e) { console.error('[SubtaskModal] ❌ Error applying presetEntry in ngOnChanges', e); }
     }
     if (changes['projects']) {
       try { this.updatePresetProjectLabel(); } catch (e) {}
@@ -104,7 +189,8 @@ export class SubtaskModal implements OnInit, OnChanges {
       projectId: [presetProject !== undefined ? presetProject : '', Validators.required],
       subTaskCategoryId: ['', Validators.required],
       name: ['', Validators.required],
-      actualHours: [null, [Validators.required, Validators.min(0.01)]],
+      hours: [0, [Validators.required, Validators.min(0)]],
+      minutes: [0, [Validators.required, Validators.min(0), Validators.max(59)]],
       issueDate: [this.todayStr(), [Validators.required, this.weekdayValidator]],
       tag: ['']
     });
@@ -156,7 +242,7 @@ export class SubtaskModal implements OnInit, OnChanges {
       const v = c.value;
       const p: any = {
         name: v.name,
-        actualHours: Number(v.actualHours),
+        actualHours: hoursMinutesToDecimal(v.hours, v.minutes),
         issueDate: v.issueDate,
         subTaskCategoryId: Number(v.subTaskCategoryId),
         projectId: Number(v.projectId),
@@ -170,11 +256,28 @@ export class SubtaskModal implements OnInit, OnChanges {
       const { forkJoin } = rx;
       const calls = payloads.map(p => this.subTaskService.create(p));
       forkJoin(calls).subscribe({
-        next: () => { this.notification.show(`Saved ${payloads.length} subtask(s)`, 'success', 4000); this.form.setControl('entries', this.fb.array([this.createEntryGroup()])); this.close.emit(true); },
+        next: () => { this.notification.show(`Saved ${payloads.length} subtask(s)`, 'success', 4000); this.form.setControl('entries', this.fb.array([this.createEntryGroup()])); this.close.emit({ changed: true }); },
         error: (err) => { console.error('[SubtaskModal] create error', err); let m = 'Unknown'; try { m = err && err.error ? (err.error.message || JSON.stringify(err.error)) : (err && err.message) || 'Unknown'; } catch (e) {} this.notification.show(`Failed: ${m}`, 'error', 7000); }
       });
     });
   }
 
-  cancel(): void { this.close.emit(false); }
+  cancel(): void {
+    try {
+      const draft = (this.entries.controls || []).map((c: AbstractControl) => {
+        const v: any = c.value;
+        return {
+          projectId: v.projectId,
+          subTaskCategoryId: v.subTaskCategoryId,
+          name: v.name,
+          actualHours: v.actualHours,
+          issueDate: v.issueDate,
+          tag: v.tag
+        };
+      });
+      this.close.emit({ changed: false, draft });
+    } catch (e) {
+      this.close.emit({ changed: false });
+    }
+  }
 }

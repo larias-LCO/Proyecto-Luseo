@@ -1,11 +1,11 @@
-<div class="modal-overlay" (click)="onOverlayClick($event)">
-  <div class="modal" style="max-width: 760px;">
+<div class="rh-internal-modal-overlay" (click)="onOverlayClick($event)">
+  <div class="rh-internal-modal" style="max-width: 760px;">
     <div class="modal-header">
       <div>
-        <h2 class="modal-title">📝 Report Internal Task</h2>
+        <h2 class="modal-title"><app-alarm-clock-icon [size]="25"></app-alarm-clock-icon> Report Internal Task</h2>
         <div class="modal-sub">Report time for internal company activities</div>
       </div>
-      <button class="modal-close" (click)="cancel()">&times;</button>
+      <button class="modal-close" (click)="cancel()"><app-x-icon [size]="25"></app-x-icon></button>
     </div>
 
     <div class="modal-body">
@@ -38,11 +38,20 @@
 
             <div class="grid-2">
               <div class="form-group">
-                <label>Hours Worked <span class="req">*</span></label>
-                <input type="number" formControlName="hours" class="form-input" step="0.01" min="0.01" placeholder="e.g., 2.5">
-                <div class="field-error" *ngIf="entry.get('hours')?.touched && entry.get('hours')?.errors">
-                  <div *ngIf="entry.get('hours')?.errors?.['required']">Hours are required</div>
-                  <div *ngIf="entry.get('hours')?.errors?.['min']">Minimum 0.01 hours</div>
+                <label>Time Worked <span class="req">*</span></label>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                  <div>
+                    <input type="number" formControlName="hours" class="form-input" min="0" placeholder="Hours" style="text-align: center;">
+                    <small style="display: block; text-align: center; color: #666; margin-top: 2px;">Hours</small>
+                  </div>
+                  <div>
+                    <input type="number" formControlName="minutes" class="form-input" min="0" max="59" placeholder="Min" style="text-align: center;">
+                    <small style="display: block; text-align: center; color: #666; margin-top: 2px;">Minutes</small>
+                  </div>
+                </div>
+                <div class="field-error" *ngIf="(entry.get('hours')?.touched || entry.get('minutes')?.touched) && (entry.get('hours')?.errors || entry.get('minutes')?.errors)">
+                  <div *ngIf="entry.get('hours')?.errors?.['required'] || entry.get('minutes')?.errors?.['required']">Time is required</div>
+                  <div *ngIf="entry.get('minutes')?.errors?.['max']">Minutes must be less than 60</div>
                 </div>
               </div>
 
@@ -76,7 +85,9 @@
     </div>
 
     <div class="modal-footer">
-      <button class="btn btn-primary" [disabled]="form.invalid" (click)="saveAll()">💾 Save Reports</button>
+      <app-icon-button title="Save" (clicked)="saveAll()">
+					<app-file-check-icon [size]="25"></app-file-check-icon>
+				</app-icon-button>
     </div>
   </div>
 </div>

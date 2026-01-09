@@ -2,12 +2,11 @@ import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChange
 import { CommonModule, NgIf, NgFor } from '@angular/common';
 import { Project } from '../../models/project.model';
 import { mapProjectToCard, ProjectCardVM } from '../../utils/mappers/project.mapper';
-import { IconButtonComponent } from "../../../../core/components/animated-icons/icon-button.component";
 
 @Component({
   selector: 'app-project-cards',
   standalone: true,
-  imports: [CommonModule, NgIf, NgFor, IconButtonComponent],
+  imports: [CommonModule, NgIf, NgFor],
   templateUrl: './project-cards.html',
   styleUrls: ['./project-cards.scss']
 })

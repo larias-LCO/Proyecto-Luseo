@@ -2,12 +2,11 @@ import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../../core/services/auth.service';
-import { SubmenuComponent } from "../../../../core/components/submenu/submenu";
 
 @Component({
   selector: 'app-menu-filters-projects',
   standalone: true,
-  imports: [CommonModule, FormsModule, SubmenuComponent],
+  imports: [CommonModule, FormsModule],
   templateUrl: './menu-filters-projects.html',
   styleUrls: ['./menu-filters-projects.scss']
 })

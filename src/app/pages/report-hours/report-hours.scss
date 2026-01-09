@@ -1,6 +1,6 @@
 /* Page-level layout for Report Hours to separate embedded components */
 .report-hours {
-	font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+	font-family: var(--font-primary);
 	display: flex;
 	flex-direction: column;
 	gap: 14px;
@@ -34,6 +34,28 @@
 
 .report-section .section-body {
 	padding-top: 6px;
+}
+
+.internal-task-create{
+	display: flex;
+	align-items: center;
+	text-align: right;
+}
+
+.report-hours-info-internal-task{
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	margin-right: 16px;
+}
+.report-hours-info-internal-icon{
+	font-size: 20px;
+	font-weight: 700;
+	color: #0b1220;
+}
+.report-hours-info-internal-description{
+	font-size: 17px;
+	color: #374151;
 }
 
 /* Make sure embedded components have consistent spacing inside sections */
@@ -111,7 +133,7 @@
 
 .rh-event__head {
 	font-weight: 700;
-	font-size: 13px;
+	font-size: 17px;
 	margin-bottom: 4px;
 	display: flex;
 	align-items: center;
@@ -128,14 +150,14 @@
 	background: rgba(255,255,255,0.9);
 	padding: 2px 6px;
 	border-radius: 4px;
-	font-size: 9px;
+	font-size: 12px;
 	font-weight: 700;
 	margin-left: 4px;
 	color: #000000; /* neutral by default; modifiers override */
 }
 
 .rh-event__meta {
-	font-size: 11px;
+	font-size: 12px;
 	margin-bottom: 3px;
 }
 
@@ -149,7 +171,7 @@
 }
 
 .rh-event__footer {
-	font-size: 10px;
+	font-size: 12px;
 	margin-top: 4px;
 	border-top: 1px solid rgba(255,255,255,0.5);
 	padding-top: 3px;
@@ -247,3 +269,116 @@
 }
 .rh-badge--fire { color: #dc2626; }
 .rh-badge--review { color: #f59e0b; }
+
+/* Loading overlay used for page-level async operations */
+.rh-loading-overlay {
+	position: fixed;
+	inset: 0; /* top:0; right:0; bottom:0; left:0 */
+	background: rgba(11,17,32,0.36);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 12000; /* high so it sits above calendar and other modals */
+	pointer-events: auto;
+}
+
+.rh-loading-spinner {
+	width: 96px;
+	height: 96px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: var(--primary, #0d1ca1);
+	background: rgba(255,255,255,0.02);
+	border-radius: 12px;
+	padding: 12px;
+	box-shadow: 0 10px 30px rgba(2,6,23,0.24);
+}
+
+/* Ensure spinner is readable on small screens */
+@media (max-width: 640px) {
+	.rh-loading-spinner { width: 72px; height: 72px; }
+}
+
+/* Animated interactions for the New Internal Task button */
+.calendar-header .btn-primary {
+	position: relative;
+	overflow: hidden;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	transition: transform 160ms cubic-bezier(.2,.9,.2,1), box-shadow 200ms ease, opacity 120ms ease;
+	will-change: transform;
+	cursor: pointer;
+}
+
+.calendar-header .btn-primary:hover {
+	transform: translateY(-3px) scale(1.02);
+	box-shadow: 0 12px 28px rgba(2,6,23,0.14);
+}
+
+.calendar-header .btn-primary:active {
+	transform: translateY(0) scale(0.98);
+	box-shadow: 0 6px 14px rgba(2,6,23,0.12);
+}
+
+/* Simple CSS ripple using pseudo-element (activates on :active) */
+.calendar-header .btn-primary::after {
+	content: '';
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	width: 12px;
+	height: 12px;
+	background: currentColor;
+	border-radius: 50%;
+	transform: translate(-50%, -50%) scale(1);
+	opacity: 0;
+	pointer-events: none;
+	transition: transform 420ms cubic-bezier(.2,.9,.2,1), opacity 420ms ease;
+}
+
+.calendar-header .btn-primary:active::after {
+	transform: translate(-50%, -50%) scale(8);
+	opacity: 0.12;
+	transition: transform 120ms linear, opacity 120ms linear;
+}
+
+/* Duplicate button inside event cards: look like plain text but stand out */
+.rh-event__actions {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.rh-dup-btn {
+	background: transparent;
+	border: none;
+	padding: 0;
+	margin: 0;
+	color: rgba(11,17,32,0.8);
+	font-size: 12px;
+	font-weight: 600;
+	line-height: 1;
+	cursor: pointer;
+	text-decoration: none;
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	border-radius: 4px;
+	transition: color 160ms ease, background-color 160ms ease, text-decoration-color 160ms ease, transform 120ms ease;
+}
+
+.rh-dup-btn:hover,
+.rh-dup-btn:focus {
+	color: var(--primary, #0b6fb1);
+	text-decoration: underline;
+	background-color: rgba(11,17,32,0.03);
+	transform: translateY(-1px);
+	outline: none;
+}
+
+.rh-dup-btn:active {
+	transform: translateY(0);
+	opacity: 0.95;
+}

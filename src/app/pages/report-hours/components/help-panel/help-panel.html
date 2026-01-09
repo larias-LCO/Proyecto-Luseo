@@ -1,0 +1,33 @@
+<div class="help-panel-overlay" *ngIf="isOpen" (click)="close()"></div>
+
+<div class="help-panel" *ngIf="isOpen">
+  <div class="help-panel-header">
+    <h2 class="help-panel-title"><app-circle-help-icon [size]="25"></app-circle-help-icon>{{ content?.title || 'Ayuda' }}</h2>
+    <button class="close-button" type="button" (click)="close()" aria-label="Cerrar panel de ayuda">
+      <app-x-icon [size]="25" #xIcon></app-x-icon>
+    </button>
+  </div>
+
+  <div class="help-panel-content" *ngIf="content">
+    <p class="help-description" *ngIf="content.description">
+      {{ content.description }}
+    </p>
+
+    <div class="help-sections">
+      <div class="help-section" *ngFor="let section of content.sections">
+        <div class="section-header" *ngIf="section.icon || section.title">
+          <app-circle-help-icon [size]="25" *ngIf="section.icon"></app-circle-help-icon>
+          <span class="section-icon" *ngIf="section.icon">{{ section.icon }}</span>
+          <h3 class="section-title">{{ section.title }}</h3>
+        </div>
+        
+        <div class="section-content" *ngIf="section.htmlContent" [innerHTML]="section.htmlContent"></div>
+        <p class="section-content" *ngIf="!section.htmlContent">{{ section.content }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="help-panel-content" *ngIf="!content">
+    <p class="no-content">No hay información de ayuda disponible para esta sección.</p>
+  </div>
+</div>

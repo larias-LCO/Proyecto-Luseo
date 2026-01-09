@@ -6,15 +6,25 @@
 
 .cards-wrapper h3 {
   margin: 0 0 15px 0;
-  font-size: 16px;
+  font-size: 25px;
+  text-align: center;
 }
 
 .cards-list {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 15px;
-  position: relative; /* Ensure proper stacking context */
+  gap: 10px;
+
+  position: fixed;        /* o absolute si depende del padre */
+  top: 10px;              /* posición exacta desde arriba */
+  left: 10px;            /* posición exacta desde la izquierda */
+
+  width: calc(100% - 20px);
+  max-height: calc(100vh - 500px); /* controla el alto visible */
+  overflow-y: auto;       /* habilita scroll vertical */
+  overflow-x: hidden;     /* evita scroll horizontal */
 }
+
 
 .card-item {
   background: white;
@@ -63,7 +73,7 @@
 
 .cards-wrapper h3 {
   margin: 0 0 12px 0;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 700;
   color: #0b1220;
 }

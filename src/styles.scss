@@ -21,6 +21,9 @@
     
 }
 
+@import 'assets/fonts/fonts.scss';
+
+
 .btn-open:hover::after {
 	opacity: 1;
 }
@@ -74,6 +77,7 @@ body {
 	--card-bg: #ffffff; /* cards and panels */
 	--text: #0b1220;
 	--muted: #6b7280;
+	--danger: #dc2626;
 	--border: rgba(15, 23, 42, 0.06);
 	--accent: #2563eb;
 	--avatar-bg: linear-gradient(135deg, #295bff, #7192ff); /* original avatar gradient in light mode */
@@ -95,6 +99,7 @@ body {
 	--card-bg: #0b1724;
 	--text: #e6eef8;
 	--muted: #9aa8ba;
+	--danger: #dc2626;
 	--border: rgba(255,255,255,0.06);
 	--accent: #7cb7ff;
 	--avatar-bg: #0084ff;

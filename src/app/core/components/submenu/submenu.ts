@@ -11,6 +11,8 @@ import { RouterLink } from '@angular/router';
   styleUrls: ['./submenu.scss']
 })
 export class SubmenuComponent {
+  collapsed = false;
+
 
 isMenuOpen = false;
 
@@ -18,5 +20,9 @@ toggleMenu() {
   this.isMenuOpen = !this.isMenuOpen;
 }
 
+
+  toggle(): void {
+    this.collapsed = !this.collapsed;
+  }
 }
 

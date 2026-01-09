@@ -36,9 +36,9 @@
   border-bottom: 1px solid #eee;
 }
 
-.subtask-modal .modal-title { margin: 0; font-size: 18px; }
-.subtask-modal .modal-sub { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
-.subtask-modal .modal-close { background: transparent; border: none; font-size: 26px; line-height: 1; cursor: pointer; }
+.subtask-modal .modal-title { margin: 0; font-size: 20px; font-weight: 600; }
+.subtask-modal .modal-sub { font-size: 15px; color: var(--text-muted); margin-top: 4px; }
+.subtask-modal .modal-close { background: transparent; border: none; font-size: 30px; line-height: 1; cursor: pointer; color: white;}
 .subtask-modal .modal-body { padding: 16px 20px; overflow: auto; }
 .subtask-modal .modal-footer { padding: 12px 20px; border-top: 1px solid #eee; display: flex; justify-content: flex-end; gap: 10px; }
 

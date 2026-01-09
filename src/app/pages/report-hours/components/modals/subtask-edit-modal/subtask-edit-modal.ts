@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgIf, NgFor } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { SubTaskService } from '../../../../../pages/report-hours/services/sub-task.service';
 import { NotificationService } from '../../../../../core/services/notification.service';
@@ -7,11 +7,15 @@ import { firstValueFrom } from 'rxjs';
 import { IconButtonComponent } from '../../../../../core/components/animated-icons/icon-button.component';
 import { ArchiveIconComponent } from '../../../../../core/components/animated-icons/archive-icon.component';
 import { FileCheckIconComponent } from '../../../../../core/components/animated-icons/file-check-icon.component';
+import { XIconComponent } from '../../../../../core/components/animated-icons/x-icon.component';
+import { FilePenIconComponent } from '../../../../../core/components/animated-icons/file-pen.component';
+import { timeToDecimal, decimalToTime } from '../../../utils/time-conversion.utils';
+import { hoursMinutesToDecimal, decimalToHoursMinutes } from '../../../utils/time-conversion.utils';
 
 @Component({
   selector: 'app-subtask-edit-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, IconButtonComponent, ArchiveIconComponent, FileCheckIconComponent],
+  imports: [CommonModule, ReactiveFormsModule, IconButtonComponent, ArchiveIconComponent, FileCheckIconComponent, XIconComponent, FilePenIconComponent, NgIf, NgFor],
   templateUrl: './subtask-edit-modal.html',
   styleUrls: ['./subtask-edit-modal.scss']
 })
@@ -35,7 +39,8 @@ export class SubtaskEditModal implements OnInit {
   ) {
     this.form = this.fb.group({
       name: [''],
-      actualHours: [0, [Validators.required, Validators.min(0.01)]],
+      hours: [0, [Validators.required, Validators.min(0)]],
+      minutes: [0, [Validators.required, Validators.min(0), Validators.max(59)]],
       issueDate: ['', Validators.required],
       subTaskCategoryId: ['', Validators.required],
       projectId: [{ value: '', disabled: true }, Validators.required],
@@ -47,9 +52,12 @@ export class SubtaskEditModal implements OnInit {
     if (this.subtask) {
       const dateVal = this.subtask.issueDate || this.subtask.date || this.subtask.start || '';
       const dateStr = this.normalizeDate(dateVal);
+      const hoursValue = (this.subtask.actualHours !== undefined && this.subtask.actualHours !== null) ? this.subtask.actualHours : 0;
+      const { hours, minutes } = decimalToHoursMinutes(hoursValue);
       this.form.patchValue({
         name: this.subtask.name || '',
-        actualHours: (this.subtask.actualHours !== undefined && this.subtask.actualHours !== null) ? this.subtask.actualHours : 0,
+        hours: hours,
+        minutes: minutes,
         issueDate: dateStr,
         subTaskCategoryId: this.subtask.subTaskCategoryId || '',
         projectId: this.subtask.projectId || '',
@@ -63,7 +71,7 @@ export class SubtaskEditModal implements OnInit {
     this.canDelete = (this.myRole === 'OWNER') || Boolean(isOwn);
 
     try {
-      const editable = ['name', 'actualHours', 'issueDate', 'subTaskCategoryId', 'tag'];
+      const editable = ['name', 'hours', 'minutes', 'issueDate', 'subTaskCategoryId', 'tag'];
       editable.forEach((k) => {
         const ctrl = this.form.get(k);
         if (!ctrl) return;
@@ -114,7 +122,7 @@ export class SubtaskEditModal implements OnInit {
     const payload: any = {
       id: this.subtask.id,
       name: v.name,
-      actualHours: Number(v.actualHours),
+      actualHours: hoursMinutesToDecimal(v.hours, v.minutes),
       issueDate: v.issueDate,
       subTaskCategoryId: Number(v.subTaskCategoryId),
       projectId: Number(v.projectId),

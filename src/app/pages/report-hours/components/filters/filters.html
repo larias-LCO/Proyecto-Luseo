@@ -56,8 +56,7 @@
           <select
             [ngModel]="filters.selectedEmployeeId"
             (ngModelChange)="filters.selectedEmployeeId = $event; applyFilters()"
-            [disabled]="!employees || employees.length === 0"
-          >
+            [disabled]="!employees || employees.length === 0">
             <option [ngValue]="undefined">All employees</option>
             <option *ngFor="let emp of employees" [ngValue]="emp.id">{{ emp.name }}</option>
           </select>

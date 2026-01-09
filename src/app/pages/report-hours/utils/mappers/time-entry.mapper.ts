@@ -21,6 +21,7 @@ export function mapSubTasksToTimeEntries(
     projectName: st.projectName,
     // extras for calendar templates
     tag: st.tag,
+    subTaskCategoryId: st.subTaskCategoryId,
     categoryName: st.subTaskCategoryName,
     createdBy: st.createdByEmployeeName
   }));
@@ -43,6 +44,7 @@ export function mapInternalLogsToTimeEntries(
     ,
     // extras for calendar templates
     description: log.description,
+    internalTaskId: log.internalTaskId,
     categoryName: log.internalTaskName,
     createdBy: log.createdByEmployeeName
   }));
