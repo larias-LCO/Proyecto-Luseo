@@ -163,6 +163,10 @@ export class HeaderComponent {
     this.showNotifications = !this.showNotifications;
   }
 
+  isSubmenuOpen() {
+    return this.submenu['openSubject']?.value ?? false;
+  }
+
   toggleSubmenu() {
     try { this.submenu.toggle(); } catch (e) { /* ignore */ }
   }

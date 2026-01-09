@@ -533,3 +533,31 @@ body {
 .cdk-overlay-pane {
   z-index: 2610 !important;
 }
+
+:root.dark .btn-clear-filters{
+	border: 1px solid var(--amarillo-resaltador) !important;
+	color: var(--amarillo-resaltador) !important;
+}
+
+:root.dark .btn-clear-filters::before{
+	background: rgb(255, 255, 177) !important;
+}
+
+
+
+:root.dark .btn-clear-filters:hover{
+	color: black !important;
+}
+
+:root.dark .modal-header h1 {
+	color: var(--card-alt-bg) !important;
+}
+:root.dark .form-control input{
+	border: 1px solid var(--input-border) !important;
+}
+
+:root.dark .action_has{
+	color: var(--card-alt-bg) !important;
+	background: rgb(218, 235, 255) !important;
+	border: 2px solid var(--sidebar-hover-text) !important;
+}
