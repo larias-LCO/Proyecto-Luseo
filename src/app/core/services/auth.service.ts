@@ -95,8 +95,7 @@ export class AuthService {
         if (isNaN(employeeId)) employeeId = undefined;
       }
     }
-    
-    console.log('[AuthService] Roles cargados:', roles);
+  
     this.state.set({ authenticated: !!token, token: token || undefined, username, role: roles, employeeId });
   }
 

@@ -59,7 +59,6 @@ export class LoginComponent implements OnInit {
     // Sincronizar el AuthService principal con los datos de report-hours
     if (me?.authenticated) {
       const roles = me.role ? [me.role] : (me.authorities || []);
-      console.log('[LoginComponent] Sincronizando roles con AuthService:', roles);
       localStorage.setItem('auth.username', me.username || '');
       localStorage.setItem('auth.roles', JSON.stringify(roles));
       // El AuthService se actualizará automáticamente al detectar cambios en storage
