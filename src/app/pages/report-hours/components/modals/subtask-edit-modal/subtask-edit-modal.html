@@ -8,27 +8,29 @@
     <div class="modal-body">
       <form [formGroup]="form">
         <div class="form-group">
-          <label for="edit-project">Project</label>
+          <label for="edit-project">📋 Project</label>
           <select id="edit-project" name="projectId" formControlName="projectId" class="form-input" autocomplete="off">
             <option *ngFor="let p of projects" [value]="p.id">{{p.projectCode}} - {{p.name}}</option>
           </select>
         </div>
 
         <div class="form-group">
-          <label for="edit-category">Category</label>
+          <label for="edit-category">📂 Category</label>
           <select id="edit-category" name="subTaskCategoryId" formControlName="subTaskCategoryId" class="form-input" autocomplete="off">
             <option *ngFor="let c of filteredCategories" [value]="c.id">{{c.name}}</option>
           </select>
+          <div class="field-error" *ngIf="form.get('subTaskCategoryId')?.touched && form.get('subTaskCategoryId')?.invalid">Category is required</div>
         </div>
 
         <div class="form-group">
-          <label for="edit-name">Description</label>
+          <label for="edit-name">✏️ Description</label>
           <textarea id="edit-name" name="name" formControlName="name" class="form-input" rows="2" placeholder="Describe the task..." autocomplete="off"></textarea>
+          <div class="field-error" *ngIf="form.get('name')?.touched && form.get('name')?.invalid">Description is required</div>
         </div>
 
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
           <div class="form-group">
-            <label for="edit-hours">Time Worked</label>
+            <label for="edit-hours">⏰ Time Worked</label>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
               <div>
                 <input id="edit-hours" name="hours" type="number" formControlName="hours" min="0" class="form-input" autocomplete="off" style="text-align: center;">
@@ -40,14 +42,22 @@
               </div>
             </div>
           </div>
+          <div class="field-error" *ngIf="(form.get('hours')?.touched || form.get('minutes')?.touched) && (form.get('hours')?.errors || form.get('minutes')?.errors)">
+            <div *ngIf="form.get('hours')?.errors?.['required'] || form.get('minutes')?.errors?.['required']">Time is required</div>
+            <div *ngIf="form.get('minutes')?.errors?.['max']">Minutes must be less than 60</div>
+          </div>
           <div class="form-group">
-            <label for="edit-date">Date</label>
+            <label for="edit-date">📅 Date</label>
             <input id="edit-date" name="issueDate" type="date" formControlName="issueDate" class="form-input" autocomplete="off">
+            <div class="field-error" *ngIf="form.get('issueDate')?.touched && form.get('issueDate')?.errors">
+              <div *ngIf="form.get('issueDate')?.errors?.['required']">Date is required</div>
+              <div *ngIf="form.get('issueDate')?.errors?.['weekend']">Weekends are not allowed</div>
+            </div>
           </div>
         </div>
 
         <div class="form-group">
-          <label for="edit-tag">Tag</label>
+          <label for="edit-tag">🏷️ Tag</label>
           <select id="edit-tag" name="tag" formControlName="tag" class="form-input" autocomplete="off">
             <option value="">None</option>
             <option value="FIRE_PROTECTION">🔥 Fire Protection</option>
@@ -57,7 +67,7 @@
       </form>
 
       <div class="form-group">
-        <label>Created by</label>
+        <label>👤 Created by</label>
         <input type="text" class="form-input" [value]="subtask?.createdByEmployeeName || ''" disabled>
       </div>
 

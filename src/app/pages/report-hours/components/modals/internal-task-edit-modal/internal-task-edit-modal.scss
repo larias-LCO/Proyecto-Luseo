@@ -26,7 +26,7 @@
 }
 
 .modal-header {
-	background: rgb(24, 26, 172);
+	background: linear-gradient(135deg, #065fd4, #0e3ea5 100%);
     color: white;
     padding: 16px 20px;
     display: flex;
@@ -64,13 +64,13 @@
 	border: 1px solid #e6e6e6;
 	border-radius: 8px;
 	background: #fff;
-	font-size: 15px;
+	font-size: 17px;
 	color: #111827;
 	box-sizing: border-box;
 }
 
 .form-input[disabled] {
-	background: #f9fafb;
+	background: #1b82e9;
 	color: #6b7280;
 }
 

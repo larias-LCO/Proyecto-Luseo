@@ -7,15 +7,15 @@
         <label class="visually-hidden">Year</label>
         <select
           [ngModel]="filters.year"
-          (ngModelChange)="filters.year = $event; applyFilters()"
-        >
+          (ngModelChange)="filters.year = $event; applyFilters()">
+          <option [ngValue]="null">🗓️ All Years</option>
           <option *ngFor="let y of availableYears" [ngValue]="y">20{{ y }}</option>
         </select>
       </div>
 
       <!-- SEARCH -->
       <div class="filter-item search">
-        <label class="visually-hidden"></label>
+        <label class="visually-hidden">Hola mundo!</label>
         <input
           type="text"
           placeholder="Search project for name, code or client"
@@ -32,7 +32,7 @@
             [ngModel]="filters.myProjectsOnly"
             (ngModelChange)="filters.myProjectsOnly = $event; applyFilters()"
           />
-          My assigned projects
+          📌 My assigned projects
         </label>
       </div>
 
@@ -45,7 +45,7 @@
             [ngModel]="filters.onlyMyReports"
             (ngModelChange)="filters.onlyMyReports = $event; applyFilters()"
             />
-            Only my reports
+            📝 Only my reports
           </label>
         </div>
       </ng-container>
@@ -53,11 +53,11 @@
       <!-- ADMIN: Filtrar por empleado -->
       <ng-container *ngIf="isAdminOrOwner">
         <div class="filter-item select">
-          <select
+          <select class="employee-filter"
             [ngModel]="filters.selectedEmployeeId"
             (ngModelChange)="filters.selectedEmployeeId = $event; applyFilters()"
             [disabled]="!employees || employees.length === 0">
-            <option [ngValue]="undefined">All employees</option>
+            <option [ngValue]="undefined">👥 All employees</option>
             <option *ngFor="let emp of employees" [ngValue]="emp.id">{{ emp.name }}</option>
           </select>
         </div>

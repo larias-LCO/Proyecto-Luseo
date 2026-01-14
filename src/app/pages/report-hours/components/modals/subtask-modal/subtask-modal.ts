@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output, OnInit, OnChanges, SimpleChanges } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgIf } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators, AbstractControl } from '@angular/forms';
 import { SubTaskService } from '../../../../../pages/report-hours/services/sub-task.service';
 import { SubTaskCategoryService } from '../../../../../pages/report-hours/services/sub-task-category.service';
@@ -16,7 +16,7 @@ import { hoursMinutesToDecimal, decimalToHoursMinutes } from '../../../utils/tim
 @Component({
   selector: 'app-subtask-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, IconButtonComponent, PlusIconComponent, ArchiveIconComponent, FileCheckIconComponent, XIconComponent, AlarmClockIconComponent],
+  imports: [NgIf,CommonModule, ReactiveFormsModule, IconButtonComponent, PlusIconComponent, ArchiveIconComponent, FileCheckIconComponent, XIconComponent, AlarmClockIconComponent],
   templateUrl: './subtask-modal.html',
   styleUrls: ['./subtask-modal.scss']
 })

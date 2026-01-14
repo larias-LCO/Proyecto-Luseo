@@ -29,13 +29,13 @@
 }
 
 .subtask-edit-modal .modal-header {
-    background: rgb(24, 26, 172);
+    background: linear-gradient(135deg, #065fd4, #0e3ea5 100%);
     color: white;
     padding: 16px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid #ffffff;
+    border-bottom: 1px solid linear-gradient(135deg, #065fd4, #0e3ea5 100%);
     border-radius: 10px 10px 0 0;
 }
 .subtask-edit-modal .modal-title { margin: 0; font-size: 20px; font-weight: 600; }

@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthStateService } from '../../auth/services/auth-state.service';
 
@@ -13,7 +13,8 @@ import { ɵEmptyOutletComponent } from "@angular/router";
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule
+    FormsModule,
+    NgIf
   ],
   templateUrl: './filters.html',
   styleUrls: ['./filters.scss']
@@ -94,21 +95,14 @@ export class Filters implements OnInit, OnChanges {
    * Reset only year and searchText to defaults (do NOT change myProjectsOnly)
    */
   resetFilters(): void {
-    const currentYear = Number(new Date().getFullYear().toString().slice(2));
-
     // reset search text
     (this.filters as any).searchText = '';
     // Do not reset calendar date ranges here (calendar manages them)
 
     (this.filters as any).selectedEmployeeId = undefined;
+
     // reset year to current if available, otherwise first available or current
-    if (this.availableYears && this.availableYears.length > 0) {
-      this.filters.year = this.availableYears.includes(currentYear)
-        ? currentYear
-        : this.availableYears[0];
-    } else {
-      this.filters.year = currentYear;
-    }
+    this.filters.year = null;
 
     this.applyFilters();
   }

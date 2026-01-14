@@ -299,6 +299,7 @@ export class ReportHours implements OnInit, OnDestroy {
           }
         );
         try { this.cd.detectChanges(); } catch (e) {}
+        try { this.loadEmployeesList(this.allTimeEntries); } catch (e) {}
       } catch (e) {
         console.warn('[ReportHours] Error al re-aplicar filtros tras WS', e);
       }
@@ -352,14 +353,15 @@ export class ReportHours implements OnInit, OnDestroy {
                   }
                 );
                 try { this.cd.detectChanges(); } catch (e) {}
+                try { this.loadEmployeesList(this.allTimeEntries); } catch (e) {}
               } catch (e) {
                 console.warn('[ReportHours] Error re-aplicando filtros tras partialRefresh', e);
               }
             },
-            error: (err: any) => { console.warn('[ReportHours] partialRefresh: fallo cargando internal logs', err); }
+            error: (err: any) => { console.warn('[ReportHours] partialRefresh: fail loading internal logs', err); }
           });
         },
-        error: (err: any) => { console.warn('[ReportHours] partialRefresh: fallo cargando subtasks', err); }
+        error: (err: any) => { console.warn('[ReportHours] partialRefresh: fail loading subtasks', err); }
       });
     } catch (err) {
       console.error('[ReportHours] Error en partialRefreshForResource', err);
@@ -737,7 +739,7 @@ export class ReportHours implements OnInit, OnDestroy {
     });
   }
 
-  /** Recibe proyectos ya filtrados desde FiltersComponent */
+  /** Receive pre-filtered projects from FiltersComponent */
   onProjectsFiltered(projects: Project[]): void {
     this.filteredProjects = projects;
     // Force change detection in case parent view doesn't update
@@ -778,7 +780,7 @@ export class ReportHours implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.authSub?.unsubscribe();
     this.wsSub?.unsubscribe();
-    // Limpiar el contenido de ayuda y cerrar el panel al salir de esta página
+    // Clear the help content and close the panel when leaving this page
     this.helpPanelService.close();
     this.helpPanelService.setContent(null);
   }
