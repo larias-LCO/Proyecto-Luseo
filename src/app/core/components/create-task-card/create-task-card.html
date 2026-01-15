@@ -1,5 +1,5 @@
 <!-- MODAL DE ÉXITO PERSONALIZADO -->
-<div *ngIf="showSuccessModal" class="modal-show" style="z-index:9999;background:rgba(0,0,0,0.18);display:flex;align-items:center;justify-content:center;">
+<div *ngIf="showSuccessModal" class="modal-show" style="z-index:10001;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;">
     <div style="background:#fff;padding:32px 36px 28px 36px;border-radius:16px;box-shadow:0 2px 16px rgba(0,0,0,0.10);text-align:center;min-width:320px;max-width:90vw;">
         <div style="font-size:48px;color:#10b981;margin-bottom:8px;">✔️</div>
         <div style="font-size:22px;font-weight:600;margin-bottom:8px;">¡Tarea creada exitosamente!</div>
@@ -14,12 +14,11 @@
              (click)="$event.stopPropagation()">
 
         <div class="modal-header">
-            <div id="createTaskTitle"><svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-file-plus"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2" /><path d="M12 11l0 6" /><path d="M9 14l6 0" /></svg> Create New Task</div>
-            <button class="button" (click)="Cerrar()">
-  <span class="X"></span>
-  <span class="Y"></span>
+            <div id="createTaskTitle"><app-edit-icon [size]="40"></app-edit-icon>  Create New Task</div>
+            <app-x-icon class="close-button" (click)="Cerrar()" [size]="35" [color]="'red'">
   <div class="close">Close</div>
-</button>
+ </app-x-icon>
+
 
         </div>
 

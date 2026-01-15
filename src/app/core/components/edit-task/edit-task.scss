@@ -73,13 +73,17 @@ input[disabled], select[disabled], textarea[disabled] {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(8px);
   font-weight: 700;
-  height: 30px;
+  height: 60px;
   letter-spacing: 0.3px;
+    position: relative;
+  overflow: visible;
+  z-index: 2525;
 }
+
  
 
 .modal-header h2 {
-  font-size: 23px;
+  font-size: 25px;
   font-weight: 700;
   text-shadow: 0 1px 3px rgba(0,0,0,0.15);
   display: flex;
@@ -88,8 +92,27 @@ input[disabled], select[disabled], textarea[disabled] {
   margin: 0;
 }
 
-.modal-header h2 svg {
-  flex-shrink: 0;
+.close-button{
+  color: red;
+  cursor: pointer;
+  position: relative;
+}
+
+.close {
+  display: flex;
+  padding: 0.8rem 1.5rem;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  height: 30px;
+  width: 50px;
+  background-color: rgb(19, 22, 24);
+  color: rgb(187, 229, 236);
+  border: none;
+  border-radius: 5px;
+  pointer-events: none;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 // .icon-title {
@@ -97,79 +120,6 @@ input[disabled], select[disabled], textarea[disabled] {
 //   font-size: 22px;
 // }
 
-/* From Uiverse.io by javierBarroso */ 
-.button {
-  position: relative;
-  width: 40px;
-  height: 40px;
-  border: none;
-  background: rgb(180, 83, 107);
-  border-radius: 50%;
-  transition: background 0.5s;
-  cursor: pointer;
-  margin-right: -5px;
-}
-
-.X {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 2em;
-  height: 1.5px;
-  background-color: rgb(255, 255, 255);
-  transform: translateX(-50%) rotate(45deg);
-}
-
-.Y {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 2em;
-  height: 1.5px;
-  background-color: #fff;
-  transform: translateX(-50%) rotate(-45deg);
-}
-
-.close {
-  position: absolute;
-  display: flex;
-  padding: 0.8rem 1.5rem;
-  align-items: center;
-  justify-content: center;
-  transform: translateX(-50%);
-  top: 40px;
-  left: 50%;
-  width: 20px;
-  height: 10px;
-  font-size: 14px;
-  background-color: rgb(19, 22, 24);
-  color: rgb(187, 229, 236);
-  border: none;
-  border-radius: 3px;
-  pointer-events: none;
-  opacity: 0;
-
-}
-
-.button:hover {
-  background-color: rgb(204, 0, 0);
-}
-
-.button:active {
-  background-color: rgb(130, 0, 0);
-}
-
-.button:hover > .close {
-  animation: close 0.2s forwards 0.25s;
-}
-
-@keyframes close {
-  100% {
-    opacity: 1;
-  }
-}
 
 .modal-body-new {
   padding: 20px 30px;
@@ -325,7 +275,7 @@ input[disabled], select[disabled], textarea[disabled] {
  color: rgb(26, 26, 26);
  font-weight: 700;
  font-size: 15px;
-  margin-left: -20px;
+  margin-left: -15px;
 
 }
 
@@ -381,7 +331,7 @@ input[disabled], select[disabled], textarea[disabled] {
   justify-content: center;
   height: calc(var(--sz) * 2.5);
   // width: calc(var(--sz) * 2.5);
-  width: 200px;
+  width: 70px;
   padding: 10px 16px;
   border-radius: 0.375rem;
   border: 2px solid #6fadff;
@@ -570,3 +520,122 @@ input[disabled], select[disabled], textarea[disabled] {
   transform: translateY(0px);
   transition-duration: 0.3s;
 }
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+  opacity: 1 !important;
+
+  .tooltip-text {
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1f2937;
+    color: #fff;
+    padding: 5px ;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 8px;
+    white-space: normal;
+   width: 100px;
+    text-align: center;
+    line-height: 1.4;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .tooltip-text::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: #1f2937;
+  }
+
+  &:hover .tooltip-text {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(-4px);
+  }
+}
+
+
+// MOOOOOOOOOOOOD DARKKKKKK
+:host-context(.dark) .modal-container {
+  background: #0b1724 !important;
+  color: #e0e0e0;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+}
+
+:host-context(.dark) .modal-body-new {
+  background: #0b1724 !important;
+}
+
+:host-context(.dark) .modal-header {
+  background: linear-gradient(135deg, #d5e7fc, #cde8ff, hsl(211, 89%, 89%)) !important;
+  color: #0b1724 !important;
+}
+
+:host-context(.dark) .modal-header h2 {
+  color: #232831  !important;
+}
+
+:host-context(.dark) .form-group input,
+:host-context(.dark) .form-group select,
+:host-context(.dark) .form-group textarea {
+  background: #232831 !important;
+  border: 1px solid #394050 !important;
+  color: #e2e8f0 !important;
+}
+
+:host-context(.dark) .form-group input:focus,
+:host-context(.dark) .form-group select:focus,
+:host-context(.dark) .form-group textarea:focus {
+  background: #2a303b !important;
+  border: 1px solid #ebd660 !important;
+}
+
+:host-context(.dark) .form-group label,
+:host-context(.dark) .section-title,
+:host-context(.dark) .description label {
+  color: #e2e8f0 !important;
+  font-weight: 700;
+}
+
+:host-context(.dark) .created-box {
+  background: #232831 !important;
+  border: none !important;
+  color: #e2e8f0 !important;
+}
+
+:host-context(.dark) .mini-container {
+  background: #232831  !important;
+  border: none !important;
+  color: #e2e8f0 !important;
+}
+
+
+:host-context(.dark) .mini-container span{
+  font-weight: 700;
+}
+:host-context(.dark) .mini-container label{
+  font-weight: 700;
+}
+
+/* Save button dark mode adjustment */
+ :host-context(.dark) .action_has {
+    background: #bcd4ff !important;
+    border-color: #292b2e !important;
+  }
+
+  :host-context(.dark) .has_saved:hover {
+    background: #fff3cc !important;
+    border-color: hsl(214, 100%, 67%) !important;
+  }

@@ -1,26 +1,26 @@
+<!-- From Uiverse.io by andrew-demchenk0 --> 
+
+
 <div class="tooltip">
-  <button class="btn-agregar" (click)="abrirModal()">Add New Member</button>
-  <span class="tooltip-text">Create a new member by assigning their data and corresponding role.</span>
+<button type="button" class="button2" [style.color]="'#fff'" (click)="abrirModal()">
+  <span class="button__text">Add New Member</span>
+  <span class="button__icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" viewBox="0 0 24 24" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" stroke="currentColor" height="24" fill="none" class="svg"><line y2="19" y1="5" x2="12" x1="12"></line><line y2="12" y1="12" x2="19" x1="5"></line></svg></span>
+</button>
+<span class="tooltip-text">Create a new member by assigning their data and corresponding role.</span>
 </div>
 
+
 <div class="modal-backdrop" *ngIf="mostrarModal">
-  <div class="modal">
+  <div class="modal" [class.modal-small]="paso === 2">
     
     <div class="modal-header">
-      <h1>
-        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
-          <circle cx="9" cy="7" r="4"></circle>
-          <line x1="19" y1="8" x2="19" y2="14"></line>
-          <line x1="22" y1="11" x2="16" y2="11"></line>
-        </svg>
+      <h1> <app-user-mas-icon [size]="32"></app-user-mas-icon>
         Add New Member
       </h1>
-      <button class="button" (click)="cerrarModal()">
-  <span class="X"></span>
-  <span class="Y"></span>
+ <app-x-icon class="close-button" (click)="cerrarModal()" [size]="35" [color]="'red'">
   <div class="close">Close</div>
-</button>
+ </app-x-icon>
+ 
     </div>
 
     <div class="modal-body">
@@ -136,7 +136,10 @@
 
     <!-- BOTONES -->
     <div class="acciones">
-      <button class="cancelar" (click)="cerrarModal()">Cancel</button>
+      <!-- <button class="cancelar" (click)="cerrarModal()">Cancel</button> -->
+<button class="noselect" (click)="cerrarModal()"><span class="text" >Cancel</span></button>
+
+
       <!-- <button class="atras" *ngIf="paso === 2" (click)="atras()">Atrás</button> -->
       <!-- From Uiverse.io by Jedi-hongbin --> 
 <button class="atras" *ngIf="paso === 2" (click)="atras()">
@@ -150,14 +153,10 @@
 
       <!-- <button class="siguiente" *ngIf="paso === 1" (click)="siguiente()">Siguiente</button> -->
 <button class="next-button" *ngIf="paso === 1" (click)="siguiente()">
-
-  
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
     <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75"></path>
   </svg>
-
-  
-  <div class="text">
+  <div class="text2">
     Next
   </div>
 
@@ -182,6 +181,11 @@
       <div style="font-size:2.5rem;color:#10b981;">✔</div>
       <span> Miembro creado correctamente</span>
     </div>
-
+<!-- <div *ngIf="showSuccessModal" class="success-modal" style="z-index:9999;background:rgba(0,0,0,0.18);display:flex;align-items:center;justify-content:center;">
+    <div style="background:#fff;padding:32px 36px 28px 36px;border-radius:16px;box-shadow:0 2px 16px rgba(0,0,0,0.10);text-align:center;min-width:320px;max-width:90vw;">
+        <div style="font-size:48px;color:#10b981;margin-bottom:8px;">✔️</div>
+        <div style="font-size:22px;font-weight:600;margin-bottom:8px;">Member created successfully!</div>
+    </div>
+</div> -->
   
 

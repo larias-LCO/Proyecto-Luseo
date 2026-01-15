@@ -1,10 +1,10 @@
 import { Component, EventEmitter, Input, OnInit, Output, HostListener } from '@angular/core';
 
 @Component({
-  selector: 'app-mas-icon',
+  selector: 'app-clock-icon',
   standalone: true,
   template: `
-    <div class="mas-icon" [class.animate]="animate">
+    <div class="clock-icon" [class.animate]="animate">
       <svg 
         xmlns="http://www.w3.org/2000/svg" 
         [attr.width]="size" 
@@ -15,8 +15,8 @@ import { Component, EventEmitter, Input, OnInit, Output, HostListener } from '@a
         stroke-width="2" 
         stroke-linecap="round" 
         stroke-linejoin="round">
-        <path d="M5 12h14" class="horizontal-line"></path>
-        <path d="M12 5v14" class="vertical-line"></path>
+        <circle cx="12" cy="12" r="10" class="clock-circle"></circle>
+        <polyline points="12 6 12 12 16 14" class="clock-hand"></polyline>
       </svg>
     </div>
   `,
@@ -26,45 +26,59 @@ import { Component, EventEmitter, Input, OnInit, Output, HostListener } from '@a
       line-height: 0; 
     }
     
-    .mas-icon { 
+    .clock-icon { 
       display: inline-flex; 
       align-items: center; 
       justify-content: center; 
       cursor: pointer; 
     }
     
-    .mas-icon svg {
+    .clock-icon svg {
       overflow: visible;
-      transform-origin: center;
-      animation: rotatePlus 4s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
     }
     
-    .mas-icon .horizontal-line,
-    .mas-icon .vertical-line {
+    .clock-icon .clock-circle {
       transform-origin: center;
+      animation: pulseClock 3s ease-in-out infinite;
     }
     
-    @keyframes rotatePlus {
+    .clock-icon .clock-hand {
+      transform-origin: 12px 12px;
+      animation: rotateClock 4s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+    }
+    
+    @keyframes rotateClock {
       0% {
         transform: rotate(0deg);
       }
       25% {
-        transform: rotate(180deg);
+        transform: rotate(90deg);
       }
       50% {
-        transform: rotate(360deg);
-      }
-      75% {
         transform: rotate(180deg);
       }
+      75% {
+        transform: rotate(270deg);
+      }
       100% {
-        transform: rotate(0deg);
+        transform: rotate(360deg);
+      }
+    }
+    
+    @keyframes pulseClock {
+      0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      50% {
+        transform: scale(1.03);
+        opacity: 0.9;
       }
     }
     `
   ]
 })
-export class MasIconComponent implements OnInit {
+export class ClockIconComponent implements OnInit {
   @Input() size = 28;
   animate = true;
   @Output() animationStarted = new EventEmitter<void>();

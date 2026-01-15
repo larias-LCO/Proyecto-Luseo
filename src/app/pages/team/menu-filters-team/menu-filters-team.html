@@ -7,7 +7,7 @@
   </div>
 
 
-  <div class="mf-section" *ngIf="departments?.length">
+  <div class="mf-section" *ngIf="departments.length">
       <div class="mf-section-header" (click)="toggleCollapse('departments')">
         <span class="caret" [class.open]="!isCollapsed('departments')">▶</span>
         <h4>Departments</h4>
@@ -21,7 +21,7 @@
 
 
     <!-- POSITIONS FILTER -->
-  <div class="mf-section" *ngIf="positions?.length">
+  <div class="mf-section" *ngIf="positions.length">
     <div class="mf-section-header" (click)="toggleCollapse('positions')">
         <span class="caret" [class.open]="!isCollapsed('positions')">▶</span>
         <h4>Position</h4>
@@ -34,7 +34,7 @@
     </div>
 
 
-    <div class="mf-section" *ngIf="offices?.length">
+    <div class="mf-section" *ngIf="offices.length">
       <div class="mf-section-header" (click)="toggleCollapse('offices')">
         <span class="caret" [class.open]="!isCollapsed('offices')">▶</span>
         <h4>Offices</h4>

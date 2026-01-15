@@ -1,11 +1,11 @@
 <!-- ✅ Coloca tus componentes de encabezado -->
 <app-header></app-header>
-<app-submenu class="menu" [class.open]="isMenuOpen$ | async" ></app-submenu>
+<app-submenu class="menu" [class.open]="isMenuOpen$ | async" [class.hidden]="!!confirmDeleteId"></app-submenu>
 
 <app-menu-filters-team
-  [departments]="catalogs?.departments ?? []"
-  [positions]="catalogs?.jobs ?? []"
-  [offices]="catalogs?.offices ?? []"
+  [departments]="catalogs.departments"
+  [positions]="catalogs.jobs"
+  [offices]="catalogs.offices"
   [roles]="roleFilterOptions"
   [states]="stateOptions"
   (filtersChange)="onFiltersChange($event)"
@@ -27,7 +27,7 @@ Its objective is to facilitate the management and administration of users, ensur
 <div *ngIf="isUserOnly">
   <p class="texto-descriptivo">
     This page is intended for view-only users. It allows you to view information on available projects and use search filters to quickly find projects of interest.
-Users cannot make modifications, ensuring data integrity while maintaining a clear and organized browsing experience.👀
+Users cannot make modifications, ensuring data integrity while maintaining a clear and organized browsing experience.
   </p>
 
 </div>
@@ -96,7 +96,7 @@ Users cannot make modifications, ensuring data integrity while maintaining a cle
 
   <!--  botones dentro del form -->
   <!-- 🔹 Fila inferior: Mostrar por página + Botones -->
-<!-- <div class="filters-row bottom-row"> -->
+<div class="botones-fila">
   <!-- <div class="filter-item small">
     <label>Show per page</label>
     <select formControlName="size">
@@ -105,7 +105,7 @@ Users cannot make modifications, ensuring data integrity while maintaining a cle
   </div> -->
 
   <app-fagregar-miembro
-      *ngIf="canAddMember"
+      *ngIf="canAddMember && !confirmDeleteId"
       [catalogs]="catalogs"
       [allowedRoles]="allowedRoleOptions"
       (created)="refreshData()"
@@ -114,7 +114,7 @@ Users cannot make modifications, ensuring data integrity while maintaining a cle
     <button class="refresh" type="button"  (click)="refreshData()" [disabled]="loading">Update Data</button>
   <!-- From Uiverse.io by andrew-demchenk0 --> 
 
-<!-- </div> -->
+</div>
 
 
 
@@ -246,9 +246,9 @@ Users cannot make modifications, ensuring data integrity while maintaining a cle
   <!-- Modal de confirmación reutilizable -->
   <app-confirm-modal
     *ngIf="confirmDeleteId"
-    [message]="'¿Eliminar empleado ' + confirmDeleteName + '? Esta acción no se puede deshacer.'"
-    [confirmText]="'Aceptar'"
-    [cancelText]="'Cancelar'"
+    [message]="'Delete employee ' + confirmDeleteName + '? This action cannot be undone.'"
+    [confirmText]="'Accept'"
+    [cancelText]="'Cancel'"
     (confirm)="confirmarEliminarEmpleado()"
     (cancel)="cancelarEliminarEmpleado()"
   ></app-confirm-modal>

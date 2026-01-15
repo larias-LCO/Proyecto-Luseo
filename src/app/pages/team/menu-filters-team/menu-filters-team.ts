@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth.service';
 import { SubmenuComponent } from '../../../core/components/submenu/submenu';
+import { CatalogsService } from '../../../core/services/catalogs.service';
 
 @Component({
   selector: 'app-menu-filters-team',
@@ -13,12 +14,12 @@ import { SubmenuComponent } from '../../../core/components/submenu/submenu';
 })
 export class MenuFiltersTeam {
 private auth = inject(AuthService);
- @Input() departments: any[] = [];
- @Input() positions: any[] = [];
-   @Input() offices: any[] = [];
-   @Input() roles: any[] = [];
-   @Input() jobs: any[] = [];
-   @Input() states: any[] = [];
+ @Input() departments!: any[];
+ @Input() positions!: any[];
+@Input() offices!: any[];
+   @Input() roles!: any[];
+   @Input() jobs!: any[];
+   @Input() states!: any[];
 
 
 
@@ -34,11 +35,11 @@ private auth = inject(AuthService);
 
   // ---- Traer los roles para autenticar (UI gating) ----
  get isOwner(): boolean {
-  return this.auth.hasRole('OWNER');
+  return this.auth.isOwner();
 }
 
-get isAdmin(): boolean {
-  return this.auth.hasRole('ADMIN');
+  get isAdmin(): boolean {
+  return this.auth.isAdmin();
 }
 
 get isAdminOrOwner(): boolean {
@@ -46,7 +47,7 @@ get isAdminOrOwner(): boolean {
 }
 
 get isUser(): boolean {
-  return this.auth.hasRole('USER');
+  return this.auth.isUser();
 }
 
 

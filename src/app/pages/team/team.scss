@@ -16,10 +16,16 @@
   text-align: center;
   min-width: 280px;
 }
+
+/* Ocultar menu cuando se muestra modal de confirmación */
+app-submenu.hidden {
+  display: none !important;
+}
+
 /* ====== TEAM PAGE STYLES ====== */
-.team-container, .team-container * { box-sizing: border-box; }
+.team-container, .team-container * { box-sizing: border-box;}
 .team-container {
-  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-family: var(--font-primary);
   /* Evitar superposición con header (70px) y sidebar (250px) */
   margin-top: -10px;
   margin-left: 10px;
@@ -31,7 +37,8 @@
   font-size: 38px;
   font-weight: 700;
   margin-bottom: 20px;
- color: #001cb9;
+color: #1e3a8a;
+margin-top: 20px;
 }
 
 // /* ====== TABLE ====== */
@@ -195,7 +202,7 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background-color: #005fdb;
+  background:  #1e3a8a;
   border: none;
   font-weight: 700;
   display: flex;
@@ -274,7 +281,7 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background-color: rgb(204, 2, 2);
+  background-color: rgb(194, 42, 42);
   border: none;
   font-weight: 600;
   display: flex;
@@ -336,16 +343,21 @@
 
 /* ====== PAGINATION ====== */
 .pagination {
-  text-align: center;
-  margin-top: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 30px;
+  gap: 4px;
 
   button {
     border: 1px solid #d1d5db;
     background: white;
-    padding: 6px 10px;
-    margin: 0 2px;
+    padding: 4px 8px;
+    min-width: 32px;
+    height: 32px;
     border-radius: 4px;
     cursor: pointer;
+    font-size: 13px;
     transition: transform 0.2s ease;
     
   }
@@ -452,6 +464,15 @@ select:focus {
 
 
 //botones de actualizar datos y de limpiar filtros
+.botones-fila {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+
 // .buttons-group{
 //   display: flex;
 //   gap: 1rem;
@@ -505,16 +526,12 @@ select:focus {
 
 
 .refresh{
-display: inline-block;
+  display: inline-block;
   position: relative;
-  font-size: 14px;
-// margin-top: -100px;
-margin-left: 1440px;
-top: -29px;
-  // font-weight: bold;
-  // text-transform: uppercase;
+  font-size: 15px;
+  font-weight: 600;
   color: #fff;
-  background: linear-gradient(180deg, #0d3d8c, #0b2a5b);
+  background: #1e3a8a;
   border: 1px solid #ddd017;
   border-radius: 7px;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1), inset 0px 2px 4px rgba(255, 255, 255, 0.2);
@@ -522,7 +539,7 @@ top: -29px;
   cursor: pointer;
   overflow: hidden;
   transition: background-color 0.3s, transform 0.3s;
-   width: 130px;
+  width: 130px;
   height: 40px;
 }
 
@@ -603,6 +620,7 @@ top: -29px;
   box-shadow: var(--elevation);
   transition: transform .25s ease, box-shadow .25s ease, background-color 220ms var(--expo-out), color 220ms var(--expo-out);
   cursor: pointer;
+  height: 240px;
 }
 
 .employee-card:hover {
@@ -692,17 +710,16 @@ top: -29px;
 // .role-owner { background: #ede9fe; color: #6d28d9; }
 // .role-user  { background: #f3f4f6; color: #374151; }
 
-.state-active   { background: #dcfce7; color: #166534; }
+.state-active   { background: #dcfce7;  color: #166534; }
 .state-inactive { background: #fee2e2; color: #991b1b; }
 
 /* Actions */
 .card-actions {
-  margin-top: 16px;
+  margin-top: -15px;
   display: flex;
   justify-content: flex-end;
   gap: 10px;
 }
-
 // .card-actions button {
 //   border: none;
 //   border-radius: 10px;
@@ -804,5 +821,4 @@ top: -29px;
   color: var(--muted);
   padding: 40px;
 }
-
 

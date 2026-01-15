@@ -1,12 +1,12 @@
 .filters-container{
   width: 250px;
-  height: 94vh;
+  height: 100vh;
   background: #ffffff;
   border-right: 1px solid #e5e7eb;
   padding: 12px 8px;
   font-family: system-ui, -apple-system, BlinkMacSystemFont;
   position: fixed;
-  top: 100px; /* altura del header */
+  top: 75px; /* altura del header */
   left: 0; /* siempre pegado al lado izquierdo */
   z-index: 1200;
   overflow: visible;

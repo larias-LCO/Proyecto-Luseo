@@ -11,13 +11,17 @@ export function getWeekCalendarOptions(): CalendarOptions {
   return {
     initialView: 'dayGridWeek',
     plugins: [dayGridPlugin, interactionPlugin, listPlugin, bootstrap5Plugin],
-    themeSystem: 'bootstrap5',
+    // themeSystem: 'bootstrap5',
     headerToolbar: {
-      left: 'prev,next today',
+      left: '',
       center: 'title',
       // add list views so user can switch to compact listWeek/listMonth
-      right: 'dayGridMonth,dayGridWeek,listWeek'
+      right: 'prev today next dayGridMonth,dayGridWeek,listWeek'
     },
+    // Format title to show date range like "Jan 5 – 9, 2026"
+    titleFormat: { month: 'short', day: 'numeric', year: 'numeric' },
+    // Format day header to show only day number and short name like "5 Mon"
+    dayHeaderFormat: { day: 'numeric', weekday: 'short' },
     hiddenDays: [0, 6], // hide Sunday and Saturday
     weekends: false,
     editable: false,

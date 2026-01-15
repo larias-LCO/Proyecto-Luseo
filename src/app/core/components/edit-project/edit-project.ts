@@ -15,12 +15,15 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { XIconComponent } from '../animated-icons/x-icon.component';
+import { EditIconComponent } from "../animated-icons/edit-icon.component";
+import { TeamIconComponent } from "../animated-icons/team-icon.component";
 
 
 @Component({
   selector: 'app-edit-project',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatSelectModule, MatChipsModule, MatFormFieldModule, MatCheckboxModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatSelectModule, MatChipsModule, MatFormFieldModule, MatCheckboxModule, XIconComponent, EditIconComponent, TeamIconComponent],
   templateUrl: './edit-project.html',
   styleUrls: ['./edit-project.scss']
 })

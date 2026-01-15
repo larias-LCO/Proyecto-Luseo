@@ -1,10 +1,10 @@
 import { Component, EventEmitter, Input, OnInit, Output, HostListener } from '@angular/core';
 
 @Component({
-  selector: 'app-mas-icon',
+  selector: 'app-details-icon',
   standalone: true,
   template: `
-    <div class="mas-icon" [class.animate]="animate">
+    <div class="details-icon" [class.animate]="animate">
       <svg 
         xmlns="http://www.w3.org/2000/svg" 
         [attr.width]="size" 
@@ -15,8 +15,11 @@ import { Component, EventEmitter, Input, OnInit, Output, HostListener } from '@a
         stroke-width="2" 
         stroke-linecap="round" 
         stroke-linejoin="round">
-        <path d="M5 12h14" class="horizontal-line"></path>
-        <path d="M12 5v14" class="vertical-line"></path>
+        <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" class="file-body"></path>
+        <path d="M14 2v4a2 2 0 0 0 2 2h4" class="file-corner"></path>
+        <path d="M10 9H8" class="text-line line-1"></path>
+        <path d="M16 13H8" class="text-line line-2"></path>
+        <path d="M16 17H8" class="text-line line-3"></path>
       </svg>
     </div>
   `,
@@ -26,45 +29,64 @@ import { Component, EventEmitter, Input, OnInit, Output, HostListener } from '@a
       line-height: 0; 
     }
     
-    .mas-icon { 
+    .details-icon { 
       display: inline-flex; 
       align-items: center; 
       justify-content: center; 
       cursor: pointer; 
     }
     
-    .mas-icon svg {
+    .details-icon svg {
       overflow: visible;
-      transform-origin: center;
-      animation: rotatePlus 4s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+      animation: scaleFile 3s ease-in-out infinite;
     }
     
-    .mas-icon .horizontal-line,
-    .mas-icon .vertical-line {
+    .details-icon .file-body,
+    .details-icon .file-corner {
       transform-origin: center;
     }
     
-    @keyframes rotatePlus {
-      0% {
-        transform: rotate(0deg);
+    .details-icon .text-line {
+      stroke-dasharray: 10;
+      stroke-dashoffset: 0;
+    }
+    
+    .details-icon .line-1 {
+      animation: writeLine 3s ease-in-out infinite;
+    }
+    
+    .details-icon .line-2 {
+      animation: writeLine 3s ease-in-out infinite 0.3s;
+    }
+    
+    .details-icon .line-3 {
+      animation: writeLine 3s ease-in-out infinite 0.6s;
+    }
+    
+    @keyframes scaleFile {
+      0%, 100% {
+        transform: scale(1);
       }
-      25% {
-        transform: rotate(180deg);
+      10%, 90% {
+        transform: scale(1.05);
       }
-      50% {
-        transform: rotate(360deg);
+    }
+    
+    @keyframes writeLine {
+      0%, 20% {
+        stroke-dashoffset: 0;
       }
-      75% {
-        transform: rotate(180deg);
+      35% {
+        stroke-dashoffset: 10;
       }
-      100% {
-        transform: rotate(0deg);
+      50%, 100% {
+        stroke-dashoffset: 0;
       }
     }
     `
   ]
 })
-export class MasIconComponent implements OnInit {
+export class DetailsIconComponent implements OnInit {
   @Input() size = 28;
   animate = true;
   @Output() animationStarted = new EventEmitter<void>();

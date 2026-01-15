@@ -119,6 +119,22 @@ declare global {
     }
   }
 
+  // Función para decodificar JWT
+  function decodeJwt(token: string): any {
+    try {
+      const parts = token.split('.');
+      if (parts.length < 2) return null;
+      const base64Url = parts[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const padded = base64.padEnd(base64.length + (4 - (base64.length % 4)) % 4, '=');
+      const json = atob(padded);
+      return JSON.parse(json);
+    } catch (e) {
+      console.warn('[auth-sync] Error decoding JWT:', e);
+      return null;
+    }
+  }
+
   // 🔹 NUEVA FUNCIÓN: redirigir al login
 function cerrarSesion() {
   // Borrar estado de autenticación
@@ -158,6 +174,7 @@ function cerrarSesion() {
 
   function saveState(newState: Partial<AuthState>) {
     state = { ...state, ...newState };
+    console.log('[auth-sync.saveState] Guardando estado:', state);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     emit();
     broadcast({ type: 'state', payload: state });
@@ -228,9 +245,11 @@ function cerrarSesion() {
   }
 
   function setAuth(token: string, expiresAtMillis: number, user?: Partial<AuthState>) {
+    console.log('[auth-sync.setAuth] Token:', token ? 'Presente' : 'Ausente', 'Rol:', user?.role);
     cancelSchedule();
     const roleNorm = inferRoleFromData(user, user?.role);
     const authorities = ensureAuthoritiesForRole(roleNorm, user?.authorities);
+    console.log('[auth-sync.setAuth] Rol normalizado:', roleNorm, 'Authorities:', authorities);
     saveState({
       token,
       expiresAtMillis,
@@ -351,18 +370,42 @@ function cerrarSesion() {
   }
 
   async function login(login: string, password: string): Promise<AuthState> {
+    console.log('[auth-sync] Iniciando login para:', login);
     const res = await fetch(url('/auth/login'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ login, password }),
     });
-    if (!res.ok) throw new Error(`Login failed: ${res.status}`);
+    if (!res.ok) {
+      console.error('[auth-sync] Login falló:', res.status);
+      throw new Error(`Login failed: ${res.status}`);
+    }
     const data = await res.json();
+    console.log('[auth-sync] Respuesta del servidor:', data);
+    
+    // Intentar obtener el rol de la respuesta, si no, del token JWT
+    let role = data.role || data.accountRole;
+    
+    if (!role && data.token) {
+      console.log('[auth-sync] Rol no en respuesta, decodificando token...');
+      const decoded = decodeJwt(data.token);
+      console.log('[auth-sync] Token decodificado:', decoded);
+      if (decoded) {
+        // Intentar extraer rol del token JWT
+        role = inferRoleFromData(decoded);
+        console.log('[auth-sync] Rol extraído del token:', role);
+      }
+    }
+    
+    console.log('[auth-sync] Login exitoso. Rol detectado:', role, 'Token:', data.token ? 'Presente' : 'Ausente');
+    
     setAuth(data.token, data.expiresAtMillis, {
       username: data.username,
-      role: data.role,
-      authorities: data.role ? [`ROLE_${data.role}`] : [],
+      role: role,
+      authorities: role ? [`ROLE_${role}`] : [],
     });
+    
+    console.log('[auth-sync] Estado guardado:', getState());
     return getState();
   }
 

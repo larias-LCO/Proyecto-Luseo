@@ -4,7 +4,21 @@
 	display: flex;
 	flex-direction: column;
 	gap: 14px;
+	margin-top: 10px;
+	width: 1635px;
+	margin-left: 5px;
+	
 }
+
+.report-hours h1{
+	  font-size: 38px;
+  font-weight: 700;
+  margin-bottom: 20px;
+color: #1e3a8a;
+margin-top: 20px;
+margin-left: 20px;
+}
+
 
 .report-section {
 	/* lightweight card wrapper for each section/component */
@@ -40,6 +54,7 @@
 	display: flex;
 	align-items: center;
 	text-align: right;
+	height: 70px;
 }
 
 .report-hours-info-internal-task{
@@ -90,6 +105,8 @@
   position: relative; /* Ensure proper stacking context */
   z-index: 1; /* Ensure cards are above any background elements */
 }
+
+
 
 /* Ensure divs inside section-body don't block clicks */
 .report-section--flush .section-body > div {
@@ -381,4 +398,13 @@
 .rh-dup-btn:active {
 	transform: translateY(0);
 	opacity: 0.95;
+}
+
+.texto-descriptivo{
+   font-size: 15px;
+  color: #494949;
+  font-weight: 600;
+font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  margin-bottom: 20px;
+  margin-left: 20px;
 }

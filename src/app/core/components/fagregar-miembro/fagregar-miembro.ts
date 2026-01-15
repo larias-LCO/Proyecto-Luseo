@@ -2,12 +2,14 @@ import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
+import { UserMasIconComponent } from '../animated-icons/user-mas.component';
+import { XIconComponent } from "../animated-icons/x-icon.component";
 
 
 @Component({
   selector: 'app-fagregar-miembro',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, UserMasIconComponent, XIconComponent],
   templateUrl: './fagregar-miembro.html',
   styleUrls: ['./fagregar-miembro.scss']
 })
@@ -23,6 +25,7 @@ export class FagregarMiembroComponent {
   private auth = inject(AuthService);
 
   constructor(private fb: FormBuilder) {
+    console.log('🟢 FagregarMiembroComponent constructor ejecutado');
     this.form = this.fb.group({
       nombre: ['', Validators.required],
       departamento: ['', Validators.required],
@@ -34,6 +37,7 @@ export class FagregarMiembroComponent {
       correo: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]]
     });
+    console.log('🟢 Formulario inicializado');
   }
 
   get filteredAllowedRoles(): string[] {
@@ -41,12 +45,19 @@ export class FagregarMiembroComponent {
   }
 
   abrirModal() {
+    console.log('🔵 abrirModal() llamado');
+    console.log('🔵 isAdmin():', this.auth.isAdmin());
+    console.log('🔵 isOwner():', this.auth.isOwner());
+    
     // Solo ADMIN u OWNER pueden abrir
-    if (!(this.auth.hasRole('ADMIN') || this.auth.hasRole('OWNER'))) {
+    if (!(this.auth.isAdmin() || this.auth.isOwner())) {
+      console.log('❌ Usuario no autorizado');
       alert('No autorizado: tu rol no permite agregar miembros.');
       
       return;
     }
+    
+    console.log('✅ Usuario autorizado, abriendo modal...');
     // Limpiar el formulario antes de mostrar el modal y forzar paso 1
     this.form.reset({
       nombre: '',
@@ -63,6 +74,7 @@ export class FagregarMiembroComponent {
     this.form.markAsUntouched();
     this.paso = 1;
     this.mostrarModal = true;
+    console.log('✅ mostrarModal =', this.mostrarModal);
   }
 
   cerrarModal() {
@@ -123,14 +135,14 @@ export class FagregarMiembroComponent {
     const password = v.password;
     const role = String(v.rol || '').toUpperCase();
     // ADMIN no puede crear OWNER
-    if (this.auth.hasRole('ADMIN') && role === 'OWNER') {
+    if (this.auth.isAdmin() && role === 'OWNER') {
       alert('No autorizado: un ADMIN no puede crear usuarios con rol OWNER.');
       return;
     }
     try {
-      // 1) Crear cuenta: backend espera username/passwordHash/role (role opcional)
+      // 1) Crear cuenta: backend espera username/password/role (role opcional)
       const accApi = `${this.auth.getApiBase()}/accounts`;
-      const accPayload = { username, passwordHash: password, role };
+      const accPayload = { username, password, role };
       console.debug('Creando cuenta con payload:', accPayload);
       const accRes = await this.auth.fetchWithAuth(accApi, {
         method: 'POST',

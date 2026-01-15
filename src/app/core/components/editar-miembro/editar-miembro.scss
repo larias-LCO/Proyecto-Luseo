@@ -127,16 +127,16 @@
   /* Focus: highlight suave */
   .form-input:focus {
     outline: none;
-    border-color: #2563eb !important;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
+    border-color: #e9d73bad !important;
+  box-shadow: 0 0 0 3px rgba(255, 238, 164, 0.1) !important;
     transform: translateY(-1px);
   }
 
   /* Hover */
-  .form-input:hover {
-    border-color: #9ca3af !important;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
-  }
+  // .form-input:hover {
+  //   border-color: #9ca3af !important;
+  //   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+  // }
 
   /* Select caret alignment fix (native) */
   .form-input[type="text"],
@@ -151,7 +151,7 @@
     display: flex;
     justify-content: flex-end;
     gap: 12px;
-    margin-top: 16px;
+    margin-top: -20px;
     align-items: center;
   }
 
@@ -266,12 +266,12 @@ select.form-input {
   font-weight: 600;
   letter-spacing: 0.3px;
   margin: 0;
-  height: 40px;
+  height: 65px;
   margin-bottom: -10px;
 }
 
 .modal-header h1 {
-  font-size: 24px;
+  font-size: 23px;
   font-weight: 700;
   text-shadow: 0 1px 3px rgba(0,0,0,0.15);
   color: #002049;
@@ -285,80 +285,30 @@ select.form-input {
   flex-shrink: 0;
 }
 
+.close-button{
+  color: red;
+  cursor: pointer;
+  position: relative;
+}
+
 
 
 /* From Uiverse.io by javierBarroso */ 
-.button {
-  position: relative;
-  width: 40px;
-  height: 40px;
-  border: none;
-   background: rgba(180, 83, 83, 0.719);
-  border-radius: 50%;
-  transition: background 0.5s;
-  cursor: pointer;
-  margin-right: -15px;
-}
-
-.X {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 2em;
-  height: 1.5px;
-  background-color: rgb(255, 255, 255);
-  transform: translateX(-50%) rotate(45deg);
-}
-
-.Y {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 2em;
-  height: 1.5px;
-  background-color: #fff;
-  transform: translateX(-50%) rotate(-45deg);
-}
-
 .close {
-  position: absolute;
   display: flex;
   padding: 0.8rem 1.5rem;
   align-items: center;
   justify-content: center;
-  transform: translateX(-50%);
-  top: 40px;
-  left: 50%;
-  width: 20px;
-  height: 10px;
-  font-size: 14px;
+  font-size: 15px;
+  height: 30px;
+  width: 50px;
   background-color: rgb(19, 22, 24);
   color: rgb(187, 229, 236);
   border: none;
-  border-radius: 3px;
+  border-radius: 5px;
   pointer-events: none;
-  opacity: 0;
-
-}
-
-.button:hover {
-  background-color: rgb(204, 0, 0);
-}
-
-.button:active {
-  background-color: rgb(130, 0, 0);
-}
-
-.button:hover > .close {
-  animation: close 0.2s forwards 0.25s;
-}
-
-@keyframes close {
-  100% {
-    opacity: 1;
-  }
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 
@@ -374,7 +324,7 @@ select.form-input {
   justify-content: center;
   height: calc(var(--sz) * 2.5);
   // width: calc(var(--sz) * 2.5);
-  width: 200px;
+  width: 60px;
   padding: 10px 16px;
   border-radius: 0.375rem;
   border: 2px solid #6fadff;
@@ -391,7 +341,7 @@ select.form-input {
 
 .has_saved:hover {
   border-color: hsl(var(--color-has));
-  background: #cbe1fd;
+  background: #e3efff;
   transform: scale(1.05);
  box-shadow: 2px 2px 8px rgba(0,0,0,0.25);
 }
@@ -477,7 +427,7 @@ select.form-input {
 
 /* From Uiverse.io by cssbuttons-io */ 
 .noselect {
- width: 100px;
+ width: 90px;
  height: 40px;
  cursor: pointer;
  display: flex;
@@ -498,7 +448,7 @@ select.form-input {
  color: rgb(26, 26, 26);
  font-weight: 700;
  font-size: 15px;
-  margin-left: -20px;
+  margin-left: -22px;
 
 }
 
@@ -543,3 +493,122 @@ select.form-input {
 //  transform: scale(0.8);
 // }
 
+.tooltip {
+  position: relative;
+  display: inline-block;
+  opacity: 1 !important;
+
+  .tooltip-text {
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1f2937;
+    color: #fff;
+    padding: 5px ;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 8px;
+    white-space: normal;
+   width: 100px;
+    text-align: center;
+    line-height: 1.4;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .tooltip-text::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: #1f2937;
+  }
+
+  &:hover .tooltip-text {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(-4px);
+  }
+}
+
+/* ===== DARK MODE SUPPORT ===== */
+:host-context(.dark) .editar-miembro-modal {
+
+  /* Labels dark */
+  label {
+    color: #d1d5db !important;
+    font-weight: 700 !important;
+  }
+
+  /* Inputs dark */
+  .form-input {
+    background: #232831 !important;
+    border: 1px solid #3a4049 !important;
+    color: #e5e7eb !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+  }
+
+  .form-input::placeholder {
+    color: #9ca3af !important;
+  }
+
+  .form-input:focus {
+    border-color: #fffbe7 !important;
+    box-shadow: 0 0 0 2px rgba(255, 242, 167, 0.527) !important;
+    background: #2a303b !important;
+  }
+
+  .form-input:hover {
+    border-color: #4a5158 !important;
+    background: #2a303b !important;
+  }
+
+  /* Buttons dark */
+  .btn-cancelar {
+    background: #2d3238 !important;
+    color: #e5e7eb !important;
+  }
+
+  .btn-cancelar:hover {
+    background: #3a4049 !important;
+  }
+
+  .btn-guardar {
+    background: #1E56A0 !important;
+    color: #fff !important;
+    box-shadow: 0 10px 24px rgba(30, 86, 160, 0.2);
+  }
+
+  .btn-guardar:hover {
+    background: #183f78 !important;
+  }
+
+  /* Close button tooltip dark */
+  .tooltip-text {
+    background: #374151 !important;
+    color: #f3f4f6 !important;
+  }
+
+  .tooltip-text::after {
+    border-top-color: #374151 !important;
+  }
+
+  /* Save button dark mode adjustment */
+  .action_has {
+    background: #bcd4ff !important;
+    border-color: #292b2e !important;
+  }
+
+  .has_saved:hover {
+    background: #fff3cc !important;
+    border-color: hsl(214, 100%, 67%) !important;
+  }
+
+}

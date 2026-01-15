@@ -57,10 +57,14 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(8px);
   letter-spacing: 0.3px;
+  height: 70px;
+  position: relative;
+  overflow: visible;
+  z-index: 2525;
 }
 
 .modal-header h2 {
-  font-size: 20px;
+  font-size: 23px;
   font-weight: 700;
   text-shadow: 0 1px 3px rgba(0,0,0,0.15);
   display: flex;
@@ -69,83 +73,33 @@
   margin: 0;
 }
 
-.modal-header h2 svg {
-  flex-shrink: 0;
-}
-
 /* From Uiverse.io by javierBarroso */ 
-.button {
-  position: relative;
-  width: 40px;
-  height: 40px;
-  border: none;
- background: rgb(180, 83, 107);
-  border-radius: 50%;
-  transition: background 0.5s;
+.close-button{
+  color: red;
   cursor: pointer;
-  margin-right: -5px;
-}
-
-.X {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 2em;
-  height: 1.5px;
-  background-color: rgb(255, 255, 255);
-  transform: translateX(-50%) rotate(45deg);
-}
-
-.Y {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 2em;
-  height: 1.5px;
-  background-color: #fff;
-  transform: translateX(-50%) rotate(-45deg);
+  position: relative;
+  z-index: 2530;
 }
 
 .close {
-  position: absolute;
   display: flex;
   padding: 0.8rem 1.5rem;
   align-items: center;
   justify-content: center;
-  transform: translateX(-50%);
-  top: 40px;
-  left: 50%;
-  width: 20px;
-  height: 10px;
-  font-size: 14px;
+  font-size: 15px;
+  height: 30px;
+  width: 50px;
   background-color: rgb(19, 22, 24);
   color: rgb(187, 229, 236);
   border: none;
-  border-radius: 3px;
+  border-radius: 5px;
   pointer-events: none;
-  opacity: 0;
-
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  z-index: 2531;
 }
 
-.button:hover {
-  background-color: rgb(204, 0, 0);
-}
 
-.button:active {
-  background-color: rgb(130, 0, 0);
-}
-
-.button:hover > .close {
-  animation: close 0.2s forwards 0.25s;
-}
-
-@keyframes close {
-  100% {
-    opacity: 1;
-  }
-}
 /* ============================================================
    BODY
 ============================================================ */
@@ -215,13 +169,11 @@ textarea {
   margin-bottom: 0; // más cerca de la sección inferior
   position: relative;
   padding-bottom: 6px;
-  margin-top: -9px;
+  margin-top: -9px; 
+  margin-left: 10px;
+ 
 
-  i {
-    color: #5c2ca3;
-    font-size: 1.4rem;
-    margin-right: 10px;
-  }
+
 
   &::after {
     content: '';
@@ -235,6 +187,9 @@ textarea {
   }
 }
 
+.section-title span{
+  margin-left: 10px;
+}
 
 /* ============================================================
    TEAM + PM layout
@@ -258,6 +213,7 @@ textarea {
   flex-wrap: wrap;
   margin-bottom: 12px;
   align-items: center;
+  cursor: pointer;
 }
 .selected-box .chip {
   display: inline-flex;
@@ -269,6 +225,7 @@ textarea {
   border-radius: 999px;
   box-shadow: 0 4px 14px rgba(14, 60, 120, 0.06);
   transition: transform 0.12s ease, box-shadow 0.12s ease;
+  cursor: pointer;
 }
 .selected-box .chip-label {
   font-size: 0.9rem;
@@ -279,6 +236,7 @@ textarea {
   display:inline-flex;align-items:center;justify-content:center;
   width:32px;height:32px;border-radius:50%;font-weight:700;color:#0b2440;
   background: linear-gradient(180deg,#dbeafe,#bfdbfe);box-shadow:0 2px 6px rgba(59,130,246,0.12);
+
 }
 .selected-box .chip:hover{ transform: translateY(-3px); box-shadow:0 8px 22px rgba(14,60,120,0.09);} 
 .selected-box .chip-remove{ background:#fff;border:1px solid rgba(0,0,0,0.06); padding:4px 6px; border-radius:6px; color:#ef4444; cursor:pointer}
@@ -294,6 +252,7 @@ textarea {
   color: #94a3b8;
   font-size: 0.9rem;
   padding: 6px 8px;
+  
 }
 
 /* Empty */
@@ -460,7 +419,7 @@ select[multiple] option[selected] {
   justify-content: center;
   height: calc(var(--sz) * 2.5);
   // width: calc(var(--sz) * 2.5);
-  width: 200px;
+  width: 65px;
   padding: 10px 16px;
   border-radius: 0.375rem;
   border: 2px solid #6fadff;
@@ -477,7 +436,7 @@ select[multiple] option[selected] {
 
 .has_saved:hover {
   border-color: hsl(var(--color-has));
-  background: #cbe1fd;
+  background: #eef5ff;
   transform: scale(1.05);
  box-shadow: 2px 2px 8px rgba(0,0,0,0.25);
 }
@@ -561,7 +520,7 @@ select[multiple] option[selected] {
 
 /* From Uiverse.io by cssbuttons-io */ 
 .noselect {
- width: 100px;
+ width: 90px;
  height: 40px;
  cursor: pointer;
  display: flex;
@@ -626,3 +585,220 @@ select[multiple] option[selected] {
 // .noselect:active .icon svg {
 //  transform: scale(0.8);
 // }
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+  opacity: 1 !important;
+
+  .tooltip-text {
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1f2937;
+    color: #fff;
+    padding: 5px ;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 8px;
+    white-space: normal;
+   width: 100px;
+    text-align: center;
+    line-height: 1.4;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .tooltip-text::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: #1f2937;
+  }
+
+  &:hover .tooltip-text {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(-4px);
+  }
+}
+
+
+
+// MOOOD DARKKKKKKKK
+:host-context(.dark) .modal-card {
+  background: #0b1724 !important;
+  color: #f1f5f9;
+}
+
+:host-context(.dark) .modal-body {
+  background: #0b1724 !important;
+  color: #f1f5f9;
+}
+
+:host-context(.dark) .modal-header{
+  background: linear-gradient(135deg, #d5e7fc, #cde8ff, hsl(211, 89%, 89%)) !important;
+  color: #0f172a;
+}
+
+:host-context(.dark) .modal-grid input,
+:host-context(.dark) .modal-grid select,
+:host-context(.dark) .modal-grid textarea {
+  background: #232831 !important;
+  border: 1px solid #394050 !important;
+  color: #f1f5f9 !important;
+}
+
+:host-context(.dark) .modal-grid input:focus,
+:host-context(.dark) .modal-grid select:focus,
+:host-context(.dark) .modal-grid textarea:focus {
+  box-shadow: 0 4px 10px #fff8bc79 !important;
+  background: #2a303b !important;
+}
+
+:host-context(.dark) .modal-grid label{
+  color: #ffffff !important;
+}
+
+:host-context(.dark) .two-column-grid{
+  background: transparent !important;
+  border: 1px solid #394050;
+}
+
+  :host-context(.dark) .section-title{
+    color: #e0e7ff !important;
+  }
+
+:host-context(.dark) .chip-avatar{
+    color: black !important;
+    background: #fff8bb !important;
+  }
+
+ :host-context(.dark) .chip{
+    background: rgb(205, 228, 255) ;
+    font-weight: 600;
+  }
+
+/* Scrollbar oscuro para modo dark */
+:host-context(.dark) .modal-card {
+  scrollbar-width: thin;
+  scrollbar-color: #4a5568 #1a202c;
+}
+
+:host-context(.dark) .modal-card::-webkit-scrollbar {
+  width: 12px;
+}
+
+:host-context(.dark) .modal-card::-webkit-scrollbar-track {
+  background: #1a202c;
+  border-radius: 10px;
+}
+
+:host-context(.dark) .modal-card::-webkit-scrollbar-thumb {
+  background: #4a5568;
+  border-radius: 10px;
+  border: 2px solid #1a202c;
+}
+
+:host-context(.dark) .modal-card::-webkit-scrollbar-thumb:hover {
+  background: #5a6678;
+}
+
+/* Scrollbar para modal-body en modo dark */
+:host-context(.dark) .modal-body::-webkit-scrollbar {
+  width: 12px;
+}
+
+:host-context(.dark) .modal-body::-webkit-scrollbar-track {
+  background: #1a202c;
+  border-radius: 10px;
+}
+
+:host-context(.dark) .modal-body::-webkit-scrollbar-thumb {
+  background: #4a5568;
+  border-radius: 10px;
+  border: 2px solid #0b1724;
+}
+
+:host-context(.dark) .modal-body::-webkit-scrollbar-thumb:hover {
+  background: #5a6678;
+}
+
+/* Scrollbar para textarea en modo dark */
+:host-context(.dark) textarea::-webkit-scrollbar {
+  width: 10px;
+}
+
+:host-context(.dark) textarea::-webkit-scrollbar-track {
+  background: #1a202c;
+  border-radius: 6px;
+}
+
+:host-context(.dark) textarea::-webkit-scrollbar-thumb {
+  background: #4a5568;
+  border-radius: 6px;
+  border: 2px solid #232831;
+}
+
+:host-context(.dark) textarea::-webkit-scrollbar-thumb:hover {
+  background: #5a6678;
+}
+
+/* Scrollbar para select[multiple] en modo dark */
+:host-context(.dark) select[multiple]::-webkit-scrollbar {
+  width: 10px;
+}
+
+:host-context(.dark) select[multiple]::-webkit-scrollbar-track {
+  background: #1a202c;
+  border-radius: 6px;
+}
+
+:host-context(.dark) select[multiple]::-webkit-scrollbar-thumb {
+  background: #4a5568;
+  border-radius: 6px;
+  border: 2px solid #1a202c;
+}
+
+:host-context(.dark) select[multiple]::-webkit-scrollbar-thumb:hover {
+  background: #5a6678;
+}
+
+/* Scrollbar universal para cualquier elemento con scroll en modo dark */
+:host-context(.dark) *::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+:host-context(.dark) *::-webkit-scrollbar-track {
+  background: #1a202c;
+}
+
+:host-context(.dark) *::-webkit-scrollbar-thumb {
+  background: #4a5568;
+  border-radius: 6px;
+}
+
+:host-context(.dark) *::-webkit-scrollbar-thumb:hover {
+  background: #5a6678;
+}
+  
+  
+ /* Save button dark mode adjustment */
+ :host-context(.dark) .action_has {
+    background: #bcd4ff !important;
+    border-color: #292b2e !important;
+  }
+
+  :host-context(.dark) .has_saved:hover {
+    background: #fff3cc !important;
+    border-color: hsl(214, 100%, 67%) !important;
+  }

@@ -7,10 +7,13 @@ import { CatalogsService } from '../../services/catalogs.service';
 import { ProjectService } from '../../services/project.service';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
+import { EditIconComponent } from "../animated-icons/edit-icon.component";
+import { XIconComponent } from "../animated-icons/x-icon.component";
+import { ConfirmModalComponent } from '../confirm-modal/confirm-modal';
 
 @Component({
   selector: 'app-edit-task',
-  imports: [ CommonModule, FormsModule ],
+  imports: [CommonModule, FormsModule, EditIconComponent, XIconComponent, ConfirmModalComponent],
   templateUrl: './edit-task.html',
   styleUrl: './edit-task.scss'
 })
@@ -22,6 +25,9 @@ export class EditTask implements OnInit, OnChanges {
      */
     @Input() canEditTask: boolean = false;
     @Input() canDeleteTask: boolean = false;
+
+    // Modal de confirmación para eliminar
+    showDeleteConfirmModal: boolean = false;
 
     // Refuerzo: asegúrate de que los botones se actualicen si los inputs cambian
     ngOnChanges(changes: SimpleChanges): void {
@@ -47,7 +53,13 @@ export class EditTask implements OnInit, OnChanges {
 
   async deleteTask() {
     if (!this.task?.id || !this.task?.name) return;
-    if (!confirm(`Are you sure you want to delete the task "${this.task.name}"?\n\nNote: This will also delete all associated subtasks.`)) return;
+    // Mostrar modal de confirmación en lugar de confirm()
+    this.showDeleteConfirmModal = true;
+  }
+
+  async confirmDelete() {
+    this.showDeleteConfirmModal = false;
+    if (!this.task?.id || !this.task?.name) return;
     this.loading = true;
     this.message = 'Deleting...';
     try {
@@ -71,6 +83,10 @@ export class EditTask implements OnInit, OnChanges {
       }
     }
     this.loading = false;
+  }
+
+  cancelDelete() {
+    this.showDeleteConfirmModal = false;
   }
 
     getEmployeeNameById(id: number): string {
@@ -218,7 +234,7 @@ export class EditTask implements OnInit, OnChanges {
    */
   get isUserOnly(): boolean {
     try {
-      return this.auth.hasRole && this.auth.hasRole('USER');
+      return this.auth.isUser();
     } catch {
       return false;
     }

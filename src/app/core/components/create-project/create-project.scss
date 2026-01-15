@@ -19,7 +19,7 @@
   display: flex !important;
   justify-content: center;
   align-items: center;
-  z-index: 2500;
+  z-index: 10000;
   padding: 24px;
   overflow: hidden;
 }
@@ -39,7 +39,7 @@
   flex-direction: column;
   font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   position: relative;
-  z-index: 2520;            /* 4. asegurar que esté encima de otros elementos */
+  z-index: 10001;            /* 4. asegurar que esté encima de otros elementos */
 }
 
 /* HEADER moderno con profundidad, blur y sutil brillo */
@@ -57,6 +57,9 @@
   backdrop-filter: blur(8px);
   font-weight: 600;
   letter-spacing: 0.3px;
+  position: relative;
+  overflow: visible;
+  z-index: 10002;
 }
 
 /* Título */
@@ -74,79 +77,31 @@
 }
 
 /* From Uiverse.io by javierBarroso */ 
-.button {
-  position: relative;
-  width: 40px;
-  height: 40px;
-  border: none;
-  background: rgb(180, 83, 107);
-  border-radius: 50%;
-  transition: background 0.5s;
+.close-button{
+  color: red;
   cursor: pointer;
-  margin-right: -5px;
-}
-
-.X {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 2em;
-  height: 1.5px;
-  background-color: rgb(255, 255, 255);
-  transform: translateX(-50%) rotate(45deg);
-}
-
-.Y {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 2em;
-  height: 1.5px;
-  background-color: #fff;
-  transform: translateX(-50%) rotate(-45deg);
+  position: relative;
+  z-index: 10003;
 }
 
 .close {
-  position: absolute;
   display: flex;
   padding: 0.8rem 1.5rem;
   align-items: center;
   justify-content: center;
-  transform: translateX(-50%);
-  top: 40px;
-  left: 50%;
-  width: 20px;
-  height: 10px;
-  font-size: 14px;
+  font-size: 15px;
+  height: 30px;
+  width: 50px;
   background-color: rgb(19, 22, 24);
   color: rgb(187, 229, 236);
   border: none;
-  border-radius: 3px;
+  border-radius: 5px;
   pointer-events: none;
-  opacity: 0;
-  
-
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  z-index: 2531;
 }
 
-.button:hover {
-  background-color: rgb(204, 0, 0);
-}
-
-.button:active {
-  background-color: rgb(130, 0, 0);
-}
-
-.button:hover > .close {
-  animation: close 0.2s forwards 0.25s;
-}
-
-@keyframes close {
-  100% {
-    opacity: 1;
-  }
-}
 
 /* CUERPO con scroll independiente y padding interno (evita estar pegado) */
 .modal-body {
@@ -537,7 +492,8 @@ select[multiple] {
     cursor: pointer;
 
     &:hover {
-      background: #eff6ff;
+      background: #fffbdb;
+      color: #000000;
     }
   }
 
@@ -651,12 +607,6 @@ select[multiple] {
   margin-top: -9px;
   margin-left: -20px;
 
-  i {
-    color: #5c2ca3;
-    font-size: 1.4rem;
-   
-  }
-
   &::after {
     content: '';
     position: absolute;
@@ -667,6 +617,10 @@ select[multiple] {
     background: linear-gradient(90deg, #1554ff 0%, #3766ff 60%, transparent 80%);
     border-radius: 4px;
   }
+}
+
+.section-title span {
+  margin-left: 10px;
 }
 
 
@@ -697,4 +651,171 @@ select[multiple] {
 
 .btnccc:active {
   transform: translateY(-1px);
+}
+
+// MOOD DARK
+:host-context(.dark) .modal-card {
+  background: #0b1724;
+  // color: #e2e8f0;
+
+  .modal-header {
+    background:linear-gradient(135deg, #d5e7fc, #cde8ff, hsl(211, 89%, 89%));
+    color: #0f172a;
+  }
+
+  .modal-body{
+    background: #0b1724;
+  }
+
+  .grid input,
+  .grid select,
+  .grid textarea {
+    background: #232831 !important;
+
+  }
+
+  .grid input:focus,
+  .grid select:focus,
+  .grid textarea:focus {
+    background: #232831 !important;
+    border: 1px solid #fffbe7 !important;
+    box-shadow: 0 0 0 2px rgba(255, 242, 167, 0.527) !important;
+  }
+
+  .grid label{
+    color: #fff !important;
+  }
+
+  .two-column-grid{
+    background-color: #0b1724;
+  }
+
+  .filter-team{
+    background: #0b1724;
+    border: 1px solid #3a4049 !important;
+  }
+
+  .filter-pm{
+    background: #0b1724;
+    border: 1px solid #3a4049 !important;
+  }
+
+  .section-title{
+    color: #ffffff !important;
+  }
+
+  .chip-avatar{
+    color: black !important;
+    background: #fff8bb !important;
+  }
+
+  .chip{
+    background: rgb(205, 228, 255) ;
+    font-weight: 600;
+  }
+
+  /* Scrollbar oscuro para modo dark */
+  .modal-card {
+    scrollbar-width: thin;
+    scrollbar-color: #4a5568 #1a202c;
+  }
+
+  .modal-card::-webkit-scrollbar {
+    width: 12px;
+  }
+
+  .modal-card::-webkit-scrollbar-track {
+    background: #1a202c;
+    border-radius: 10px;
+  }
+
+  .modal-card::-webkit-scrollbar-thumb {
+    background: #4a5568;
+    border-radius: 10px;
+    border: 2px solid #1a202c;
+  }
+
+  .modal-card::-webkit-scrollbar-thumb:hover {
+    background: #5a6678;
+  }
+
+  /* Scrollbar para textarea en modo dark */
+  textarea::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  textarea::-webkit-scrollbar-track {
+    background: #1a202c;
+    border-radius: 6px;
+  }
+
+  textarea::-webkit-scrollbar-thumb {
+    background: #4a5568;
+    border-radius: 6px;
+    border: 2px solid #232831;
+  }
+
+  textarea::-webkit-scrollbar-thumb:hover {
+    background: #5a6678;
+  }
+
+  /* Scrollbar para select[multiple] en modo dark */
+  select[multiple]::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  select[multiple]::-webkit-scrollbar-track {
+    background: #1a202c;
+    border-radius: 6px;
+  }
+
+  select[multiple]::-webkit-scrollbar-thumb {
+    background: #4a5568;
+    border-radius: 6px;
+    border: 2px solid #1a202c;
+  }
+
+  select[multiple]::-webkit-scrollbar-thumb:hover {
+    background: #5a6678;
+  }
+
+  /* Scrollbar para modal-body en modo dark */
+  .modal-body::-webkit-scrollbar {
+    width: 12px;
+  }
+
+  .modal-body::-webkit-scrollbar-track {
+    background: #1a202c;
+    border-radius: 10px;
+  }
+
+  .modal-body::-webkit-scrollbar-thumb {
+    background: #4a5568;
+    border-radius: 10px;
+    border: 2px solid #0b1724;
+  }
+
+  .modal-body::-webkit-scrollbar-thumb:hover {
+    background: #5a6678;
+  }
+
+  /* Scrollbar para cualquier contenedor con overflow auto en modo dark */
+  *::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: #1a202c;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background: #4a5568;
+    border-radius: 6px;
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background: #5a6678;
+  }
+
 }

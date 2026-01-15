@@ -10,12 +10,10 @@
   <div *ngIf="visible">
     <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="createTitle" (click)="$event.stopPropagation()">
       <div class="modal-header">
-        <div id="createTitle" style="font-weight:600"><svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-square-plus"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 12h6" /><path d="M12 9v6" /><path d="M3 5a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-14" /></svg>Create project</div>
-        <button class="button" (click)="closeModal()">
-  <span class="X"></span>
-  <span class="Y"></span>
+        <div id="createTitle" style="font-weight:600"><app-mas-icon [size]="35"></app-mas-icon> Create project</div>
+         <app-x-icon class="close-button" (click)="closeModal()" [size]="35" [color]="'red'">
   <div class="close">Close</div>
-</button>
+ </app-x-icon>
 
       </div>
 
@@ -94,12 +92,12 @@
          </div>
         <div style="grid-column:1/-1"><label for="p_notes">📝 Notes</label><textarea id="p_notes" name="p_notes" [(ngModel)]="project.notes" placeholder="Notes or comments"></textarea></div>
 
-        
-        <div class="two-column-grid" style="grid-column: 1 / -1;">
+  
 
-          <h3 class="section-title">
-            <i class="bi bi-people-fill"></i>
-              ➕👥 Team Assignment</h3>
+          <div class="two-column-grid" style="grid-column: 1 / -1;">
+    <div class="section-title">
+      <app-team-icon [size]="24"></app-team-icon> <span>Team Assignment</span>
+      </div>
 
           <!-- LEFT SIDE: Team -->
           <div class="filter-team">

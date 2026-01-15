@@ -88,7 +88,7 @@ header {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-right: 10px;
+  margin-right: 50px;
   
 
   padding: 10px 14px;
@@ -114,36 +114,36 @@ header {
 }
 
 /* Icono */
-.logout-btn svg {
-  width: 18px;
-  height: 18px;
-  transition: transform 0.25s ease;
+// .logout-btn svg {
+//   width: 18px;
+//   height: 18px;
+//   transition: transform 0.25s ease;
   
-}
+// }
 
 /* Hover */
-.logout-btn:hover {
-  background: linear-gradient( 135deg,rgba(239, 68, 68, 0.18),rgba(239, 68, 68, 0.28) );
+// .logout-btn:hover {
+//   background: linear-gradient( 135deg,rgba(239, 68, 68, 0.18),rgba(239, 68, 68, 0.28) );
 
-  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.25);
-  transform: translateY(-1px);
-}
+//   box-shadow: 0 8px 20px rgba(239, 68, 68, 0.25);
+//   transform: translateY(-1px);
+// }
 
-/* Animación del icono */
-.logout-btn:hover svg {
-  transform: translateX(4px);
-}
+// /* Animación del icono */
+// .logout-btn:hover svg {
+//   transform: translateX(4px);
+// }
 
-/* Active */
-.logout-btn:active {
-  transform: scale(0.97);
-}
+// /* Active */
+// .logout-btn:active {
+//   transform: scale(0.97);
+// }
 
-/* Focus accesible */
-.logout-btn:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.35);
-}
+// /* Focus accesible */
+// .logout-btn:focus-visible {
+//   outline: none;
+//   box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.35);
+// }
 
  .notification-btn {
   position: relative;
@@ -247,6 +247,7 @@ header {
   transition-duration: .3s;
   box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.199);
   background-color: rgb(255, 65, 65);
+  margin-right: -30px;
 }
 
 /* plus sign */

@@ -1,10 +1,10 @@
 import { Component, EventEmitter, Input, OnInit, Output, HostListener } from '@angular/core';
 
 @Component({
-  selector: 'app-mas-icon',
+  selector: 'app-file-icon',
   standalone: true,
   template: `
-    <div class="mas-icon" [class.animate]="animate">
+    <div class="file-icon" [class.animate]="animate">
       <svg 
         xmlns="http://www.w3.org/2000/svg" 
         [attr.width]="size" 
@@ -15,8 +15,10 @@ import { Component, EventEmitter, Input, OnInit, Output, HostListener } from '@a
         stroke-width="2" 
         stroke-linecap="round" 
         stroke-linejoin="round">
-        <path d="M5 12h14" class="horizontal-line"></path>
-        <path d="M12 5v14" class="vertical-line"></path>
+        <path 
+          d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2" 
+          class="folder-path">
+        </path>
       </svg>
     </div>
   `,
@@ -26,45 +28,43 @@ import { Component, EventEmitter, Input, OnInit, Output, HostListener } from '@a
       line-height: 0; 
     }
     
-    .mas-icon { 
+    .file-icon { 
       display: inline-flex; 
       align-items: center; 
       justify-content: center; 
       cursor: pointer; 
     }
     
-    .mas-icon svg {
+    .file-icon svg {
       overflow: visible;
-      transform-origin: center;
-      animation: rotatePlus 4s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
     }
     
-    .mas-icon .horizontal-line,
-    .mas-icon .vertical-line {
-      transform-origin: center;
+    .file-icon .folder-path {
+      transform-origin: 12px 12px;
+      animation: wiggleFolder 2s ease-in-out infinite;
     }
     
-    @keyframes rotatePlus {
-      0% {
+    @keyframes wiggleFolder {
+      0%, 100% {
         transform: rotate(0deg);
       }
-      25% {
-        transform: rotate(180deg);
+      20% {
+        transform: rotate(-8deg);
       }
-      50% {
-        transform: rotate(360deg);
+      40% {
+        transform: rotate(6deg);
       }
-      75% {
-        transform: rotate(180deg);
+      60% {
+        transform: rotate(-4deg);
       }
-      100% {
+      80% {
         transform: rotate(0deg);
       }
     }
     `
   ]
 })
-export class MasIconComponent implements OnInit {
+export class FileIconComponent implements OnInit {
   @Input() size = 28;
   animate = true;
   @Output() animationStarted = new EventEmitter<void>();

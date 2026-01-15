@@ -12,11 +12,13 @@ import { XIconComponent } from '../../../../../core/components/animated-icons/x-
 import { AlarmClockIconComponent } from '../../../../../core/components/animated-icons/alarm-clock.component';
 import { timeToDecimal, decimalToTime } from '../../../utils/time-conversion.utils';
 import { hoursMinutesToDecimal, decimalToHoursMinutes } from '../../../utils/time-conversion.utils';
+import { MasIconComponent } from '../../../../../core/components/animated-icons/mas-icon.component';
+import { EditIconComponent } from "../../../../../core/components/animated-icons/edit-icon.component";
 
 @Component({
   selector: 'app-subtask-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, IconButtonComponent, PlusIconComponent, ArchiveIconComponent, FileCheckIconComponent, XIconComponent, AlarmClockIconComponent],
+  imports: [CommonModule, ReactiveFormsModule, IconButtonComponent, XIconComponent,  MasIconComponent, EditIconComponent],
   templateUrl: './subtask-modal.html',
   styleUrls: ['./subtask-modal.scss']
 })

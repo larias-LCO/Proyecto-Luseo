@@ -20,26 +20,31 @@ export class AuthService {
   state = signal<AuthState>({ authenticated: false });
 
   constructor() {
-       // Sync across tabs
+       // Sync across tabs - escuchar cambios en auth.state Y en las claves individuales
     window.addEventListener('storage', (e) => {
       if (!e.key) return;
-      if ([...this.storageTokenKeys, this.usernameKey].includes(e.key)) {
+      // Escuchar cambios en auth.state (usado por auth-sync.ts) O en las claves individuales
+      if (e.key === 'auth.state' || [...this.storageTokenKeys, this.usernameKey, this.rolesKey].includes(e.key)) {
+        console.log('[AuthService] Detectado cambio en localStorage:', e.key);
         this.loadFromStorage();
       }
     });
     this.loadFromStorage();
-    // Log para depuración: token y roles decodificados
-    const token = this.getStoredToken();
-    if (token) {
-      try {
-        const parts = token.split('.');
-        if (parts.length === 3) {
-          const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/').padEnd(parts[1].length + (4 - (parts[1].length % 4)) % 4, '=')));
-        }
-      } catch (e) {
-        console.warn('[AuthService] No se pudo decodificar el token JWT:', e);
-      }
-    }
+    
+    // Exponer método de debug global
+    (window as any).debugAuthService = () => this.debugAuth();
+  }
+
+  debugAuth() {
+    console.group('🔍 DEBUG AUTH SERVICE');
+    console.log('Estado actual:', this.state());
+    console.log('auth.state (raw):', localStorage.getItem('auth.state'));
+    console.log('auth.token:', localStorage.getItem('auth.token'));
+    console.log('auth.roles:', localStorage.getItem('auth.roles'));
+    console.log('isOwner():', this.isOwner());
+    console.log('isAdmin():', this.isAdmin());
+    console.log('isUser():', this.isUser());
+    console.groupEnd();
   }
 
   configure(apiBase: string) {
@@ -47,6 +52,59 @@ export class AuthService {
   }
 
   loadFromStorage() {
+    // PRIORIDAD 1: Intentar cargar desde auth.state (usado por auth-sync.ts)
+    try {
+      const authStateJson = localStorage.getItem('auth.state');
+      if (authStateJson) {
+        const authState = JSON.parse(authStateJson);
+        console.log('[AuthService] Cargando desde auth.state:', authState);
+        
+        const token = authState.token;
+        const username = authState.username;
+        const employeeId = authState.employeeId;
+        
+        // Convertir rol de string a array para compatibilidad
+        let roles: string[] | undefined = undefined;
+        
+        if (authState.role) {
+          // Si es string, convertir a array
+          roles = typeof authState.role === 'string' ? [authState.role] : 
+                  (Array.isArray(authState.role) ? authState.role : undefined);
+        }
+        
+        // Si no hay rol directo, intentar extraer de authorities
+        if (!roles && authState.authorities && Array.isArray(authState.authorities)) {
+          roles = authState.authorities.map((a: string) => {
+            if (typeof a === 'string' && a.startsWith('ROLE_')) {
+              return a.substring(5); // Quitar "ROLE_" prefix
+            }
+            return a;
+          }).filter(Boolean);
+        }
+        
+        if (token) {
+          console.log('[AuthService] ✓ Estado cargado desde auth.state - Roles:', roles);
+          this.state.set({ 
+            authenticated: true, 
+            token, 
+            username, 
+            role: roles, 
+            employeeId 
+          });
+          
+          // Sincronizar también en las claves individuales para compatibilidad
+          if (token) this.setStoredToken(token);
+          if (username) localStorage.setItem(this.usernameKey, username);
+          if (roles) localStorage.setItem(this.rolesKey, JSON.stringify(roles));
+          
+          return; // Salir, ya tenemos todo
+        }
+      }
+    } catch (e) {
+      console.warn('[AuthService] Error al cargar auth.state:', e);
+    }
+    
+    // PRIORIDAD 2: Cargar desde claves individuales (fallback)
     const token = this.getStoredToken();
     const username = localStorage.getItem(this.usernameKey) || undefined;
     const rolesJson = localStorage.getItem(this.rolesKey);
@@ -96,7 +154,7 @@ export class AuthService {
       }
     }
     
-    console.log('[AuthService] Roles cargados:', roles);
+    console.log('[AuthService] Roles cargados desde claves individuales:', roles);
     this.state.set({ authenticated: !!token, token: token || undefined, username, role: roles, employeeId });
   }
 
@@ -175,13 +233,36 @@ export class AuthService {
       roles = [data.roles];
     }
     
+    // Si no hay roles en la respuesta, intentar extraerlos del token JWT
+    if (!roles || roles.length === 0) {
+      console.log('[AuthService] No se encontraron roles en la respuesta, decodificando token...');
+      const decoded = this.decodeJwt(token);
+      if (decoded) {
+        const rawRoles = decoded?.roles
+          ?? decoded?.authorities
+          ?? decoded?.scopes
+          ?? decoded?.scope
+          ?? decoded?.role
+          ?? decoded?.accountRole
+          ?? decoded?.claims?.roles;
+        
+        if (Array.isArray(rawRoles)) {
+          roles = rawRoles.map((r: any) => typeof r === 'string' ? r : (r?.name || r?.role || r?.authority || r?.rol || r?.roleName || r?.label)).filter(Boolean);
+        } else if (typeof rawRoles === 'string' && rawRoles) {
+          roles = [rawRoles];
+        }
+        console.log('[AuthService] Roles extraídos del token:', roles);
+      }
+    }
+    
     if (!token) throw new Error('Token missing in response');
     this.setStoredToken(token);
     localStorage.setItem(this.usernameKey, username);
-    if (roles) {
+    if (roles && roles.length > 0) {
       console.log('[AuthService] Guardando roles en localStorage:', roles);
       localStorage.setItem(this.rolesKey, JSON.stringify(roles));
     } else {
+      console.warn('[AuthService] ⚠️ No se pudieron obtener roles del servidor ni del token');
       localStorage.removeItem(this.rolesKey);
     }
     
@@ -197,12 +278,31 @@ export class AuthService {
     
     console.log('[AuthService] Login exitoso. Roles:', roles, 'EmployeeId:', employeeId);
     this.state.set({ authenticated: true, username, token, role: roles, employeeId });
+    
+    // IMPORTANTE: Sincronizar con auth-sync.ts guardando en auth.state también
+    try {
+      const authState = {
+        token,
+        username,
+        role: roles && roles.length > 0 ? roles[0] : '', // auth-sync usa string, no array
+        authorities: roles && roles.length > 0 ? roles.map(r => `ROLE_${r}`) : [],
+        employeeId,
+        expiresAtMillis: data?.expiresAtMillis || (Date.now() + 3600000), // 1 hora por defecto
+        openMode: data?.openMode || false,
+        serverDeltaMs: 0
+      };
+      console.log('[AuthService] Sincronizando con auth.state:', authState);
+      localStorage.setItem('auth.state', JSON.stringify(authState));
+    } catch (e) {
+      console.error('[AuthService] Error al sincronizar con auth.state:', e);
+    }
   }
 
   logout(): void {
     this.setStoredToken(null);
     localStorage.removeItem(this.usernameKey);
     localStorage.removeItem(this.rolesKey);
+    localStorage.removeItem('auth.state'); // Limpiar también auth.state
     this.state.set({ authenticated: false });
   }
 
@@ -215,12 +315,28 @@ export class AuthService {
   }
 
   getRoles(): string[] {
-    return this.state().role || [];
+    const roles = this.state().role || [];
+    return roles;
   }
 
   hasRole(role: string): boolean {
     const roles = (this.state().role || []).map(r => r.toUpperCase());
     return roles.includes(role.toUpperCase());
+  }
+
+  isAdmin(): boolean {
+    const result = this.hasRole('ADMIN');
+    return result;
+  }
+
+  isOwner(): boolean {
+    const result = this.hasRole('OWNER');
+    return result;
+  }
+
+  isUser(): boolean {
+    const result = this.hasRole('USER');
+    return result;
   }
 
 fetchWithAuth(input: RequestInfo | URL, init: RequestInit = {}) {

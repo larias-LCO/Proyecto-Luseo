@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { TeamComponent } from './../../pages/team/team';
+import { TeamComponent } from './team';
 
 describe('TeamComponent', () => {
   let component: TeamComponent;

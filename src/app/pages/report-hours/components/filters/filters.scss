@@ -43,15 +43,16 @@ $transition: 180ms cubic-bezier(.2,.9,.3,1);
         position: relative;
         transition: transform $transition, box-shadow $transition;
         border: 1px solid transparent;
+        cursor: pointer;
 
         &:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 10px 30px rgba(12,18,30,0.45);
+            transform: translateY(-0.4px);
+            box-shadow: 0 4px 12px rgba(12,18,30,0.15);
             border-color: rgba(124,92,255,0.12);
         }
 
         label {
-            font-size: 12px;
+            font-size: 14px;
             color: $muted;
             min-width: 0px;
         }
@@ -72,6 +73,9 @@ $transition: 180ms cubic-bezier(.2,.9,.3,1);
         font-size: 14px;
         padding: 6px 8px;
         width: 100%;
+        cursor: pointer;
+        border-radius: 8px;
+        
     }
 
     select {
@@ -169,12 +173,12 @@ $transition: 180ms cubic-bezier(.2,.9,.3,1);
     }
 
     // Action buttons
-    .actions {
-        margin-left: auto;
-        display: flex;
-        gap: 8px;
-        align-items: center;
-    }
+    // .actions {
+    //     margin-left: auto;
+    //     display: flex;
+    //     // gap: 8px;
+    //     align-items: center;
+    // }
 
     .btn {
         -webkit-tap-highlight-color: transparent;
@@ -242,4 +246,51 @@ $transition: 180ms cubic-bezier(.2,.9,.3,1);
         box-shadow: 0 0 0 4px rgba(124,92,255,0.12);
         border-radius: 8px;
     }
+}
+
+.btn-clear-filters {
+  --color: #0077ff;
+ --color2: #001cb9;
+  --border: #9fa4aa;
+  font-family: inherit;
+  display: inline-block;
+  width: 8em;
+  height: 2.6em;
+  line-height: 2.5em;
+  overflow: hidden;
+  cursor: pointer;
+//   margin-left: -5px;
+  margin-top: -8px;
+  font-size: 17px;
+  font-weight: 700;
+  z-index: 1;
+  color: var(--color2);
+  border: 2px solid var(--color2);
+  border-radius: 6px;
+  position: relative;
+}
+
+.btn-clear-filters::before {
+  position: absolute;
+  content: "";
+  background: linear-gradient(#001cb9, #0077ff);
+  width: 200px;
+  height: 200px;
+  z-index: -1;
+  border-radius: 50%;
+}
+
+.btn-clear-filters:hover {
+  color: white;
+}
+
+.btn-clear-filters:before {
+  top: 100%;
+  left: 100%;
+  transition: 0.3s all;
+}
+
+.btn-clear-filters:hover::before {
+  top: -30px;
+  left: -30px;
 }

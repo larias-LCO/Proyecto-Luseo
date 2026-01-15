@@ -1,7 +1,8 @@
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable, OnDestroy, inject } from '@angular/core';
 import { Client, StompSubscription } from '@stomp/stompjs';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { environment } from '../../../../environment';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -16,6 +17,8 @@ export class WebsocketService implements OnDestroy {
 
   private subscriptions = new Map<string, StompSubscription>();
   private pendingSubscriptions: Array<{ topic: string, subject: Subject<any> }> = [];
+
+  private authService = inject(AuthService);
 
   constructor() {
     this.initializeWebSocket();
@@ -33,6 +36,8 @@ export class WebsocketService implements OnDestroy {
       reconnectDelay: 5000,
       heartbeatIncoming: 20000,
       heartbeatOutgoing: 10000,
+      // Agregar headers de autenticación
+      connectHeaders: this.getAuthHeaders(),
       debug: (msg) => {
         if (msg.includes('ERROR') || msg.includes('CLOSE') || msg.includes('DISCONNECT')) {
           console.warn('WS DEBUG:', msg);
@@ -43,6 +48,9 @@ export class WebsocketService implements OnDestroy {
     this.client.beforeConnect = (client: Client) => {
       this.connectionAttempts++;
       console.log(`🔄 Intentando conectar WebSocket (${this.connectionAttempts}/${this.maxAttempts})`);
+
+      // Actualizar headers antes de cada intento de conexión
+      client.connectHeaders = this.getAuthHeaders();
 
       if (this.connectionAttempts >= this.maxAttempts) {
         console.error('❌ Límite de intentos alcanzado.');
@@ -71,6 +79,16 @@ export class WebsocketService implements OnDestroy {
     };
 
     this.client.activate();
+  }
+
+  private getAuthHeaders(): Record<string, string> {
+    const token = this.authService.getState().token;
+    if (token) {
+      return {
+        'Authorization': `Bearer ${token}`
+      };
+    }
+    return {};
   }
 
   private getWebSocketUrl(): string {

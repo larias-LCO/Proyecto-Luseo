@@ -1,6 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { SubmenuComponent } from './submenu';
 
+declare const describe: any;
+declare const beforeEach: any;
+declare const it: any;
+declare const expect: any;
+
 describe('Submenu', () => {
   let component: SubmenuComponent;
   let fixture: ComponentFixture<SubmenuComponent>;

@@ -25,10 +25,10 @@ export class MenuFiltersProjects {
   @Output() toggleSubmenu = new EventEmitter<void>();
 
   // ---- Traer los roles para autenticar (UI gating) ----
-  get isOwner(): boolean { try { return this.auth.hasRole('OWNER'); } catch { return false; } }
-  get isAdmin(): boolean { try { return this.auth.hasRole('ADMIN'); } catch { return false; } }
+  get isOwner(): boolean { try { return this.auth.isOwner(); } catch { return false; } }
+  get isAdmin(): boolean { try { return this.auth.isAdmin(); } catch { return false; } }
   get isAdminOrOwner(): boolean { return this.isAdmin || this.isOwner; }
-  get isUser(): boolean { try { return this.auth.hasRole('USER'); } catch { return false; } }
+  get isUser(): boolean { try { return this.auth.isUser(); } catch { return false; } }
 
 
 

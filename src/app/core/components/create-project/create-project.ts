@@ -7,6 +7,9 @@ import { ProjectService, ProjectPayload } from '../../services/project.service';
 import { CatalogsService, Employee, Office, Client, Software, JobPosition, Department } from '../../services/catalogs.service';
 import { ProjectFiltersService } from '../../services/project-filters.service';
 import { Enums, EnumsService } from '../../services/enums.service';
+import { XIconComponent } from '../animated-icons/x-icon.component';
+import { MasIconComponent } from "../animated-icons/mas-icon.component";
+import { TeamIconComponent } from '../animated-icons/team-icon.component';
 
 // Utilidad para cache local de códigos
 const cache = { allProjectCodes: new Set<string>() };
@@ -14,7 +17,7 @@ const cache = { allProjectCodes: new Set<string>() };
 @Component({
   selector: 'app-create-project',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, XIconComponent, MasIconComponent, TeamIconComponent],
   templateUrl: './create-project.html',
   styleUrls: ['./create-project.scss']
 })

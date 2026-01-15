@@ -2,6 +2,11 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { EditarMiembroComponent } from './editar-miembro';
 
+declare const describe: any;
+declare const beforeEach: any;
+declare const it: any;
+declare const expect: any;
+
 describe('EditarMiembroComponent', () => {
   let component: EditarMiembroComponent;
   let fixture: ComponentFixture<EditarMiembroComponent>;

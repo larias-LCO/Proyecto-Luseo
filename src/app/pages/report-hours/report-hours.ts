@@ -58,6 +58,13 @@ import { FloatingHelpButtonComponent } from './components/floating-help-button/f
 })
 export class ReportHours implements OnInit, OnDestroy {
 
+    // Permissions
+// ---- Traer los roles para autenticar (UI gating) ----
+  get isOwner(): boolean { try { return this.authState.role === 'OWNER'; } catch { return false; } }
+  get isAdmin(): boolean { try { return this.authState.role === 'ADMIN'; } catch { return false; } }
+  get isUser(): boolean { try { return this.authState.role === 'USER'; } catch { return false; } }
+  get isUserOnly(): boolean { return this.isUser && !this.isAdmin && !this.isOwner; }
+
   /** Proyectos crudos del backend */
   projects: Project[] = [];
 
@@ -106,6 +113,9 @@ export class ReportHours implements OnInit, OnDestroy {
     private subTaskCategoryService: SubTaskCategoryService,
     private helpPanelService: HelpPanelService
   ) {}
+
+
+
 
   ngOnInit(): void {
     // Configurar contenido de ayuda para esta página

@@ -1,8 +1,8 @@
 <div class="subtask-edit-modal-overlay" (click)="cancel()">
   <div class="subtask-edit-modal" style="max-width:640px;" (click)="$event.stopPropagation()">
     <div class="modal-header">
-      <h2 class="modal-title"><app-file-pen-icon [size]="25"></app-file-pen-icon> Edit Report</h2>
-      <button class="modal-close" (click)="cancel()"><app-x-icon [size]="25"></app-x-icon></button>
+      <div class="modal-title"><app-file-pen-icon [size]="35"></app-file-pen-icon> <span>Edit Report</span></div>
+      <button class="modal-close" (click)="cancel()"><app-x-icon [size]="33" [color]="'red'"><div class="close">Close</div></app-x-icon></button>
     </div>
 
     <div class="modal-body">
@@ -65,14 +65,63 @@
 
     <div class="modal-footer">
       <ng-container *ngIf="canDelete">
-        <app-icon-button title="Delete" (clicked)="deleteSubtask()">
+
+        <!-- <app-icon-button title="Delete" (clicked)="deleteSubtask()">
           <app-archive-icon [size]="25"></app-archive-icon>
-        </app-icon-button>
+        </app-icon-button> -->
+
+        <button class="delete-button"  (clicked)="deleteSubtask()">
+  			<svg class="delete-svgIcon" viewBox="0 0 448 512">
+                    <path d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"></path>
+                  </svg>
+			</button>
+
+
       </ng-container>
       <ng-container *ngIf="canEdit">
-        <app-icon-button title="Save" (clicked)="saveChanges()">
+
+
+        <!-- <app-icon-button title="Save" (clicked)="saveChanges()">
           <app-file-check-icon [size]="25"></app-file-check-icon>
-        </app-icon-button>
+        </app-icon-button> -->
+
+        <div class="tooltip">
+<button class="action_has has_saved" aria-label="save" type="submit" (clicked)="saveChanges()">
+  <svg
+    aria-hidden="true"
+    xmlns="http://www.w3.org/2000/svg"
+    width="20"
+    height="20"
+    stroke-linejoin="round"
+    stroke-linecap="round"
+    stroke-width="2"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+    fill="none"
+  >
+    <path
+      d="m19,21H5c-1.1,0-2-.9-2-2V5c0-1.1.9-2,2-2h11l5,5v11c0,1.1-.9,2-2,2Z"
+      stroke-linejoin="round"
+      stroke-linecap="round"
+      data-path="box"
+    ></path>
+    <path
+      d="M7 3L7 8L15 8"
+      stroke-linejoin="round"
+      stroke-linecap="round"
+      data-path="line-top"
+    ></path>
+    <path
+      d="M17 20L17 13L7 13L7 20"
+      stroke-linejoin="round"
+      stroke-linecap="round"
+      data-path="line-bottom"
+    ></path>
+  </svg>
+</button> 
+<span class="tooltip-text">Save Changes</span>
+</div>
+
       </ng-container>
     </div>
   </div>

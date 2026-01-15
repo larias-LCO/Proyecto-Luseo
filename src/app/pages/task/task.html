@@ -1,22 +1,36 @@
 <app-header></app-header>
 <app-submenu></app-submenu>
-<!-- 
-<div class="task-container">
 
-  <section class="title-filters">
-
-    <div class="header-with-button">
-      <h1>Tasks</h1> -->
-
-
-
-  <!-- Search -->
   <div
     class="filter-search">
 <div class="task-container">
   <section class="title-filters">
     <div class="header-with-button">
       <h1>Tasks</h1>
+
+    <div *ngIf="isAdminOrOwner">
+    <p class="texto-descriptivo">
+ This page allows you to create and manage tasks associated with each area of ​​the project, facilitating the organization and tracking of daily work.
+ <br>
+Tasks are displayed on a weekly calendar, appearing on the corresponding day according to their creation date, providing a clear overview of progress and workload.
+<br>
+Owners and Administrators can edit any task, ensuring total supervision and control of the process.</p>
+</div>
+
+
+<div *ngIf="isUserOnly">
+  <p class="texto-descriptivo">
+    This page allows you to create and manage tasks associated with each area of ​​the project, facilitating the organization and tracking of daily work.
+    <br>
+Tasks are displayed on a weekly calendar, appearing on the corresponding day according to their creation date, providing a clear overview of progress and workload.
+<br>
+Users can only edit tasks they themselves have created, maintaining individual responsibility without affecting the work of others.
+  </p>
+
+</div>
+  
+
+
     </div>
     <!-- Search -->
     <div class="filter-search">
@@ -55,13 +69,14 @@
           id="week-filter"
           class="search-input"/>
       </div>
-
-        <div class="filter-created-by-me">
-          <input type="checkbox" id="created-by-me" (change)="onShowCreatedByMeChange($event)">
-          <label for="created-by-me">Show created by me</label>
-        </div>
     </div>
+    
+    
     <div class="filters-actions-row">
+       <div class="filter-created-by-me" style="display: flex; align-items: center; gap: 8px;">
+          <input type="checkbox" id="created-by-me" (change)="onShowCreatedByMeChange($event)" style="margin:0;">
+          <label for="created-by-me" style="margin:0;">Show created by me</label>
+        </div>
 
 
       <div class="filter-show" style="display: flex; align-items: center; gap: 8px;">
@@ -74,16 +89,20 @@
         </button> -->
 <button id="clear-all-filters" class="btn-clear-filters" type="button" >Clear All filters</button>
 
-        <button class="btn-open"
-          data-tooltip="Task management and reporting for projects"
-          (click)="showCreateTaskModal = true">
-          Create New Task
-        </button>
+<div class="tooltip">
+<button type="button" class="button3" (click)="showCreateTaskModal = true">
+  <span class="button__text">Create New Task</span>
+  <span class="button__icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" viewBox="0 0 24 24" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" stroke="currentColor" height="24" fill="none" class="svg"><line y2="19" y1="5" x2="12" x1="12"></line><line y2="12" y1="12" x2="19" x1="5"></line></svg></span>
+</button>
+<span class="tooltip-text">Create a task and view it on the calendar</span>
+</div>
       </div>
-    </div>
+    </div>  
   </section>
 
   
+
+
 
   
   <section class="schedule">
@@ -119,7 +138,8 @@
 
 
   <section class="schedule2">
-    <h2>📌 Schedule Prev</h2>
+    <br>
+    <app-prev-icon [size]="37" color="red" [strokeWidth]="3"></app-prev-icon> <span>Schedule Prev</span> 
     <!--aqui va la etiqueta de el calendario week prev-->
     <app-calendar-week-prev #calendarWeekPrevRef [tasks]="tasks">
 
@@ -127,4 +147,14 @@
     </app-calendar-week-prev>
   </section>
 </div>
+
+<!-- Modal de confirmación para eliminar tarea -->
+<app-confirm-modal 
+  *ngIf="showDeleteConfirmModal"
+  message="Are you sure you want to delete this task? This will also delete all associated subtasks."
+  confirmText="Delete"
+  cancelText="Cancel"
+  (confirm)="confirmDeleteTask()"
+  (cancel)="cancelDeleteTask()">
+</app-confirm-modal>
     <!-- *ngIf="showCreateTaskModal"  -->

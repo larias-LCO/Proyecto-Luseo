@@ -1,12 +1,10 @@
 <div class="modal-backdrop" (click)="closeModal()"></div>
 <div class="modal-container">
   <div class="modal-header">
-    <h2><svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-edit-circle"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 15l8.385 -8.415a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3" /><path d="M16 5l3 3" /><path d="M9 7.07a7 7 0 0 0 1 13.93a7 7 0 0 0 6.929 -6" /></svg>Edit Task</h2>
-    <button class="button" (click)="closeModal()">
-  <span class="X"></span>
-  <span class="Y"></span>
+    <h2><app-edit-icon [size]="40"></app-edit-icon> Edit Task</h2>
+ <app-x-icon class="close-button" (click)="closeModal()" [size]="35" [color]="'red'">
   <div class="close">Close</div>
-</button>
+ </app-x-icon>
   </div>
   <div class="modal-body-new">
     <form>
@@ -89,6 +87,7 @@
 
 
       <!-- <button *ngIf="canEditTask" type="button" class="save-btn" (click)="saveTask()"><span class="icon">📝</span> Save Changes</button> -->
+       <div class="tooltip">
       <button *ngIf="canEditTask" type="button" class="action_has has_saved" (click)="saveTask()" aria-label="save" type="submit">
   <svg
     aria-hidden="true"
@@ -120,8 +119,10 @@
       stroke-linecap="round"
       data-path="line-bottom"
     ></path>
-  </svg><span class="texto">Guardar Cambios</span>
+  </svg>
 </button> 
+<span class="tooltip-text">Save Changes</span>
+</div>
 
 
       <!-- MODAL DE ÉXITO PERSONALIZADO -->
@@ -135,6 +136,12 @@
   </div>
 </div>
 
-
-
-
+<!-- Modal de confirmación para eliminar tarea -->
+<app-confirm-modal 
+  *ngIf="showDeleteConfirmModal"
+  message="Are you sure you want to delete this task? This will also delete all associated subtasks."
+  confirmText="Delete"
+  cancelText="Cancel"
+  (confirm)="confirmDelete()"
+  (cancel)="cancelDelete()">
+</app-confirm-modal>

@@ -11,12 +11,14 @@ import { ApiService } from '../../services/api.service';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { EditProjectComponent } from '../edit-project/edit-project';
 import { ConfirmModalComponent } from '../confirm-modal/confirm-modal';
+import { XIconComponent } from '../animated-icons/x-icon.component';
+import { DetailsIconComponent } from '../animated-icons/details-icon.component';
 
 
 @Component({
   selector: 'app-project-details',
   standalone: true,
-  imports: [CommonModule, MatDialogModule, ConfirmModalComponent],
+  imports: [CommonModule, MatDialogModule, ConfirmModalComponent, XIconComponent, DetailsIconComponent],
   templateUrl: './project-details.html',
   styleUrls: ['./project-details.scss']
 })

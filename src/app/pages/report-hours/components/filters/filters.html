@@ -15,7 +15,7 @@
 
       <!-- SEARCH -->
       <div class="filter-item search">
-        <label class="visually-hidden"></label>
+        <label class="visually-hidden"> Search</label>
         <input
           type="text"
           placeholder="Search project for name, code or client"
@@ -63,12 +63,15 @@
         </div>
       </ng-container>
 
+
+
       <!-- CLEAR FILTERS (global) -->
-      <div class="filter-item actions">
-        <button type="button" class="btn ghost clear-btn" (click)="resetFilters()">
+      <!-- <div class="filter-item actions"> -->
+        <!-- <button type="button" class="btn ghost clear-btn" (click)="resetFilters()">
           Filter reset
-        </button>
-      </div>
+        </button> -->
+        <button type="button" class="btn-clear-filters" (click)="resetFilters()">Clear filters</button>
+      <!-- </div> -->
 
     </div>
   </div>

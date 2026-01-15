@@ -8,8 +8,8 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 })
 export class ConfirmModalComponent {
   @Input() message: string = '';
-  @Input() confirmText: string = 'Aceptar';
-  @Input() cancelText: string = 'Cancelar';
+  @Input() confirmText: string = 'Accept';
+  @Input() cancelText: string = 'Cancel';
   @Output() confirm = new EventEmitter<void>();
   @Output() cancel = new EventEmitter<void>();
 

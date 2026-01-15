@@ -20,7 +20,6 @@ import { WebsocketService } from '../../core/services/websocket.service';
 import { debounceTime } from 'rxjs/operators';
 import { Subject, Subscription } from 'rxjs';
 import { MenuFiltersProjects } from "./components/menu-filters-projects/menu-filters-projects";
-import { MasIconComponent } from "../../core/components/animated-icons/mas-icon.component";
 // import { MenuFiltersProjects } from "../../core/components/menu-filters-projects/menu-filters-projects";
 
 
@@ -117,6 +116,11 @@ constructor(
   ) {
     // ✅ Aquí conectas correctamente el helper con el servicio
     this.createEdit = new CreateEditHelper(this.projectService);
+    
+    // Suscribir al estado del submenu
+    this.submenuService.open$.subscribe(isOpen => {
+      this.isMenuOpen = isOpen;
+    });
   }
 
 
@@ -164,7 +168,7 @@ onFiltersUpdated(filters: any) {
      */
     get isUserOnly(): boolean {
       try {
-        return this.auth.hasRole && this.auth.hasRole('USER');
+        return this.auth.isUser();
       } catch {
         return false;
       }
@@ -347,8 +351,8 @@ closeProjectDetails() {
   }
 
   // ---- Traer los roles para autenticar (UI gating) ----
-  get isOwner(): boolean { try { return this.auth.hasRole('OWNER'); } catch { return false; } }
-  get isAdmin(): boolean { try { return this.auth.hasRole('ADMIN'); } catch { return false; } }
+  get isOwner(): boolean { try { return this.auth.isOwner(); } catch { return false; } }
+  get isAdmin(): boolean { try { return this.auth.isAdmin(); } catch { return false; } }
   get isAdminOrOwner(): boolean { return this.isAdmin || this.isOwner; }
 
   /** Carga todos los catálogos desde el backend */

@@ -61,7 +61,7 @@
     justify-content: center;
     align-items: center;
     animation: fadeIn .25s ease-out;
-    z-index: 2500;
+    z-index: 10000;
     padding: 24px;
     
 }
@@ -110,79 +110,35 @@
     font-size: 20px;
     font-weight: 600;
     margin-bottom: 15px;
+      position: relative;
+  overflow: visible;
+  z-index: 2525;
 }
-/* From Uiverse.io by javierBarroso */ 
-.button {
-  position: relative;
-  width: 40px;
-  height: 40px;
-  border: none;
-   background: rgb(180, 83, 107);
-  border-radius: 50%;
-  transition: background 0.5s;
+
+.close-button{
+  color: red;
   cursor: pointer;
-  margin-right: -5px;
+  position: relative;
 }
 
-.X {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 2em;
-  height: 1.5px;
-  background-color: rgb(255, 255, 255);
-  transform: translateX(-50%) rotate(45deg);
-}
 
-.Y {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 2em;
-  height: 1.5px;
-  background-color: #fff;
-  transform: translateX(-50%) rotate(-45deg);
-}
+
 
 .close {
-  position: absolute;
   display: flex;
   padding: 0.8rem 1.5rem;
   align-items: center;
   justify-content: center;
-  transform: translateX(-50%);
-  top: 40px;
-  left: 50%;
-  width: 20px;
-  height: 10px;
-  font-size: 14px;
+  font-size: 15px;
+  height: 30px;
+  width: 50px;
   background-color: rgb(19, 22, 24);
   color: rgb(187, 229, 236);
   border: none;
-  border-radius: 3px;
+  border-radius: 5px;
   pointer-events: none;
-  opacity: 0;
-
-}
-
-.button:hover {
-  background-color: rgb(204, 0, 0);
-}
-
-.button:active {
-  background-color: rgb(130, 0, 0);
-}
-
-.button:hover > .close {
-  animation: close 0.2s forwards 0.25s;
-}
-
-@keyframes close {
-  100% {
-    opacity: 1;
-  }
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 
@@ -442,3 +398,44 @@ font-size: 14px;
 // .noselect:active .icon svg {
 //  transform: scale(0.8);
 // }
+
+// MOOOOOOOOOD DARKKKKKKKKKKK
+:host-context(.dark) .modal-body {
+  background: #0b1724 !important;
+}
+
+:host-context(.dark) .modal-card {
+  background: #0b1724 !important;
+}
+
+:host-context(.dark) .formulario input,
+:host-context(.dark) .formulario select,
+:host-context(.dark) .formulario textarea,
+:host-context(.dark) .modal-card form input,
+:host-context(.dark) .modal-card form select,
+:host-context(.dark) .modal-card form textarea {
+  background: #232831 !important;
+  border: 1px solid #394050 !important;
+  color: #e2e8f0 !important;
+}
+
+:host-context(.dark) .formulario input:focus,
+:host-context(.dark) .formulario select:focus,
+:host-context(.dark) .formulario textarea:focus,
+:host-context(.dark) .modal-card form input:focus,
+:host-context(.dark) .modal-card form select:focus,
+:host-context(.dark) .modal-card form textarea:focus {
+  background: #2a303b !important;
+  box-shadow: 0 0 0 3px rgba(255, 238, 164, 0.2) !important;
+  border: 1px solid #ebd660 !important;
+}
+
+:host-context(.dark) .formulario label,
+:host-context(.dark) .modal-card form label {
+  color: #e2e8f0 !important;
+}
+
+:host-context(.dark) .modal-header {
+  background: linear-gradient(135deg, #d5e7fc, #cde8ff, hsl(211, 89%, 89%)) !important;
+  color: #0f172a;
+}

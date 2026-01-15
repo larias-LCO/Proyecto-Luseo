@@ -18,8 +18,9 @@ import {
   Validators
 } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
-import { EmployeeApi } from '../../../pages/team/team-api'; // Ajusta la ruta si tu estructura es distinta
-
+import { EmployeeApi } from '../../../pages/team/team-api'; 
+import { XIconComponent } from '../animated-icons/x-icon.component';
+import { EditIconComponent } from '../animated-icons/edit-icon.component';
 /**
  * EditarMiembroComponent
  * - Recibe por @Input() el miembro a editar y los catálogos/roles.
@@ -32,7 +33,7 @@ import { EmployeeApi } from '../../../pages/team/team-api'; // Ajusta la ruta si
 @Component({
   selector: 'app-editar-miembro',
   standalone: true,
-  imports: [CommonModule, NgIf, NgForOf, ReactiveFormsModule, FormsModule],
+  imports: [CommonModule, NgIf, NgForOf, ReactiveFormsModule, FormsModule, XIconComponent, EditIconComponent],
   templateUrl: './editar-miembro.html',
   styleUrls: ['./editar-miembro.scss']
 })
@@ -127,7 +128,7 @@ export class EditarMiembroComponent implements OnInit, OnChanges {
   }
 
   // Expose admin check for template
-  isAdmin(): boolean { return this.auth.hasRole('ADMIN'); }
+  isAdmin(): boolean { return this.auth.isAdmin(); }
 
   // Llamado desde el botón "Cancelar" del template
   cerrarModal() {
@@ -145,12 +146,12 @@ export class EditarMiembroComponent implements OnInit, OnChanges {
     const v = this.form.value;
     // Si ADMIN intenta editar OWNER o asignar OWNER, bloquear
     const targetRoles = this.getEmployeeRoles(this.miembro);
-    if (this.auth.hasRole('ADMIN') && targetRoles.includes('OWNER')) {
+    if (this.auth.isAdmin() && targetRoles.includes('OWNER')) {
       alert('No autorizado: un ADMIN no puede editar a un OWNER.');
       return;
     }
     const newRole = String(v.rol || '').toUpperCase();
-    if (this.auth.hasRole('ADMIN') && newRole === 'OWNER') {
+    if (this.auth.isAdmin() && newRole === 'OWNER') {
       alert('No autorizado: un ADMIN no puede asignar rol OWNER.');
       return;
     }

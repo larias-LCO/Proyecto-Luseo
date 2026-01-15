@@ -181,10 +181,10 @@ toggleMenu() {
 
   // Permissions
 // ---- Traer los roles para autenticar (UI gating) ----
-  get isOwner(): boolean { try { return this.auth.hasRole('OWNER'); } catch { return false; } }
-  get isAdmin(): boolean { try { return this.auth.hasRole('ADMIN'); } catch { return false; } }
+  get isOwner(): boolean { try { return this.auth.isOwner(); } catch { return false; } }
+  get isAdmin(): boolean { try { return this.auth.isAdmin(); } catch { return false; } }
   get isAdminOrOwner(): boolean { return this.isAdmin || this.isOwner; }
-  get isUser(): boolean { try { return this.auth.hasRole('USER'); } catch { return false; } }
+  get isUser(): boolean { try { return this.auth.isUser(); } catch { return false; } }
   get canAddMember() { return this.isOwner || this.isAdmin; }
   get canEditDelete() { return this.isOwner || this.isAdmin; }
 
@@ -201,7 +201,9 @@ toggleMenu() {
 
   // catalogs & allowed roles
   catalogs: { departments: any[]; jobs: any[]; offices: any[] } = { departments: [], jobs: [], offices: [] };
-  allowedRoleOptions: string[] = [];
+  get allowedRoleOptions(): string[] {
+    return this.isOwner ? ['USER', 'ADMIN', 'OWNER'] : ['USER', 'ADMIN'];
+  }
   // Filter options should always allow filtering by any role
   roleFilterOptions = [
     { id: 'USER', name: 'USER' },
@@ -235,8 +237,7 @@ toggleMenu() {
     const base = this.auth.getApiBase?.() ?? '';
     this.api = new EmployeeApi(base, this.auth);
 
-    // allowed roles
-    this.allowedRoleOptions = this.isOwner ? ['USER', 'ADMIN', 'OWNER'] : ['USER', 'ADMIN'];
+    // allowed roles are computed dynamically via getter `allowedRoleOptions`
 
     // read filters from URL and initial page size
     const url = readFiltersFromUrl();
@@ -321,7 +322,7 @@ toggleMenu() {
 
 get isUserOnly(): boolean {
       try {
-        return this.auth.hasRole && this.auth.hasRole('USER');
+        return this.auth.isUser();
       } catch {
         return false;
       }

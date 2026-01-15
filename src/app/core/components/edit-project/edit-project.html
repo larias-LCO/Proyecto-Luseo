@@ -3,12 +3,10 @@
   <div class="modal-card">
 
     <div class="modal-header">
-      <h2 id="editTitle"><svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-edit"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" /><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415" /><path d="M16 5l3 3" /></svg>Edit Project</h2>
-       <button class="button" (click)="onCancel()">
-  <span class="X"></span>
-  <span class="Y"></span>
+      <h2 id="editTitle"> <app-edit-icon [size]="36"></app-edit-icon> Edit Project</h2>
+       <app-x-icon class="close-button" (click)="onCancel()" [size]="35" [color]="'red'">
   <div class="close">Close</div>
-</button>
+ </app-x-icon>
 
     </div>
 
@@ -21,7 +19,7 @@
 
     <div>
       <label>Code</label>
-      <input type="text" formControlName="projectCode">
+      <input type="text" class="input2" formControlName="projectCode">
     </div>
 
     <div>
@@ -125,9 +123,10 @@
 
   <!-- TEAM ASSIGNMENT SECTION -->
   <div style="grid-column: 1 / -1;">
-    <h3 class="section-title">
-      <i class="bi bi-people-fill"></i>➕👥 Team Assignment
-    </h3>
+    <div class="section-title">
+      <app-team-icon [size]="24"></app-team-icon> <span>Team Assignment</span>
+      </div>
+   
 
     <!-- CONTENEDOR 2 COLUMNAS: 50% Team, 50% PM -->
     <div class="two-column-grid">
@@ -227,8 +226,8 @@
 
     <!-- <button type="button" class="btn btn-primary" (click)="onSave()">
       <span class="icon">📝</span> Save Changes</button> -->
-
-      <button class="action_has has_saved" aria-label="save" type="submit">
+ <div class="tooltip">
+      <button class="action_has has_saved" aria-label="save" type="submit" (click)="onSave()">
   <svg
     aria-hidden="true"
     xmlns="http://www.w3.org/2000/svg"
@@ -259,8 +258,11 @@
       stroke-linecap="round"
       data-path="line-bottom"
     ></path>
-  </svg><span class="texto">Guardar Cambios</span>
+  </svg>
 </button> 
+<span class="tooltip-text">Save Changes</span> 
+</div>
+
   </div>
 </div> <!-- end modal-footer -->
 

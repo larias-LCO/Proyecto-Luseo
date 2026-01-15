@@ -1,3 +1,7 @@
+:host {
+  display: contents;
+}
+
 /* Estilo para el grupo de contraseña con el botón de ojo */
 .password-group {
   position: relative;
@@ -10,7 +14,7 @@
 .toggle-password {
   position: absolute;
   right: 10px;
-  top: 23px;
+  top: 35px;
   background: none;
   border: none;
   cursor: pointer;
@@ -29,8 +33,8 @@
   left: 50%;
   transform: translate(-50%, -50%);
   background: #e6ffed;
-  color: #1a7f37;
-  border: 2px solid #1a7f37;
+  color: #0c7429;
+  border: 1px solid #0c7429;
   border-radius: 10px;
   padding: 24px 40px;
   font-size: 1.3rem;
@@ -50,36 +54,38 @@
   100% { opacity: 0; }
 }
 .modal-backdrop {
-  // position: fixed;
-  top: 0;
-  left: 0;
+  position: fixed !important;
+  inset: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
+ background: rgba(15, 23, 42, 0.7);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  display: flex !important;
   align-items: center;
   justify-content: center;
-  /* Ensure the modal overlays everything (header z-index is 1000, sidebar 900) */
-  // z-index: 2000;
-      position: fixed;
-    inset: 0;
-    // background: rgba(0, 0, 0, 0.54);
-    -webkit-backdrop-filter: blur(6px);
-    backdrop-filter: blur(6px);
-    z-index: 2500;
+  z-index: 9999;
 }
 
 .modal {
   border-radius: 12px;
   padding: 0;
-  background: #fff;     
+  background: #fff !important;     
   box-shadow: 0 4px 25px rgba(0, 0, 0, 0.2);
   animation: aparecer 0.3s ease;
   width: 700px;
   max-width: 95%;
-  position: relative;
-  z-index: 2520;
+  height: 500px;
+  position: relative !important;
+  z-index: 10000 !important;
   overflow: hidden;
+  display: block !important;
+  visibility: visible !important;
+}
+
+.modal-small {
+  width: 700px;
+  height: 400px;
 }
 
 @keyframes aparecer {
@@ -131,13 +137,14 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 15px 25px;
-  margin-top: 15px;
+  margin-top: 5px;
 }
 
 .form-control {
   display: flex;
   flex-direction: column;
   width: 100%;
+  border: transparent !important;
 }
 
 .form-control input,
@@ -147,7 +154,7 @@
   padding: 10px 12px;
   border-radius: 6px;
   border: 1px solid #d1d5db !important;
-  font-size: 14px;
+  font-size: 15px;
   outline: none;
   transition: 0.3s;
   background: #ffffff !important;
@@ -156,7 +163,7 @@
 }
 
 .form-control label{
-      font-size: 0.85rem;
+      font-size: 15px;
       color: #686b70 !important;
       margin-left: 4px;
       font-weight: 600;
@@ -172,8 +179,8 @@
 
 .form-control input:focus,
 .form-control select:focus {
-  border-color: #2563eb !important;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
+  border-color: #e9d73bad !important;
+  box-shadow: 0 0 0 3px rgba(255, 238, 164, 0.1) !important;
 }
 
 .form-control select {
@@ -197,7 +204,7 @@ small {
 }
 
 .acciones {
-  margin-top: 25px;
+  margin-top: 40px;
   display: flex;
   justify-content: flex-end;
   gap: 12px;
@@ -236,12 +243,13 @@ small {
   background-color: #3654ff;
   color: #fff;
   width: 8.5em;
-  height: 2.9em;
+  height: 40px;
   border: #3654ff 0.2em solid;
   border-radius: 8px;
   text-align: right;
   transition: all 0.6s ease;
   cursor: pointer;
+ 
 }
 
 .next-button:hover {
@@ -255,6 +263,7 @@ small {
   position: absolute;
   display: flex;
   transition: all 0.6s ease;
+  margin-top: -0.1px;
 }
 
 .next-button:hover svg {
@@ -262,9 +271,9 @@ small {
   color: black;
 }
 
-.text {
+.text2 {
   margin: 0 1.5em;
-  font-size: 16px;
+   font-size: 18px;
   font-weight: 600;
   margin-left: 10px;
 }
@@ -326,8 +335,8 @@ small {
 .atras {
   background-color: #3654ff;
   color: #fff;
-  width: 8.5em;
-  height: 2.9em;
+  width: 120px;
+  height: 41px;
   border: #3654ff 0.2em solid;
   border-radius: 8px;
   text-align: right;
@@ -346,6 +355,7 @@ small {
   position: absolute;
   display: flex;
   transition: all 0.6s ease;
+  margin-top: 1.5px;
 }
 
 .atras:hover svg {
@@ -355,36 +365,74 @@ small {
 
 .text {
   margin: 0 1.5em;
-  font-size: 16px;
-  font-weight: 600;
-  margin-left: 10px;
+  font-size: 17px;
+  font-weight: 700;
+  margin-right: 20px;
 }
 
-.cancelar {
-  // margin-left: 5px;
-  width: 100px;
-  height: 40px;
-  border-radius: 8px;
-  margin-right: 6px;
-margin-top: 1px;
-  color: #fff;
-  min-width: 120px;
-  height: 36px;
-  padding: 0.5rem 1rem;
-  font-size: 16px;
-  border-radius: 8px;
-  border: 1px solid #920500;
-  font-weight: 600;
-  background: linear-gradient(180deg, #aa2200, #b60600);
-  box-shadow: 0 4px 10px rgba(13,61,140,0.2);
-  cursor: pointer;
+.noselect {
+ width: 110px;
+ height: 40px;
+ cursor: pointer;
+ display: flex;
+ align-items: center;
+ background: rgb(250, 101, 101);
+ border: none;
+ border-radius: 6px;
+ box-shadow: 1px 1px 3px rgba(0,0,0,0.15);
+ transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.cancelar:hover {
-  background: linear-gradient(180deg,  #c01d1d, #f35454);
-  box-shadow: 0 6px 12px rgba(11,42,91,0.3);
-  // transform: translateY(-2px);
+// .noselect, .noselect span {
+//  transition: 200ms;
+// }
+
+.noselect .text {
+ transform: translateX(35px);
+ color: rgb(26, 26, 26);
+ font-weight: 700;
+ font-size: 16px;
+  margin-left: -12px;
+
 }
+
+// .noselect .icon {
+//  position: absolute;
+//  border-left: 1px solid #c41b1b;
+//  transform: translateX(110px);
+//  height: 40px;
+//  width: 40px;
+//  display: flex;
+//  align-items: center;
+//  justify-content: center;
+// }
+
+// .noselect svg {
+//  width: 15px;
+//  fill: #eee;
+
+// }
+
+.noselect:hover {
+ background: #ff4848;
+ transform: scale(1.05);
+ box-shadow: 2px 2px 8px rgba(0,0,0,0.25);
+}
+
+.noselect:hover .text {
+ color: #fff;
+}
+
+// .noselect:hover .icon {
+//  width: 150px;
+//  border-left: none;
+//  transform: translateX(0);
+// }
+
+.noselect:focus {
+ outline: none;
+}
+
 
 
 /* Ajustar tamaño de TODOS los inputs y selects del formulario */
@@ -411,107 +459,82 @@ form textarea {
   flex: 1;
 }
 
-
-// .btn-agregar{
-//     // margin-left: 5px;
-//   width: 160px;
-//   height: 35px;
-//   font-size: 14px;
-//   border-radius: 6px;
-//   margin-right: 6px;
-//   color: #fff;
-//   min-width: 120px;
-//   height: 36px;
-//   padding: 0.5rem 1rem;
-//   font-size: 14px;
-//   border-radius: 6px;
-//   border: none;
-//   font-weight: 500;
-//   background: linear-gradient(180deg, #0257d6, #0469ec);
-//   box-shadow: 0 4px 10px rgba(13,61,140,0.2);
-//   cursor: pointer;
-
-// }
-
-// .btn-agregar:hover {
-//   background: linear-gradient(180deg,  #306ac0, #2e69e9);
-//   box-shadow: 0 6px 12px rgba(11,42,91,0.3);
-//   transform: translateY(-2px);
-// }
-
-
-
-.btn-agregar {
-  display: inline-block;
+/* From Uiverse.io by andrew-demchenk0 */ 
+.button2 {
   position: relative;
-  font-size: 14px;
-margin-top: -10px;
-margin-left: 70px;
-  // font-weight: bold;
-  // text-transform: uppercase;
-  color: #fff;
-  background: linear-gradient(180deg, #0d3d8c, #0b2a5b);
-  border: 1px solid #ddd017;
-  border-radius: 7px;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1), inset 0px 2px 4px rgba(255, 255, 255, 0.2);
-  text-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
-  cursor: pointer;
-  overflow: hidden;
-  transition: background-color 0.3s, transform 0.3s;
-   width: 160px;
+  width: 195px;
   height: 40px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  border: 1px solid #ddd017;
+  background-color: #123d99;
+  border-radius: 8px;
 }
 
-.btn-agregar::before,
-.btn-agregar::after {
-  content: '';
+.button2, .button__icon, .button__text {
+  transition: all 0.3s;
+}
+
+.button2 .button__text {
+  transform: translateX(30px);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  margin-left: -20px;
+}
+
+.button2 .button__icon {
   position: absolute;
-  width: 100%;
+  transform: translateX(109px);
   height: 100%;
-  background: inherit;
-  z-index: -1;
-  transition: transform 0.3s;
+  width: 39px;
+   background-color: #123d99;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 38px;
+  border-radius: 8px;
 }
 
-.btn-agregar::before {
-  top: 0;
-  left: -100%;
-  transform: skewX(-45deg);
+.button2 .svg {
+  width: 30px;
+  stroke: #fff;
 }
 
-.btn-agregar::after {
-  bottom: 0;
-  right: -100%;
-  transform: skewX(45deg);
+.button2:hover {
+   background-color: #123d99;
 }
 
-.btn-agregar:hover {
-  background: linear-gradient(to bottom, #135ee9, #2b75ff);
-  transform: translateY(-2px);
-  box-shadow: 0px 6px 8px rgba(0, 195, 255, 0.2), inset 0px 2px 4px rgba(255, 255, 255, 0.1);
+.button2:hover .button__text {
+  color: transparent;
 }
 
-.btn-agregar:hover::before {
-  transform: translateX(100%);
+.button2:hover .button__icon {
+  width: 148px;
+  transform: translateX(0);
 }
 
-.btn-agregar:hover::after {
-  transform: translateX(-100%);
+.button2:active .button__icon {
+   background-color: #123d99;
 }
+
+.button2:active {
+ background-color: #123d99;
+}
+
 
 
 /* ===== TOOLTIP ANIMADO ===== */
 .tooltip {
   position: relative;
   display: inline-block;
-  margin-top: 30px;
-  margin-left: 1200px;
-  margin-bottom: -30px;
+  opacity: 1 !important;
 
   .tooltip-text {
     position: absolute;
     bottom: calc(100% + 10px);
-    left: 50%;
+    left: 93%;
     transform: translateX(-50%);
     background: #1f2937;
     color: #fff;
@@ -577,75 +600,56 @@ margin-left: 70px;
 }
 
 /* From Uiverse.io by javierBarroso */ 
-.button {
-  position: relative;
-  width: 40px;
-  height: 40px;
-  border: none;
-  background: rgba(180, 83, 83, 0.719);
-  border-radius: 50%;
-  transition: background 0.5s;
+.close-button{
+  color: red;
   cursor: pointer;
-  margin-right: -10px;
-}
-
-.X {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 2em;
-  height: 1.5px;
-  background-color: rgb(255, 255, 255);
-  transform: translateX(-50%) rotate(45deg);
-}
-
-.Y {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 2em;
-  height: 1.5px;
-  background-color: #fff;
-  transform: translateX(-50%) rotate(-45deg);
+  position: relative;
 }
 
 .close {
-  position: absolute;
   display: flex;
   padding: 0.8rem 1.5rem;
   align-items: center;
   justify-content: center;
-  transform: translateX(-50%);
-  top: 40px;
-  left: 50%;
-  width: 20px;
-  height: 10px;
-  font-size: 14px;
+  font-size: 15px;
+  height: 30px;
+  width: 50px;
   background-color: rgb(19, 22, 24);
   color: rgb(187, 229, 236);
   border: none;
-  border-radius: 3px;
+  border-radius: 5px;
   pointer-events: none;
-  opacity: 0;
-
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
-.button:hover {
-  background-color: rgb(204, 0, 0);
-}
 
-.button:active {
-  background-color: rgb(130, 0, 0);
-}
+// MOOD DARK
+:host-context(.dark) .modal{
+  background: #0b1724 !important;
 
-.button:hover > .close {
-  animation: close 0.2s forwards 0.25s;
-}
-
-@keyframes close {
-  100% {
-    opacity: 1;
+  .form-control{
+    background-color: #0b1724 !important;
   }
+  .form-control input,
+  .form-control select {
+    background: #0b1724 !important;
+    color: #fff !important;
+}
+
+.form-control label{
+      color: #fff !important;  
+}
+
+.next-button:hover{
+  background: rgba(255, 255, 213, 0.842) !important;
+  color: black !important;
+  border: 2px solid black !important;
+}
+
+.atras:hover{
+  background: rgba(255, 255, 213, 0.842) !important;
+  color: black !important;
+  border: 2px solid black !important;
+}
 }

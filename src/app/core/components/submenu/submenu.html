@@ -1,42 +1,7 @@
 
 <nav class="sidebar" [class.collapsed]="collapsed">
-  <button class="sidebar-toggle" (click)="toggle()" aria-label="Toggle menu">
-    <span class="chev" aria-hidden="true">▸</span>
-  </button>
-
-  <div class="sidebar-inner">
-    <div class="sidebar-label">
-      RECORDED TIMES
-    </div>
-    <div class="menu-container">
-      <div class="sidebar-section">
-        <button class="sidebar-item" routerLink="/report-hours" routerLinkActive="active">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><path d="M12 2a10 10 0 0 1 7.38 16.75"/><path d="M12 6v6l4 2"/><path d="M2.5 8.875a10 10 0 0 0-.5 3"/><path d="M2.83 16a10 10 0 0 0 2.43 3.4"/><path d="M4.636 5.235a10 10 0 0 1 .891-.857"/><path d="M8.644 21.42a10 10 0 0 0 7.631-.38"/></svg>
-          <span class="text">REPORT HOURS</span>
-        </button>
-
-        <button class="sidebar-item" routerLink="/tasks" routerLinkActive="active">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><path d="M16 14v2.2l1.6 1"/><path d="M16 2v4"/><path d="M21 7.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3.5"/><path d="M3 10h5"/><path d="M8 2v4"/><circle cx="16" cy="16" r="6"/></svg>
-          <span class="text">SCHEDULE</span>
-        </button>
-      </div>
-    </div>
-
-    <div class="menu-block">
-      <div class="menu-item">PROJECT HUB</div>
-      <ul class="submenu">
-        <li><a routerLink="/proyectos">Projects</a></li>
-        <li><a routerLink="/tasks">Tasks</a></li>
-      </ul>
-    </div>
-
-    <div class="menu-block">
-      <div class="menu-item">WORKLOAD</div>
-    </div>
-  </div>
-</nav>
-
-<nav class="sidebar" >
+  <!-- <button class="sidebar-toggle" (click)="toggle()" aria-label="Toggle menu"> -->
+  <!-- </button> -->
 
   <!-- <div class="sidebar-section">
     <button class="sidebar-item" routerLink="/tasks" routerLinkActive="active">
@@ -46,13 +11,13 @@
  <div class="sidebar-label">RECORDED TIMES</div>
  <div class="sidebar-section"> 
     <button class="sidebar-item" routerLink="/report-hours" routerLinkActive="active">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" color="#001dbe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clock-fading-icon lucide-clock-fading"><path d="M12 2a10 10 0 0 1 7.38 16.75"/><path d="M12 6v6l4 2"/><path d="M2.5 8.875a10 10 0 0 0-.5 3"/><path d="M2.83 16a10 10 0 0 0 2.43 3.4"/><path d="M4.636 5.235a10 10 0 0 1 .891-.857"/><path d="M8.644 21.42a10 10 0 0 0 7.631-.38"/></svg>
-      <span class="text">REPORT HOURS</span>
+      <app-clock-icon [size]="25"></app-clock-icon>
+      <span class="text">HOURS LOG</span>
     </button>
 
     <button class="sidebar-item" routerLink="/tasks" routerLinkActive="active">
       <!-- <span class="icon">📅</span> -->
-       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" color="#001dbe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar-clock-icon lucide-calendar-clock"><path d="M16 14v2.2l1.6 1"/><path d="M16 2v4"/><path d="M21 7.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3.5"/><path d="M3 10h5"/><path d="M8 2v4"/><circle cx="16" cy="16" r="6"/></svg>
+       <app-calendar-icon [size]="25"></app-calendar-icon>
       <span class="text">SCHEDULE</span>
     </button>
   </div>
@@ -73,7 +38,7 @@
   <div class="sidebar-label">MANAGE</div>
 
   <button class="sidebar-item" routerLink="/proyectos" routerLinkActive="active">
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" color="#001dbe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-folder-open-icon lucide-folder-open"><path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2"/></svg>
+  <app-file-icon [size]="25"></app-file-icon>
     <span class="text">PROJECTS</span>
   </button>
 
@@ -83,9 +48,6 @@
   </button> -->
 
   <button class="sidebar-item" routerLink="/team">
-  <!-- ICONO SVG -->
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" color="#001dbe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-users-icon lucide-users"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><path d="M16 3.128a4 4 0 0 1 0 7.744"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><circle cx="9" cy="7" r="4"/></svg>
-
-  <span class="text">TEAM</span>
+<app-team-icon [size]="25"></app-team-icon> <span class="text">TEAM</span>
 </button>
 </nav>

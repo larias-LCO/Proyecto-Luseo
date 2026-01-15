@@ -5,13 +5,15 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { EditIconComponent } from "../animated-icons/edit-icon.component";
+import { XIconComponent } from "../animated-icons/x-icon.component";
 
 
 
 @Component({
   selector: 'app-create-task-card',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, EditIconComponent, XIconComponent],
   templateUrl: './create-task-card.html',
   styleUrl: './create-task-card.scss'
 })

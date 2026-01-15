@@ -136,8 +136,7 @@ export async function apiPut(path: string, data: any): Promise<any> {
 
 
 export async function deleteGeneralTask(taskId: number, taskName: string): Promise<void> {
-  //mensaje de confirmación
-  if (!confirm(`Are you sure you want to delete the task "${taskName}"?\n\nNote: This will also delete all associated subtasks.`)) return;
+  // La confirmación ahora se maneja con el modal
   try {
     await apiDelete(`/general-tasks/${taskId}`);
     // Emitir evento WebSocket para notificar a otros clientes
@@ -436,12 +435,13 @@ import { inject } from '@angular/core';
 import { WebsocketService } from '../../core/services/websocket.service';
 import { debounceTime } from 'rxjs/operators';
 import { Subject, Subscription } from 'rxjs';
+import { PrevIconComponent } from '../../core/components/animated-icons/prev-icon.component';
 
 
 @Component({
   selector: 'app-task',
   standalone: true,
-  imports: [HeaderComponent, SubmenuComponent, CommonModule, CreateTaskCard, FullCalendarModule, CalendarTask, EditTask, CalendarWeekPrev],
+  imports: [HeaderComponent, SubmenuComponent, CommonModule, CreateTaskCard, FullCalendarModule, CalendarTask, EditTask, CalendarWeekPrev, PrevIconComponent, ConfirmModalComponent],
   templateUrl: './task.html',
   styleUrls: ['./task.scss']
 })
@@ -459,20 +459,50 @@ private subs = new Subscription();
   @ViewChild('calendarTaskRef') calendarTaskRef?: CalendarTask;
   @ViewChild('calendarWeekPrevRef') calendarWeekPrevRef?: CalendarWeekPrev;
 
+  // Modal de confirmación para eliminar tareas
+  showDeleteConfirmModal: boolean = false;
+  deleteTaskId: number | null = null;
+  deleteTaskName: string = '';
+
 
   
   /**
    * Devuelve true si el usuario autenticado tiene rol USER (no puede editar/eliminar)
    */
-  get isUserOnly(): boolean {
-    try {
-      return this.auth.hasRole && this.auth.hasRole('USER');
-    } catch {
-      return false;
+ // Permissions
+// ---- Traer los roles para autenticar (UI gating) ----
+  get isOwner(): boolean { try { return this.auth.isOwner(); } catch { return false; } }
+  get isAdmin(): boolean { try { return this.auth.isAdmin(); } catch { return false; } }
+  get isAdminOrOwner(): boolean { return this.isAdmin || this.isOwner; }
+  get isUser(): boolean { try { return this.auth.isUser(); } catch { return false; } }
+  get canAddMember() { return this.isOwner || this.isAdmin; }
+  get canEditDelete() { return this.isOwner || this.isAdmin; }
+
+  get isUserOnly(): boolean { return this.isUser && !this.isAdmin && !this.isOwner; }
+    showCreatedByMe: boolean = false;
+
+  // Métodos para el modal de confirmación de eliminación
+  showDeleteTaskModal(taskId: number, taskName: string) {
+    this.deleteTaskId = taskId;
+    this.deleteTaskName = taskName;
+    this.showDeleteConfirmModal = true;
+  }
+
+  async confirmDeleteTask() {
+    if (this.deleteTaskId) {
+      this.showDeleteConfirmModal = false;
+      await deleteGeneralTask(this.deleteTaskId, this.deleteTaskName);
+      this.deleteTaskId = null;
+      this.deleteTaskName = '';
     }
   }
 
-    showCreatedByMe: boolean = false;
+  cancelDeleteTask() {
+    this.showDeleteConfirmModal = false;
+    this.deleteTaskId = null;
+    this.deleteTaskName = '';
+  }
+
   // Filtra tareas por creador (usuario autenticado)
   onShowCreatedByMeChange(event: any) {
     this.showCreatedByMe = event.target.checked;

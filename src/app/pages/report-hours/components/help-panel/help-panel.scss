@@ -5,7 +5,7 @@
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
-  z-index: 999;
+  z-index: 10000;
   cursor: pointer;
 }
 
@@ -13,11 +13,11 @@
   position: fixed;
   top: 0;
   right: 0;
-  width: 400px;
+  width: 500px;
   height: 100vh;
   background-color: #ffffff;
   box-shadow: -2px 0 8px rgba(0, 0, 0, 0.15);
-  z-index: 1000;
+  z-index: 10001;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -160,5 +160,42 @@
   .help-panel {
     width: 100%;
     right: -100%;
+  }
+}
+
+:host-context(.dark) .help-panel {
+  background-color: #0b1724;
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.5);
+}
+
+:host-context(.dark) .help-panel-header {
+  background-color: #0b1724;
+  border-bottom: 1px solid #374151;
+}
+
+:host-context(.dark) .help-panel-title{
+  color: #ebd660;
+}
+
+
+:host-context(.dark) .help-description {
+  color: #9ca3af;
+  font-weight: 600;
+}
+
+:host-context(.dark) .section-header .section-title {
+  color: #7cb7ff;
+}
+
+:host-context(.dark) .section-content {
+  color: #ffffff;
+}
+
+:host-context(.dark) .close-button {
+  color: #af9c9c;
+
+  &:hover {
+    background-color: #c78686;
+    color: #ffffff;
   }
 }
