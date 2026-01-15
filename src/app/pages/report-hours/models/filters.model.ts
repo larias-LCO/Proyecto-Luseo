@@ -1,5 +1,5 @@
 export interface ReportHoursFilters {
-  year: number;
+  year: number | null;
 
   searchText?: string;
 

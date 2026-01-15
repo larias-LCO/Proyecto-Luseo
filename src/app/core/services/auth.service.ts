@@ -153,8 +153,12 @@ export class AuthService {
         if (isNaN(employeeId)) employeeId = undefined;
       }
     }
+<<<<<<< HEAD
     
     console.log('[AuthService] Roles cargados desde claves individuales:', roles);
+=======
+  
+>>>>>>> 88104b61abbe571f0d148730454a4211888ea173
     this.state.set({ authenticated: !!token, token: token || undefined, username, role: roles, employeeId });
   }
 

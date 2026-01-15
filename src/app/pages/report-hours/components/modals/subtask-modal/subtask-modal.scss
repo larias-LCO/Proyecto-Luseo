@@ -27,13 +27,17 @@
 }
 
 .subtask-modal .modal-header {
+
     background: linear-gradient(135deg, #1e3a8a, #2563eb);
+
+  background: linear-gradient(135deg, #065fd4, #0e3ea5 100%);
+
   color: white;
   padding: 16px 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid linear-gradient(135deg, #065fd4, #0e3ea5 100%);
 }
 
 .subtask-modal .modal-title {
@@ -53,6 +57,7 @@
 .subtask-modal .modal-footer { padding: 12px 20px; border-top: 1px solid #eee; display: flex; justify-content: flex-end; gap: 10px; }
 
 .form-group { margin-bottom: 12px; display: flex; flex-direction: column; }
+
 .form-input { padding: 8px 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px;  cursor: pointer;}
 
 .form-input:focus{
@@ -69,6 +74,9 @@
   color: #334155;
   font-size: 15px;
 }
+
+.form-input { padding: 8px 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 17px; }
+
 .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .req { color: var(--danger); font-weight: 700; }
 
@@ -82,6 +90,7 @@
 .btn-link { background: transparent; color: var(--primary); border: none; padding: 6px 8px; }
 .small { padding: 6px 8px; font-size: 13px; }
 .entry-actions { display: flex; justify-content: flex-end; margin-bottom: 8px; }
+
 hr { border: none; height: 1px; background: #f3f4f6; margin: 12px 0; }
 
 
@@ -365,3 +374,6 @@ hr { border: none; height: 1px; background: #f3f4f6; margin: 12px 0; }
     font-weight: 600;
     
   }
+
+hr { border: none; height: 1px; background: #f3f4f6 !important; margin: 12px 0; }
+

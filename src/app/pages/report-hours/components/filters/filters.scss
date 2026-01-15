@@ -1,5 +1,3 @@
-// src/app/pages/report-hours/components/filters/filters.scss
-
 // Modern filter bar styles (responsive, accessible, and minimal)
 $bg: #0f1724;
 $card: #0b1220;
@@ -15,11 +13,9 @@ $transition: 180ms cubic-bezier(.2,.9,.3,1);
 
 .filters-container {
     display: block;
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
     color: #000000;
 
     .filters-card {
-        background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
         border-radius: $radius;
         padding: 12px;
         backdrop-filter: blur(6px);
@@ -46,15 +42,28 @@ $transition: 180ms cubic-bezier(.2,.9,.3,1);
         cursor: pointer;
 
         &:hover {
+
             transform: translateY(-0.4px);
             box-shadow: 0 4px 12px rgba(12,18,30,0.15);
+
+            transform: translateY(-6px);
+            box-shadow: 0 10px 30px rgba(12,18,30,0.45);
+
             border-color: rgba(124,92,255,0.12);
         }
 
         label {
+
             font-size: 14px;
+
+            font-size: 15px;
+
             color: $muted;
             min-width: 0px;
+        }
+
+        input{
+            font-size: 15px;
         }
     }
 
@@ -86,7 +95,6 @@ $transition: 180ms cubic-bezier(.2,.9,.3,1);
     // Custom caret for select
     .filter-item.select {
         position: relative;
-
         &::after {
             content: "▾";
             position: absolute;
@@ -96,6 +104,17 @@ $transition: 180ms cubic-bezier(.2,.9,.3,1);
             font-size: 12px;
             color: $muted;
             pointer-events: none;
+        }
+
+        select{
+            background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%); 
+            color: #312e81;
+            min-width: 200px; 
+            height: 40px;
+            border: 1px solid #e0e7ff; 
+            border-radius: 8px; 
+            font-size: 15px; 
+            font-weight: 500;
         }
     }
 
@@ -117,33 +136,6 @@ $transition: 180ms cubic-bezier(.2,.9,.3,1);
             font-size: 14px;
             opacity: 0.8;
             pointer-events: none;
-        }
-    }
-
-    // Date range group
-    .date-range {
-        display: flex;
-        gap: 6px;
-        align-items: center;
-
-        .date {
-            min-width: 140px;
-            display: flex;
-            align-items: center;
-            position: relative;
-
-            &::before {
-                content: "📅";
-                position: absolute;
-                left: 10px;
-                font-size: 14px;
-                opacity: 0.9;
-                pointer-events: none;
-            }
-
-            input {
-                padding-left: 28px;
-            }
         }
     }
 

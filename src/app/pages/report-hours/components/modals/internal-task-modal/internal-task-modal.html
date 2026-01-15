@@ -17,7 +17,7 @@
           <div *ngFor="let entry of entries.controls; let i = index" [formGroupName]="i" class="entry-row">
             <div class="grid-2">
               <div class="form-group">
-                <label>Category <span class="req">*</span></label>
+                <label>📂 Category <span class="req">*</span></label>
                 <select formControlName="mainTaskId" class="form-input" (change)="onMainChange(i)">
                   <option value="">-- Select a category --</option>
                   <option *ngFor="let t of getMainTasks()" [value]="t.id">{{t.name}}</option>
@@ -26,7 +26,7 @@
               </div>
 
               <div class="form-group" *ngIf="getSubtasksFor(entry.get('mainTaskId')?.value).length > 0">
-                <label>Subcategory</label>
+                <label>🗂️ Subcategory</label>
                 <select formControlName="subTaskId" class="form-input">
                   <option value="">-- No subcategory --</option>
                   <option *ngFor="let s of getSubtasksFor(entry.get('mainTaskId')?.value)" [value]="s.id">{{s.name}}</option>
@@ -35,13 +35,13 @@
             </div>
 
             <div class="form-group">
-              <label>Description</label>
+              <label>✏️ Description</label>
               <textarea formControlName="description" class="form-input" rows="2" placeholder="Describe what you worked on..."></textarea>
             </div>
 
             <div class="grid-2">
               <div class="form-group">
-                <label>Time Worked <span class="req">*</span></label>
+                <label>⏰ Time Worked <span class="req">*</span></label>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
                   <div>
                     <input type="number" formControlName="hours" class="form-input" min="0" placeholder="Hours" style="text-align: center;">
@@ -59,7 +59,7 @@
               </div>
 
               <div class="form-group">
-                <label>Date <span class="req">*</span></label>
+                <label>📅 Date <span class="req">*</span></label>
                 <input type="date" formControlName="date" class="form-input">
                 <div class="field-error" *ngIf="entry.get('date')?.touched && entry.get('date')?.errors">
                   <div *ngIf="entry.get('date')?.errors?.['required']">Date is required</div>
@@ -69,6 +69,7 @@
             </div>
 
             <div class="entry-actions">
+
               <!-- <app-icon-button title="Remove" (clicked)="entries.length > 1 && removeEntry(i)" [class.disabled]="entries.length <= 1">
                 <app-archive-icon [size]="16"></app-archive-icon>
               </app-icon-button> -->
@@ -81,6 +82,11 @@
 
 
 
+
+              <app-icon-button title="Remove" (clicked)="entries.length > 1 && removeEntry(i)" [class.disabled]="entries.length <= 1">
+                <app-archive-icon [size]="25"></app-archive-icon>
+              </app-icon-button>
+
             </div>
 
             <hr *ngIf="i < entries.length - 1">
@@ -90,11 +96,17 @@
         <div class="form-controls">
 
 
+
           <app-icon-button  (clicked)="addEntry()">
 
             <app-mas-icon [size]="33"></app-mas-icon>
             <!-- <app-plus-icon [size]="18"></app-plus-icon> -->
             <span class="add" style="margin-left:8px" >Add Another</span>
+
+          <app-icon-button title="Add another" (clicked)="addEntry()">
+            <app-plus-icon [size]="25"></app-plus-icon>
+            <span style="margin-left:8px"></span>
+
           </app-icon-button>
 
         </div>

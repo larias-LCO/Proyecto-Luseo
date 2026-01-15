@@ -29,12 +29,8 @@ export function buildEmployeesWithReports(
   let employees = Array.from(employeeMap.values())
     .sort((a, b) => a.name.localeCompare(b.name));
 
-  // ADMIN-Coordinator → only their department
-  if (
-    options.myRole === 'ADMIN' &&
-    options.isCoordinator &&
-    options.myDepartmentId
-  ) {
+  // Only `OWNER` can see all persons. Others see only employees from their department (if provided).
+  if (options.myRole !== 'OWNER' && options.myDepartmentId) {
     employees = employees.filter(emp =>
       options.employeeDepartmentMap[emp.id] === options.myDepartmentId
     );

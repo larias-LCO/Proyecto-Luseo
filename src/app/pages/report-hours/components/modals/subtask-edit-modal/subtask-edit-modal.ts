@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule, NgIf, NgFor } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { SubTaskService } from '../../../../../pages/report-hours/services/sub-task.service';
 import { NotificationService } from '../../../../../core/services/notification.service';
 import { firstValueFrom } from 'rxjs';
@@ -11,6 +11,7 @@ import { XIconComponent } from '../../../../../core/components/animated-icons/x-
 import { FilePenIconComponent } from '../../../../../core/components/animated-icons/file-pen.component';
 import { timeToDecimal, decimalToTime } from '../../../utils/time-conversion.utils';
 import { hoursMinutesToDecimal, decimalToHoursMinutes } from '../../../utils/time-conversion.utils';
+import { Project } from '../../../models/project.model';
 
 @Component({
   selector: 'app-subtask-edit-modal',
@@ -25,10 +26,11 @@ export class SubtaskEditModal implements OnInit {
   @Input() subTaskCategories: any[] = [];
   @Input() myRole: string | null = null;
   @Input() myEmployeeId?: number | string;
+  
 
   @Output() close = new EventEmitter<boolean>();
 
-  form: FormGroup;
+  form!: FormGroup;
   canEdit = false;
   canDelete = false;
 
@@ -41,7 +43,7 @@ export class SubtaskEditModal implements OnInit {
       name: [''],
       hours: [0, [Validators.required, Validators.min(0)]],
       minutes: [0, [Validators.required, Validators.min(0), Validators.max(59)]],
-      issueDate: ['', Validators.required],
+      issueDate: ['', [Validators.required, this.weekdayValidator]],
       subTaskCategoryId: ['', Validators.required],
       projectId: [{ value: '', disabled: true }, Validators.required],
       tag: ['']
@@ -90,6 +92,22 @@ export class SubtaskEditModal implements OnInit {
     return `${y}-${m}-${day}`;
   }
 
+  weekdayValidator(control: AbstractControl | null) {
+    if (!control || !control.value) return null;
+    try { const d = new Date(String(control.value) + 'T12:00:00'); const day = d.getDay(); return (day === 0 || day === 6) ? { weekend: true } : null; } catch (e) { return null; }
+  }
+
+  get projectLabel(): string {
+    try {
+      const pid = this.form.get('projectId')?.value ?? (this.subtask && this.subtask.projectId ? this.subtask.projectId : undefined);
+      if (pid === undefined || pid === null || pid === '') return '';
+      const found = (this.projects || []).find((p: any) => String(p.id) === String(pid));
+      return found ? `${found.projectCode || 'N/A'} - ${found.name || 'Unknown Project'}` : '';
+    } catch (e) {
+      return '';
+    }
+  }
+
   get filteredCategories(): any[] {
     const cats = this.subTaskCategories || [];
     const manualWlIds = [1,2,3,4];
@@ -125,7 +143,7 @@ export class SubtaskEditModal implements OnInit {
       actualHours: hoursMinutesToDecimal(v.hours, v.minutes),
       issueDate: v.issueDate,
       subTaskCategoryId: Number(v.subTaskCategoryId),
-      projectId: Number(v.projectId),
+      projectId: Number(this.form.get('projectId')?.value ?? v.projectId ?? this.subtask.projectId),
       tag: v.tag || null,
       createdByEmployeeId: this.subtask.createdByEmployeeId
     };

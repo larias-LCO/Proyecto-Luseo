@@ -55,6 +55,20 @@ export class LoginComponent implements OnInit {
     });
   }
 
+<<<<<<< HEAD
+=======
+  private syncAuthService(me: any) {
+    // Sincronizar el AuthService principal con los datos de report-hours
+    if (me?.authenticated) {
+      const roles = me.role ? [me.role] : (me.authorities || []);
+      localStorage.setItem('auth.username', me.username || '');
+      localStorage.setItem('auth.roles', JSON.stringify(roles));
+      // El AuthService se actualizará automáticamente al detectar cambios en storage
+      this.authService.loadFromStorage();
+    }
+  }
+
+>>>>>>> 88104b61abbe571f0d148730454a4211888ea173
   onSubmit() {
     this.errorMsg = '';
     if (this.form.invalid) {

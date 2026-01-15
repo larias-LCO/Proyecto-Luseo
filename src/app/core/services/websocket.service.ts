@@ -16,7 +16,10 @@ export class WebsocketService implements OnDestroy {
   private maxAttempts = 15;
 
   private subscriptions = new Map<string, StompSubscription>();
-  private pendingSubscriptions: Array<{ topic: string, subject: Subject<any> }> = [];
+  // Registrations mantiene los topics que el frontend desea suscribir
+  // y sus Subjects asociados. Se usa para (re)crear subscripciones
+  // cuando se establece/reestablece la conexión.
+  private registrations = new Map<string, Subject<any>>();
 
   private authService = inject(AuthService);
 
@@ -49,8 +52,25 @@ export class WebsocketService implements OnDestroy {
       this.connectionAttempts++;
       console.log(`🔄 Intentando conectar WebSocket (${this.connectionAttempts}/${this.maxAttempts})`);
 
+<<<<<<< HEAD
       // Actualizar headers antes de cada intento de conexión
       client.connectHeaders = this.getAuthHeaders();
+=======
+      // Intentar enviar credenciales basadas en cookie en el CONNECT frame.
+      // Muchos backends aceptan headers en el STOMP CONNECT; como mínimo
+      // incluimos JSESSIONID/SESSION si existe, y como fallback `document.cookie`.
+      try {
+        const jsession = this.getCookie('JSESSIONID') || this.getCookie('SESSION');
+        if (jsession) {
+          client.connectHeaders = { ...(client.connectHeaders || {}), JSESSIONID: jsession, Cookie: `JSESSIONID=${jsession}` };
+        } else if (typeof document !== 'undefined' && document.cookie) {
+          client.connectHeaders = { ...(client.connectHeaders || {}), Cookie: document.cookie };
+        }
+      } catch (e) {
+        // no crítico si falla la lectura de cookies
+        console.warn('⚠️ No fue posible adjuntar cookies al CONNECT WS', e);
+      }
+>>>>>>> 88104b61abbe571f0d148730454a4211888ea173
 
       if (this.connectionAttempts >= this.maxAttempts) {
         console.error('❌ Límite de intentos alcanzado.');
@@ -65,7 +85,8 @@ export class WebsocketService implements OnDestroy {
       this.connectionAttempts = 0;
       this.isConnected = true;
 
-      this.restorePendingSubscriptions();
+      // (Re)crear subscripciones para todos los topics registrados
+      this.restoreRegistrations();
     };
 
     this.client.onStompError = (frame) => {
@@ -81,6 +102,7 @@ export class WebsocketService implements OnDestroy {
     this.client.activate();
   }
 
+<<<<<<< HEAD
   private getAuthHeaders(): Record<string, string> {
     const token = this.authService.getState().token;
     if (token) {
@@ -89,6 +111,16 @@ export class WebsocketService implements OnDestroy {
       };
     }
     return {};
+=======
+  // Leer cookie por nombre (browser-side)
+  private getCookie(name: string): string | null {
+    try {
+      const match = document.cookie.match(new RegExp('(^|; )' + name + '=([^;]*)'));
+      return match ? decodeURIComponent(match[2]) : null;
+    } catch (e) {
+      return null;
+    }
+>>>>>>> 88104b61abbe571f0d148730454a4211888ea173
   }
 
   private getWebSocketUrl(): string {
@@ -117,45 +149,53 @@ export class WebsocketService implements OnDestroy {
   // ======================================
   public subscribe(topic: string): Observable<any> {
     const destination = `/topic/${topic}`;
-    const subject = new Subject<any>();
-
-    if (!this.isConnected) {
-      console.warn(`⏳ Guardando suscripción pendiente: ${destination}`);
-      this.pendingSubscriptions.push({ topic, subject });
-      return subject.asObservable();
+    // Reuse existing registration if present
+    if (this.registrations.has(destination)) {
+      return this.registrations.get(destination)!.asObservable();
     }
 
-    const subscription = this.client.subscribe(destination, (message) => {
-      try {
-        const parsed = JSON.parse(message.body);
-        subject.next(parsed);
-      } catch (e) {
-        console.error('❌ Error parseando mensaje WS:', e, message.body);
-      }
-    });
+    const subject = new Subject<any>();
+    this.registrations.set(destination, subject);
 
-    this.subscriptions.set(destination, subscription);
+    // If already connected, subscribe immediately
+    if (this.isConnected) {
+      const subscription = this.client.subscribe(destination, (message) => {
+        try {
+          const parsed = JSON.parse(message.body);
+          subject.next(parsed);
+        } catch (e) {
+          console.error('❌ Error parseando mensaje WS:', e, message.body);
+        }
+      });
+      this.subscriptions.set(destination, subscription);
+    }
     return subject.asObservable();
   }
 
-  private restorePendingSubscriptions() {
-    if (this.pendingSubscriptions.length === 0) return;
+  private restoreRegistrations() {
+    if (this.registrations.size === 0) return;
 
-    const pending = [...this.pendingSubscriptions];
-    this.pendingSubscriptions = [];
-
-    pending.forEach(({ topic, subject }) => {
-      const destination = `/topic/${topic}`;
-
-      const subscription = this.client.subscribe(destination, (message) => {
-        try {
-          subject.next(JSON.parse(message.body));
-        } catch (e) {
-          console.error('❌ Error parseando mensaje:', e);
-        }
+    // unsubscribe any stale subscriptions first
+    try {
+      this.subscriptions.forEach((sub, dest) => {
+        try { sub.unsubscribe(); } catch (e) {}
       });
+    } catch (e) {}
+    this.subscriptions.clear();
 
-      this.subscriptions.set(destination, subscription);
+    this.registrations.forEach((subject, destination) => {
+      try {
+        const subscription = this.client.subscribe(destination, (message) => {
+          try {
+            subject.next(JSON.parse(message.body));
+          } catch (e) {
+            console.error('❌ Error parseando mensaje WS:', e, message.body);
+          }
+        });
+        this.subscriptions.set(destination, subscription);
+      } catch (e) {
+        console.warn('⚠️ No fue posible (re)subscribir topic', destination, e);
+      }
     });
   }
 

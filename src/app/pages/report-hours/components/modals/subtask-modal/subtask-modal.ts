@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output, OnInit, OnChanges, SimpleChanges } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgIf } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators, AbstractControl } from '@angular/forms';
 import { SubTaskService } from '../../../../../pages/report-hours/services/sub-task.service';
 import { SubTaskCategoryService } from '../../../../../pages/report-hours/services/sub-task-category.service';
@@ -18,7 +18,11 @@ import { EditIconComponent } from "../../../../../core/components/animated-icons
 @Component({
   selector: 'app-subtask-modal',
   standalone: true,
+<<<<<<< HEAD
   imports: [CommonModule, ReactiveFormsModule, IconButtonComponent, XIconComponent,  MasIconComponent, EditIconComponent],
+=======
+  imports: [NgIf,CommonModule, ReactiveFormsModule, IconButtonComponent, PlusIconComponent, ArchiveIconComponent, FileCheckIconComponent, XIconComponent, AlarmClockIconComponent],
+>>>>>>> 88104b61abbe571f0d148730454a4211888ea173
   templateUrl: './subtask-modal.html',
   styleUrls: ['./subtask-modal.scss']
 })

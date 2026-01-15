@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { InternalTaskLogService } from '../../../../../pages/report-hours/services/internal-tasks.service';
 import { NotificationService } from '../../../../../core/services/notification.service';
 import { firstValueFrom } from 'rxjs';
@@ -39,7 +39,7 @@ export class InternalTaskEditModal implements OnInit {
       description: [''],
       hours: [0, [Validators.required, Validators.min(0)]],
       minutes: [0, [Validators.required, Validators.min(0), Validators.max(59)]],
-      logDate: ['', Validators.required]
+      logDate: ['', [Validators.required, this.weekdayValidator]]
     });
   }
 
@@ -102,6 +102,11 @@ export class InternalTaskEditModal implements OnInit {
     const m = String(dt.getMonth() + 1).padStart(2, '0');
     const day = String(dt.getDate()).padStart(2, '0');
     return `${y}-${m}-${day}`;
+  }
+
+  weekdayValidator(control: AbstractControl | null) {
+    if (!control || !control.value) return null;
+    try { const d = new Date(String(control.value) + 'T12:00:00'); const day = d.getDay(); return (day === 0 || day === 6) ? { weekend: true } : null; } catch (e) { return null; }
   }
 
   // Close when clicking on overlay background

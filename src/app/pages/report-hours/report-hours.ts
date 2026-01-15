@@ -29,6 +29,7 @@ import { AuthStateService } from './auth/services/auth-state.service';
 import { HeaderComponent } from "../../core/components/header/header";
 import { SubmenuComponent } from "../../core/components/submenu/submenu";
 import { AlarmClockIconComponent } from '../../core/components/animated-icons/alarm-clock.component';
+import { WebsocketService } from '../../core/services/websocket.service';
 import { HelpPanelService } from './services/help-panel.service';
 import { REPORT_HOURS_HELP } from './utils/report-hours-help.config';
 import { HelpPanelComponent } from './components/help-panel/help-panel';
@@ -98,6 +99,8 @@ export class ReportHours implements OnInit, OnDestroy {
   selectedLog: any = null;
   employeesList: { id: number; name: string }[] = [];
   private authSub?: Subscription;
+  // Subscription container for websocket topic updates
+  private wsSub: Subscription = new Subscription();
   
   constructor(
     private projectsService: ProjectService,
@@ -111,7 +114,8 @@ export class ReportHours implements OnInit, OnDestroy {
     private employeeService: EmployeeService,
     private holidayService: HolidayService,
     private subTaskCategoryService: SubTaskCategoryService,
-    private helpPanelService: HelpPanelService
+    private helpPanelService: HelpPanelService,
+    private websocket: WebsocketService
   ) {}
 
 
@@ -140,18 +144,250 @@ export class ReportHours implements OnInit, OnDestroy {
 
     // Load time entries and employees
     this.loadTimeEntries();
+
+    // Suscribirse al WebSocket para recibir actualizaciones parciales
+    // Escuchar varios topics que el backend podría emitir (ajustar si es necesario)
+    try {
+      const topics = ['sub_task', 'internalTaskLog', 'employee'];
+      topics.forEach(t => {
+        try {
+          const s = this.websocket.subscribe(t).subscribe((msg: any) => this.handleWsMessage(msg, t));
+          this.wsSub.add(s);
+        } catch (e) {
+          console.warn('[ReportHours] No fue posible suscribir topic', t, e);
+        }
+      });
+    } catch (e) {
+      console.warn('[ReportHours] Falló suscripción WS', e);
+    }
+  }
+
+  /**
+   * Handler genérico para mensajes WS. Enruta según `resource`/topic hacia
+   * la función que aplica la actualización parcial adecuada.
+   */
+  private handleWsMessage(msg: any, topic?: string): void {
+    try {
+      // Mensajes pueden venir en diferentes formas; intentar normalizar
+      const payload = msg || {};
+
+      // backend puede emitir: realTimeSyncService.emitRefreshForResource("sub_task", "SUB_TASK_SAVED")
+      // que podría traducirse en un mensaje del tipo { resource: 'sub_task', event: 'SUB_TASK_SAVED', data: {...} }
+      const resource = payload.resource || payload.type || topic || '';
+      const eventType = payload.event || payload.action || payload.type || null;
+
+      // Si el recurso es empleado, refrescamos la lista de empleados (pasivo)
+      if (String(resource).toLowerCase().includes('employee')) {
+        // Recalcular mapeos y lista de empleados sin recargar todos los timeEntries
+        try { this.loadEmployeesList(this.allTimeEntries); } catch (e) { console.warn('[ReportHours] WS employee refresh failed', e); }
+        return;
+      }
+
+      // Recursos relacionados a time entries/subtasks/internal tasks deben mapearse
+      const lower = String(resource).toLowerCase();
+      if (lower.includes('sub') || lower.includes('task') || lower.includes('time') || lower.includes('entry')) {
+        // pasar al handler que aplica cambios parciales sobre time entries
+        // empaquetar payload en la forma { action, entry }
+        const entry = payload.data || payload.entry || payload.payload || null;
+        const action = payload.event || payload.action || eventType || null;
+
+        // Si el backend solo emite el recurso/evento (sin la entidad),
+        // hacemos un refresco parcial: recargar subtasks + internal logs
+        // y reconstruir `allTimeEntries`. Esto asegura que Owners vean
+        // los cambios aunque el mensaje WS no incluya el objeto.
+        if (!entry) {
+          this.partialRefreshForResource(lower, action);
+          return;
+        }
+
+        // Construir objeto simple para compatibilidad con onWsTimeEntry
+        const normalized = { action, entry };
+        this.onWsTimeEntry(normalized);
+        return;
+      }
+
+      // Otros recursos: ignorar por ahora
+    } catch (err) {
+      console.error('[ReportHours] Error manejando message genérico WS', err, msg);
+    }
+  }
+
+  /**
+   * Maneja mensajes entrantes del topic WS y aplica cambios parciales.
+   * - Solo procesa actualizaciones si el usuario puede ver todos los reportes
+   *   (owners/admin/coordinators).
+   * - No recarga toda la lista: modifica `allTimeEntries` y re-aplica filtros.
+   */
+  private onWsTimeEntry(msg: any): void {
+    try {
+      // Protección: solo roles privilegiados deben procesar listados globales
+      const isPrivileged = this.isAdminOrOwner || (this.isCoordinatorFlag ?? ((this.authState.authorities || []).some((a: any) => typeof a === 'string' && a.toLowerCase().includes('coordinator'))));
+      if (!isPrivileged) return;
+
+      const payload = msg || {};
+
+      // Soportar varios formatos comunes de payload
+      const action = payload.action || payload.type || (payload.event && payload.event.action) || null;
+      const entry = payload.entry || payload.data || payload || null;
+
+      if (!entry || (entry && (entry.id === undefined || entry.id === null))) {
+        // nothing to do if no id
+        return;
+      }
+
+      const idStr = String(entry.id);
+      const idx = (this.allTimeEntries || []).findIndex((e: any) => String(e.id) === idStr);
+
+      // Apply action semantics conservatively
+      if (action === 'created' || action === 'create') {
+        // push nuevo (si no existe)
+        if (idx === -1) this.allTimeEntries.push(entry);
+      } else if (action === 'updated' || action === 'update') {
+        if (idx >= 0) this.allTimeEntries[idx] = { ...this.allTimeEntries[idx], ...entry };
+      } else if (action === 'deleted' || action === 'delete') {
+        if (idx >= 0) this.allTimeEntries.splice(idx, 1);
+      } else {
+        // heurística: si existe reemplazar, si no existe insertar
+        if (idx >= 0) this.allTimeEntries[idx] = { ...this.allTimeEntries[idx], ...entry };
+        else this.allTimeEntries.push(entry);
+      }
+
+      // Además sincronizar caches locales y limpiar cache de servicios
+      try {
+        const looksLikeInternal = entry && (entry.internalTaskId !== undefined || entry.logDate !== undefined || entry.logDate !== null);
+        const looksLikeSubtask = entry && (entry.issueDate !== undefined || entry.projectId !== undefined || entry.tag !== undefined);
+
+        if (looksLikeInternal) {
+          // mantener rawInternalLogs actualizado
+          const ridx = (this.rawInternalLogs || []).findIndex((r: any) => String(r.id) === idStr);
+          if (action === 'deleted' || action === 'delete') {
+            if (ridx >= 0) this.rawInternalLogs.splice(ridx, 1);
+          } else if (action === 'created' || action === 'create') {
+            if (ridx === -1) this.rawInternalLogs.push(entry);
+          } else {
+            if (ridx >= 0) this.rawInternalLogs[ridx] = { ...this.rawInternalLogs[ridx], ...entry };
+            else this.rawInternalLogs.push(entry);
+          }
+          try { this.internalTaskLogService.clearCache(); } catch (e) {}
+        }
+
+        if (looksLikeSubtask) {
+          const sidx = (this.subTasks || []).findIndex((s: any) => String(s.id) === idStr);
+          if (action === 'deleted' || action === 'delete') {
+            if (sidx >= 0) this.subTasks.splice(sidx, 1);
+          } else if (action === 'created' || action === 'create') {
+            if (sidx === -1) this.subTasks.push(entry);
+          } else {
+            if (sidx >= 0) this.subTasks[sidx] = { ...this.subTasks[sidx], ...entry };
+            else this.subTasks.push(entry);
+          }
+          try { this.subTaskService.clearCache(); } catch (e) {}
+        }
+      } catch (e) {
+        // no crítico
+      }
+
+      // Si hay modal abierto para el mismo id, actualizar contenido in-place
+      try {
+        if (this.selectedLog && String(this.selectedLog.id) === idStr) this.selectedLog = { ...this.selectedLog, ...entry };
+        if (this.selectedSubtask && String(this.selectedSubtask.id) === idStr) this.selectedSubtask = { ...this.selectedSubtask, ...entry };
+      } catch (e) {}
+
+      // Re-aplicar filtros para actualizar la vista sin recargar todo
+      try {
+        const myRole = (this.authState.role as 'OWNER' | 'ADMIN' | 'USER') ?? 'USER';
+        const isCoord = this.isCoordinatorFlag ?? ((this.authState.authorities || []).some((a: any) => typeof a === 'string' && a.toLowerCase().includes('coordinator')));
+        this.timeEntries = this.reportHoursDataService.applyFilters(
+          this.allTimeEntries,
+          this.lastTimeEntryFilters || {},
+          {
+            myEmployeeId: this.employeeId,
+            myRole,
+            isCoordinator: isCoord,
+            myDepartmentId: this.myDepartmentId,
+            employeeDepartmentMap: this.employeeDepartmentMap
+          }
+        );
+        try { this.cd.detectChanges(); } catch (e) {}
+        try { this.loadEmployeesList(this.allTimeEntries); } catch (e) {}
+      } catch (e) {
+        console.warn('[ReportHours] Error al re-aplicar filtros tras WS', e);
+      }
+
+    } catch (err) {
+      console.error('[ReportHours] Error manejando mensaje WS', err, msg);
+    }
+  }
+
+  /**
+   * Refresco parcial para recursos que no traen entidad completa en el mensaje WS.
+   * Recupera `subTasks` y `internalTaskLogs`, reconstruye `allTimeEntries`
+   * y re-aplica los filtros de vista.
+   */
+  private partialRefreshForResource(resource: string, eventType?: string): void {
+    try {
+      // Sólo ejecutar para recursos de tareas/entradas
+      const lower = String(resource || '').toLowerCase();
+      if (!(lower.includes('sub') || lower.includes('task') || lower.includes('time') || lower.includes('entry') || lower.includes('internal'))) return;
+
+      // Obtener subtasks, luego internal logs, reconstruir entries
+      // Forzar refresh para evitar devolver caché stale cuando el backend
+      // emite solo evento y la cache del servicio aún contiene datos viejos.
+      this.subTaskService.getAll(true).subscribe({
+        next: (subs: any[]) => {
+          this.subTasks = subs || [];
+          this.internalTaskLogService.getAll(true).subscribe({
+            next: (logs: any[]) => {
+              this.rawInternalLogs = logs || [];
+
+              // Reconstruir entries a partir de subtasks + logs
+              const built = this.reportHoursDataService.buildTimeEntries(this.subTasks, this.rawInternalLogs);
+
+              // Mantener entradas de festivos ya presentes (isHoliday)
+              const holidayEntries = (this.allTimeEntries || []).filter((e: any) => e && e.isHoliday);
+              this.allTimeEntries = [...built, ...holidayEntries];
+
+              // Re-aplicar filtros con el estado actual
+              try {
+                const myRole = (this.authState.role as 'OWNER' | 'ADMIN' | 'USER') ?? 'USER';
+                const isCoord = this.isCoordinatorFlag ?? ((this.authState.authorities || []).some((a: any) => typeof a === 'string' && a.toLowerCase().includes('coordinator')));
+                this.timeEntries = this.reportHoursDataService.applyFilters(
+                  this.allTimeEntries,
+                  this.lastTimeEntryFilters || {},
+                  {
+                    myEmployeeId: this.employeeId,
+                    myRole,
+                    isCoordinator: isCoord,
+                    myDepartmentId: this.myDepartmentId,
+                    employeeDepartmentMap: this.employeeDepartmentMap
+                  }
+                );
+                try { this.cd.detectChanges(); } catch (e) {}
+                try { this.loadEmployeesList(this.allTimeEntries); } catch (e) {}
+              } catch (e) {
+                console.warn('[ReportHours] Error re-aplicando filtros tras partialRefresh', e);
+              }
+            },
+            error: (err: any) => { console.warn('[ReportHours] partialRefresh: fail loading internal logs', err); }
+          });
+        },
+        error: (err: any) => { console.warn('[ReportHours] partialRefresh: fail loading subtasks', err); }
+      });
+    } catch (err) {
+      console.error('[ReportHours] Error en partialRefreshForResource', err);
+    }
   }
 
   private loadTimeEntries(): void {
     // Load subtasks, internal logs and employees, then build time entries
-    this.subTaskService.getAll().subscribe({
+      this.subTaskService.getAll(true).subscribe({
       next: subs => {
         this.subTasks = subs || [];
         // load internal tasks categories used by modal
         try {
           this.internalTaskService.getAll().subscribe({ next: (its: InternalTaskCategory[]) => { this.internalTasks = its || []; }, error: () => { this.internalTasks = []; } });
         } catch (e) { this.internalTasks = []; }
-        this.internalTaskLogService.getAll().subscribe({
+          this.internalTaskLogService.getAll(true).subscribe({
           next: logs => {
             this.rawInternalLogs = logs || [];
             // Build unified time entries
@@ -513,7 +749,7 @@ export class ReportHours implements OnInit, OnDestroy {
     });
   }
 
-  /** Recibe proyectos ya filtrados desde FiltersComponent */
+  /** Receive pre-filtered projects from FiltersComponent */
   onProjectsFiltered(projects: Project[]): void {
     this.filteredProjects = projects;
     // Force change detection in case parent view doesn't update
@@ -553,7 +789,8 @@ export class ReportHours implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.authSub?.unsubscribe();
-    // Limpiar el contenido de ayuda y cerrar el panel al salir de esta página
+    this.wsSub?.unsubscribe();
+    // Clear the help content and close the panel when leaving this page
     this.helpPanelService.close();
     this.helpPanelService.setContent(null);
   }

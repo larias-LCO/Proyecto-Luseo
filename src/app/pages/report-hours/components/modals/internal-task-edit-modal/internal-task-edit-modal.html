@@ -8,18 +8,18 @@
     <div class="modal-body">
       <form [formGroup]="form">
         <div class="form-group">
-          <label>Category</label>
+          <label>📂 Category</label>
           <input type="text" class="form-input" [value]="displayCategory" disabled>
         </div>
 
         <div class="form-group">
-          <label>Description</label>
+          <label>✏️ Description</label>
           <textarea formControlName="description" rows="3" class="form-input"></textarea>
         </div>
 
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
           <div class="form-group">
-            <label>Time Worked <span style="color:var(--danger);">*</span></label>
+            <label>⏰ Time Worked <span style="color:var(--danger);">*</span></label>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
               <div>
                 <input type="number" formControlName="hours" min="0" class="form-input" style="text-align: center;">
@@ -31,16 +31,24 @@
               </div>
             </div>
           </div>
+          <div class="field-error" *ngIf="(form.get('hours')?.touched || form.get('minutes')?.touched) && (form.get('hours')?.errors || form.get('minutes')?.errors)">
+            <div *ngIf="form.get('hours')?.errors?.['required'] || form.get('minutes')?.errors?.['required']">Time is required</div>
+            <div *ngIf="form.get('minutes')?.errors?.['max']">Minutes must be less than 60</div>
+          </div>
 
           <div class="form-group">
-            <label>Date <span style="color:var(--danger);">*</span></label>
+            <label>📅 Date <span style="color:var(--danger);">*</span></label>
             <input type="date" formControlName="logDate" class="form-input">
+            <div class="field-error" *ngIf="form.get('logDate')?.touched && form.get('logDate')?.errors">
+              <div *ngIf="form.get('logDate')?.errors?.['required']">Date is required</div>
+              <div *ngIf="form.get('logDate')?.errors?.['weekend']">Weekends are not allowed</div>
+            </div>
           </div>
         </div>
         
         <div *ngIf="log?.createdByEmployeeName" class="form-group">
-          <label>Created By</label>
-          <input type="text" class="form-input" [value]="log.createdByEmployeeName" disabled>
+          <label>👤 Created By</label>
+          <input type="text" class="form-input createBy" [value]="log.createdByEmployeeName" disabled>
         </div>
       </form>
     </div>

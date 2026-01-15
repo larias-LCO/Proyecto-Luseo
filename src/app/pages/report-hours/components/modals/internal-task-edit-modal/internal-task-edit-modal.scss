@@ -27,7 +27,7 @@
 }
 
 .modal-header {
-	background: rgb(24, 26, 172);
+	background: linear-gradient(135deg, #065fd4, #0e3ea5 100%);
     color: white;
     padding: 16px 20px;
     display: flex;
@@ -64,7 +64,7 @@
 	cursor: pointer;
 }
 
-.form-group { margin-bottom: 12px; }
+.form-group { margin-bottom: 12px;}
 
 .form-input {
 	width: 100%;
@@ -72,14 +72,17 @@
 	border: 1px solid #e6e6e6;
 	border-radius: 8px;
 	background: #fff;
-	font-size: 15px;
+	font-size: 17px;
 	color: #111827;
 	box-sizing: border-box;
 }
 
-.form-input[disabled] {
-	background: #f9fafb;
-	color: #6b7280;
+.form-input[disabled], .form-input[readonly] {
+	background: #f3f4f6 !important; /* subtle gray */
+	color: #374151; /* slightly muted text */
+	border-color: #e6e6e6;
+	font-style: italic;
+	opacity: 1;
 }
 
 .form-group label{
