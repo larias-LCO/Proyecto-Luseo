@@ -56,7 +56,7 @@
 	cursor: pointer;
 }
 
-.form-group { margin-bottom: 12px; }
+.form-group { margin-bottom: 12px;}
 
 .form-input {
 	width: 100%;
@@ -69,9 +69,12 @@
 	box-sizing: border-box;
 }
 
-.form-input[disabled] {
-	background: #1b82e9;
-	color: #6b7280;
+.form-input[disabled], .form-input[readonly] {
+	background: #f3f4f6 !important; /* subtle gray */
+	color: #374151; /* slightly muted text */
+	border-color: #e6e6e6;
+	font-style: italic;
+	opacity: 1;
 }
 
 /* Ensure textarea grows but stays inside modal */

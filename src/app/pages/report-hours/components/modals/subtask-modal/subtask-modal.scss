@@ -43,7 +43,7 @@
 .subtask-modal .modal-footer { padding: 12px 20px; border-top: 1px solid #eee; display: flex; justify-content: flex-end; gap: 10px; }
 
 .form-group { margin-bottom: 12px; display: flex; flex-direction: column; }
-.form-input { padding: 8px 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
+.form-input { padding: 8px 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 17px; }
 .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .req { color: var(--danger); font-weight: 700; }
 .field-error { color: var(--danger); font-size: 12px; margin-top: 6px; background: rgba(220, 38, 38, 0.06); padding: 6px 8px; border-radius: 6px; font-weight: 600; }
@@ -54,4 +54,4 @@
 .btn-link { background: transparent; color: var(--primary); border: none; padding: 6px 8px; }
 .small { padding: 6px 8px; font-size: 13px; }
 .entry-actions { display: flex; justify-content: flex-end; margin-bottom: 8px; }
-hr { border: none; height: 1px; background: #f3f4f6; margin: 12px 0; }
+hr { border: none; height: 1px; background: #f3f4f6 !important; margin: 12px 0; }

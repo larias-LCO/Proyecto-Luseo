@@ -9,9 +9,7 @@
       <form [formGroup]="form">
         <div class="form-group">
           <label for="edit-project">📋 Project</label>
-          <select id="edit-project" name="projectId" formControlName="projectId" class="form-input" autocomplete="off">
-            <option *ngFor="let p of projects" [value]="p.id">{{p.projectCode}} - {{p.name}}</option>
-          </select>
+          <input id="edit-project" name="projectId" type="text" [value]="projectLabel" class="form-input" disabled>
         </div>
 
         <div class="form-group">

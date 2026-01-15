@@ -38,7 +38,14 @@
 .modal-body { padding: 16px 20px; overflow: auto; }
 .modal-footer { padding: 12px 20px; border-top: 1px solid #eee; display: flex; justify-content: flex-end; gap: 10px; }
 .form-group { margin-bottom: 12px; display: flex; flex-direction: column; }
-.form-input { padding: 8px 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
+.form-input { padding: 8px 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 17px; }
+.form-input[disabled], .form-input[readonly] {
+  background: #f3f4f6 !important;
+  color: #374151;
+  border-color: #e6e6e6;
+  font-style: italic;
+  opacity: 1;
+}
 .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .req { color: var(--danger); font-weight: 700; }
 .field-error { color: var(--danger); font-size: 12px; margin-top: 6px; background: rgba(220, 38, 38, 0.06); padding: 6px 8px; border-radius: 6px; font-weight: 600; }

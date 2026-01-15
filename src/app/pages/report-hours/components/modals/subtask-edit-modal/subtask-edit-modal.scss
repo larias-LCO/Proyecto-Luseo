@@ -45,8 +45,14 @@
 .subtask-edit-modal .modal-footer { padding: 12px 20px; border-top: 1px solid #eee; display: flex; justify-content: flex-end; gap: 10px; }
 
 .subtask-edit-modal .form-group { margin-bottom: 12px; display: flex; flex-direction: column; }
-.subtask-edit-modal .form-input { padding: 8px 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
-.subtask-edit-modal .form-input[disabled] { background: #f9fafb; color: #002775; }
+.subtask-edit-modal .form-input { padding: 8px 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 17px; }
+.subtask-edit-modal .form-input[disabled], .subtask-edit-modal .form-input[readonly] {
+  background: #f3f4f6 !important;
+  color: #374151;
+  border-color: #e6e6e6;
+  font-style: italic;
+  opacity: 1;
+}
 .subtask-edit-modal .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .subtask-edit-modal .req { color: var(--danger); font-weight: 700; }
 .subtask-edit-modal .field-error { color: var(--danger); font-size: 12px; margin-top: 6px; background: rgba(220, 38, 38, 0.06); padding: 6px 8px; border-radius: 6px; font-weight: 600; }
@@ -54,7 +60,7 @@
 .subtask-edit-modal .btn { padding: 8px 12px; border-radius: 6px; border: 1px solid transparent; cursor: pointer; }
 .subtask-edit-modal .btn-primary { background: linear-gradient(135deg, #10b981, #059669); color: #fff; }
 .subtask-edit-modal .btn-danger { background:#ef4444; color:#fff }
-.subtask-edit-modal .btn-secondary { background: #f3f4f6; color: #111827; }
+.subtask-edit-modal .btn-secondary { background: #f3f4f6 !important; color: #111827; }
 
 .subtask-edit-modal .modal-close { background: transparent;
 	border: none;
