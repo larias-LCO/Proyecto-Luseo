@@ -4,8 +4,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0,0,0,0.45);
+  
   z-index: 10000;
+  background: rgba(17, 24, 39, 0.55);
+  backdrop-filter: blur(4px);
+  
 }
 .rh-internal-modal {
   background: #fff;
@@ -30,7 +33,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid linear-gradient(135deg, #065fd4, #0e3ea5 100%);
+  border-bottom: 1px solid #076aff;
   color: white;
 }
 .modal-title {
@@ -330,7 +333,7 @@ hr { border: none; height: 1px; background: #f3f4f6; margin: 12px 0; }
   margin-left: 8px;
   font-size: 17px;
   font-weight: 600;
-  margin-top: 5px;
+  margin-top: -20px;
 }
 
 :host-context(.dark) .rh-internal-modal {
@@ -343,10 +346,12 @@ hr { border: none; height: 1px; background: #f3f4f6; margin: 12px 0; }
 	
 }
 
-:host-context(.dark) .form-input {
-	background: #232831;
-  border: 1px solid #394050;
-	color: #f1f5f9;
+:host-context(.dark) input.form-input,
+:host-context(.dark) textarea.form-input,
+:host-context(.dark) select.form-input {
+  background: #232831 !important;
+  border: 1px solid #394050 !important;
+  color: #f1f5f9 !important;
 }
 
 :host-context(.dark) .modal-header {

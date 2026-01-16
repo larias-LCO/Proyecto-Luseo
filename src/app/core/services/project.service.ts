@@ -156,9 +156,9 @@ async loadProjects(query: any): Promise<{ items: any[], pageInfo: any }> {
     }
   });
 
-  console.log('🌐 Request URL:', url);
-  console.log('🔑 Request params:', params.toString());
-  console.log('📦 Query object:', query);
+  // console.log('🌐 Request URL:', url);
+  // console.log('🔑 Request params:', params.toString());
+  // console.log('📦 Query object:', query);
 
   const obs$ = this.http.get<any>(url, {
     headers,

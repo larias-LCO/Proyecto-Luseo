@@ -53,6 +53,9 @@ export class HeaderComponent {
     // apply saved theme (light/dark)
     this.applySavedTheme();
   }
+
+  // track current theme state for template binding (true when dark)
+  isDarkTheme = signal<boolean>(typeof document !== 'undefined' && document.documentElement.classList.contains('dark'));
  
   isAuthenticated = computed(() => {
     const cookies = this.cookieState();
@@ -175,6 +178,8 @@ export class HeaderComponent {
       const saved = localStorage.getItem('theme');
       if (saved === 'dark') document.documentElement.classList.add('dark');
       else document.documentElement.classList.remove('dark');
+      // update signal to reflect actual document state
+      this.isDarkTheme.set(document.documentElement.classList.contains('dark'));
     } catch (e) {
       // ignore
     }
@@ -185,6 +190,8 @@ export class HeaderComponent {
       document.documentElement.classList.toggle('dark');
       const isDark = document.documentElement.classList.contains('dark');
       try { localStorage.setItem('theme', isDark ? 'dark' : 'light'); } catch (e) {}
+      // update template binding
+      this.isDarkTheme.set(isDark);
     };
 
     // TypeScript may not know about startViewTransition — cast to any

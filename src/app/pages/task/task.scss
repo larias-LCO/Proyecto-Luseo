@@ -285,8 +285,8 @@ font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-seri
   font-size: 15px;
   font-weight: 700;
   z-index: 1;
-  color: var(--color2);
-  border: 2px solid var(--color2);
+  color: #076aff;
+  border: 2px solid #076aff;
   border-radius: 6px;
   position: relative;
 }
@@ -294,7 +294,7 @@ font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-seri
 .btn-clear-filters::before {
   position: absolute;
   content: "";
-  background: linear-gradient(#001174, #0077ff);
+  background: #076aff;
   width: 200px;
   height: 200px;
   z-index: -1;
@@ -348,7 +348,7 @@ font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-seri
   display: flex;
   align-items: center;
   border: 1px solid #ddd017;
-  background-color: #123d99;
+  background-color: #076aff;
   border-radius: 8px;
 }
 
@@ -369,7 +369,7 @@ font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-seri
   transform: translateX(109px);
   height: 100%;
   width: 39px;
-   background-color: #123d99;
+   background-color: #076aff;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -384,7 +384,7 @@ font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-seri
 }
 
 .button3:hover {
-   background-color: #123d99;
+   background-color: #076aff;
 }
 
 .button3:hover .button__text {
@@ -397,7 +397,7 @@ font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-seri
 }
 
 .button3:active .button__icon {
-   background-color: #123d99;
+   background-color: #076aff;
 }
 
 .button3:active {

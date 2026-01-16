@@ -55,8 +55,6 @@ export class LoginComponent implements OnInit {
     });
   }
 
-<<<<<<< HEAD
-=======
   private syncAuthService(me: any) {
     // Sincronizar el AuthService principal con los datos de report-hours
     if (me?.authenticated) {
@@ -64,11 +62,10 @@ export class LoginComponent implements OnInit {
       localStorage.setItem('auth.username', me.username || '');
       localStorage.setItem('auth.roles', JSON.stringify(roles));
       // El AuthService se actualizará automáticamente al detectar cambios en storage
-      this.authService.loadFromStorage();
+      this.mainAuthService.loadFromStorage();
     }
   }
 
->>>>>>> 88104b61abbe571f0d148730454a4211888ea173
   onSubmit() {
     this.errorMsg = '';
     if (this.form.invalid) {
@@ -81,9 +78,9 @@ export class LoginComponent implements OnInit {
     // Usar directamente reportApi para login con cookies
     this.reportApi.login({ login: username, password }).subscribe({
       next: (loginResponse) => {
-        console.log('[Login] Respuesta del login:', loginResponse);
+        // console.log('[Login] Respuesta del login:', loginResponse);
         const loginToken = loginResponse?.token || '';
-        console.log('[Login] Token recibido:', loginToken ? 'SÍ' : 'NO');
+        // console.log('[Login] Token recibido:', loginToken ? 'SÍ' : 'NO');
         
         // El backend estableció las cookies (auth-token, username, role, employeeId, etc.)
         // El navegador las enviará automáticamente en cada petición con withCredentials: true
@@ -97,7 +94,7 @@ export class LoginComponent implements OnInit {
               this.reportState.setSession(me);
               
               // SINCRONIZAR CON AUTH.SERVICE.TS Y AUTH-SYNC.TS
-              console.log('[Login] Sincronizando con AuthService principal:', me);
+              // console.log('[Login] Sincronizando con AuthService principal:', me);
               try {
                 // Extraer el rol del objeto me
                 let role = me.role || '';
@@ -110,8 +107,8 @@ export class LoginComponent implements OnInit {
                   }
                 }
                 
-                console.log('[Login] Rol detectado:', role);
-                console.log('[Login] Usando token:', loginToken || 'NINGUNO');
+                // console.log('[Login] Rol detectado:', role);
+                // console.log('[Login] Usando token:', loginToken || 'NINGUNO');
                 
                 // Sincronizar con auth.state (usado por auth-sync.ts)
                 const authState = {
@@ -125,21 +122,21 @@ export class LoginComponent implements OnInit {
                   serverDeltaMs: me.serverTimeMillis ? (me.serverTimeMillis - Date.now()) : 0
                 };
                 
-                console.log('[Login] Guardando en auth.state:', authState);
+                // console.log('[Login] Guardando en auth.state:', authState);
                 localStorage.setItem('auth.state', JSON.stringify(authState));
                 
                 // Sincronizar con auth.service.ts (claves individuales)
                 if (role) {
                   localStorage.setItem('auth.roles', JSON.stringify([role]));
-                  console.log('[Login] Guardando en auth.roles:', [role]);
+                  // console.log('[Login] Guardando en auth.roles:', [role]);
                 }
                 
                 // Recargar el estado en el AuthService principal
                 this.mainAuthService.loadFromStorage();
                 
                 console.log('[Login] Estado final AuthService:', this.mainAuthService.getState());
-                console.log('[Login] isOwner:', this.mainAuthService.isOwner());
-                console.log('[Login] isAdmin:', this.mainAuthService.isAdmin());
+                // console.log('[Login] isOwner:', this.mainAuthService.isOwner());
+                // console.log('[Login] isAdmin:', this.mainAuthService.isAdmin());
                 
               } catch (syncError) {
                 console.error('[Login] Error sincronizando con AuthService:', syncError);

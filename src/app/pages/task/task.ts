@@ -4,14 +4,14 @@ export async function apiGet<T = any>(path: string): Promise<T> {
   const url = apiBase.replace(/\/\$/, '') + path;
   let res: Response;
   const token = (window as any).Auth?.getState?.().token || localStorage.getItem('auth.token') || localStorage.getItem('token');
-  console.log('[apiGet] URL:', url);
-  console.log('[apiGet] Token:', token);
+  // console.log('[apiGet] URL:', url);
+  // console.log('[apiGet] Token:', token);
   if ((window as any).Auth && typeof (window as any).Auth.fetchWithAuth === 'function') {
     res = await (window as any).Auth.fetchWithAuth(url, { headers: { 'Accept': 'application/json' } });
   } else {
     res = await fetch(url, { credentials: 'include' });
   }
-  console.log('[apiGet] Response status:', res.status);
+  // console.log('[apiGet] Response status:', res.status);
   if (res.status === 401) {
     console.warn('[apiGet] 401 Unauthorized. Token:', token);
     try { await (window as any).Auth.logout(); } finally {
@@ -514,8 +514,8 @@ private subs = new Subscription();
   
 filterTasks() {
           // Log explícito para depuración directa del estado de autenticación
-          console.log('[DEBUG][Filtro] this.auth.getState():', this.auth.getState && this.auth.getState());
-          console.log('[DEBUG][Filtro] this.createdByEmployeeId antes de filtrar:', this.createdByEmployeeId, 'typeof:', typeof this.createdByEmployeeId);
+          // console.log('[DEBUG][Filtro] this.auth.getState():', this.auth.getState && this.auth.getState());
+          // console.log('[DEBUG][Filtro] this.createdByEmployeeId antes de filtrar:', this.createdByEmployeeId, 'typeof:', typeof this.createdByEmployeeId);
         // Declarar filtered antes de cualquier uso
           let filtered = [...this.allTasks];
           const state = this.auth.getState?.();
@@ -530,10 +530,10 @@ filterTasks() {
           }
         }
         this.createdByEmployeeId = createdByEmployeeId;
-        console.log('[DEBUG][Filtro] createdByEmployeeId usado para filtrar:', this.createdByEmployeeId);
+        // console.log('[DEBUG][Filtro] createdByEmployeeId usado para filtrar:', this.createdByEmployeeId);
         // Log de depuración de IDs de tareas
         (filtered || []).forEach(task => {
-          console.log('[DEBUG][Filtro] Task.id:', task.id, 'Task.createdByEmployeeId:', task.createdByEmployeeId, 'typeof:', typeof task.createdByEmployeeId);
+          // console.log('[DEBUG][Filtro] Task.id:', task.id, 'Task.createdByEmployeeId:', task.createdByEmployeeId, 'typeof:', typeof task.createdByEmployeeId);
         });
     // DEBUG: Mostrar valores actuales de usuario y tareas
     // const state = this.auth.getState?.();
@@ -614,8 +614,20 @@ filterTasks() {
     // Log para depuración: mostrar myFullName y todos los createdByEmployeeName de las tareas
     console.log('[DEBUG][Filtro] myFullName:', myFullName);
     console.log('[DEBUG][Filtro] createdByEmployeeName de todas las tareas:', (filtered || []).map(t => t.createdByEmployeeName));
-    console.log('[DEBUG][Filtro] Aplicando filtro showCreatedByMe con nombre completo:', myFullName);
-    filtered = filtered.filter(task => {
+    // Intento rápido: si tenemos el employeeId autenticado, filtrar por él (más robusto)
+    const stateForId = this.auth.getState?.();
+    const numericCreatedById = stateForId?.employeeId != null ? Number(stateForId.employeeId) : this.createdByEmployeeId;
+    let usedNumericFilter = false;
+    if (numericCreatedById && !isNaN(numericCreatedById)) {
+      usedNumericFilter = true;
+      console.log('[DEBUG][Filtro] Aplicando filtro rápido por createdByEmployeeId:', numericCreatedById);
+      // Filtrar por ID y continuar para que la asignación de this.tasks
+      // y la actualización del calendario sucedan una sola vez más abajo.
+      filtered = filtered.filter(task => String(task.createdByEmployeeId) === String(numericCreatedById));
+    }
+    console.log('[DEBUG][Filtro] Aplicando filtro showCreatedByMe con nombre completo:', myFullName, 'usedNumericFilter:', usedNumericFilter);
+    if (!usedNumericFilter) {
+      filtered = filtered.filter(task => {
       let match = false;
       const username = myUsername ? String(myUsername).toLowerCase() : '';
       const taskName = task.createdByEmployeeName ? String(task.createdByEmployeeName).toLowerCase() : '';
@@ -688,72 +700,40 @@ filterTasks() {
         });
       }
       return match;
-    });
-    // // Ordenar antes de asignar
-    // filtered.sort(taskOrder);
-    // Forzar refresco del calendario tras asignar this.tasks
-    this.tasks = [...filtered];
-    console.log('[DEBUG][filterTasks] Tareas después de filtrar:', this.tasks.length, 'IDs:', this.tasks.map(t => t.id), 'Nombres:', this.tasks.map(t => t.name));
-    setTimeout(() => {
-      if (this.calendarTaskRef && this.calendarTaskRef.calendar && this.calendarTaskRef.calendar.getApi) {
-        const api = this.calendarTaskRef.calendar.getApi();
-        api.removeAllEvents();
-        (this.tasks || []).forEach(task => {
-          let dateStr = task.issuedDate || task.createdDate;
-          if (!dateStr) dateStr = new Date().toISOString().slice(0, 10);
-          if (dateStr && /^\d{4}-\d{2}-\d{2}$/.test(dateStr)) dateStr = dateStr + 'T00:00:00';
-          api.addEvent({
-            title: task.name,
-            start: dateStr,
-            allDay: true,
-            extendedProps: { task }
-          });
-        });
-      }
-      if (this.calendarWeekPrevRef && this.calendarWeekPrevRef.setCalendarDate) {
-        const todayStr = new Date().toISOString().slice(0, 10);
-        this.calendarWeekPrevRef.setCalendarDate(todayStr);
-      }
-    }, 0);
-    return; // Evita doble asignación de this.tasks más abajo
+      });
+    } else {
+      console.log('[DEBUG][Filtro] Omitiendo filtrado por nombre porque ya se filtró por employeeId');
+    }
+    // Continuar y dejar la asignación de `this.tasks` al final de la función
   }
   // Filtro: solo tareas de proyectos donde estoy asignado
-  if (this.currentFilters.showMineOnly && this.createdByEmployeeId) {
+  // Si el filtro 'Show created by me' está activo, no aplicar el filtro "show mine only"
+  if (this.currentFilters.showMineOnly && this.createdByEmployeeId && !this.showCreatedByMe) {
     const myProjectIds = (this.allProjects || [])
       .filter(p => Array.isArray(p.employeeIds) && p.employeeIds.includes(this.createdByEmployeeId))
       .map(p => p.id);
     filtered = filtered.filter(task => myProjectIds.includes(task.projectId));
   }
   // Log de fechas de tareas filtradas para depuración
-  console.log('[DEBUG][Calendar] Tareas enviadas al calendario:');
+  // console.log('[DEBUG][Calendar] Tareas enviadas al calendario:');
   filtered.forEach(task => {
-    console.log(`ID: ${task.id}, Name: ${task.name}, issuedDate: ${task.issuedDate}, createdDate: ${task.createdDate}`);
+    // console.log(`ID: ${task.id}, Name: ${task.name}, issuedDate: ${task.issuedDate}, createdDate: ${task.createdDate}`);
   });
   // filtered.sort(taskOrder);
   this.tasks = [...filtered]; // fuerza nueva referencia siempre
-  console.log('[DEBUG][Calendar] this.tasks después de asignar:', this.tasks);
+  // console.log('[DEBUG][Calendar] this.tasks después de asignar:', this.tasks);
   // Forzar actualización del calendario si es necesario
   setTimeout(() => {
-    // Refrescar eventos del calendario principal
-    if (this.calendarTaskRef && this.calendarTaskRef.calendar && this.calendarTaskRef.calendar.getApi) {
-      const api = this.calendarTaskRef.calendar.getApi();
-      api.removeAllEvents();
-      (this.tasks || []).forEach(task => {
-        let dateStr = task.issuedDate || task.createdDate;
-        if (!dateStr) dateStr = new Date().toISOString().slice(0, 10);
-        if (dateStr && /^\d{4}-\d{2}-\d{2}$/.test(dateStr)) dateStr = dateStr + 'T00:00:00';
-        api.addEvent({
-          title: task.name,
-          start: dateStr,
-          allDay: true,
-          extendedProps: { task }
-        });
-      });
-    }
-    // Refrescar calendario week prev si existe
+    // Solo actualizar el componente week-prev si existe (no tocar API del calendario aquí)
     if (this.calendarWeekPrevRef && this.calendarWeekPrevRef.setCalendarDate) {
-      const todayStr = new Date().toISOString().slice(0, 10);
-      this.calendarWeekPrevRef.setCalendarDate(todayStr);
+      let dateToShow: string | null = null;
+      if (this.tasks && this.tasks.length > 0) {
+        const first = this.tasks[0];
+        const d = first.issuedDate || first.createdDate || first.date || null;
+        if (d) dateToShow = (d.indexOf('T') === -1) ? d.slice(0, 10) : d.split('T')[0];
+      }
+      if (!dateToShow) dateToShow = new Date().toISOString().slice(0, 10);
+      this.calendarWeekPrevRef.setCalendarDate(dateToShow);
     }
   }, 0);
 }
@@ -778,7 +758,7 @@ async ngAfterViewInit() {
     // Forzar inicialización de Auth al cargar la vista
     try {
       await this.initAuth();
-      console.log('[PERM DEBUG][ngAfterViewInit] createdByEmployeeId:', this.createdByEmployeeId);
+      // console.log('[PERM DEBUG][ngAfterViewInit] createdByEmployeeId:', this.createdByEmployeeId);
     } catch (err) {
       console.error('[PERM DEBUG][ngAfterViewInit] Error inicializando Auth:', err);
     }
@@ -1478,9 +1458,9 @@ async init(): Promise<void> {
     const url = `${base.replace(/\/$/, '')}/general-tasks`;
     try {
       const response = await firstValueFrom(this.http.get<any[]>(url));
-      console.log('[DEBUG][fetchTasks] Respuesta cruda del backend:', response);
+      // console.log('[DEBUG][fetchTasks] Respuesta cruda del backend:', response);
       this.allTasks = response;
-      console.log('Tareas cargadas:', this.allTasks);
+      // console.log('Tareas cargadas:', this.allTasks);
       this.filterTasks();
       // Render calendar legend in etiquetas section
       setTimeout(() => {

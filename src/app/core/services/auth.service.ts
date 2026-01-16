@@ -57,7 +57,7 @@ export class AuthService {
       const authStateJson = localStorage.getItem('auth.state');
       if (authStateJson) {
         const authState = JSON.parse(authStateJson);
-        console.log('[AuthService] Cargando desde auth.state:', authState);
+        // console.log('[AuthService] Cargando desde auth.state:', authState);
         
         const token = authState.token;
         const username = authState.username;
@@ -83,7 +83,7 @@ export class AuthService {
         }
         
         if (token) {
-          console.log('[AuthService] ✓ Estado cargado desde auth.state - Roles:', roles);
+          // console.log('[AuthService] ✓ Estado cargado desde auth.state - Roles:', roles);
           this.state.set({ 
             authenticated: true, 
             token, 
@@ -152,13 +152,9 @@ export class AuthService {
         employeeId = Number(decoded.employeeId ?? decoded.employee_id);
         if (isNaN(employeeId)) employeeId = undefined;
       }
-    }
-<<<<<<< HEAD
-    
-    console.log('[AuthService] Roles cargados desde claves individuales:', roles);
-=======
-  
->>>>>>> 88104b61abbe571f0d148730454a4211888ea173
+    } 
+    // console.log('[AuthService] Roles cargados desde claves individuales:', roles);
+
     this.state.set({ authenticated: !!token, token: token || undefined, username, role: roles, employeeId });
   }
 

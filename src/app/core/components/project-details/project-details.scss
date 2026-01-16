@@ -153,7 +153,7 @@
   display: flex !important;
   justify-content: center;
   align-items: center;
-  z-index: 2500;
+  z-index: 10000;
   padding: -30px;
   overflow: hidden;
 }
@@ -171,7 +171,7 @@
 	flex-direction: column;
 	overflow: hidden;
 	position: relative;
-	z-index: 2520;
+	z-index: 10001;
 }
 
 /* Divider */
@@ -199,7 +199,7 @@
 /* HEADER moderno con profundidad, blur y sutil brillo */
 .modal-header {
   flex-shrink: 0;
-  background: linear-gradient(135deg, #1e3a8a, #2563eb);
+background: linear-gradient(135deg, #065fd4, #0e3ea5 100%);
   color: #fff;
   display: flex;
   font-size: 23px;

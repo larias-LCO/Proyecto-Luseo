@@ -174,7 +174,7 @@ function cerrarSesion() {
 
   function saveState(newState: Partial<AuthState>) {
     state = { ...state, ...newState };
-    console.log('[auth-sync.saveState] Guardando estado:', state);
+    // console.log('[auth-sync.saveState] Guardando estado:', state);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     emit();
     broadcast({ type: 'state', payload: state });

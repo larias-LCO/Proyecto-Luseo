@@ -298,19 +298,19 @@ async function buildAllPMIds(force: boolean) {
       errorMsg = String(e);
     }
     // safety puede no estar en scope aquí, así que lo inicializamos a -1 si no existe
-    console.warn('Could not build global PM list from backend pages.', {
-      error: errorMsg,
-      stack: errorStack,
-      url,
-      page,
-      totalPages,
-      safety
-    });
+    // console.warn('Could not build global PM list from backend pages.', {
+    //   error: errorMsg,
+    //   stack: errorStack,
+    //   url,
+    //   page,
+    //   totalPages,
+    //   safety
+    // });
   }
 
   // Final fallback: if no PMs found, use all employees with PM-capable job positions
   if (all.size === 0) {
-    console.warn('buildAllPMIds: No PMs found in projects, using fallback: all PM-capable employees');
+    // console.warn('buildAllPMIds: No PMs found in projects, using fallback: all PM-capable employees');
     const pmEmployees = (cache.employees || []).filter(isLikelyPM);
     pmEmployees.forEach((e: any) => all.add(Number(e.id)));
   }
@@ -472,7 +472,7 @@ export class ProjectFiltersService {
     this.cache.employeesById = new Map(employees.map(e => [Number(e.id), e]));
     // LOG: Verificar IDs cargados
     const ids = employees.map(e => Number(e.id));
-    console.log('[setEmployees] IDs de empleados cargados:', ids);
+    // console.log('[setEmployees] IDs de empleados cargados:', ids);
     // Si hay PMs en cache, mostrar si están en empleados
     if (this.cache.allPMIds && this.cache.allPMIds.size > 0) {
       this.cache.allPMIds.forEach(pmId => {
@@ -597,9 +597,9 @@ export class ProjectFiltersService {
     await this.ensureAllPMs(force);
 
     // LOG: Estado del cache
-    console.log('[ProjectFiltersService] Empleados en cache:', this.cache.employees);
-    console.log('[ProjectFiltersService] EmpleadosById en cache:', this.cache.employeesById);
-    console.log('[ProjectFiltersService] allPMIds en cache:', this.cache.allPMIds);
+    // console.log('[ProjectFiltersService] Empleados en cache:', this.cache.employees);
+    // console.log('[ProjectFiltersService] EmpleadosById en cache:', this.cache.employeesById);
+    // console.log('[ProjectFiltersService] allPMIds en cache:', this.cache.allPMIds);
 
     const ids = Array.from(this.cache.allPMIds);
     const people = ids
@@ -608,7 +608,7 @@ export class ProjectFiltersService {
       .map(e => ({ id: Number(e!.id), name: e!.name }))
       .sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
 
-    console.log('[ProjectFiltersService] Opciones de PM generadas:', people);
+    // console.log('[ProjectFiltersService] Opciones de PM generadas:', people);
     return people;
   }
 

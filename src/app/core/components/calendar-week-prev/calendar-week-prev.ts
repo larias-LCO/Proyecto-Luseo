@@ -57,7 +57,7 @@ export class CalendarWeekPrev {
       const section = this.createTypeSection('', true, 'my-section', calendarEl);
       this.sectionContainer.nativeElement.appendChild(section);
     }
-    console.log("Calendar API:", this.calendarComponent?.getApi());
+    // console.log("Calendar API:", this.calendarComponent?.getApi());
   }
 
 
@@ -95,10 +95,12 @@ export class CalendarWeekPrev {
   };
 
   onDatesSet(arg: any) {
-    this.calendarTitle = arg.view.title;
-    this.calendarViewType = arg.view.type;
-    // Soluciona ExpressionChangedAfterItHasBeenCheckedError
-    Promise.resolve(() => this.cdr.detectChanges());
+    // Update title/view asynchronously to avoid ExpressionChangedAfterItHasBeenCheckedError
+    Promise.resolve().then(() => {
+      this.calendarTitle = arg.view.title;
+      this.calendarViewType = arg.view.type;
+      try { this.cdr.detectChanges(); } catch (e) { /* ignore */ }
+    });
   }
 
   // Cambia la fecha visible del calendario

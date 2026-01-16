@@ -361,6 +361,7 @@
 	font-size: 1.25rem;
 	color: #010e25de;
 	cursor: pointer;
+	background: transparent !important;
 }
 
 /* Dark mode support */
@@ -369,12 +370,14 @@
 	box-shadow: none !important;
 }
 
+
+
 :host-context(.dark) ::ng-deep .fc {
-	background: transparent !important;
+	background: #081226 !important;
 }
 
 :host-context(.dark) ::ng-deep .fc .fc-view-harness {
-	background: transparent !important;
+	background: #081226 !important;
 }
 
 :host-context(.dark) ::ng-deep .fc .fc-daygrid {
@@ -382,31 +385,36 @@
 }
 
 :host-context(.dark) ::ng-deep .fc .fc-daygrid-day {
-	background: transparent !important;
+	background: #081226 !important;
 	border-color: rgba(255, 255, 255, 0.1) !important;
 }
 
-:host-context(.dark) ::ng-deep .fc .fc-daygrid-day-frame {
-	background: transparent !important;
-}
+// :host-context(.dark) ::ng-deep .fc .fc-daygrid-day-frame {
+// 	background: transparent !important;
+// }
 
 :host-context(.dark) ::ng-deep .fc .fc-col-header-cell {
-	background: transparent !important;
+	background: #081226 !important;
 	color: rgba(255, 255, 255, 0.9) !important;
 	border-color: rgba(255, 255, 255, 0.1) !important;
 }
 
 :host-context(.dark) ::ng-deep .fc .fc-daygrid-day-number {
 	color: var(--avatar-text) !important;
+	background: #081226 !important;
 }
 
-:host-context(.dark) ::ng-deep .fc .fc-day-today,
+// :host-context(.dark) ::ng-deep .fc .fc-day-today,
 :host-context(.dark) ::ng-deep .fc .fc-day-today .fc-daygrid-day-frame,
 :host-context(.dark) ::ng-deep .fc .fc-day-today .fc-daygrid-day-number {
-	background: transparent !important;
-	color: var(--sidebar-hover-text) !important;
+	background: #081226 !important;
 	border-radius: 8px;
 }
+
+:host-context(.dark) ::ng-deep .fc .fc-col-header-cell{
+	border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
 
 :host-context(.dark) ::ng-deep .fc .fc-daygrid-day:hover {
 	background: rgba(255, 255, 255, 0.05) !important;
@@ -427,6 +435,7 @@
 	max-height: 100%;
 	overflow: hidden;
 	padding-bottom: 0;
+
 }
 
 :host ::ng-deep .fc-dayGridMonth-view .gt-card {

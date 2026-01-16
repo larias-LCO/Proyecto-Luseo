@@ -18,7 +18,7 @@ import { ClockIconComponent } from "../../../../../core/components/animated-icon
 @Component({
   selector: 'app-internal-task-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, IconButtonComponent, XIconComponent,  MasIconComponent, ClockIconComponent],
+  imports: [PlusIconComponent,CommonModule, ReactiveFormsModule, XIconComponent,  MasIconComponent, ClockIconComponent, MasIconComponent,IconButtonComponent, ArchiveIconComponent],
   templateUrl: './internal-task-modal.html',
   styleUrls: ['./internal-task-modal.scss']
 })

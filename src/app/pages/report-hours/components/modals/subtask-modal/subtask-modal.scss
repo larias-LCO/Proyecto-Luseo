@@ -10,6 +10,8 @@
   background: rgba(0,0,0,0.45);
   z-index: 10000;
   pointer-events: auto;
+  background: rgba(17, 24, 39, 0.55);
+  backdrop-filter: blur(4px);
 }
 
 .subtask-modal {
@@ -347,10 +349,12 @@ hr { border: none; height: 1px; background: #f3f4f6; margin: 12px 0; }
 	
 }
 
-:host-context(.dark) .form-input {
-	background: #232831;
-  border: 1px solid #394050;
-	color: #f1f5f9;
+:host-context(.dark) input.form-input,
+:host-context(.dark) textarea.form-input,
+:host-context(.dark) select.form-input {
+  background: #232831 !important;
+  border: 1px solid #394050 !important;
+  color: #f1f5f9 !important;
 }
 
 :host-context(.dark) .modal-header {

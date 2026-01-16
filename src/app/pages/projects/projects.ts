@@ -232,25 +232,24 @@ this.subs.add(wsDebounceSub);
     this.departments = (this.departments || []).slice().sort(byName);
     this.employees = (this.employees || []).slice().sort(byName);
     // LOG: Empleados cargados
-    console.log('[VALIDACIÓN] Empleados cargados:', this.employees);
+    // console.log('[VALIDACIÓN] Empleados cargados:', this.employees);
     if (!this.employees || this.employees.length === 0) {
       console.warn('[VALIDACIÓN] No se cargaron empleados. Revisa la respuesta de loadCatalogs.');
     }
     this.projectFiltersService.setEmployees(this.employees);
     // LOG: Empleados en el servicio
-    console.log('[VALIDACIÓN] Empleados en servicio (projectFiltersService.employeesAll):', this.projectFiltersService.employeesAll);
+    // console.log('[VALIDACIÓN] Empleados en servicio (projectFiltersService.employeesAll):', this.projectFiltersService.employeesAll);
 
     // Esperar a que los empleados estén cargados antes de pedir managers
     const managerOptionsRaw = await this.projectFiltersService.getManagerFilterOptions();
-    console.log('[VALIDACIÓN] Opciones crudas de managerOptions:', managerOptionsRaw);
+    // console.log('[VALIDACIÓN] Opciones crudas de managerOptions:', managerOptionsRaw);
     this.managerOptionsAll = (managerOptionsRaw || []).slice().sort(byName);
     // mantener managerOptions por compatibilidad inicial
     this.managerOptions = this.managerOptionsAll.slice();
-    console.log('[VALIDACIÓN] ManagerOptions cargados (final):', this.managerOptionsAll);
-
+    // console.log('[VALIDACIÓN] ManagerOptions cargados (final):', this.managerOptionsAll);
     // Validar coincidencias de IDs entre pmIds y empleados
     if (Array.isArray(this.managerOptions) && this.managerOptions.length === 0) {
-      console.warn('[VALIDACIÓN] managerOptions está vacío. Verifica que los pmIds de los proyectos coincidan con los IDs de empleados.');
+      // console.warn('[VALIDACIÓN] managerOptions está vacío. Verifica que los pmIds de los proyectos coincidan con los IDs de empleados.');
     }
     await this.loadProjects();
     // El modal de creación es manejado por el CreateProjectComponent
@@ -523,7 +522,7 @@ onPageSizeChange() {
       this.projects = Array.isArray(items) ? items : [];
       this.pageInfo = pageInfo;
       // LOG: Proyectos cargados
-      console.log('[VALIDACIÓN] Proyectos cargados:', this.projects);
+      // console.log('[VALIDACIÓN] Proyectos cargados:', this.projects);
       if (!this.projects || this.projects.length === 0) {
         console.warn('[VALIDACIÓN] No se cargaron proyectos. Revisa la respuesta de projectService.loadProjects.');
       }

@@ -10,7 +10,7 @@
   align-items: center;
   justify-content: center;
   padding: 24px;
-  z-index: 2500;
+  z-index: 10000;
   opacity: 0;
   pointer-events: none;
   transition: opacity .25s ease;
@@ -19,6 +19,7 @@
 .modal.show {
   opacity: 1;
   pointer-events: auto;
+  z-index: 10001;
 }
 
 /* CARD */
@@ -34,7 +35,7 @@
   overflow: visible;
   font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   position: relative;
-  z-index: 2520;                  /* 4. asegurar que esté encima de otros elementos */
+  z-index: 10001;                  /* 4. asegurar que esté encima de otros elementos */
 }
 @keyframes modalZoom {
   from { transform: scale(.92); opacity: 0; }
@@ -45,7 +46,7 @@
    HEADER
 ============================================================ */
 .modal-header {
-  background: linear-gradient(135deg, #1e3a8a, #2563eb);
+ background: linear-gradient(135deg, #065fd4, #0e3ea5 100%);
   color: #fff;
   display: flex;
   justify-content: space-between;
@@ -60,7 +61,7 @@
   height: 70px;
   position: relative;
   overflow: visible;
-  z-index: 2525;
+  z-index: 10001;
 }
 
 .modal-header h2 {

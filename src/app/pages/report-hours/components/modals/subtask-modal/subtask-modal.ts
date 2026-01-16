@@ -18,11 +18,8 @@ import { EditIconComponent } from "../../../../../core/components/animated-icons
 @Component({
   selector: 'app-subtask-modal',
   standalone: true,
-<<<<<<< HEAD
-  imports: [CommonModule, ReactiveFormsModule, IconButtonComponent, XIconComponent,  MasIconComponent, EditIconComponent],
-=======
-  imports: [NgIf,CommonModule, ReactiveFormsModule, IconButtonComponent, PlusIconComponent, ArchiveIconComponent, FileCheckIconComponent, XIconComponent, AlarmClockIconComponent],
->>>>>>> 88104b61abbe571f0d148730454a4211888ea173
+  imports: [NgIf,CommonModule, ReactiveFormsModule,  XIconComponent, EditIconComponent, MasIconComponent],
+
   templateUrl: './subtask-modal.html',
   styleUrls: ['./subtask-modal.scss']
 })

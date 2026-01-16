@@ -35,19 +35,18 @@
   margin-left: 3px;
 }
 .mf-search input{
-  width: 90%;
-  height: 20px;
+  width: 95%;
+  height: 40px;
   padding: 6px 8px;
   border: 1px solid #acacac;
-  border-radius: 6px;
-  font-size: 13px;
-  margin-top: -20px;
+  border-radius: 15px;
+  font-size: 14px;
+
 }
 
 .mf-search input:focus{
   outline: none;
-  border-color: #f6f33b;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 0 0 2px rgba(102, 161, 216, 0.671);
 }
 
 .mf-section input{
@@ -152,8 +151,8 @@
   font-size: 17px;
   font-weight: 700;
   z-index: 1;
-  color: var(--color2);
-  border: 2px solid var(--color2);
+  color: #076aff;
+  border: 2px solid #076aff;
   border-radius: 6px;
   position: relative;
 }
@@ -161,7 +160,7 @@
 .btn-clear-filters::before {
   position: absolute;
   content: "";
-  background: linear-gradient(#001cb9, #0077ff);
+  background: #076aff;
   width: 200px;
   height: 200px;
   z-index: -1;

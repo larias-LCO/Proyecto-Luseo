@@ -82,15 +82,15 @@
 	padding: 6px 4px 4px 4px;
 }
 
-// :host ::ng-deep .fc .fc-event {
-//   width: 100% !important;
-//   margin: 0 0 8px 0 !important;
-//   padding: 0 !important;
-//   background: none !important;
-//   border: none !important;
-//   box-shadow: none !important;
-//   display: block !important;
-// }
+:host ::ng-deep .fc .fc-event {
+  width: 100% !important;
+  margin: 0 0 8px 0 !important;
+  padding: 0 !important;
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  display: block !important;
+}
 
 :host ::ng-deep .gt-card {
   width: 100% !important;
@@ -149,7 +149,7 @@
 /* Día actual con fondo azul tenue y elegante */
 
 
-
+:host ::ng-deep .fc .fc-day-today,
 :host ::ng-deep .fc .fc-day-today,
 :host ::ng-deep .fc .fc-day-today .fc-daygrid-day-frame,
 :host ::ng-deep .fc .fc-day-today .fc-daygrid-day-number {
@@ -165,12 +165,12 @@
 :host-context(.dark) ::ng-deep .fc .fc-day-today,
 :host-context(.dark) ::ng-deep .fc .fc-day-today .fc-daygrid-day-frame,
 :host-context(.dark) ::ng-deep .fc .fc-day-today .fc-daygrid-day-number {
-	background: var(--sidebar-hover) !important;
+	background: transparent !important;
 	color: var(--sidebar-hover-text) !important;
 	border-radius: 8px;
 }
 :host-context(.dark) ::ng-deep .fc .fc-daygrid-day:hover {
-	background: var(--sidebar-hover) !important;
+	background: transparent !important;
 	color: var(--sidebar-hover-text) !important;
 }
 

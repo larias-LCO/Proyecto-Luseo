@@ -68,59 +68,77 @@
               </div>
             </div>
 
-            <div class="entry-actions">
-
-              <!-- <app-icon-button title="Remove" (clicked)="entries.length > 1 && removeEntry(i)" [class.disabled]="entries.length <= 1">
-                <app-archive-icon [size]="16"></app-archive-icon>
-              </app-icon-button> -->
-
-              <button class="delete-button" title="Remove" (clicked)="entries.length > 1 && removeEntry(i)" [class.disabled]="entries.length <= 1">
-  <svg class="delete-svgIcon" viewBox="0 0 448 512">
+            <div class="entry-actions"> 
+              <button type="button" class="delete-button" [title]="'Remove'" (click)="entries.length > 1 && removeEntry(i)" [class.disabled]="entries.length <= 1">
+      <svg class="delete-svgIcon" viewBox="0 0 448 512">
                     <path d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"></path>
                   </svg>
-</button>
-
-
-
-
-              <app-icon-button title="Remove" (clicked)="entries.length > 1 && removeEntry(i)" [class.disabled]="entries.length <= 1">
-                <app-archive-icon [size]="25"></app-archive-icon>
-              </app-icon-button>
-
+    </button>
             </div>
-
-            <hr *ngIf="i < entries.length - 1">
+            <!-- <hr *ngIf="i < entries.length - 1"> -->
           </div>
         </div>
 
         <div class="form-controls">
-
-
-
-          <app-icon-button  (clicked)="addEntry()">
-
-            <app-mas-icon [size]="33"></app-mas-icon>
-            <!-- <app-plus-icon [size]="18"></app-plus-icon> -->
-            <span class="add" style="margin-left:8px" >Add Another</span>
-
-          <app-icon-button title="Add another" (clicked)="addEntry()">
+            <button type="button" class="icon-btn" [title]="'Add another'" (click)="addEntry()">
+              <app-mas-icon [size]="33"></app-mas-icon>
+              <span class="add"  >Add Another</span>
+            </button>
+          <!-- <app-icon-button title="Add another" (clicked)="addEntry()">
             <app-plus-icon [size]="25"></app-plus-icon>
             <span style="margin-left:8px"></span>
-
-          </app-icon-button>
-
+          </app-icon-button> -->
         </div>
       </form>
     </div>
 
     <div class="modal-footer">
 
-      <!-- <app-icon-button title="Save" (clicked)="saveAll()">
+    <!-- <app-icon-button title="Save" (clicked)="saveAll()">
 					<app-file-check-icon [size]="25"></app-file-check-icon>
 				</app-icon-button> -->
 
         <!-- From Uiverse.io by ilkhoeri --> 
          <div class="tooltip">
+        <button type="button" class="action_has has_saved" aria-label="save" type="submit" (click)="saveAll()">
+            <svg
+    aria-hidden="true"
+    xmlns="http://www.w3.org/2000/svg"
+    width="20"
+    height="20"
+    stroke-linejoin="round"
+    stroke-linecap="round"
+    stroke-width="2"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+    fill="none"
+  >
+    <path
+      d="m19,21H5c-1.1,0-2-.9-2-2V5c0-1.1.9-2,2-2h11l5,5v11c0,1.1-.9,2-2,2Z"
+      stroke-linejoin="round"
+      stroke-linecap="round"
+      data-path="box"
+    ></path>
+    <path
+      d="M7 3L7 8L15 8"
+      stroke-linejoin="round"
+      stroke-linecap="round"
+      data-path="line-top"
+    ></path>
+    <path
+      d="M17 20L17 13L7 13L7 20"
+      stroke-linejoin="round"
+      stroke-linecap="round"
+      data-path="line-bottom"
+    ></path>
+  </svg>
+            </button>
+            <span class="tooltip-text">Save Changes</span>
+            </div>
+
+
+
+         <!-- <div class="tooltip">
 <button class="action_has has_saved" aria-label="save" type="submit" (clicked)="saveAll()">
   <svg
     aria-hidden="true"
@@ -155,7 +173,7 @@
   </svg>
 </button> 
 <span class="tooltip-text">Save Changes</span>
-</div>
+</div> -->
 
 
     </div>

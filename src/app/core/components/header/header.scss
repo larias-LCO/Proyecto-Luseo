@@ -16,6 +16,10 @@ header {
   border-bottom: 1px solid #e9eef5;
   box-shadow: 0 4px 14px rgba(2,18,46,0.06);
 }
+
+.title{
+  margin-top: 10px;
+}
  
 .logo-section {
   display: flex;
@@ -342,4 +346,12 @@ header {
 .hamburger input:checked + svg .line-top-bottom {
   stroke-dasharray: 20 300;
   stroke-dashoffset: -32.42;
+}
+
+:host-context(.dark) .hamburger svg .line {
+  stroke: #ebd660;
+}
+:host-context(.dark) .title{
+  color: #97bdfd;
+
 }

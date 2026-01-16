@@ -11,6 +11,8 @@
   background: rgba(0,0,0,0.45);
   z-index: 10000;
   pointer-events: auto;
+  background: rgba(17, 24, 39, 0.55);
+  backdrop-filter: blur(4px);
 }
 
 .subtask-edit-modal {
@@ -29,8 +31,6 @@
 }
 
 .subtask-edit-modal .modal-header {
-
-   background: linear-gradient(135deg, #1e3a8a, #2563eb);
 
     background: linear-gradient(135deg, #065fd4, #0e3ea5 100%);
 
@@ -85,6 +85,14 @@
   border-color: #e6e6e6;
   font-style: italic;
   opacity: 1;
+}
+
+/* Dark-mode: ensure disabled/readonly inputs use dark background (override more specific rules) */
+:host-context(.dark) .subtask-edit-modal .form-input[disabled],
+:host-context(.dark) .subtask-edit-modal .form-input[readonly] {
+  background: #232831 !important;
+  color: #f1f5f9 !important;
+  border-color: #394050 !important;
 }
 
 .subtask-edit-modal .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -348,10 +356,12 @@
 	
 }
 
-:host-context(.dark) .form-input {
-	background: #232831;
-  border: 1px solid #394050;
-	color: #f1f5f9;
+:host-context(.dark) input.form-input,
+:host-context(.dark) textarea.form-input,
+:host-context(.dark) select.form-input {
+  background: #232831 !important;
+  border: 1px solid #394050 !important;
+  color: #f1f5f9 !important;
 }
 
 :host-context(.dark) .modal-header {

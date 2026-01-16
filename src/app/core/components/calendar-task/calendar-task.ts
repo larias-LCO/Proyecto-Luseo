@@ -12,9 +12,10 @@ import interactionPlugin from '@fullcalendar/interaction';
 
 @Component({
   selector: 'app-calendar-task',
+  standalone: true,
   imports: [FullCalendarModule],
   templateUrl: './calendar-task.html',
-  styleUrl: './calendar-task.scss'
+  styleUrls: ['./calendar-task.scss']
 })
 export class CalendarTask {
   public calendarTitle: string = '';
@@ -45,7 +46,7 @@ export class CalendarTask {
       const section = this.createTypeSection('', true, 'my-section', calendarEl);
       this.sectionContainer.nativeElement.appendChild(section);
     }
-    console.log("Calendar API:", this.calendar?.getApi());
+    // console.log("Calendar API:", this.calendar?.getApi());
   }
 
 
@@ -133,11 +134,13 @@ export class CalendarTask {
   };
 
   onDatesSet(arg: any) {
-    this.calendarTitle = arg.view.title;
-    this.calendarViewType = arg.view.type;
-    // Soluciona ExpressionChangedAfterItHasBeenCheckedError
-    Promise.resolve(() => this.cdr.detectChanges());
-  this.addCompactClassToDays();
+    // Update title/view asynchronously to avoid ExpressionChangedAfterItHasBeenCheckedError
+    Promise.resolve().then(() => {
+      this.calendarTitle = arg.view.title;
+      this.calendarViewType = arg.view.type;
+      try { this.cdr.detectChanges(); } catch (e) { /* ignore */ }
+      this.addCompactClassToDays();
+    });
   }
 
   // Esta función agrega la clase .more-than-3 a los días con más de 3 tareas
@@ -167,7 +170,7 @@ setCalendarDate(date: string) {
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['tasks']) {
-      console.log('[DEBUG][CalendarTask] Tareas recibidas en @Input tasks:', this.tasks);
+      // console.log('[DEBUG][CalendarTask] Tareas recibidas en @Input tasks:', this.tasks);
       this.calendarOptions = {
         ...this.calendarOptions,
         events: (this.tasks || []).map(task => {
@@ -191,6 +194,75 @@ setCalendarDate(date: string) {
           };
         })
       };
+      // Además de reemplazar options, forzar actualización del calendario si ya existe la instancia
+      setTimeout(() => {
+        try {
+          if (this.calendar && this.calendar.getApi) {
+            const api = this.calendar.getApi();
+            api.removeAllEvents();
+            (this.tasks || []).forEach(task => {
+              let dateStr = task.issuedDate || task.createdDate;
+              if (!dateStr) dateStr = new Date().toISOString().slice(0,10);
+              if (dateStr && /^\d{4}-\d{2}-\d{2}$/.test(dateStr)) dateStr = dateStr + 'T00:00:00';
+              api.addEvent({ title: task.name, start: dateStr, allDay: true, extendedProps: { task } });
+            });
+            // Comprobar eventos en la API y forzar render
+            try {
+              const apiEvents = api.getEvents();
+              // console.log('[DEBUG][CalendarTask][API] events count via API.getEvents():', apiEvents.length, 'view:', api.view?.type);
+              try {
+                // console.log('[DEBUG][CalendarTask][API] events detail:', apiEvents.map((ev: any) => ({ id: ev.id, title: ev.title, start: ev.startStr || ev.start?.toISOString?.(), allDay: ev.allDay })));
+              } catch (e) { console.warn('[DEBUG][CalendarTask][API] could not map events', e); }
+              try {
+                // console.log('[DEBUG][CalendarTask][API] view range:', { activeStart: api.view?.activeStart?.toISOString?.(), activeEnd: api.view?.activeEnd?.toISOString?.(), type: api.view?.type });
+              } catch (e) { /* ignore */ }
+              // Si hay tareas y la vista no incluye la fecha de la primera tarea, mover la vista a esa semana
+              try {
+                if ((this.tasks || []).length > 0) {
+                  const first = this.tasks[0];
+                  const d = first.issuedDate || first.createdDate || first.date || null;
+                  if (d) {
+                    const dateToShow = (d.indexOf && d.indexOf('T') === -1) ? d.slice(0,10) : (d.split ? d.split('T')[0] : null);
+                    if (dateToShow) {
+                      // Cambiar vista al lunes de la semana de la fecha
+                      try {
+                        api.changeView('dayGridWeek', dateToShow);
+                        console.log('[DEBUG][CalendarTask] Changed view to week of', dateToShow);
+                      } catch (e) { console.warn('[DEBUG][CalendarTask] could not change view to date', dateToShow, e); }
+                    }
+                  }
+                }
+              } catch (e) { /* ignore */ }
+              // Forzar render y ajuste de tamaño
+              try { api.render(); } catch (e) { /* ignore */ }
+              try { api.updateSize(); } catch (e) { /* ignore */ }
+              setTimeout(() => {
+                try {
+                  const counts = {
+                    fc_event: document.querySelectorAll('.fc-event').length,
+                    fc_daygrid_event: document.querySelectorAll('.fc-daygrid-event').length,
+                    fc_daygrid_event_harness: document.querySelectorAll('.fc-daygrid-event-harness').length,
+                    gt_card: document.querySelectorAll('.gt-card').length
+                  };
+                  // console.log('[DEBUG][CalendarTask][DOM] after api.addEvent counts:', counts);
+                } catch (err) { console.warn('[DEBUG][CalendarTask][DOM] error counting after render', err); }
+              }, 80);
+            } catch (err) {
+              console.warn('[DEBUG][CalendarTask][API] error inspecting api events', err);
+            }
+            // Log DOM counts para depuración: eventos y tarjetas
+            setTimeout(() => {
+              try {
+                const eventEls = document.querySelectorAll('.fc-event');
+                const cardEls = document.querySelectorAll('.gt-card');
+                // console.log('[DEBUG][CalendarTask][DOM] fc-event elements:', eventEls.length, 'gt-card elements:', cardEls.length);
+              } catch (err) { console.warn('[DEBUG][CalendarTask][DOM] error counting elements', err); }
+            }, 50);
+          }
+        } catch (e) {
+          console.warn('[CalendarTask] No se pudo actualizar eventos vía API:', e);
+        }
+      }, 0);
     }
   }
 

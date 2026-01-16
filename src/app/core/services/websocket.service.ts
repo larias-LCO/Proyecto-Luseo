@@ -52,10 +52,9 @@ export class WebsocketService implements OnDestroy {
       this.connectionAttempts++;
       console.log(`🔄 Intentando conectar WebSocket (${this.connectionAttempts}/${this.maxAttempts})`);
 
-<<<<<<< HEAD
+
       // Actualizar headers antes de cada intento de conexión
       client.connectHeaders = this.getAuthHeaders();
-=======
       // Intentar enviar credenciales basadas en cookie en el CONNECT frame.
       // Muchos backends aceptan headers en el STOMP CONNECT; como mínimo
       // incluimos JSESSIONID/SESSION si existe, y como fallback `document.cookie`.
@@ -70,7 +69,6 @@ export class WebsocketService implements OnDestroy {
         // no crítico si falla la lectura de cookies
         console.warn('⚠️ No fue posible adjuntar cookies al CONNECT WS', e);
       }
->>>>>>> 88104b61abbe571f0d148730454a4211888ea173
 
       if (this.connectionAttempts >= this.maxAttempts) {
         console.error('❌ Límite de intentos alcanzado.');
@@ -102,7 +100,7 @@ export class WebsocketService implements OnDestroy {
     this.client.activate();
   }
 
-<<<<<<< HEAD
+
   private getAuthHeaders(): Record<string, string> {
     const token = this.authService.getState().token;
     if (token) {
@@ -111,7 +109,7 @@ export class WebsocketService implements OnDestroy {
       };
     }
     return {};
-=======
+  }
   // Leer cookie por nombre (browser-side)
   private getCookie(name: string): string | null {
     try {
@@ -120,7 +118,6 @@ export class WebsocketService implements OnDestroy {
     } catch (e) {
       return null;
     }
->>>>>>> 88104b61abbe571f0d148730454a4211888ea173
   }
 
   private getWebSocketUrl(): string {

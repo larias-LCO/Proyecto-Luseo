@@ -103,26 +103,6 @@
 }
 
 /* ============ HEADER ============ */
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 20px;
-    font-weight: 600;
-    margin-bottom: 15px;
-      position: relative;
-  overflow: visible;
-  z-index: 2525;
-}
-
-.close-button{
-  color: red;
-  cursor: pointer;
-  position: relative;
-}
-
-
-
 
 .close {
   display: flex;
@@ -171,13 +151,13 @@
 }
 
 .modal-header {
-  background: linear-gradient(135deg, #1e3a8a, #2563eb);
+background: linear-gradient(135deg, #065fd4, #0e3ea5 100%);
   color: #fff;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 22px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 16px 20px;
+   border-bottom: 1px solid linear-gradient(135deg, #065fd4, #0e3ea5 100%);
   border-top-left-radius: 16px; 
   border-top-right-radius: 16px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);

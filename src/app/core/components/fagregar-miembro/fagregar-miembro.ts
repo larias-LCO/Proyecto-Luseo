@@ -25,7 +25,7 @@ export class FagregarMiembroComponent {
   private auth = inject(AuthService);
 
   constructor(private fb: FormBuilder) {
-    console.log('🟢 FagregarMiembroComponent constructor ejecutado');
+    // console.log('🟢 FagregarMiembroComponent constructor ejecutado');
     this.form = this.fb.group({
       nombre: ['', Validators.required],
       departamento: ['', Validators.required],
@@ -37,7 +37,7 @@ export class FagregarMiembroComponent {
       correo: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]]
     });
-    console.log('🟢 Formulario inicializado');
+    // console.log('🟢 Formulario inicializado');
   }
 
   get filteredAllowedRoles(): string[] {

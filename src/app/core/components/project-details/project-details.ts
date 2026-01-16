@@ -13,6 +13,7 @@ import { EditProjectComponent } from '../edit-project/edit-project';
 import { ConfirmModalComponent } from '../confirm-modal/confirm-modal';
 import { XIconComponent } from '../animated-icons/x-icon.component';
 import { DetailsIconComponent } from '../animated-icons/details-icon.component';
+import { SubmenuService } from '../../services/submenu.service';
 
 
 @Component({
@@ -74,7 +75,8 @@ private isAllowedTeamEmployee(employee: Employee): boolean {
     private dialog: MatDialog,
     public enumsService: EnumsService,
     public projectService: ProjectService,
-    private authService: AuthService
+    private authService: AuthService,
+    private submenuService: SubmenuService
   ) {}
 
   // --- Métodos importados de create-project ---
@@ -465,10 +467,10 @@ employeeOptionLabel(emp: any): string {
   }
 
 // --- NOTES Y ACCIONES --- //
-
-isAdminOrOwner(): boolean {
-  return this.canEdit;
-}
+// ---- Traer los roles para autenticar (UI gating) ----
+  get isOwner(): boolean { try { return this.authService.isOwner(); } catch { return false; } }
+  get isAdmin(): boolean { try { return this.authService.isAdmin(); } catch { return false; } }
+  get isAdminOrOwner(): boolean { return this.isAdmin || this.isOwner; }
 
 // Actualiza la propiedad cacheada `canEdit` a partir de `roles` o del estado de AuthService
 private updateCanEdit(): void {
@@ -513,6 +515,8 @@ private updateCanEdit(): void {
   openEditModal() {
     // Cerrar el modal de detalles primero
     this.closeModal();
+    // Also ensure the global submenu is closed when opening the edit dialog
+    try { this.submenuService.close(); } catch (e) {}
     
     // Open the edit dialog
     const openDialog = () => {
