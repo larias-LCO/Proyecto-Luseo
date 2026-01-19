@@ -4,19 +4,21 @@
 	display: flex;
 	flex-direction: column;
 	gap: 14px;
-	margin-top: 10px;
-	width: 1635px;
-	margin-left: 5px;
-	
+	margin: 0; /* no outer margin */
+	/* Rely on global `body` for header/sidebar spacing. Do not add local padding. */
+	padding: 0 !important;
+	margin-left: 0 !important;
+	width: 100% !important;
+	min-height: 100vh; /* ensure page fills viewport vertically */
+	box-sizing: border-box;
+	overflow-x: hidden; /* avoid accidental horizontal scroll */
 }
 
 .report-hours h1{
-	  font-size: 38px;
-  font-weight: 700;
-  margin-bottom: 20px;
-color: #1e3a8a;
-margin-top: 20px;
-margin-left: 20px;
+	font-size: 38px;
+	font-weight: 700;
+	margin: 20px 0 20px 0; /* remove left margin so heading is full-bleed */
+	color: #1e3a8a;
 }
 
 
@@ -90,8 +92,19 @@ margin-left: 20px;
 
 @media (max-width: 720px) {
 	.report-hours {
-		margin-left: 0;
+		margin: 0;
 		width: 100%;
+		padding: 0; /* keep full-bleed on small screens too */
+	}
+}
+
+/* Allow a slightly larger max-width on very large displays so layout
+	 doesn't look cramped while still filling the viewport horizontally */
+@media (min-width: 1920px) {
+	.report-hours {
+		/* Let global `body` manage header/sidebar offsets; avoid adding page-level padding */
+		width: 100% !important;
+		padding-right: 0 !important;
 	}
 }
 
@@ -403,12 +416,11 @@ margin-left: 20px;
 }
 
 .texto-descriptivo{
-   font-size: 15px;
-  color: #494949;
-  font-weight: 600;
+	 font-size: 15px;
+	color: #494949;
+	font-weight: 600;
 font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  margin-bottom: 20px;
-  margin-left: 20px;
+	margin: 0 0 20px 0; /* remove left margin to keep full-bleed */
 }
 
 .btn-internal-task{
