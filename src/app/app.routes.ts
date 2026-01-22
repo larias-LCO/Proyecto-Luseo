@@ -5,6 +5,7 @@ import { AuthGuard as ReportAuthGuard } from './pages/report-hours/auth/guards/a
 import { ProjectsPage } from './pages/projects/projects';
 import { TasksPage } from './pages/task/task';
 import { ReportHours } from './pages/report-hours/report-hours';
+import { Schedule } from './pages/schedule/schedule';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'report-hours', pathMatch: 'full' },
@@ -13,5 +14,6 @@ export const routes: Routes = [
   { path: 'proyectos', component: ProjectsPage, canActivate: [ReportAuthGuard] },
   { path: 'tasks', component: TasksPage, canActivate: [ReportAuthGuard] },
   { path: 'report-hours', component: ReportHours, canActivate: [ReportAuthGuard] },
+  { path: 'schedule', component: Schedule, canActivate: [ReportAuthGuard] },
   { path: '**', redirectTo: 'login' }
 ];

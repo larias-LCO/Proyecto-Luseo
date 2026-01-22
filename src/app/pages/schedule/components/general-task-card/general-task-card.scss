@@ -1,0 +1,280 @@
+.gt-card {
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.3s ease;
+  cursor: pointer;
+  height: 100%;
+  width: 100%;
+  background: none !important;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+  }
+
+  // Borders by project type
+  &--commercial {
+    border-top: 4px solid #7DD3FC;
+  }
+
+  &--residential {
+    border-top: 4px solid #6EE7B7;
+  }
+
+  // Opacity for completed
+  &--completed {
+    opacity: 0.45;
+  }
+
+  // Display modes
+  &--compact {
+    padding: 4px;
+    font-size: 12px;
+  }
+
+  &--expanded {
+    padding: 8px;
+  }
+}
+
+// Badge de tipo de proyecto
+.gt-card__project-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  font-size: 14px;
+  padding: 3px 5px;
+  border-radius: 6px;
+  font-weight: 800;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  z-index: 1;
+
+  &--commercial {
+    background: #7DD3FC !important;
+    color: #fff;
+  }
+
+  &--residential {
+    background: #6EE7B7 !important;
+    color: #fff;
+  }
+
+  .gt-card--expanded & {
+    top: 3px;
+    right: 3px;
+    font-size: 16px;
+    padding: 4px 7px;
+    border-radius: 8px;
+  }
+}
+
+// Body
+.gt-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: transparent;
+
+  .gt-card--expanded & {
+    gap: 3px;
+  }
+}
+
+// Sección de proyecto
+.gt-card__project {
+  display: flex;
+  gap: 2px;
+  align-items: center;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+
+  .gt-card--expanded & {
+    gap: 5px;
+    padding: 2px 4px;
+    border-radius: 6px;
+  }
+}
+
+.gt-card__project-icon {
+  font-size: 12px;
+  flex-shrink: 0;
+  line-height: 1;
+
+  .gt-card--expanded & {
+    font-size: 14px;
+  }
+}
+
+.gt-card__project-info {
+  flex: 1;
+  margin: 0;
+  padding: 0;
+  padding-right: 30px;
+  background: transparent;
+
+  .gt-card--expanded & {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding-right: 40px;
+  }
+}
+
+.gt-card__project-name {
+  font-weight: 700;
+  font-size: 11px;
+  line-height: 1;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+  margin: 0;
+  padding: 0;
+  background: transparent;
+
+  .gt-card--expanded & {
+    font-weight: 800;
+    font-size: 12px;
+  }
+}
+
+.gt-card__phase-name {
+  font-size: 9px;
+  opacity: 0.85;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+  background: transparent;
+}
+
+// Contenido principal
+.gt-card__content {
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: transparent;
+
+  .gt-card--expanded & {
+    gap: 3px;
+    padding: 2px 4px;
+    border-radius: 6px;
+  }
+}
+
+// Nombre de tarea
+.gt-card__task-name {
+  display: flex;
+  gap: 2px;
+  align-items: center;
+  font-size: 10px;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+
+  .gt-card--expanded & {
+    gap: 4px;
+    font-weight: 700;
+  }
+}
+
+.gt-card__task-icon {
+  line-height: 1;
+}
+
+.gt-card__task-title {
+  font-weight: 700;
+  flex: 1;
+  line-height: 1;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+  margin: 0;
+  padding: 0;
+  padding-right: 30px;
+  background: transparent;
+
+  .gt-card--expanded & {
+    font-size: 12px;
+    line-height: 1.2;
+    padding-right: 40px;
+  }
+}
+
+// Categoría
+.gt-card__category {
+  display: flex;
+  gap: 4px;
+  align-items: flex-start;
+  font-size: 10px;
+  opacity: 0.9;
+  background: transparent;
+
+  div {
+    flex: 1;
+    line-height: 1.2;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+    background: transparent;
+  }
+}
+
+// PM y Creator
+.gt-card__pm,
+.gt-card__creator {
+  font-size: 9px;
+  padding: 0;
+  margin: 0;
+  font-weight: 600;
+  line-height: 1;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+  background: transparent;
+
+  .gt-card--expanded & {
+    padding: 2px 5px;
+    border-radius: 4px;
+  }
+}
+
+// Badges
+.gt-card__badges {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 2px;
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+
+  .gt-card--expanded & {
+    gap: 3px;
+    margin-top: 1px;
+  }
+}
+
+.gt-card__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+  padding: 0 3px;
+  border-radius: 999px;
+  font-size: 8px;
+  font-weight: 700;
+  line-height: 1.2;
+
+  .gt-card--expanded & {
+    gap: 3px;
+    padding: 2px 6px;
+    font-size: 10px;
+  }
+
+  &--status {
+    border: 1px solid;
+  }
+
+  &--personal {
+    background: transparent;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+    
+    .gt-card--expanded & {
+      padding: 2px 5px;
+      border-radius: 6px;
+    }
+  }
+}

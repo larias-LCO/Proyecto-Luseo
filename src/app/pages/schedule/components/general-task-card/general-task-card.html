@@ -1,0 +1,66 @@
+<div class="gt-card" [class.gt-card--compact]="compact" [class.gt-card--expanded]="!compact" 
+     [class.gt-card--completed]="isCompleted"
+     [class.gt-card--commercial]="task.projectType === 'COMMERCIAL'"
+     [class.gt-card--residential]="task.projectType === 'RESIDENTIAL'">
+  
+  <!-- Badge de tipo de proyecto -->
+  <span *ngIf="projectTypeIcon" class="gt-card__project-badge" 
+        [class.gt-card__project-badge--commercial]="task.projectType === 'COMMERCIAL'"
+        [class.gt-card__project-badge--residential]="task.projectType === 'RESIDENTIAL'">
+    {{ projectTypeIcon }}
+  </span>
+
+  <div class="gt-card__body">
+    <!-- Info del proyecto -->
+    <div *ngIf="task.projectCode || task.projectName" class="gt-card__project">
+      <span class="gt-card__project-icon">📦</span>
+      <div class="gt-card__project-info">
+        <div class="gt-card__project-name">
+          {{ task.projectCode || 'No Project' }}
+          <ng-container *ngIf="task.projectName"> - {{ task.projectName }}</ng-container>
+        </div>
+        <div *ngIf="!compact && task.projectPhaseName" class="gt-card__phase-name">
+          {{ task.projectPhaseName }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Contenido principal -->
+    <div class="gt-card__content">
+      <!-- Nombre de la tarea -->
+      <div class="gt-card__task-name">
+        <span class="gt-card__task-icon">📝</span>
+        <div class="gt-card__task-title">{{ task.name || '' }}</div>
+      </div>
+
+      <!-- Categoría -->
+      <div class="gt-card__category">
+        <span>📂</span>
+        <div>{{ task.taskCategoryName || '-' }}</div>
+      </div>
+
+      <!-- Project Manager -->
+      <div *ngIf="pmName" class="gt-card__pm">
+        👤 PM: {{ pmName }}
+      </div>
+
+      <!-- Creator (solo en modo expandido) -->
+      <div *ngIf="!compact && creatorName" class="gt-card__creator">
+        ✍️ Created by: {{ creatorName }}
+      </div>
+
+      <!-- Badges -->
+      <div class="gt-card__badges">
+        <span *ngIf="!compact && task.personalTask" class="gt-card__badge gt-card__badge--personal">
+          👤 Personal
+        </span>
+        <span class="gt-card__badge gt-card__badge--status" 
+              [style.background]="statusConfig.bg" 
+              [style.color]="statusConfig.color"
+              [style.borderColor]="statusConfig.color">
+          {{ statusConfig.icon }} {{ statusConfig.text }}
+        </span>
+      </div>
+    </div>
+  </div>
+</div>

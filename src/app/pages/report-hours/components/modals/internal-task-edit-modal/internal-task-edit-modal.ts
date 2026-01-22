@@ -6,7 +6,6 @@ import { NotificationService } from '../../../../../core/services/notification.s
 import { firstValueFrom } from 'rxjs';
 import { IconButtonComponent } from '../../../../../core/components/animated-icons/icon-button.component';
 import { ArchiveIconComponent } from '../../../../../core/components/animated-icons/archive-icon.component';
-import { FileCheckIconComponent } from '../../../../../core/components/animated-icons/file-check-icon.component';
 import { XIconComponent } from '../../../../../core/components/animated-icons/x-icon.component';
 import { FilePenIconComponent } from '../../../../../core/components/animated-icons/file-pen.component';
 import { timeToDecimal, decimalToTime } from '../../../utils/time-conversion.utils';
@@ -15,7 +14,7 @@ import { hoursMinutesToDecimal, decimalToHoursMinutes } from '../../../utils/tim
 @Component({
   selector: 'app-internal-task-edit-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, IconButtonComponent, ArchiveIconComponent, FileCheckIconComponent, XIconComponent, FilePenIconComponent],
+  imports: [CommonModule, ReactiveFormsModule, IconButtonComponent, ArchiveIconComponent, XIconComponent, FilePenIconComponent],
   templateUrl: './internal-task-edit-modal.html',
   styleUrls: ['./internal-task-edit-modal.scss']
 })

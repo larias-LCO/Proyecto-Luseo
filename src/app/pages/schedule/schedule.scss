@@ -1,0 +1,240 @@
+.schedule-page {
+  padding: 2rem;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+
+  // Loading container
+  .loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    
+    p {
+      color: #6c757d;
+      font-size: 1.1rem;
+    }
+  }
+
+  // Page header
+  .page-header {
+    .page-title {
+      font-size: 2rem;
+      font-weight: 600;
+      color: #333;
+      margin: 0;
+
+      i {
+        color: #667eea;
+        margin-right: 0.5rem;
+      }
+    }
+
+    .btn {
+      font-weight: 500;
+      transition: all 0.2s;
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+      }
+    }
+  }
+
+  // Statistics section
+  .statistics-section {
+    .stat-card {
+      display: flex;
+      align-items: center;
+      padding: 1.5rem;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 12px;
+      color: white;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+      transition: all 0.3s;
+      height: 100%;
+
+      &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+      }
+
+      i {
+        font-size: 2.5rem;
+        margin-right: 1.25rem;
+        opacity: 0.95;
+      }
+
+      .stat-content {
+        display: flex;
+        flex-direction: column;
+
+        .stat-value {
+          font-size: 2rem;
+          font-weight: bold;
+          line-height: 1.2;
+          margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+          font-size: 0.9rem;
+          opacity: 0.95;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+      }
+
+      &.stat-card-success {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+      }
+
+      &.stat-card-info {
+        background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+      }
+
+      &.stat-card-warning {
+        background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+      }
+    }
+  }
+
+  // Filters section
+  .filters-section {
+    .card {
+      border: none;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+      .card-title {
+        color: #667eea;
+        font-weight: 600;
+        font-size: 1.25rem;
+
+        i {
+          margin-right: 0.5rem;
+        }
+      }
+
+      .form-label {
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 0.5rem;
+      }
+
+      .form-select,
+      .form-control {
+        border-radius: 8px;
+        border: 1px solid #dee2e6;
+        transition: all 0.2s;
+
+        &:focus {
+          border-color: #667eea;
+          box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+      }
+
+      .form-check-input {
+        cursor: pointer;
+        width: 3rem;
+        height: 1.5rem;
+
+        &:checked {
+          background-color: #667eea;
+          border-color: #667eea;
+        }
+
+        &:focus {
+          border-color: #667eea;
+          box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+      }
+
+      .form-check-label {
+        cursor: pointer;
+        margin-left: 0.5rem;
+      }
+
+      .selected-filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+
+        .badge {
+          padding: 0.5rem 0.75rem;
+          font-size: 0.85rem;
+          font-weight: 500;
+          border-radius: 6px;
+          display: flex;
+          align-items: center;
+          gap: 0.25rem;
+
+          i {
+            cursor: pointer;
+            transition: opacity 0.2s;
+
+            &:hover {
+              opacity: 0.7;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Calendar section
+  .calendar-section {
+    margin-top: 2rem;
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .schedule-page {
+    padding: 1rem;
+
+    .page-header {
+      .page-title {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+      }
+
+      .col-md-6.text-end {
+        text-align: left !important;
+
+        .btn {
+          display: block;
+          width: 100%;
+          margin-bottom: 0.5rem;
+          margin-right: 0 !important;
+        }
+      }
+    }
+
+    .statistics-section {
+      .stat-card {
+        margin-bottom: 1rem;
+
+        i {
+          font-size: 2rem;
+        }
+
+        .stat-content {
+          .stat-value {
+            font-size: 1.5rem;
+          }
+
+          .stat-label {
+            font-size: 0.8rem;
+          }
+        }
+      }
+    }
+
+    .filters-section {
+      .col-md-4 {
+        margin-bottom: 1rem;
+      }
+    }
+  }
+}

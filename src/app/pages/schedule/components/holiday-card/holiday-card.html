@@ -1,0 +1,13 @@
+<div class="holiday-card" 
+     [class.holiday-card--colombia]="isColombia"
+     [class.holiday-card--usa]="isUSA">
+  
+  <div class="holiday-card__header">
+    <span class="holiday-card__flag">{{ flag }}</span>
+    <span class="holiday-card__country">{{ displayCountryName }}</span>
+  </div>
+
+  <div class="holiday-card__title">{{ displayName }}</div>
+
+  <div class="holiday-card__note">🚫 No Working Day</div>
+</div>
