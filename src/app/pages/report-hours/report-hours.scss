@@ -4,7 +4,16 @@
 	display: flex;
 	flex-direction: column;
 	gap: 14px;
-<<<<<<< HEAD
+
+
+	margin-top: 10px;
+	width: 100%;
+	max-width: 100%;
+	margin-left: 0;
+	box-sizing: border-box;
+	padding-right: 12px;
+
+
 	margin: 0; /* no outer margin */
 	/* Rely on global `body` for header/sidebar spacing. Do not add local padding. */
 	padding: 0 !important;
@@ -13,14 +22,13 @@
 	min-height: 100vh; /* ensure page fills viewport vertically */
 	box-sizing: border-box;
 	overflow-x: hidden; /* avoid accidental horizontal scroll */
-=======
+
 	margin-top: 10px;
 	width: 100%;
 	max-width: 100%;
 	margin-left: 0;
 	box-sizing: border-box;
 	padding-right: 12px;
->>>>>>> 34660b6 (new module-estimated-hours)
 }
 
 .report-hours h1{
