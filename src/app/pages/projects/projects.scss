@@ -1,12 +1,21 @@
+// :root {
+//   --filters-sidebar-width: 300px; /* AJUSTA AL REAL */
+// }
 
-
-    .project-container {
+.project-container {
   font-family: var(--font-primary);
-  /* Espacio para el panel de filtros (290px) a la izquierda */
-  margin-top: -10px;
-  margin-left: 45px;
-  padding: 24px;
+  padding: 24px ;
+  width: 100%;
+
+/* se eliminó el contorno de depuración para evitar interrupciones visuales en pantallas grandes */
+
+  // margin-left: var(--filters-sidebar-width);
+  // width: calc(100% - var(--filters-sidebar-width));
+  // box-sizing: border-box;
 }
+
+
+
 
 .project-container h1 {
   font-size: 38px;
@@ -15,166 +24,263 @@
    color: #001cb9;
 }
 
-/* Buscar por nombre */
-.filter-search label,
-.filters-row label {
-  display: block;
-  font-size: 14px;
-  font-weight: 600;
-  color: #444;
-  margin-bottom: 6px;
-  margin-top: 30px;
-}
- 
-.filter-search input {
-  width: 50%;
-  padding: 10px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  font-size: 14px;
-}
-
-.muted {
-  font-size: 12px;
-  color: #777;
-  margin-top: 3px;
-}
- 
-/* Estilo de enfoque específico para la entrada de búsqueda */
-.filter-search input:focus,
-.filter-search input:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 4px rgba(0, 98, 255, 0.08);
-}
-
-
-  /* ====== FILTROS ====== */
-.filters-container {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(150px, 1fr)); /* más estrecho */
-  gap: 10px 16px;
-  align-items: end;
-  margin-right: 40px;       /* mueve los filtros a la derecha */
-  margin-top: 8px;
-  margin-bottom: 30px;     /* espacio antes de la tabla */
-}
-
-/* Todos los filtros iguales */
-.filter-item {
+/* Compensar el padding izquierdo global del cuerpo (usado para la barra lateral de la aplicación) para que el diseño de esta página
+alinee la barra lateral y el contenido sin espacio adicional a la izquierda. La variable --sidebar-width
+está definida globalmente en src/styles.scss. En pantallas pequeñas se convierte en 0. */
+.projects-layout {
+  position: relative;
+  box-sizing: border-box;
   display: flex;
-  flex-direction: column;
+}
+
+/* Colocar explícitamente los hijos del componente en columnas de la cuadrícula y proporcionar una alternativa receptiva a un diseño apilado */
+.projects-layout > app-menu-filters-projects { flex: 0 0 320px; }
+.projects-layout > .project-container { flex: 1 1 auto; }
+
+// @media (max-width: 992px) {
+//   .projects-layout {
+//     grid-template-columns: 1fr;
+//     grid-auto-rows: auto;
+//   }
+
+//   .projects-layout > app-menu-filters-projects { grid-column: 1; }
+//   .projects-layout > .project-container { grid-column: 1; }
+// }
+
+
+// /* Buscar por nombre */
+// .filter-search label,
+// .filters-row label {
+//   display: block;
+//   font-size: 14px;
+//   font-weight: 600;
+//   color: #444;
+//   margin-bottom: 6px;
+//   margin-top: 30px;
+// }
+ 
+// .filter-search input {
+//   width: 100%;
+//   max-width: 520px;
+//   padding: 10px;
+//   border: 1px solid #d1d5db;
+//   border-radius: 6px;
+//   font-size: 14px;
+// }
+
+// .muted {
+//   font-size: 12px;
+//   color: #777;
+//   margin-top: 3px;
+// }
+ 
+// /* Estilo de enfoque específico para la entrada de búsqueda */
+// .filter-search input:focus,
+// .filter-search input:focus-visible {
+//   outline: none;
+//   box-shadow: 0 0 0 4px rgba(0, 98, 255, 0.08);
+// }
+
+
+//   /* ====== FILTROS ====== */
+//   .project-container .filters-container {
+//   display: grid;
+//   grid-template-columns: repeat(5, minmax(150px, 1fr)); /* más estrecho */
+//   gap: 10px 16px;
+//   align-items: end;
+//   margin-right: 40px;       /* mueve los filtros a la derecha */
+//   margin-top: 8px;
+//   margin-bottom: 30px;     /* espacio antes de la tabla */
+// }
+
+// /* Todos los filtros iguales */
+// .filter-item {
+//   display: flex;
+//   flex-direction: column;
 
 
 
 
-      label {
-        font-weight: 500;
-        font-size: 0.9rem;
-        margin-bottom: 4px;
-        color: #333;
-      }
+//       label {
+//         font-weight: 500;
+//         font-size: 0.9rem;
+//         margin-bottom: 4px;
+//         color: #333;
+//       }
 
-      select,
-      input {
-        padding: 8px 10px;
-        width: 230px;
-        height: 36px;
-        border: 1px solid rgba(11,42,91,0.08);
-        border-radius: 10px;
-        font-size: 0.95rem;
-        background: white;
-        box-shadow: inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -6px 12px rgba(11,42,91,0.02);
-          transition: box-shadow 0.2s ease-in-out, border-color 0.2s ease-in-out, background-color 0.2s ease-in-out;
+//       select,
+//       input {
+//         padding: 8px 10px;
+//         width: 100%;
+//         max-width: 320px;
+//         height: 36px;
+//         border: 1px solid rgba(11,42,91,0.08);
+//         border-radius: 10px;
+//         font-size: 0.95rem;
+//         background: white;
+//         box-shadow: inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -6px 12px rgba(11,42,91,0.02);
+//           transition: box-shadow 0.2s ease-in-out, border-color 0.2s ease-in-out, background-color 0.2s ease-in-out;
 
-      }
+//       }
 
-      /* Focus/active state for filter controls: stronger ring and subtle inner shadow */
-      select:focus,
-      input:focus,
-      select:focus-visible,
-      input:focus-visible {
-        outline: none;
+//       /* Focus/active state for filter controls: stronger ring and subtle inner shadow */
+//       select:focus,
+//       input:focus,
+//       select:focus-visible,
+//       input:focus-visible {
+//         outline: none;
       
-        box-shadow: 0 0 0 4px rgba(10,88,202,0.08), inset 0 1px 6px rgba(11,42,91,0.06);
-      }
-    }
+//         box-shadow: 0 0 0 4px rgba(10,88,202,0.08), inset 0 1px 6px rgba(11,42,91,0.06);
+//       }
+//     }
     
 
 
-    /* Espaciador invisible si se requiere completar filas */
-    .empty {
-      visibility: hidden;
-    }
+//     /* Espaciador invisible si se requiere completar filas */
+//     .empty {
+//       visibility: hidden;
+//     }
 
-    /* Botones Search y Clear alineados al final */
-    .field {
-      display: flex;
-      flex-direction: column;
+//     /* Botones Search y Clear alineados al final */
+//     .field {
+//       display: flex;
+//       flex-direction: column;
 
-      // button {
-      //   padding: 8px 12px;
-      //   border: none;
-      //   border-radius: 6px;
-      //   font-size: 0.9rem;
-      //   cursor: pointer;
-      // }
+//       // button {
+//       //   padding: 8px 12px;
+//       //   border: none;
+//       //   border-radius: 6px;
+//       //   font-size: 0.9rem;
+//       //   cursor: pointer;
+//       // }
 
-      .btn-secondary {
-        background-color: #007bff;
-        color: white;
-      }
+//       .btn-secondary {
+//         background-color: #007bff;
+//         color: white;
+//       }
 
-      .btn { background-color: #e0e0e0; }
-    }
+//       .btn { background-color: #e0e0e0; }
+//     }
 
-    /* Clear button aligned to the right spanning full row */
-    .field.clear-action {
-      grid-column: 1 / -1;
-      justify-self: end;
-      align-self: end;
-      margin-top: 4px;
+//     /* Clear button aligned to the right spanning full row */
+//     .field.clear-action {
+//       grid-column: 1 / -1;
+//       justify-self: end;
+//       align-self: end;
+//       margin-top: 4px;
       
-      .btn {
-        background: #ffffff; /* outline style */
-        color: var(--primary);
-        border: 1px solid var(--primary);
-        border-radius: 6px;
-        padding: 6px 8px; /* igual que select */
-        line-height: 1.2;
-        min-height: 34px; /* altura similar a selects en la mayoría de navegadores */
-        box-shadow: none;
-        font-weight: 600;
-        transition: background-color .15s ease, border-color .15s ease, color .15s ease;
-      }
+//       .btn {
+//         background: #ffffff; /* outline style */
+//         color: var(--primary);
+//         border: 1px solid var(--primary);
+//         border-radius: 6px;
+//         padding: 6px 8px; /* igual que select */
+//         line-height: 1.2;
+//         min-height: 34px; /* altura similar a selects en la mayoría de navegadores */
+//         box-shadow: none;
+//         font-weight: 600;
+//         transition: background-color .15s ease, border-color .15s ease, color .15s ease;
+//       }
 
-      .btn:hover { 
-        background: var(--primary); 
-        color: #ffffff;
-        border-color: var(--primary-700); 
-      }
+//       .btn:hover { 
+//         background: var(--primary); 
+//         color: #ffffff;
+//         border-color: var(--primary-700); 
+//       }
 
-      .btn:focus-visible {
-        outline: 2px solid rgba(10,88,202,.35);
-        outline-offset: 2px;
-      }
-    }
+//       .btn:focus-visible {
+//         outline: 2px solid rgba(10,88,202,.35);
+//         outline-offset: 2px;
+//       }
+//     }
 
-  /* Los botones se alinean al nivel de los filtros */
+//   /* Los botones se alinean al nivel de los filtros */
 
  
   /* Responsivo: En pantallas pequeñas se apilan */
-  @media (max-width: 992px) {
-    .filters-container {
-      grid-template-columns: repeat(3, 1fr);
-    }
-    .filters-actions { grid-column: 1 / -1; justify-content: flex-end; margin-top: 6px; }
-  }
+  // @media (max-width: 992px) {
+  //   .project-container .filters-container {
+  //     grid-template-columns: repeat(3, 1fr);
+  //   }
+  //   .filters-actions { grid-column: 1 / -1; justify-content: flex-end; margin-top: 6px; }
+  // }
 
-  @media (max-width: 600px) {
-    .filters-container {
-      grid-template-columns: 1fr;
-    }
-  }
+  // @media (max-width: 600px) {
+  //   .project-container .filters-container {
+  //     grid-template-columns: 1fr;
+  //   }
+  // }
+
+/* ====== LARGE / DESKTOP ENHANCEMENTS ====== */
+/* Improve layout and sizing for large desktop screens */
+// @media (min-width: 1200px) {
+//   :root {
+//     --filters-sidebar-width: 340px;
+//   }
+
+//   .project-container {
+//     padding: 32px;
+//   }
+
+//   .project-container h1 {
+//     font-size: 44px;
+//   }
+
+//   .project-container .filters-container {
+//     grid-template-columns: repeat(6, minmax(170px, 1fr));
+//     gap: 14px 20px;
+//     margin-right: 48px;
+//   }
+
+//   .filter-search input {
+//     max-width: 640px;
+//   }
+
+//   .project-card {
+//     padding: 22px;
+//   }
+
+//   .projects-grid {
+//     grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+//     gap: 24px;
+//   }
+
+//   .project-name {
+//     font-size: 1.2rem;
+//   }
+// }
+
+// @media (min-width: 1440px) {
+//   :root {
+//     --filters-sidebar-width: 380px;
+//   }
+
+//   .project-container {
+//     padding: 48px;
+//   }
+
+//   .project-container h1 {
+//     font-size: 48px;
+//   }
+
+//   .project-container .filters-container {
+//     grid-template-columns: repeat(6, minmax(180px, 1fr));
+//     margin-right: 60px;
+//   }
+
+//   .project-content {
+//     max-width: 1800px;
+//   }
+
+//   .projects-grid {
+//     grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+//     gap: 28px;
+//   }
+
+//   .project-name {
+//     font-size: 1.25rem;
+//   }
+// }
 
   /* Estilo general para botones primarios */
   .btn-primary {
@@ -311,73 +417,17 @@
 }
 
 
-//BOTONSITO NEW PROJECT 
-/* From Uiverse.io by KhaledMatalkah */ 
-// .btn-create {
-//   display: inline-block;
-//   position: relative;
-//   padding: 15px;
-//   font-size: 16px;
-//   font-weight: bold;
-//   // text-transform: uppercase;
-//   color: #fff;
-//   background: linear-gradient(180deg, #0d3d8c, #0b2a5b);
-//   border: 1px solid #ddd017;
-//   border-radius: 12px;
-//   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1), inset 0px 2px 4px rgba(255, 255, 255, 0.2);
-//   text-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
-//   cursor: pointer;
-//   overflow: hidden;
-//   transition: background-color 0.3s, transform 0.3s;
-// }
-
-// .btn-create::before,
-// .btn-create::after {
-//   content: '';
-//   position: absolute;
-//   width: 100%;
-//   height: 100%;
-//   background: inherit;
-//   z-index: -1;
-//   transition: transform 0.3s;
-// }
-
-// .btn-create::before {
-//   top: 0;
-//   left: -100%;
-//   transform: skewX(-45deg);
-// }
-
-// .btn-create::after {
-//   bottom: 0;
-//   right: -100%;
-//   transform: skewX(45deg);
-// }
-
-// .btn-create:hover {
-//   background: linear-gradient(to bottom, #135ee9, #2b75ff);
-//   transform: translateY(-2px);
-//   box-shadow: 0px 6px 8px rgba(0, 195, 255, 0.2), inset 0px 2px 4px rgba(255, 255, 255, 0.1);
-// }
-
-// .btn-create:hover::before {
-//   transform: translateX(100%);
-// }
-
-// .btn-create:hover::after {
-//   transform: translateX(-100%);
-// }
-
 
 /* From Uiverse.io by andrew-demchenk0 */ 
 .button {
   position: relative;
-  width: 210px;
+  min-width: 210px;
   height: 40px;
+    padding: 0 16px;
   cursor: pointer;
   display: flex;
   align-items: center;
-  border: 1px solid #ddd017;
+  border: none;
   background-color: #076aff;
   border-radius: 8px;
 }
@@ -433,6 +483,63 @@
  background-color: #123d99;
 }
 
+// @media (max-width: 1024px) {
+//   .button {
+//     min-width: 170px;
+//     height: 38px;
+//   }
+
+//   .button .button__text {
+//     font-size: 14px;
+//     transform: translateX(20px);
+//   }
+
+//   .button .button__icon {
+//     transform: translateX(85px);
+//     width: 36px;
+//   }
+
+//   .button:hover .button__icon {
+//     width: 120px;
+//   }
+// }
+
+
+// // PARA MOVIL POR SI ACASO
+// @media (max-width: 768px) {
+//   .filters-actions {
+//     position: fixed;
+//     bottom: 20px;
+//     right: 20px;
+//     z-index: 1400;
+//   }
+
+//   .button {
+//     min-width: 48px;
+//     width: 48px;
+//     height: 48px;
+//     border-radius: 50%;
+//     padding: 0;
+//     justify-content: center;
+//   }
+
+//   .button__text {
+//     display: none;
+//   }
+
+//   .button__icon {
+//     position: static;
+//     transform: none;
+//     width: 100%;
+//     height: 100%;
+//     margin: 0;
+//     border-radius: 50%;
+//   }
+
+//   .button:hover .button__icon {
+//     width: 100%;
+//   }
+// }
 
 
 
@@ -485,65 +592,6 @@
     transform: translateX(-50%) translateY(-4px);
   }
 }
-
-
-// .btn-clear-filters {
-//  margin-right: 6px;
-//   color: black;
-//   min-width: 120px;
-//   height: 36px;
-//   font-weight: 500;
-//   padding: 6px 14px;
-//   font-size: 14px;
-//   border-radius: 6px;
-//   border: none;
-//   background: linear-gradient(180deg, #c5d8f3, #acb8cc);
-//   box-shadow: 0 4px 10px rgba(13,61,140,0.2);
-//   cursor: pointer;
-//   transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
-//   margin-top: 10px;
-// }
-
-// .btn-clear-filters:hover {
-//   border-color: #9cafa2;
-//   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-//   transform: translateY(-2px);
-// }
-
-
-// .btn-clear-filters{
-//   display: flex;
-//   align-items: center;
-//   justify-content: center;
-//   outline: none;
-//   cursor: pointer;
-//   width: 120px;
-//   height: 40px;
-//   background-image: linear-gradient(to top, #D8D9DB 0%, #fff 80%, #FDFDFD 100%);
-//   border-radius: 30px;
-//   border: 1px solid #8F9092;
-//   transition: all 0.2s ease;
-//   font-family: "Source Sans Pro", sans-serif;
-//   font-size: 14px;
-//   font-weight: 600;
-//   color: #606060;
-//   text-shadow: 0 1px #fff;
-// }
-
-// .btn-clear-filters:hover {
-//   box-shadow: 0 4px 3px 1px #FCFCFC, 0 6px 8px #D6D7D9, 0 -4px 4px #CECFD1, 0 -6px 4px #FEFEFE, inset 0 0 3px 3px #CECFD1;
-// }
-
-// .btn-clear-filters:active {
-//   box-shadow: 0 4px 3px 1px #FCFCFC, 0 6px 8px #D6D7D9, 0 -4px 4px #CECFD1, 0 -6px 4px #FEFEFE, inset 0 0 5px 3px #999, inset 0 0 30px #aaa;
-// }
-
-// .btn-clear-filters:focus {
-//   box-shadow: 0 4px 3px 1px #FCFCFC, 0 6px 8px #D6D7D9, 0 -4px 4px #CECFD1, 0 -6px 4px #FEFEFE, inset 0 0 5px 3px #999, inset 0 0 30px #aaa;
-// }
-
-
-
 
 
  /* Pager moved below toolbar: modern centered pager */
@@ -706,44 +754,6 @@ font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-seri
   margin-bottom: -10px;
 }
 
-// .menu {
-//   position: fixed;
-//   top: 70px; /* ajusta a tu header */
-//   width: 260px;
-//   height: calc(100vh - 70px);
-//   background: #fff;
-//   margin-top: -80px;
-//   margin-left: 300px;
-//   padding: 24px;
-
-//   transform: translateX(-100%);
-//   transition: transform 0.3s ease, opacity 0.3s ease;
-//   opacity: 0;
-// }
-
-// .menu.open {
-//   transform: translateX(0);
-//   opacity: 1;
-// }
-
-// /* Botón que abre/cierra el submenu: colocado a la derecha del sidebar de filtros */
-// .menu-toggle {
-//   position: fixed;
-//   top: 78px;
-//   left: 300px; /* coincide con el margin-left del panel de filtros */
-//   z-index: 1400;
-//   width: 38px;
-//   height: 38px;
-//   border-radius: 6px;
-//   background: white;
-//   border: 1px solid rgba(0,0,0,0.08);
-//   display: flex;
-//   align-items: center;
-//   justify-content: center;
-//   box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-//   cursor: pointer;
-// }
-// .menu-toggle svg { width: 18px; height: 18px; fill: #334155; }
 
 
   // MOOD DARK
@@ -756,3 +766,30 @@ font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-seri
     
   }
 }
+
+
+// @media (max-width: 1024px) {
+//   .projects-layout {
+//     grid-template-columns: 1fr;
+//   }
+
+//   app-menu-filters-projects {
+//     position: fixed;
+//     top: var(--topbar-height);
+//     left: 0;
+//     width: 290px;
+//     height: calc(100vh - var(--topbar-height));
+//     transform: translateX(-100%);
+//     transition: transform 0.3s ease;
+//     z-index: 1300;
+//     background: #fff;
+//   }
+
+//   app-menu-filters-projects.open {
+//     transform: translateX(0);
+//   }
+
+//   .project-container {
+//     padding-left: 0;
+//   }
+// }

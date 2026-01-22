@@ -185,7 +185,7 @@ setCalendarDate(date: string) {
             // YYYY-MM-DD => YYYY-MM-DDT00:00:00 (local)
             dateStr = dateStr + 'T00:00:00';
           }
-          console.log('Evento calendario:', { nombre: task.name, fecha: dateStr, id: task.id });
+          // console.log('Evento calendario:', { nombre: task.name, fecha: dateStr, id: task.id });
           return {
             title: task.name,
             start: dateStr,
@@ -227,7 +227,7 @@ setCalendarDate(date: string) {
                       // Cambiar vista al lunes de la semana de la fecha
                       try {
                         api.changeView('dayGridWeek', dateToShow);
-                        console.log('[DEBUG][CalendarTask] Changed view to week of', dateToShow);
+                        // console.log('[DEBUG][CalendarTask] Changed view to week of', dateToShow);
                       } catch (e) { console.warn('[DEBUG][CalendarTask] could not change view to date', dateToShow, e); }
                     }
                   }

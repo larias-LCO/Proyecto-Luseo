@@ -28,9 +28,34 @@ app-submenu.hidden {
   font-family: var(--font-primary);
   /* Evitar superposición con header (70px) y sidebar (250px) */
   margin-top: -10px;
-  margin-left: 10px;
+  // margin-left: -100px;
   padding: 24px;
   
+}
+
+/* Layout: reserve space for filters pane */
+.team-layout {
+  display: flex;
+  gap: 270px; /* espacio reducido entre panel y contenido */
+  align-items: flex-start;
+  position: relative;
+}
+
+/* El panel de filtros está posicionado fixed; no debe reservar espacio en el layout
+   porque eso deja un hueco cuando el submenu está abierto. En su lugar damos margen
+   al contenedor principal para que el contenido no quede debajo del panel. */
+.team-layout > app-menu-filters-team {
+  flex: 0 0 0; /* no reservar espacio (panel es fixed) */
+}
+
+.team-layout > .team-container {
+  flex: 1 1 auto;
+  // margin-left: 270px; /* compensar el ancho del panel fijo (igual que .filters-container) */
+  padding-left: 0px;
+}
+
+@media (max-width: 768px) {
+  .team-layout > .team-container { margin-left: 0; }
 }
 
 .team-container h1 {
@@ -373,6 +398,20 @@ margin-top: 20px;
     cursor: not-allowed;
   }
 }
+
+:host-context(.dark) .pagination button {
+  background: #35404e;
+  color: #d1d5db;
+  border: 1px solid #374151;
+}
+
+:host-context(.dark) .pagination button:hover {
+  background: #3b82f6;
+  border-color: #3b82f6;
+  color: white;
+}
+
+
 /* Buscar por nombre */
 .filter-search label,
 .filters-row label {
@@ -525,59 +564,132 @@ select:focus {
 }
 
 
-.refresh{
-  display: inline-block;
-  position: relative;
-  font-size: 15px;
-  font-weight: 600;
-  color: #fff;
-  background: #076aff;
-  border: 1px solid #ddd017;
-  border-radius: 7px;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1), inset 0px 2px 4px rgba(255, 255, 255, 0.2);
-  text-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
-  cursor: pointer;
-  overflow: hidden;
-  transition: background-color 0.3s, transform 0.3s;
-  width: 130px;
-  height: 40px;
-}
+// .refresh{
+//   display: inline-block;
+//   position: relative;
+//   font-size: 15px;
+//   font-weight: 600;
+//   color: #fff;
+//   background: #076aff;
+//   border: 1px solid #ddd017;
+//   border-radius: 7px;
+//   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1), inset 0px 2px 4px rgba(255, 255, 255, 0.2);
+//   text-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+//   cursor: pointer;
+//   overflow: hidden;
+//   transition: background-color 0.3s, transform 0.3s;
+//   width: 130px;
+//   height: 40px;
+// }
 
-.refresh::before,
-.refresh::after {
-  content: '';
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background: inherit;
-  z-index: -1;
-  transition: transform 0.3s;
+// .refresh::before,
+// .refresh::after {
+//   content: '';
+//   position: absolute;
+//   width: 100%;
+//   height: 100%;
+//   background: inherit;
+//   z-index: -1;
+//   transition: transform 0.3s;
+// }
+
+// .refresh::before {
+//   top: 0;
+//   left: -100%;
+//   transform: skewX(-45deg);
+// }
+
+// .refresh::after {
+//   bottom: 0;
+//   right: -100%;
+//   transform: skewX(45deg);
+// }
+
+// .refresh:hover {
+//   background: linear-gradient(to bottom, #757f92, #b0b4bb);
+//   transform: translateY(-2px);
+//   box-shadow: 0px 6px 8px rgba(0, 195, 255, 0.2), inset 0px 2px 4px rgba(255, 255, 255, 0.1);
+// }
+
+// .refresh:hover::before {
+//   transform: translateX(100%);
+// }
+
+// .refresh:hover::after {
+//   transform: translateX(-100%);
+// }
+
+.refresh {
+  --color: #0077ff;
+ --color2: #001cb9;
+  --border: #9fa4aa;
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 8em;
+  height: 2.4em;
+  line-height: 2.5em;
+  overflow: hidden;
+  cursor: pointer;
+  // margin-left: 50px;
+  // margin-top: 15px;
+  font-size: 17px;
+  font-weight: 700;
+  z-index: 1;
+  color: #076aff;
+  border: 2px solid #076aff;
+  border-radius: 6px;
+  position: relative;
 }
 
 .refresh::before {
-  top: 0;
-  left: -100%;
-  transform: skewX(-45deg);
-}
+  position: absolute;
+  content: "";
+  background: #076aff;
 
-.refresh::after {
-  bottom: 0;
-  right: -100%;
-  transform: skewX(45deg);
+  width: 200px;
+  height: 200px;
+  z-index: -1;
+  border-radius: 50%;
 }
 
 .refresh:hover {
-  background: linear-gradient(to bottom, #757f92, #b0b4bb);
-  transform: translateY(-2px);
-  box-shadow: 0px 6px 8px rgba(0, 195, 255, 0.2), inset 0px 2px 4px rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.refresh:before {
+  top: 100%;
+  left: 100%;
+  transition: 0.3s all;
 }
 
 .refresh:hover::before {
-  transform: translateX(100%);
+  top: -30px;
+  left: -30px;
 }
 
-.refresh:hover::after {
-  transform: translateX(-100%);
+:host-context(.dark) .refresh {
+  color: white;
+  border-color: #3399ff;
+}
+
+:host-context(.dark) .refresh::before {
+
+  position: absolute;
+  content: "";
+  background: #77b0f1;
+  width: 200px;
+  height: 200px;
+  z-index: -1;
+  border-radius: 50%;
+  border: 1px solid #3399ff;
+
+
+}
+
+:host-context(.dark) .refresh:hover {
+  color: #081226;
 }
 
 

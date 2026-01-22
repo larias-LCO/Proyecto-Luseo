@@ -128,7 +128,7 @@ setCalendarDate(date: string) {
             // YYYY-MM-DD => YYYY-MM-DDT00:00:00 (local)
             dateStr = dateStr + 'T00:00:00';
           }
-          console.log('Evento calendario:', { nombre: task.name, fecha: dateStr, id: task.id });
+          // console.log('Evento calendario:', { nombre: task.name, fecha: dateStr, id: task.id });
           return {
             title: task.name,
             start: dateStr,

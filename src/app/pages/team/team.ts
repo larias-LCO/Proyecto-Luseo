@@ -39,8 +39,7 @@ export class TeamComponent implements OnInit, OnDestroy {
     confirmDeleteName: string = '';
   private auth = inject(AuthService);
   private ws = inject(WebsocketService);
-  private submenuService = inject(SubmenuService);
-  isMenuOpen$ = this.submenuService.open$;
+  public submenu = inject(SubmenuService);
   private api!: EmployeeApi;
   private fb = new FormBuilder();
   constructor() {
@@ -55,12 +54,7 @@ export class TeamComponent implements OnInit, OnDestroy {
     });
   }
 
-    //MENU TOGGLE- MENU PRINCIPAL DE PAGINA
-isMenuOpen = false;
-
-toggleMenu() {
-  this.isMenuOpen = !this.isMenuOpen;
-}
+    // submenu is consumed via `submenu` service in templates
 
   onFiltersChange(filters: any) {
     console.log('Filtros recibidos desde menu:', filters);

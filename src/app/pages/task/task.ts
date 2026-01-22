@@ -436,6 +436,7 @@ import { WebsocketService } from '../../core/services/websocket.service';
 import { debounceTime } from 'rxjs/operators';
 import { Subject, Subscription } from 'rxjs';
 import { PrevIconComponent } from '../../core/components/animated-icons/prev-icon.component';
+import { SubmenuService } from '../../core/services/submenu.service';
 
 
 @Component({
@@ -446,8 +447,19 @@ import { PrevIconComponent } from '../../core/components/animated-icons/prev-ico
   styleUrls: ['./task.scss']
 })
 export class TasksPage implements OnInit {
+
+
+  // header.component.ts (o donde esté el botón)
+isMenuOpen = false;
+
+toggleMenu() {
+  this.isMenuOpen = !this.isMenuOpen;
+}
+
   // WebSocket y subs para eventos en tiempo real (Angular DI, no window fallbacks)
 private ws = inject(WebsocketService);
+  private submenuService = inject(SubmenuService);
+  isMenuOpen$ = this.submenuService.open$;
 private wsRefresh$ = new Subject<void>();
 private subs = new Subscription();
 
@@ -1030,6 +1042,7 @@ if (!state) {
         if (typeof this.loadProjectsFromService === 'function') this.loadProjectsFromService();
       });
     this.subs.add(wsProjectDebounceSub);
+    // Visual sync of submenu width is handled centrally by HeaderComponent
     
   }
   

@@ -256,8 +256,8 @@ $transition: 180ms cubic-bezier(.2,.9,.3,1);
   font-size: 17px;
   font-weight: 700;
   z-index: 1;
-  color: var(--color2);
-  border: 2px solid var(--color2);
+  color: #076aff;
+  border: 2px solid #076aff;
   border-radius: 6px;
   position: relative;
 }
@@ -265,7 +265,7 @@ $transition: 180ms cubic-bezier(.2,.9,.3,1);
 .btn-clear-filters::before {
   position: absolute;
   content: "";
-  background: linear-gradient(#001cb9, #0077ff);
+  background: #076aff;
   width: 200px;
   height: 200px;
   z-index: -1;

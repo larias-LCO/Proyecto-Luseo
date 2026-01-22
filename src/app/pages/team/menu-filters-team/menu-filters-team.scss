@@ -12,6 +12,13 @@
   overflow: visible;
 }
 
+/* Cuando el submenu aplica un desplazamiento global (html.submenu--push),
+   colocamos el panel de filtros justo a la derecha del sidebar para evitar huecos. */
+html.submenu--push .filters-container {
+  left: var(--sidebar-width);
+  transition: left 240ms ease;
+}
+
 .filters-scroll {
   height: 85%;
   overflow-y: auto;

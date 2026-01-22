@@ -33,12 +33,8 @@ import { MenuFiltersProjects } from "./components/menu-filters-projects/menu-fil
 })
 export class ProjectsPage implements OnInit {
 
-  // header.component.ts (o donde esté el botón)
-isMenuOpen = false;
-
-toggleMenu() {
-  this.isMenuOpen = !this.isMenuOpen;
-}
+  // expose submenu service for template binding
+  public submenu = inject(SubmenuService);
 
 
   // WebSocket y subs para eventos en tiempo real
@@ -117,10 +113,7 @@ constructor(
     // ✅ Aquí conectas correctamente el helper con el servicio
     this.createEdit = new CreateEditHelper(this.projectService);
     
-    // Suscribir al estado del submenu
-    this.submenuService.open$.subscribe(isOpen => {
-      this.isMenuOpen = isOpen;
-    });
+    // submenu state handled centrally; templates bind to `submenu.open$`
   }
 
 
@@ -214,12 +207,8 @@ const wsDebounceSub = this.wsRefresh$
     this.loadProjects();
   });
 this.subs.add(wsDebounceSub);
-    // Subscribe to shared submenu open state
-    const submenuSub = this.submenuService.open$.subscribe(v => {
-      this.isMenuOpen = !!v;
-    });
-    this.subs.add(submenuSub);
- //=======================================================================
+   
+
     
     // --- Inicialización de catálogos y proyectos ---
     await this.loadCatalogs();
