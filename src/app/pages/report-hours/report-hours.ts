@@ -30,6 +30,7 @@ import { HeaderComponent } from "../../core/components/header/header";
 import { SubmenuComponent } from "../../core/components/submenu/submenu";
 import { AlarmClockIconComponent } from '../../core/components/animated-icons/alarm-clock.component';
 import { WebsocketService } from '../../core/services/websocket.service';
+import { SubmenuService } from '../../core/services/submenu.service';
 import { HelpPanelService } from './services/help-panel.service';
 import { REPORT_HOURS_HELP } from './utils/report-hours-help.config';
 import { HelpPanelComponent } from './components/help-panel/help-panel';
@@ -85,6 +86,7 @@ export class ReportHours implements OnInit, OnDestroy {
   subTasks: any[] = [];
   internalTasks: any[] = [];
   subTaskCategories: any[] = [];
+  
   loading = false; // general-purpose loading flag for overlays
   subtaskPresetEntry: any = null;
   internalPresetEntry: any = null;
@@ -101,6 +103,8 @@ export class ReportHours implements OnInit, OnDestroy {
   private authSub?: Subscription;
   // Subscription container for websocket topic updates
   private wsSub: Subscription = new Subscription();
+  // Observable para estado del submenu (se sincroniza con el header)
+  isMenuOpen$?: any;
   
   constructor(
     private projectsService: ProjectService,
@@ -116,7 +120,11 @@ export class ReportHours implements OnInit, OnDestroy {
     private subTaskCategoryService: SubTaskCategoryService,
     private helpPanelService: HelpPanelService,
     private websocket: WebsocketService
-  ) {}
+    , private submenuService: SubmenuService
+  ) { 
+    // asignar el observable después de que el servicio es inyectado
+    try { this.isMenuOpen$ = this.submenuService.open$; } catch (e) { this.isMenuOpen$ = undefined; }
+  }
 
 
 
@@ -160,6 +168,8 @@ export class ReportHours implements OnInit, OnDestroy {
     } catch (e) {
       console.warn('[ReportHours] Falló suscripción WS', e);
     }
+
+    // visual sync of submenu width is handled centrally by HeaderComponent
   }
 
   /**

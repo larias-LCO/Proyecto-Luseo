@@ -1,10 +1,10 @@
 <!-- Page header and submenu -->
 <app-header></app-header>
-<app-submenu class="menu" [class.open]="isMenuOpen"></app-submenu>
+<app-submenu class="menu" [class.open]="submenu.open$ | async"></app-submenu>
 
-  
 
- <app-menu-filters-projects
+<div class="projects-layout">
+  <app-menu-filters-projects
    [offices]="offices"
    [clients]="clients"
    [software]="software"
@@ -12,20 +12,13 @@
   [managerOptions]="managerOptionsAll"
    [enums]="enums"
    [pageSize]="pageSize"
-   (filtersChange)="onFiltersUpdated($event)"
-   (clear)="clearFilters()"
-   (toggleSubmenu)="isMenuOpen = !isMenuOpen"></app-menu-filters-projects>
- 
-<!-- Hidden helper so static analyzers detect dynamic '.kv' usage  -->
-<div id="__util_classes" aria-hidden="true" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;">
-  <span class="chip"></span>
-  <div class="kv"><span>Key</span></div>
-  <button class="btn btn-danger" type="button">X</button>
-  <div class="grid-2"><div class="pair"><div class="val"></div></div></div>
-  <button class="btn-xs"></button>
-  <div class="scroll"><div class="row-mini"></div></div> 
-</div> 
+  (filtersChange)="onFiltersUpdated($event)"
+  (clear)="clearFilters()"
+  (toggleSubmenu)="submenu.toggle()"></app-menu-filters-projects>
+
+
 <div class="project-container">
+    <div class="project-content">
     <h1 >Projects</h1>
 
     <div *ngIf="isAdminOrOwner">
@@ -49,7 +42,7 @@ Users cannot make modifications, ensuring data integrity while maintaining a cle
   <!-- </div> -->
 
   <!-- Filters moved to component above. Keep page-size and action buttons here -->
-  <div class="filter-actions-group">
+  <!-- <div class="filter-actions-group"> -->
     <!-- <div class="filter-item">
       <label>Page Size</label>
       <select [(ngModel)]="pageSize" (change)="onPageSizeChange()">
@@ -174,7 +167,8 @@ Users cannot make modifications, ensuring data integrity while maintaining a cle
   </div>
 
 </div>
-
+</div>
+</div>
 
 
 <app-project-details

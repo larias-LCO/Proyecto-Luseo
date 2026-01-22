@@ -99,7 +99,7 @@
 	flex-direction: column;
 	gap: 6px;
 	background: transparent; /* per-type backgrounds applied below */
-	box-shadow: 0 6px 18px rgba(0, 0, 0, 0.548);
+	box-shadow: 0 3px 10px rgba(0, 0, 0, 0.548);
 	border-left: 4px solid transparent;
 }
 .calendar-stats-item .calendar-stats-label { font-weight:500; font-size:15px; color:#0b1220; }
@@ -282,7 +282,7 @@
 
 /* Toolbar del calendario con estilo azul */
 :host ::ng-deep .fc .fc-toolbar {
-	background: #0859d0;
+	background: #2578f5; 
 	color: #fff;
 	border-radius: 12px;
 	padding: 14px 20px;
@@ -290,9 +290,11 @@
 	display: flex;
 	justify-content: flex-end;
 	align-items: center;
-	margin-top: 20px;
+	margin-top: 5px;
 	position: relative;
 }
+
+
 
 :host ::ng-deep .fc .fc-toolbar-title {
 	position: absolute;
@@ -319,7 +321,7 @@
 }
 
 :host ::ng-deep .fc .fc-button:hover {
-	background: rgba(255,255,255,0.30);
+	background: rgba(44, 92, 197, 0.815);
 	transform: translateY(-2px);
 }
 
@@ -404,7 +406,7 @@
 	background: #081226 !important;
 }
 
-// :host-context(.dark) ::ng-deep .fc .fc-day-today,
+:host-context(.dark) ::ng-deep .fc .fc-day-today,
 :host-context(.dark) ::ng-deep .fc .fc-day-today .fc-daygrid-day-frame,
 :host-context(.dark) ::ng-deep .fc .fc-day-today .fc-daygrid-day-number {
 	background: #081226 !important;
@@ -417,8 +419,12 @@
 
 
 :host-context(.dark) ::ng-deep .fc .fc-daygrid-day:hover {
-	background: rgba(255, 255, 255, 0.05) !important;
+	background: rgba(22, 100, 189, 0.1) !important;
 	color: var(--sidebar-hover-text) !important;
+}
+
+:host-context(.dark) ::ng-deep .fc .fc-toolbar {
+    background: #1664bd9f !important;
 }
 
 /* Vista mes: celdas fijas y scroll interno */
@@ -441,4 +447,5 @@
 :host ::ng-deep .fc-dayGridMonth-view .gt-card {
 	overflow-x: hidden !important;
 }
+
 

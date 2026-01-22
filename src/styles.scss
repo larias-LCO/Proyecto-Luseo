@@ -330,6 +330,8 @@ html .sidebar .sidebar-item.active svg {
 	color: var(--sidebar-hover-text) !important;
 }
 
+/* submenu overlay behavior is handled by the component's own stylesheet; no global overrides here */
+
 /* Keep view-transition rules at end */
 ::view-transition-group(root) {
 	animation-timing-function: var(--expo-out);
@@ -499,14 +501,47 @@ html.dark .fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number {
 	--sidebar-width: 250px;
 }
 
+/* Keep header spacing but do not push page content with body padding */
 body {
 	padding-top: var(--header-height);
-	padding-left: var(--sidebar-width);
+	padding-left: 0;
+	transition: padding-right 240ms ease;
 }
+
+// /* Use border-box globally to avoid layout shifts when widths change */
+// html { box-sizing: border-box; }
+// *, *::before, *::after { box-sizing: inherit; }
+
+// /* Common page containers that should expand to full width when sidebar collapsed.
+// 	 These rules are intentionally broad and use !important to override page-local fixed widths.
+// 	 They keep padding so content isn't flush to the viewport edge. */
+@supports (--css: variables) {
+	.project-container,
+	.report-hours,
+	.task-container,
+	.projects-layout,
+	.page-container {
+		margin-left: 0 !important;
+		width: 100% !important;
+		max-width: 100% !important;
+		padding-left: 12px !important;
+		padding-right: 12px !important;
+		box-sizing: border-box !important;
+		transition: margin-left 240ms ease, width 240ms ease;
+	}
+}
+
+
 
 @media (max-width: 576px) {
 	:root { --header-height: 56px; --sidebar-width: 0px; }
-	body { padding-top: var(--header-height); padding-left: var(--sidebar-width); }
+	body { padding-top: var(--header-height); padding-left: 0; }
+}
+
+/* Aplicar padding-left (push) únicamente cuando la clase html.submenu--push está presente */
+html.submenu--push body {
+	padding-left: var(--sidebar-width);
+	transition: padding-left 240ms ease;
 }
 
 :root.dark .filters-container{
@@ -645,4 +680,17 @@ body {
 // MODALES
 :root.dark .modal-content{
 	background: var(--card-bg) !important;
+}
+
+/* Overrides: make 'today' transparent in dark mode and set subtle blue hover */
+html.dark .fc .fc-daygrid-day.fc-day-today,
+html.dark .fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-top {
+	background: transparent !important;
+	color: var(--sidebar-hover-text) !important;
+}
+
+html.dark .fc .fc-daygrid-day:hover,
+html.dark .fc td.fc-day:hover {
+	background: rgba(22,100,189,0.12) !important;
+	color: var(--sidebar-hover-text) !important;
 }

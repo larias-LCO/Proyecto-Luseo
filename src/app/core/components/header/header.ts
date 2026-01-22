@@ -7,11 +7,13 @@ import { AuthService as ReportApiAuthService } from '../../../pages/report-hours
 import { AuthStateService as ReportAuthState } from '../../../pages/report-hours/auth/services/auth-state.service';
 import { Subscription } from 'rxjs';
 import { SubmenuService } from '../../services/submenu.service';
+import { MoonIconComponent } from "../animated-icons/moon-icon.component";
+import { SunIconComponent } from "../animated-icons/sun-icon.component";
  
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MoonIconComponent, SunIconComponent],
   templateUrl: './header.html',
   styleUrls: ['./header.scss']
 })
@@ -27,6 +29,7 @@ export class HeaderComponent {
   private cookiePollId?: number;
   private reportApi = inject(ReportApiAuthService);
   private catalogs = inject(CatalogsService);
+  // track submenu subscription so we can unsubscribe on destroy
   private resolvedFullName = signal<string | null>(null);
   private lastResolvedEmployeeId?: number | null = null;
  
@@ -52,6 +55,7 @@ export class HeaderComponent {
     void this.resolveFullNameIfNeeded();
     // apply saved theme (light/dark)
     this.applySavedTheme();
+
   }
 
   // track current theme state for template binding (true when dark)
@@ -118,6 +122,7 @@ export class HeaderComponent {
     if (this.reportSub) {
       this.reportSub.unsubscribe();
     }
+    
   }
  
   initials = computed(() => {

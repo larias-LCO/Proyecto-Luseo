@@ -1,16 +1,21 @@
-.filters-container{
-  width: 290px;
-  height: 100vh;
+:host .filters-container{
+  /* Let the parent grid control space; keep a sensible max-width */
+  width: 100%;
+  max-width: var(--filters-sidebar-width, 300px);
   background: #ffffff;
   border-right: 1px solid #e5e7eb;
   padding: 12px 8px;
   font-family: system-ui, -apple-system, BlinkMacSystemFont;
-  position: fixed;
-  top: 70px; /* altura del header */
-  left: 0; /* siempre pegado al lado izquierdo */
-  z-index: 1200;
-  overflow: visible;
+  z-index: 1;
+  /* Use sticky so the sidebar stays visible while scrolling content */
+  position: sticky;
+  top: 72px; /* leave room for header */
+  height: 100vh;
+  overflow-y: auto;
 }
+
+
+
 
 .filters-scroll {
   height: 85%;
@@ -171,6 +176,28 @@
   color: white;
 }
 
+/* Responsive: collapse sidebar above content on smaller viewports */
+@media (max-width: 992px) {
+  :host .filters-container {
+    position: relative;
+    top: auto;
+    height: auto;
+    max-width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 12px 10px;
+  }
+
+  .btn-clear-filters {
+    margin-left: 0;
+  }
+}
+
+/* Very small screens: make inputs full width */
+@media (max-width: 600px) {
+  .mf-search input { width: 100%; }
+}
+
 .btn-clear-filters:before {
   top: 100%;
   left: 100%;
@@ -181,60 +208,5 @@
   top: -30px;
   left: -30px;
 }
-
-
-// .btn-clear-filters{
-//   display: flex;
-//   align-items: center;
-//   justify-content: center;
-//   outline: none;
-//   cursor: pointer;
-//   width: 150px;
-//   height: 40px;
-//   background-image: linear-gradient(to top, #D8D9DB 0%, #fff 80%, #FDFDFD 100%);
-//   border-radius: 30px;
-//   border: 1px solid #8F9092;
-//   transition: all 0.2s ease;
-//   font-family: "Source Sans Pro", sans-serif;
-//   font-size: 14px;
-//   font-weight: 600;
-//   color: #606060;
-//   text-shadow: 0 1px #fff;
-//   margin-left: 70px;
-//   margin-top: 10px;
-// }
-
-// .btn-clear-filters:hover {
-//   box-shadow: 0 4px 3px 1px #FCFCFC, 0 6px 8px #D6D7D9, 0 -4px 4px #CECFD1, 0 -6px 4px #FEFEFE, inset 0 0 3px 3px #CECFD1;
-// }
-
-// .btn-clear-filters:active {
-//   box-shadow: 0 4px 3px 1px #FCFCFC, 0 6px 8px #D6D7D9, 0 -4px 4px #CECFD1, 0 -6px 4px #FEFEFE, inset 0 0 5px 3px #999, inset 0 0 30px #aaa;
-// }
-
-// .btn-clear-filters:focus {
-//   box-shadow: 0 4px 3px 1px #fcfcfc, 0 6px 8px #D6D7D9, 0 -4px 4px #CECFD1, 0 -6px 4px #FEFEFE, inset 0 0 5px 3px #999, inset 0 0 30px #aaa;
-// }
-
-// .menu {
-//   position: fixed;
-//   top: 70px; /* ajusta a tu header */
-//   left: 0;
-//   width: 340px;
-//   height: calc(100vh - 70px);
-//   background: #fff;
-//   padding: 24px;
-//   z-index: 1600;
-//   transform: translateX(-100%);
-//   transition: transform 0.3s ease, opacity 0.3s ease;
-//   opacity: 0;
-// }
-
-// .menu.open {
-//   transform: translateX(0);
-//   opacity: 1;
-// }
-
-
 
 

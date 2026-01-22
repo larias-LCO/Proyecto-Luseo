@@ -122,6 +122,7 @@
 	align-items: center;
 }
 
+
 :host ::ng-deep .fc .fc-toolbar-title {
 	font-size: 25px;
 	font-weight: 700;
@@ -161,14 +162,6 @@
 	background: #cfe0f7 !important; /* azul un poco más intenso al hacer hover */
 }
 
-/* Dark-mode overrides for this component: use host-context to apply when ancestor has .dark */
-:host-context(.dark) ::ng-deep .fc .fc-day-today,
-:host-context(.dark) ::ng-deep .fc .fc-day-today .fc-daygrid-day-frame,
-:host-context(.dark) ::ng-deep .fc .fc-day-today .fc-daygrid-day-number {
-	background: transparent !important;
-	color: var(--sidebar-hover-text) !important;
-	border-radius: 8px;
-}
 :host-context(.dark) ::ng-deep .fc .fc-daygrid-day:hover {
 	background: transparent !important;
 	color: var(--sidebar-hover-text) !important;
@@ -207,6 +200,10 @@
  .day-column:not(.today):hover {
    background: #e0f2fe;
  }
+
+//  :host-context(.dark) .day-column:not(.today):hover {
+// 	background: transparent !important;
+//  }
 // 	background: transparent !important;
 // 	border: 2px solid #0859d0 !important;
 // 	border-radius: 8px;
@@ -218,7 +215,7 @@
 .calendar-toolbar {
     margin-top: 60px;
 	position: relative;
-	background: #0859d0;          /* azul idéntico al de la imagen */
+	background: #2578f5;          /* azul idéntico al de la imagen */
 	color: white;
 	padding: 14px 20px;
 	border-radius: 12px;
@@ -227,6 +224,12 @@
 	display: flex;
 	justify-content: flex-end;     /* botones a la derecha */
 	align-items: center;
+}
+
+
+:host-context(.dark) .calendar-toolbar {
+	background: #1664bd9f;          /* azul más oscuro para dark mode */
+	color: white;
 }
 
 /* TÍTULO CENTRADO */
@@ -257,7 +260,7 @@
 
 /* EFECTO HOVER */
 .modern-btn:hover {
-	background: rgba(255,255,255,0.30);
+	background: rgba(44, 92, 197, 0.815);
      transform: translateY(-2px);
 }
 

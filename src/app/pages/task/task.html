@@ -1,5 +1,5 @@
 <app-header></app-header>
-<app-submenu></app-submenu>
+<app-submenu class="menu" [class.open]="isMenuOpen$ | async"></app-submenu>
 
   <div
     class="filter-search">

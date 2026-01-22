@@ -15,6 +15,7 @@
       <span class="text">HOURS LOG</span>
     </button>
 
+
     <button class="sidebar-item" routerLink="/tasks" routerLinkActive="active">
       <!-- <span class="icon">📅</span> -->
        <app-calendar-icon [size]="25"></app-calendar-icon>
@@ -22,6 +23,11 @@
     </button>
   </div>
 
+    <button class="sidebar-item" routerLink="/estimated-hours" routerLinkActive="active">
+      <!-- <span class="icon">⏱️</span> -->
+     <app-timer-icon [size]="28"></app-timer-icon>
+      <span class="text">ESTIMATED HOURS</span>
+    </button>
   <!-- <div class="sidebar-label">ANALYZE</div>
 
   <button class="sidebar-item" routerLink="/dashboard" routerLinkActive="active">

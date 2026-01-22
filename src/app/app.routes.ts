@@ -6,6 +6,7 @@ import { ProjectsPage } from './pages/projects/projects';
 import { TasksPage } from './pages/task/task';
 import { ReportHours } from './pages/report-hours/report-hours';
 import { Schedule } from './pages/schedule/schedule';
+import { EstimatedHoursPage } from './pages/estimated-hours/estimated-hours';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'report-hours', pathMatch: 'full' },
@@ -15,5 +16,6 @@ export const routes: Routes = [
   { path: 'tasks', component: TasksPage, canActivate: [ReportAuthGuard] },
   { path: 'report-hours', component: ReportHours, canActivate: [ReportAuthGuard] },
   { path: 'schedule', component: Schedule, canActivate: [ReportAuthGuard] },
-  { path: '**', redirectTo: 'login' }
+  { path: '**', redirectTo: 'login' },
+  {path: 'estimated-hours', component: EstimatedHoursPage, canActivate: [ReportAuthGuard] },
 ];

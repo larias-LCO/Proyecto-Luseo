@@ -152,12 +152,12 @@
 :host-context(.dark) ::ng-deep .fc .fc-day-today,
 :host-context(.dark) ::ng-deep .fc .fc-day-today .fc-daygrid-day-frame,
 :host-context(.dark) ::ng-deep .fc .fc-day-today .fc-daygrid-day-number {
-	background: var(--sidebar-hover) !important;
+	background: transparent !important;
 	color: var(--sidebar-hover-text) !important;
 	border-radius: 8px;
 }
 :host-context(.dark) ::ng-deep .fc .fc-daygrid-day:hover {
-	background: var(--sidebar-hover) !important;
+	background: rgba(22,100,189,0.12) !important;
 	color: var(--sidebar-hover-text) !important;
 }
 
@@ -194,6 +194,8 @@
  .day-column:not(.today):hover {
    background: #e0f2fe;
  }
+
+ 
 // 	background: transparent !important;
 // 	border: 2px solid #0859d0 !important;
 // 	border-radius: 8px;
@@ -205,7 +207,7 @@
 .calendar-toolbar {
     margin-top: 60px;
 	position: relative;
-	background: #0859d0;          /* azul idéntico al de la imagen */
+	background: #2578f5;          /* azul idéntico al de la imagen */
 	color: white;
 	padding: 14px 20px;
 	border-radius: 12px;
@@ -244,7 +246,7 @@
 
 /* EFECTO HOVER */
 .modern-btn:hover {
-	background: rgba(255,255,255,0.30);
+	background: rgba(44, 92, 197, 0.815);
      transform: translateY(-2px);
 }
 
@@ -298,3 +300,8 @@
 :host ::ng-deep .fc-dayGridMonth-view .gt-card {
 	overflow-x: hidden !important;
 }
+:host-context(.dark) .calendar-toolbar {
+	background: #1664bd9f;          /* azul más oscuro para dark mode */
+	color: white;
+}
+

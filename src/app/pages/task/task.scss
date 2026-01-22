@@ -455,29 +455,32 @@ font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-seri
 
 
 .title-filters {
-  margin: 24px auto 16px auto;
+  margin-left: 10px;
   padding: 8px 32px 8px 32px;
-  width: 95%;
+  width: 100%;
   height: 430px;
   box-shadow: 0 1px 10px 1px rgba(0, 0, 0, 0.13), 0 2px 8px rgba(9,49,90,0.04);
-  border-radius: 20px;
+  border-radius: 12px;
   background: #fff;
   display: flex;
   flex-direction: column;
   align-items: stretch;
+  margin-top: -8px;
+  
 }
 
 .schedule{
   margin: 5px auto 16px auto;
   padding: 8px 32px 8px 32px;
-  width: 95%;
+  width: 100%;
   height: auto;
   box-shadow: 0 1px 10px 1px rgba(0, 0, 0, 0.13), 0 2px 8px rgba(9,49,90,0.04);
-  border-radius: 20px;
+  border-radius: 12px;
   background: #fff;
   display: flex;
   flex-direction: column;
   align-items: stretch;
+  margin-left: 10px;
   
 }
 
@@ -490,16 +493,18 @@ font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-seri
 }
 
 .schedule2{
-      margin: 24px auto 16px auto;
+      // margin: 24px auto 16px auto;
+      margin-top: -10px;
   padding: 8px 32px 8px 32px;
-  width: 95%;
+  width: 100%;
   height: auto;
   box-shadow: 0 1px 10px 1px rgba(0, 0, 0, 0.13), 0 2px 8px rgba(9,49,90,0.04);
-  border-radius: 20px;
+  border-radius: 12px;
   background: #fff;
   display: flex;
   flex-direction: column;
   align-items: stretch;
+  margin-left: 10px;
 }
 
 .schedule2 span{
@@ -519,4 +524,68 @@ font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-seri
 
 :host-context(.dark) .schedule2 span{
   color: #7cb7ff;
+}
+
+:host-context(.dark) .button3 {
+  position: relative;
+  width: 185px;
+  height: 40px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  border: 1px solid #7cb7ff;
+  background-color: #7cb7ff;
+  border-radius: 8px;
+}
+
+
+:host-context(.dark) .button3 .button__text {
+  transform: translateX(30px);
+  color: rgb(0, 13, 133);
+  font-size: 16px;
+  font-weight: 600;
+  margin-left: -20px;
+}
+
+:host-context(.dark) .button3 .button__icon {
+  position: absolute;
+  transform: translateX(109px);
+  height: 100%;
+  width: 39px;
+   background-color: #7cb7ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 25px;
+  color: rgb(0, 13, 133);
+  border-radius: 8px;
+}
+
+// .button3 .svg {
+//   width: 30px;
+//   stroke: #ffffff;
+// }
+
+:host-context(.dark) .button3:hover {
+   background-color:  #7cb7ff;
+}
+
+
+
+:host-context(.dark)  .button3:hover .button__text {
+  color: transparent;
+}
+
+
+:host-context(.dark)  .button3:hover .button__icon {
+  width: 148px;
+  transform: translateX(0);
+}
+
+:host-context(.dark)  .button3:active .button__icon {
+   background-color:  #7cb7ff;
+}
+
+:host-context(.dark)  .button3:active {
+ background-color:  #7cb7ff;
 }

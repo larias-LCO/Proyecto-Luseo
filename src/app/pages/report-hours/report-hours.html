@@ -1,5 +1,5 @@
 <app-header></app-header>
-<app-submenu></app-submenu>
+<app-submenu class="menu" [class.open]="isMenuOpen$ | async"></app-submenu>
 
 <div class="report-hours">
 
@@ -89,7 +89,7 @@ The reports are displayed on a calendar, where they can be easily duplicated or 
   </section>
 
   <!-- PROJECT CARDS -->
-  <section class="report-section report-section--flush">
+  <section class="report-section report-section--flush" style="margin-top: -10px;">
     <div class="section-body">
       <div *ngIf="!loadingProjects">
         <app-project-cards
