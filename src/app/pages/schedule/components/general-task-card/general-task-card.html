@@ -1,13 +1,18 @@
 <div class="gt-card" [class.gt-card--compact]="compact" [class.gt-card--expanded]="!compact" 
      [class.gt-card--completed]="isCompleted"
+     [class.gt-card--out-of-office]="isOutOfOffice"
      [class.gt-card--commercial]="task.projectType === 'COMMERCIAL'"
      [class.gt-card--residential]="task.projectType === 'RESIDENTIAL'">
   
   <!-- Badge de tipo de proyecto -->
-  <span *ngIf="projectTypeIcon" class="gt-card__project-badge" 
+  <span *ngIf="projectTypeIcon && !isOutOfOffice" class="gt-card__project-badge" 
         [class.gt-card__project-badge--commercial]="task.projectType === 'COMMERCIAL'"
         [class.gt-card__project-badge--residential]="task.projectType === 'RESIDENTIAL'">
     {{ projectTypeIcon }}
+  </span>
+
+  <!-- Badge de Out of Office -->
+  <span *ngIf="isOutOfOffice" class="gt-card__out-of-office-badge">
   </span>
 
   <div class="gt-card__body">
@@ -44,16 +49,13 @@
         👤 PM: {{ pmName }}
       </div>
 
-      <!-- Creator (solo en modo expandido) -->
+      <!-- Creator -->
       <div *ngIf="!compact && creatorName" class="gt-card__creator">
-        ✍️ Created by: {{ creatorName }}
+        ✍️ {{ creatorName }}
       </div>
 
       <!-- Badges -->
       <div class="gt-card__badges">
-        <span *ngIf="!compact && task.personalTask" class="gt-card__badge gt-card__badge--personal">
-          👤 Personal
-        </span>
         <span class="gt-card__badge gt-card__badge--status" 
               [style.background]="statusConfig.bg" 
               [style.color]="statusConfig.color"

@@ -129,6 +129,78 @@ export class GeneralTaskService {
       );
   }
 
+  // ========= SAVE (normalize payload keys) =========
+  /**
+   * Normalize a frontend payload into backend expected snake_case fields
+   * and perform create or update depending on presence of `id`.
+   * Supported fields (frontend keys accepted in camelCase or snake_case):
+   * id, name, issuedDate/issued_date, taskCategoryId/task_category_id,
+   * projectId/project_id, projectPhaseId/project_phase_id,
+   * createByEmployeeId/created_by_employee_id, status, endDate/end_date,
+   * bimDate/bim_date, description_bim, description_electrical,
+   * description_mechanical, description_plumbing, description_structural
+   */
+  saveTask(payload: any): Observable<GeneralTask> {
+    const body: any = {};
+    if (!payload) payload = {};
+    if (payload.id !== undefined) body.id = payload.id;
+    if (payload.name !== undefined) body.name = payload.name;
+    // issued date (fallback to startDate if provided by form)
+    body.issued_date = payload.issuedDate ?? payload.issued_date ?? payload.startDate ?? payload.start_date ?? null;
+    // Ensure issued_date is in a full ISO datetime when only a date is provided
+    if (body.issued_date) {
+      try {
+        const ds = String(body.issued_date).trim();
+        // if it's like YYYY-MM-DD, append time to make it an ISO datetime
+        if (/^\d{4}-\d{2}-\d{2}$/.test(ds)) {
+          body.issued_date = `${ds}T00:00:00Z`;
+        } else {
+          body.issued_date = ds;
+        }
+      } catch (e) {
+        // fallback: leave as-is
+      }
+    }
+    // category
+    body.task_category_id = payload.taskCategoryId ?? payload.task_category_id ?? payload.categoryId ?? payload.category_id ?? null;
+    // project / phase
+    body.project_id = payload.projectId ?? payload.project_id ?? null;
+    body.project_phase_id = payload.projectPhaseId ?? payload.project_phase_id ?? null;
+    // creator
+    body.created_by_employee_id = payload.createByEmployeeId ?? payload.createdByEmployeeId ?? payload.created_by_employee_id ?? null;
+    // status
+    body.status = payload.status ?? null;
+    // end date
+    body.end_date = payload.endDate ?? payload.end_date ?? null;
+    // bim
+    body.bim_date = payload.bimDate ?? payload.bim_date ?? null;
+    // descriptions
+    body.description_bim = payload.description_bim ?? payload.descriptionBim ?? payload.description_bim ?? null;
+    body.description_electrical = payload.description_electrical ?? payload.descriptionElectrical ?? null;
+    body.description_mechanical = payload.description_mechanical ?? payload.descriptionMechanical ?? null;
+    body.description_plumbing = payload.description_plumbing ?? payload.descriptionPlumbing ?? null;
+    body.description_structural = payload.description_structural ?? payload.descriptionStructural ?? null;
+
+    // ensure nulls for missing optional fields to keep API payload shape predictable
+    const keys = [
+      'name','issued_date','task_category_id','project_id','project_phase_id','created_by_employee_id','status','end_date','bim_date',
+      'description_bim','description_electrical','description_mechanical','description_plumbing','description_structural'
+    ];
+    keys.forEach(k => { if (!(k in body)) body[k] = null; });
+
+    // debug: log normalized body before sending
+    try { console.log('GeneralTaskService.normalizedBody', body); } catch (e) {}
+
+    if (body.id) {
+      const idNum = Number(body.id);
+      // remove id from body when sending update (id in URL)
+      delete body.id;
+      return this.update(idNum, body as Partial<GeneralTask>);
+    }
+
+    return this.create(body as Partial<GeneralTask>);
+  }
+
   // ========= SEARCH & FILTERS =========
   
   /**
@@ -226,7 +298,7 @@ export class GeneralTaskService {
    * Filtrar tareas personales
    */
   filterPersonalTasks(tasks: GeneralTask[]): GeneralTask[] {
-    return tasks.filter(t => t.personalTask || t.personal_task);
+    return tasks.filter(t => (t as any).personalTask || (t as any).personal_task);
   }
 
   /**

@@ -150,6 +150,8 @@ body {
 	background: var(--surface) !important;
 	color: var(--text) !important;
 	border-bottom: 1px solid var(--border) !important;
+	position: relative; /* ensure z-index works */
+	z-index: 2000; /* sit above floating buttons */
 }
 .header .username, .header .logout-btn, .header .theme-btn, .header button {
 	color: var(--btn-text) !important;

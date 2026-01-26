@@ -119,15 +119,7 @@ export class ScheduleCalendar implements OnInit, OnChanges {
     try {
       const eventType = arg.event.extendedProps?.['type'];
       
-      // Check if this is a multi-day event
-      const isMultiDay = arg.event.start && arg.event.end && 
-        Math.ceil((arg.event.end.getTime() - arg.event.start.getTime()) / (1000 * 60 * 60 * 24)) > 1;
-      
-      // For multi-day events, let FullCalendar handle native rendering
-      if (isMultiDay && arg.event.start && arg.event.end) {
-        return undefined;
-      }
-      
+      // Use custom rendering for ALL GENERAL_TASK events (including all OutOfOffice)
       if (eventType === 'GENERAL_TASK') {
         const cardElement = renderGeneralTaskCard(arg, this.appRef, this.envInjector, true);
         if (!cardElement) {

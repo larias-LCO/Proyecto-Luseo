@@ -44,6 +44,11 @@ export class GeneralTaskCard {
   }
 
   get creatorName() {
-    return this.task?.createByEmployeeName || '';
+    return (this.task as any)?.createdByEmployeeName || this.task?.createByEmployeeName || '';
+  }
+
+  get isOutOfOffice() {
+    const categoryName = (this.task?.taskCategoryName || '').toLowerCase();
+    return categoryName.includes('out of office');
   }
 }

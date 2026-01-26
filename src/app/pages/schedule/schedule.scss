@@ -185,6 +185,11 @@
   // Calendar section
   .calendar-section {
     margin-top: 2rem;
+    position: relative;
+    /* leave space at top so the floating create button sits above the calendar area */
+    padding-top: 56px;
+
+    /* floating-create removed per UX request */
   }
 }
 

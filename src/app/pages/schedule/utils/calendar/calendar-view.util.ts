@@ -7,6 +7,7 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import listPlugin from '@fullcalendar/list';
 import timeGridPlugin from '@fullcalendar/timegrid';
+import { eventOrderComparator } from './event-order.util';
 
 /**
  * Configuración del calendario para Schedule
@@ -33,15 +34,22 @@ export function getScheduleCalendarOptions(): CalendarOptions {
     selectable: true,
     selectMirror: true,
     // Event configuration
-    dayMaxEventRows: true, // Show all events, use internal scroll
-    dayMaxEvents: false, // Don't limit events
-    moreLinkClick: 'popover', // Show popover on "+X more" click
-    eventOrder: 'title', // Sort events by title
-    displayEventTime: false, // Don't show time for all-day events
-    displayEventEnd: false, // Don't show end time
+    height: 'auto', // Auto height to show all events
+    contentHeight: 'auto',
+    dayMaxEventRows: false, // Show ALL events without limit
+    dayMaxEvents: false, // No event limit
+    moreLinkClick: 'popover',
+    eventOverlap: false, // Prevent events from overlapping which can cause reordering
+    eventDisplay: 'auto', // Use default FullCalendar rendering for multi-day and allDay events
+    displayEventTime: false,
+    displayEventEnd: false,
+    // CRITICAL: Force strict event ordering - prevents FullCalendar from compacting events up to fill gaps
+    eventOrderStrict: true,
+    // Custom event order function with priority system
+    eventOrder: eventOrderComparator,
     // Multi-day event settings
-    nextDayThreshold: '00:00:00', // Events ending at midnight end on that day
-    eventMinHeight: 28, // Minimum height for events
+    nextDayThreshold: '00:00:00',
+    eventMinHeight: 28,
     // CSS classes
     dayCellClassNames: ['schedule-day-cell'],
     eventClassNames: (arg) => {
@@ -54,22 +62,12 @@ export function getScheduleCalendarOptions(): CalendarOptions {
         classes.push('schedule-task-event');
       }
       
-      // Agregar clase si es tarea personal
-      if (arg.event.extendedProps?.['isPersonalTask']) {
-        classes.push('schedule-personal-task');
-      }
-      
       return classes;
     },
-    // Altura del calendario
-    height: 'auto',
-    contentHeight: 'auto',
     // Configuración de idioma (ingles)
     locale: 'en',
     // Mostrar número de semana
     weekNumbers: false,
-    // Estilo de eventos
-    eventDisplay: 'block',
     // Configuración para vista de lista
     views: {
       listMonth: {
@@ -78,11 +76,14 @@ export function getScheduleCalendarOptions(): CalendarOptions {
       },
       dayGridMonth: {
         buttonText: 'Month',
-        dayMaxEvents: 4 // Mostrar máximo 4 eventos antes del "+X more"
+        dayMaxEventRows: false, // Show all events
+        dayMaxEvents: false,
+        fixedWeekCount: false
       },
       dayGridWeek: {
         buttonText: 'Week',
-        dayMaxEvents: true // Show all events in weekly view
+        dayMaxEventRows: false, // Show all events
+        dayMaxEvents: false
       }
     },
     // Button configuration

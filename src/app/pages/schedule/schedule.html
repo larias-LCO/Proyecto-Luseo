@@ -1,6 +1,6 @@
 <!-- Header y Submenú -->
 <app-header></app-header>
-<app-submenu></app-submenu>
+<!-- <app-submenu></app-submenu> -->
 
 <div class="schedule-page">
   <!-- Loading spinner -->
@@ -19,88 +19,23 @@
         <div class="col-md-6">
           <h2 class="page-title">
             <i class="bi bi-calendar3"></i>
-            Task Schedule
+            Schedule
           </h2>
         </div>
         <div class="col-md-6 text-end">
-          <button class="btn btn-outline-secondary me-2" (click)="toggleHolidays()">
-            <i class="bi" [ngClass]="showHolidays ? 'bi-eye-slash' : 'bi-eye'"></i>
-            {{ showHolidays ? 'Hide' : 'Show' }} Holidays
-          </button>
-          <button class="btn btn-outline-primary me-2" (click)="clearFilters()">
-            <i class="bi bi-x-circle"></i>
-            Clear Filters
-          </button>
-          <button class="btn btn-primary" (click)="reloadTasks()">
-            <i class="bi bi-arrow-clockwise"></i>
-            Refresh
-          </button>
         </div>
       </div>
     </div>
 
     <!-- Filtros rápidos -->
     <div class="filters-section mb-4">
-      <div class="card">
-        <div class="card-body">
-          <h5 class="card-title mb-3">
-            <i class="bi bi-funnel"></i>
-            Filters
-          </h5>
-          <div class="row">
-            <!-- Filtro por proyecto -->
-            <div class="col-md-4 mb-3">
-              <label class="form-label">Projects</label>
-              <select class="form-select" (change)="filterByProject(+$any($event.target).value)">
-                <option value="0">Select project...</option>
-                <option *ngFor="let project of projects" [value]="project.id">
-                  {{ project.projectCode }} - {{ project.name }}
-                </option>
-              </select>
-              <div class="selected-filters mt-2" *ngIf="filters.projectIds.length > 0">
-                <span class="badge bg-primary me-1" *ngFor="let projectId of filters.projectIds">
-                  Project {{ projectId }}
-                  <i class="bi bi-x-circle ms-1" (click)="filterByProject(projectId)" style="cursor: pointer;"></i>
-                </span>
-              </div>
-            </div>
-
-            <!-- Filtro por categoría -->
-            <div class="col-md-4 mb-3">
-              <label class="form-label">Categories</label>
-              <select class="form-select" (change)="filterByCategory(+$any($event.target).value)">
-                <option value="0">Select category...</option>
-                <option *ngFor="let category of categories" [value]="category.id">
-                  {{ category.name }}
-                </option>
-              </select>
-              <div class="selected-filters mt-2" *ngIf="filters.categoryIds.length > 0">
-                <span class="badge bg-info me-1" *ngFor="let categoryId of filters.categoryIds">
-                  Category {{ categoryId }}
-                  <i class="bi bi-x-circle ms-1" (click)="filterByCategory(categoryId)" style="cursor: pointer;"></i>
-                </span>
-              </div>
-            </div>
-
-            <!-- Toggle tareas personales -->
-            <div class="col-md-4 mb-3">
-              <label class="form-label">Options</label>
-              <div class="form-check form-switch">
-                <input 
-                  class="form-check-input" 
-                  type="checkbox" 
-                  id="showPersonalTasks"
-                  [(ngModel)]="filters.showPersonalTasks"
-                  (change)="applyCurrentFilters()"
-                >
-                <label class="form-check-label" for="showPersonalTasks">
-                  Show personal tasks
-                </label>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <schedule-filters
+        [projects]="projects"
+        [categories]="categories"
+        [initialFilters]="filters"
+        [myEmployeeId]="myEmployeeId"
+        (filtersChange)="onFiltersChange($event)"
+      ></schedule-filters>
     </div>
 
     <!-- Calendario -->
@@ -112,8 +47,20 @@
         [calendarHeight]="800"
         (taskClick)="onTaskClick($event)"
         (dateSelect)="onDateSelect($event)"
-        (dateRangeChange)="onDateRangeChange($event)"
       ></app-schedule-calendar>
     </div>
+    
+    <!-- Modal: create/edit task -->
+    <app-schedule-task-modal *ngIf="showTaskModal"
+      [task]="modalTask"
+      [myEmployeeId]="myEmployeeId"
+      [myRole]="getPrimaryRole()"
+      [projects]="projects"
+      [employees]="employees"
+      [categories]="categories"
+      (save)="onModalSave($event)"
+      (delete)="onModalDelete($event)"
+      (close)="onModalClose()"
+    ></app-schedule-task-modal>
   </div>
 </div>

@@ -10,8 +10,11 @@ import { darkenColor, getContrastColor } from '../color.util';
 export function mapGeneralTasksToEvents(tasks: GeneralTask[] = []): EventInput[] {
   // Filtrar tareas sin fecha válida
   const validTasks = (tasks || []).filter(task => task.issuedDate);
-  
-  const events = validTasks.map(task => {
+
+  const events: EventInput[] = [];
+
+  // Para cada tarea, mapeamos a uno o varios eventos (OutOfOffice multi-día -> evento por día)
+  for (const task of validTasks) {
     // Convertir fecha de inicio a formato ISO string
     let startDate: string;
     try {
@@ -32,90 +35,137 @@ export function mapGeneralTasksToEvents(tasks: GeneralTask[] = []): EventInput[]
     } catch (error) {
       console.error('Error converting issueDate for task:', task, error);
       // Si falla la conversión, skip this task
-      return null;
+      continue;
     }
 
-    // Convert end date for multi-day tasks
-    let endDate: string | undefined = undefined;
-    
-    if (task.endDate) {
+    // Check if this is an Out of Office task
+    const categoryName = (task.taskCategoryName || '').toLowerCase();
+    const isOutOfOffice = categoryName.includes('out of office');
+
+    // DEBUG: Log task details to verify endDate is being read
+    if (isOutOfOffice) {
+      console.log('🏖️ OutOfOffice task detected:', {
+        id: task.id,
+        name: task.name,
+        startDate,
+        endDate: task.endDate,
+        categoryName: task.taskCategoryName
+      });
+    }
+
+    // For ordering
+    const projectTypePriority = task.projectType === 'COMMERCIAL' ? 1 : 
+                                task.projectType === 'RESIDENTIAL' ? 2 : 3;
+    const orderValue = isOutOfOffice ? 200 : (300 + projectTypePriority);
+
+    // Common props factory
+    const makeEvent = (evStart: string, evEnd?: string, evIdSuffix = ''): EventInput => {
+      const classNames = isOutOfOffice ? ['out-of-office-event'] : ['general-task-event'];
+      const isMultiDay = isOutOfOffice && task.endDate && evEnd;
+      
+      // If this is a multi-day original task, mark segments (optional)
+      if (isMultiDay) {
+        classNames.push('out-of-office-range');
+      }
+
+      const eventProps: EventInput = {
+        id: `task-${task.id}${evIdSuffix}`,
+        title: task.name,
+        start: evStart,
+        end: evEnd,
+        allDay: true,
+        order: orderValue,
+        backgroundColor: task.taskCategoryColorHex || '#6c757d',
+        borderColor: darkenColor(task.taskCategoryColorHex || '#6c757d', 30),
+        textColor: getContrastColor(task.taskCategoryColorHex || '#fff'),
+        classNames: classNames,
+        extendedProps: {
+          type: 'GENERAL_TASK',
+          taskId: task.id,
+          taskName: task.name,
+          description: task.description,
+          status: task.status,
+          categoryId: task.taskCategoryId,
+          categoryName: task.taskCategoryName,
+          categoryColor: task.taskCategoryColorHex,
+          projectId: task.projectId,
+          projectName: task.projectName,
+          projectCode: task.projectCode,
+          projectType: task.projectType,
+          projectManagerName: task.projectManagerName,
+          phaseId: task.projectPhaseId,
+          phaseName: task.projectPhaseName,
+          createdByEmployeeId: task.createByEmployeeId,
+          createdByEmployeeName: task.createByEmployeeName,
+          isGeneralTask: true,
+          isOutOfOffice: isOutOfOffice,
+          fullTask: task
+        }
+      };
+      
+      // Force FullCalendar block display for multi-day events
+      if (isMultiDay) {
+        eventProps.display = 'auto';
+      }
+      
+      return eventProps;
+    };
+
+// If it's OutOfOffice and has an endDate, expand into daily events for custom rendering
+    if (isOutOfOffice && task.endDate) {
       try {
         const taskEndDate: any = task.endDate;
         let endDateObj: Date;
-        
+
         if (taskEndDate instanceof Date) {
-          endDateObj = taskEndDate;
+          endDateObj = new Date(taskEndDate);
         } else if (typeof taskEndDate === 'string') {
           endDateObj = new Date(taskEndDate.split('T')[0]);
         } else {
           endDateObj = new Date(taskEndDate);
         }
-        
+
         if (!isNaN(endDateObj.getTime())) {
-          // FullCalendar requires endDate to be EXCLUSIVE (day after the last day)
-          // So we add 1 day for correct display
-          endDateObj.setDate(endDateObj.getDate() + 1);
-          endDate = endDateObj.toISOString().split('T')[0];
+          // Create one event per day for custom rendering across the date range
+          const startObj = new Date(startDate);
+          const currentDay = new Date(startObj);
+          let dayCount = 0;
+          
+          console.log('🔄 Expanding OutOfOffice into daily events:', {
+            taskId: task.id,
+            taskName: task.name,
+            startDate: startDate,
+            endDate: endDateObj.toISOString().split('T')[0]
+          });
+          
+          while (currentDay <= endDateObj && dayCount < 365) {
+            const dayStr = currentDay.toISOString().split('T')[0];
+            events.push(makeEvent(dayStr, undefined, `-day${dayCount}`));
+            currentDay.setDate(currentDay.getDate() + 1);
+            dayCount++;
+          }
+          
+          console.log(`✅ Created ${dayCount} daily OutOfOffice events for task ${task.id}`);
+          continue; // next task
         }
       } catch (error) {
-        console.error('Error converting endDate for task:', task, error);
+        console.error('Error expanding endDate for Out of Office task (fallback to single-day):', task, error);
+        // fallthrough to single-day fallback below
       }
     }
 
-    const classNames = ['general-task-event'];
-    if (task.personalTask || task.personal_task) {
-      classNames.push('personal-task-event');
-    }
-
-    const mappedEvent = {
-      id: `task-${task.id}`,
-      title: task.name,
-      start: startDate,
-      end: endDate,
-      allDay: true,
-      backgroundColor: task.taskCategoryColorHex || '#6c757d',
-      borderColor: darkenColor(task.taskCategoryColorHex || '#6c757d', 30),
-      textColor: getContrastColor(task.taskCategoryColorHex || '#fff'),
-      classNames: classNames,
-      extendedProps: {
-        type: 'GENERAL_TASK',
+    // Default: single-day event at startDate (for tasks without endDate or non-OutOfOffice)
+    if (isOutOfOffice) {
+      console.log('📍 Single-day OutOfOffice event created:', {
         taskId: task.id,
         taskName: task.name,
-        description: task.description,
-        status: task.status,
-        
-        // Información de categoría
-        categoryId: task.taskCategoryId,
-        categoryName: task.taskCategoryName,
-        categoryColor: task.taskCategoryColorHex,
-        
-        // Información de proyecto
-        projectId: task.projectId,
-        projectName: task.projectName,
-        projectCode: task.projectCode,
-        projectType: task.projectType,
-        projectManagerName: task.projectManagerName,
-        
-        // Información de fase
-        phaseId: task.projectPhaseId,
-        phaseName: task.projectPhaseName,
-        
-        // Información de creador
-        createdByEmployeeId: task.createByEmployeeId,
-        createdByEmployeeName: task.createByEmployeeName,
-        
-        // Flags
-        isPersonalTask: task.personalTask || task.personal_task,
-        isGeneralTask: true,
-        
-        // Datos completos para modales/detalles
-        fullTask: task
-      }
-    };
-    
-    return mappedEvent;
-  }).filter(event => event !== null) as EventInput[];
-  
+        start: startDate
+      });
+    }
+    events.push(makeEvent(startDate));
+  }
+
+  console.log('📊 Total events generated from tasks:', events.length);
   return events;
 }
 
@@ -141,6 +191,7 @@ export function mapHolidaysToEvents(holidays: Holiday[] = []): EventInput[] {
       title: `🎉 ${holiday.localName || holiday.name}`,
       start: dateStr,
       allDay: true,
+      order: 100, // Holidays have highest priority
       backgroundColor: 'transparent',
       borderColor: 'transparent',
       textColor: '#000000',

@@ -16,6 +16,6 @@ export const routes: Routes = [
   { path: 'tasks', component: TasksPage, canActivate: [ReportAuthGuard] },
   { path: 'report-hours', component: ReportHours, canActivate: [ReportAuthGuard] },
   { path: 'schedule', component: Schedule, canActivate: [ReportAuthGuard] },
-  { path: '**', redirectTo: 'login' },
   {path: 'estimated-hours', component: EstimatedHoursPage, canActivate: [ReportAuthGuard] },
+  { path: '**', redirectTo: 'login' }
 ];

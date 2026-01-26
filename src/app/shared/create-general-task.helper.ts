@@ -138,9 +138,14 @@ export async function createGeneralTask({
       projectId: projectId,
       projectPhaseId: (phaseValue && projectId) ? parseInt(phaseValue) : null,
       taskCategoryId: parseInt((document.getElementById('task-category') as HTMLSelectElement).value),
-      personalTask: false,
-      personal_task: false,
-      status: (document.getElementById('task-status') as HTMLSelectElement).value
+      status: (document.getElementById('task-status') as HTMLSelectElement).value,
+      // New optional discipline fields; keep null by default unless form fields are added later
+      bim_date: null,
+      description_bim: null,
+      description_electrical: null,
+      description_mechanical: null,
+      description_plumbing: null,
+      description_structural: null
     };
     try {
       if (isOutOfOffice) {

@@ -22,8 +22,13 @@ export interface GeneralTask {
 
     createByEmployeeName: string;
     createByEmployeeId: number;
-
-    personalTask: boolean;
-    personal_task: boolean;
+    
+    // New BIM / discipline-specific description fields (nullable)
+    bim_date?: Date | null;
+    description_bim?: string | null;
+    description_electrical?: string | null;
+    description_mechanical?: string | null;
+    description_plumbing?: string | null;
+    description_structural?: string | null;
     status: GeneralTaskStatus;
 }

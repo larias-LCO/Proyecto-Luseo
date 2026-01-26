@@ -13,7 +13,13 @@ export interface CreateGeneralTaskPayload {
   taskCategoryId: number;
   projectId: number;
   projectPhaseId: number;
-  personalTask: boolean;
+  // Optional discipline fields
+  bim_date?: string | null;
+  description_bim?: string | null;
+  description_electrical?: string | null;
+  description_mechanical?: string | null;
+  description_plumbing?: string | null;
+  description_structural?: string | null;
 }
 
 /**
@@ -52,11 +58,16 @@ export function mapGeneralTaskFromBackend(task: any): GeneralTask {
     projectPhaseName: task.projectPhaseName || task.project_phase_name || '',
     projectPhaseId: task.projectPhaseId || task.project_phase_id,
     
-    createByEmployeeName: task.createByEmployeeName || task.create_by_employee_name || '',
-    createByEmployeeId: task.createByEmployeeId || task.create_by_employee_id,
+    createByEmployeeName: task.createdByEmployeeName || task.createByEmployeeName || task.create_by_employee_name || task.created_by_employee_name || '',
+    createByEmployeeId: task.createdByEmployeeId || task.createByEmployeeId || task.create_by_employee_id || task.created_by_employee_id,
     
-    personalTask: task.personalTask || task.personal_task || false,
-    personal_task: task.personal_task || task.personalTask || false,
+    // New discipline / BIM fields
+    bim_date: task.bim_date || task.bimDate ? (task.bim_date ? new Date(task.bim_date) : new Date(task.bimDate)) : null,
+    description_bim: task.description_bim || task.descriptionBim || null,
+    description_electrical: task.description_electrical || task.descriptionElectrical || null,
+    description_mechanical: task.description_mechanical || task.descriptionMechanical || null,
+    description_plumbing: task.description_plumbing || task.descriptionPlumbing || null,
+    description_structural: task.description_structural || task.descriptionStructural || null,
     status: task.status
   };
 }
@@ -92,7 +103,12 @@ export function mapGeneralTaskToBackend(task: Partial<GeneralTask>): CreateGener
   if (task.taskCategoryId !== undefined) payload.taskCategoryId = task.taskCategoryId;
   if (task.projectId !== undefined) payload.projectId = task.projectId;
   if (task.projectPhaseId !== undefined) payload.projectPhaseId = task.projectPhaseId;
-  if (task.personalTask !== undefined) payload.personalTask = task.personalTask;
+  if (task.bim_date !== undefined) payload.bim_date = task.bim_date instanceof Date ? task.bim_date.toISOString().split('T')[0] : task.bim_date;
+  if (task.description_bim !== undefined) payload.description_bim = task.description_bim;
+  if (task.description_electrical !== undefined) payload.description_electrical = task.description_electrical;
+  if (task.description_mechanical !== undefined) payload.description_mechanical = task.description_mechanical;
+  if (task.description_plumbing !== undefined) payload.description_plumbing = task.description_plumbing;
+  if (task.description_structural !== undefined) payload.description_structural = task.description_structural;
   if (task.status !== undefined) payload.status = task.status;
   
   return payload;
@@ -107,7 +123,13 @@ export function createDefaultGeneralTaskPayload(): Partial<CreateGeneralTaskPayl
     description: null,
     issuedDate: new Date().toISOString().split('T')[0],
     endDate: null,
-    personalTask: false
+    // discipline fields default to null
+    bim_date: null,
+    description_bim: null,
+    description_electrical: null,
+    description_mechanical: null,
+    description_plumbing: null,
+    description_structural: null
   };
 }
 

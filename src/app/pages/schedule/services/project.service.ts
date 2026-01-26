@@ -80,7 +80,7 @@ interface ProjectCache {
 @Injectable({ providedIn: 'root' })
 export class ProjectService {
 
-  private readonly CACHE_TTL = 5 * 60 * 1000; // 5 minutos
+  private readonly CACHE_TTL = 10 * 60 * 1000; // 10 minutos
   private cache: ProjectCache | null = null;
 
   constructor(private http: HttpClient) {}

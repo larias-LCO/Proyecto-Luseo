@@ -12,13 +12,36 @@ export function renderGeneralTaskCard(
   arg: EventContentArg, 
   appRef: ApplicationRef, 
   envInjector: EnvironmentInjector, 
-  compact: boolean = true
+  autoCompact: boolean = true
 ): HTMLElement {
   const event = arg.event;
   const task = event.extendedProps?.['fullTask'] as GeneralTask;
   
   if (!task) {
     return createSimpleEventElement(event.title, event.backgroundColor || '#6c757d');
+  }
+
+  // Determinar si debe ser compacto basado en el número de eventos en el mismo día
+  let shouldBeCompact = false;
+  if (autoCompact && arg.view?.calendar) {
+    try {
+      const allEvents = arg.view.calendar.getEvents();
+      const eventDate = event.start;
+      
+      if (eventDate) {
+        // Contar eventos en el mismo día
+        const eventsOnSameDay = allEvents.filter(e => {
+          if (!e.start) return false;
+          return e.start.toDateString() === eventDate.toDateString();
+        });
+        
+        // Si hay más de 4 tareas en el mismo día, usar modo compacto
+        shouldBeCompact = eventsOnSameDay.length > 4;
+      }
+    } catch (e) {
+      // Si hay error, usar modo normal (no compacto)
+      shouldBeCompact = false;
+    }
   }
 
   // Create wrapper for component
@@ -30,11 +53,9 @@ export function renderGeneralTaskCard(
   const darkerColor = darkenColor(categoryColor, 15);
   const textColor = getContrastColor(categoryColor);
   
-  // Apply styles to wrapper with !important
+  // Apply minimal styles to wrapper; let FullCalendar paint the event background/border
   wrapper.style.cssText = `
-    background-color: ${categoryColor} !important;
-    border: 2px solid ${darkenColor(categoryColor, 30)} !important;
-    border-left: 5px solid ${darkenColor(categoryColor, 40)} !important;
+    background-color: transparent !important;
     color: ${textColor} !important;
     height: 100% !important;
     min-height: 28px !important;
@@ -51,7 +72,7 @@ export function renderGeneralTaskCard(
 
   // Setear inputs
   componentRef.instance.task = task;
-  componentRef.instance.compact = compact;
+  componentRef.instance.compact = shouldBeCompact;
   componentRef.instance.categoryColor = categoryColor;
   componentRef.instance.textColor = textColor;
 
