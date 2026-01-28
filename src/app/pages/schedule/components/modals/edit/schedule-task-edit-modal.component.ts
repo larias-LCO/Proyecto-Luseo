@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges } from '@angular/core';
-import { CommonModule, NgFor, NgIf } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { ProjectService } from '../../../../../core/services/project.service';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { XIconComponent } from '../../../../../core/components/animated-icons/x-icon.component';
@@ -9,7 +9,7 @@ import { GeneralTaskStatus } from '../../../models/enums/generalTask-status.enum
 @Component({
   selector: 'app-schedule-task-edit-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, XIconComponent, NgIf, NgFor],
+  imports: [CommonModule, ReactiveFormsModule, XIconComponent],
   templateUrl: './schedule-task-edit-modal.component.html',
   styleUrls: ['./schedule-task-edit-modal.component.scss']
 })

@@ -6,68 +6,102 @@
     </header>
 
     <form [formGroup]="form" class="modal-body">
-      <label>Name</label>
-      <input formControlName="name" />
-      <div class="field-error" *ngIf="form.get('name')?.touched && form.get('name')?.invalid">Name is required</div>
+      <div class="form-group">
+        <label>Name</label>
+        <input formControlName="name" />
+        <div class="field-error" *ngIf="form.get('name')?.touched && form.get('name')?.errors">
+          <div *ngIf="form.get('name')?.errors?.['required']">Name is required</div>
+        </div>
+      </div>
 
-      <label>Issued Date</label>
-      <input type="date" formControlName="issuedDate" />
-      <div class="field-error" *ngIf="form.get('issuedDate')?.touched && form.get('issuedDate')?.invalid">Issued date is required</div>
+      <div class="form-group">
+        <label>Issued Date</label>
+        <input type="date" formControlName="issuedDate" />
+        <div class="field-error" *ngIf="form.get('issuedDate')?.touched && form.get('issuedDate')?.errors">
+          <div *ngIf="form.get('issuedDate')?.errors?.['required']">Issued date is required</div>
+        </div>
+      </div>
 
       <ng-container *ngIf="showEndDate()">
-        <label>End Date</label>
-        <input type="date" formControlName="endDate" />
-        <div class="field-error" *ngIf="form.get('endDate')?.touched && form.get('endDate')?.errors">
-          <div *ngIf="form.get('endDate')?.errors?.['required']">End date is required for this category</div>
+        <div class="form-group">
+          <label>End Date</label>
+          <input type="date" formControlName="endDate" />
+          <div class="field-error" *ngIf="form.get('endDate')?.touched && form.get('endDate')?.errors">
+            <div *ngIf="form.get('endDate')?.errors?.['required']">End date is required for this category</div>
+          </div>
         </div>
       </ng-container>
 
-      <label>Project</label>
-      <select formControlName="projectId">
-        <option value="">--</option>
-        <option *ngFor="let p of projects" [value]="p.id">{{ p.projectCode || p.code || '' }}{{ (p.projectCode || p.code) ? ' - ' : '' }}{{ p.name }}</option>
-      </select>
+      <div class="form-group">
+        <label>Project</label>
+        <select formControlName="projectId">
+          <option value="">--</option>
+          <option *ngFor="let p of projects" [value]="p.id">{{ p.projectCode || p.code || '' }}{{ (p.projectCode || p.code) ? ' - ' : '' }}{{ p.name }}</option>
+        </select>
+      </div>
 
       <ng-container *ngIf="phases.length">
-        <label>Project Phase</label>
-        <select formControlName="projectPhaseId">
-          <option value="">--</option>
-          <option *ngFor="let ph of phases" [value]="ph.id">{{ ph.name }}</option>
-        </select>
+        <div class="form-group">
+          <label>Project Phase</label>
+          <select formControlName="projectPhaseId">
+            <option value="">--</option>
+            <option *ngFor="let ph of phases" [value]="ph.id">{{ ph.name }}</option>
+          </select>
+        </div>
       </ng-container>
 
-      <label>Category</label>
-      <select formControlName="taskCategoryId">
-        <option value="">--</option>
-        <option *ngFor="let c of categories" [value]="c.id">{{ c.name }}</option>
-      </select>
-      <div class="field-error" *ngIf="form.get('taskCategoryId')?.touched && form.get('taskCategoryId')?.invalid">Category is required</div>
+      <div class="form-group">
+        <label>Category</label>
+        <select formControlName="taskCategoryId">
+          <option value="">--</option>
+          <option *ngFor="let c of categories" [value]="c.id">{{ c.name }}</option>
+        </select>
+        <div class="field-error" *ngIf="form.get('taskCategoryId')?.touched && form.get('taskCategoryId')?.errors">
+          <div *ngIf="form.get('taskCategoryId')?.errors?.['required']">Category is required</div>
+        </div>
+      </div>
 
-      <label>Status</label>
-      <select formControlName="status">
-        <option *ngFor="let s of (statusList || [])" [value]="s">{{ s }}</option>
-      </select>
+      <div class="form-group">
+        <label>Status</label>
+        <select formControlName="status">
+          <option *ngFor="let s of (statusList || [])" [value]="s">{{ s }}</option>
+        </select>
+      </div>
 
-      <label>Description</label>
-      <textarea formControlName="description"></textarea>
+      <div class="form-group full-row">
+        <label>Description</label>
+        <textarea formControlName="description"></textarea>
+      </div>
 
-      <label>BIM Date</label>
-      <input type="date" formControlName="bimDate" />
+      <div class="form-group">
+        <label>BIM Date</label>
+        <input type="date" formControlName="bimDate" />
+      </div>
 
-      <label>Description BIM</label>
-      <textarea formControlName="descriptionBim"></textarea>
+      <div class="form-group full-row">
+        <label>Description BIM</label>
+        <textarea formControlName="descriptionBim"></textarea>
+      </div>
 
-      <label>Description Electrical</label>
-      <textarea formControlName="descriptionElectrical"></textarea>
+      <div class="form-group full-row">
+        <label>Description Electrical</label>
+        <textarea formControlName="descriptionElectrical"></textarea>
+      </div>
 
-      <label>Description Mechanical</label>
-      <textarea formControlName="descriptionMechanical"></textarea>
+      <div class="form-group full-row">
+        <label>Description Mechanical</label>
+        <textarea formControlName="descriptionMechanical"></textarea>
+      </div>
 
-      <label>Description Plumbing</label>
-      <textarea formControlName="descriptionPlumbing"></textarea>
+      <div class="form-group full-row">
+        <label>Description Plumbing</label>
+        <textarea formControlName="descriptionPlumbing"></textarea>
+      </div>
 
-      <label>Description Structural</label>
-      <textarea formControlName="descriptionStructural"></textarea>
+      <div class="form-group full-row">
+        <label>Description Structural</label>
+        <textarea formControlName="descriptionStructural"></textarea>
+      </div>
 
     </form>
 

@@ -57,6 +57,8 @@
 .subtask-edit-modal .modal-footer { padding: 12px 20px; border-top: 1px solid #eee; display: flex; justify-content: flex-end; gap: 10px; }
 
 .subtask-edit-modal .form-group { margin-bottom: 12px; display: flex; flex-direction: column; }
+/* Reserve small space for inline error messages */
+.subtask-edit-modal .form-group { position: relative; padding-bottom: 6px; }
 
 
 .subtask-edit-modal .form-input { padding: 8px 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; cursor: pointer; }
@@ -97,7 +99,7 @@
 
 .subtask-edit-modal .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .subtask-edit-modal .req { color: var(--danger); font-weight: 700; }
-.subtask-edit-modal .field-error { color: var(--danger); font-size: 12px; margin-top: 6px; background: rgba(220, 38, 38, 0.06); padding: 6px 8px; border-radius: 6px; font-weight: 600; }
+.subtask-edit-modal .field-error { color: var(--danger); font-size: 12px; background: rgba(220, 38, 38, 0.06); padding: 6px 8px; border-radius: 6px; font-weight: 600; display: block; margin-top: 4px; position: static; }
 .subtask-edit-modal .form-controls { padding: 8px 0 0 0; }
 .subtask-edit-modal .btn { padding: 8px 12px; border-radius: 6px; border: 1px solid transparent; cursor: pointer; }
 .subtask-edit-modal .btn-primary { background: linear-gradient(135deg, #10b981, #059669); color: #fff; }

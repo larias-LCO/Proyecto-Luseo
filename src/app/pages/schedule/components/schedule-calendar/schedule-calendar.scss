@@ -51,22 +51,69 @@
 
 // Wrapper del calendario
 .calendar-wrapper {
-  min-height: 600px;
+  min-height: 0;
+  /* Allow wrapper to size to content; component can still set --calendar-height when needed */
+  height: auto;
+  max-height: none;
   
   ::ng-deep {
-    // Ensure calendar expands to show all events without internal scrolling
+    /* Adopt report-hours scrolling model: make full calendar scroller visible and
+       enable per-day scrolling for month view while allowing week view to use
+       general calendar scrolling. */
     .fc {
-      height: auto !important;
+      height: 100% !important;
     }
-    
-    // CRITICAL: Proper flexbox ordering for events within day containers
-    .fc-daygrid-day-events {
-      display: flex !important;
-      flex-direction: column !important;
-      gap: 2px !important;
-      overflow-y: visible !important;
-      overflow-x: hidden;
-      max-height: none !important;
+
+    /* General FullCalendar scroller */
+    .fc-scroller {
+      overflow: auto !important;
+    }
+
+    /* Month view: structure daygrid as flex so day events can flex/scroll inside */
+    .fc .fc-daygrid {
+      height: calc(100% - 56px) !important; /* leave space for headerToolbar/title; tweak if needed */
+      display: flex;
+      flex-direction: column;
+    }
+
+    .fc .fc-daygrid-body {
+      flex: 1 1 auto;
+      min-height: 0;
+      display: block;
+      overflow: hidden !important;
+    }
+
+    .fc .fc-daygrid-row {
+      display: flex;
+      flex: 1 1 0;
+      min-height: 0;
+    }
+
+    .fc .fc-daygrid-day-frame {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      flex: 1 1 0;
+    }
+
+    .fc .fc-daygrid-day-top {
+      flex: 0 0 auto;
+    }
+
+    .fc .fc-daygrid-day-events {
+      flex: 1 1 auto;
+      overflow-y: auto !important;
+      -webkit-overflow-scrolling: touch !important;
+    }
+
+    /* Week/list views: constrain the main content area and enable scrolling
+       so the calendar keeps a fixed height while users can scroll through events. */
+    .fc .fc-daygrid-body,
+    .fc .fc-timegrid-body {
+      /* leave space for header toolbar/title (approx 56px) */
+      max-height: calc(100% - 56px) !important;
+      overflow: auto !important;
+      -webkit-overflow-scrolling: touch !important;
     }
     
     // Force events to stack vertically in order
@@ -476,3 +523,68 @@
     }
   }
 }
+
+    /* Prevent overlapping between stacked calendar instances
+       - ensure each calendar creates its own stacking context
+       - clip any absolutely positioned children to the calendar wrapper
+       - keep internal FullCalendar scroller responsible for scrolling */
+    .calendar-wrapper {
+      position: relative;
+      z-index: 0; /* new stacking context */
+      overflow: hidden; /* clip children outside the wrapper */
+    }
+
+    .calendar-wrapper ::ng-deep .fc-scroller {
+      position: relative !important;
+      overflow: auto !important; /* internal scroller only */
+      -webkit-overflow-scrolling: touch !important;
+    }
+
+    /* Provide a clear gap between the two calendar instances */
+    .calendar-previous,
+    .calendar-wrapper + .calendar-wrapper {
+      margin-top: 1.5rem !important;
+    }
+
+    /* Keep popovers and event hover layers inside their calendar but above events */
+    .calendar-wrapper ::ng-deep .fc-popover,
+    .calendar-wrapper ::ng-deep .fc-event {
+      position: relative !important;
+      z-index: 10 !important;
+    }
+
+    /* Ensure FullCalendar root inside wrapper doesn't create bleed-through */
+    .calendar-wrapper ::ng-deep .fc {
+      position: relative !important;
+      z-index: 0 !important;
+    }
+
+    /* Force flex layout so inner scrollers can shrink and scroll properly */
+    .calendar-wrapper {
+      display: flex !important;
+      flex-direction: column !important;
+      /* Let the wrapper size itself by content; keep a sensible min to avoid collapse */
+      height: auto !important;
+      min-height: 0 !important;
+    }
+
+    .calendar-wrapper ::ng-deep .fc {
+      display: flex !important;
+      flex-direction: column !important;
+      flex: 1 1 auto !important;
+      min-height: 0 !important; /* allow children to shrink */
+    }
+
+    .calendar-wrapper ::ng-deep .fc-scroller {
+      flex: 1 1 auto !important;
+      min-height: 0 !important;
+      overflow: auto !important;
+    }
+
+    .calendar-wrapper ::ng-deep .fc .fc-daygrid-body,
+    .calendar-wrapper ::ng-deep .fc .fc-timegrid-body {
+      flex: 1 1 auto !important;
+      min-height: 0 !important;
+      overflow: auto !important;
+      max-height: none !important;
+    }

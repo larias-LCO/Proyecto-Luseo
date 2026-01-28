@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subject, takeUntil, forkJoin } from 'rxjs';
@@ -44,7 +44,7 @@ import { createDefaultFilters, ScheduleFilters } from './utils/filters/schedule-
   templateUrl: './schedule.html',
   styleUrl: './schedule.scss'
 })
-export class Schedule implements OnInit, OnDestroy {
+export class Schedule implements OnInit, OnDestroy, AfterViewInit {
 
   // Datos principales
   allTasks: GeneralTask[] = [];
@@ -94,6 +94,13 @@ export class Schedule implements OnInit, OnDestroy {
   createPreset: any | null = null;
 
   ngOnInit(): void {
+    // Initialize previous calendar date to one week before today so child receives it on first render
+    try {
+      const prev = new Date();
+      prev.setDate(prev.getDate() - 7);
+      this.previousInitialDate = this.formatLocalDate(prev);
+    } catch (e) {}
+
     this.loadInitialData();
 
     // Prefer state from AuthService; fallback to cookie if available
@@ -138,11 +145,33 @@ export class Schedule implements OnInit, OnDestroy {
     return undefined;
   }
 
-  @ViewChild(ScheduleCalendar) private calendarComponent?: ScheduleCalendar;
+  @ViewChild('primaryCalendar') private calendarPrimary?: ScheduleCalendar;
+  @ViewChild('previousCalendar') private calendarPrevious?: ScheduleCalendar;
+  // Date (ISO string YYYY-MM-DD) to pass as initialDate to the previous-week calendar
+  previousInitialDate: string | null = null;
+
+  private formatLocalDate(d: Date): string {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  ngAfterViewInit(): void {
+    // Position the secondary calendar to the previous week relative to today initially
+    try {
+      const prev = new Date();
+      prev.setDate(prev.getDate() - 7);
+      const prevStr = this.formatLocalDate(prev);
+      this.previousInitialDate = prevStr;
+      // also attempt to navigate if calendar API already present
+      setTimeout(() => this.calendarPrevious?.goToDate(prev), 250);
+    } catch (e) {}
   }
 
   /**
@@ -226,11 +255,31 @@ export class Schedule implements OnInit, OnDestroy {
     const currentEmployeeId = this.resolveCurrentEmployeeId();
     const currentUsername = this.authState.username || undefined;
 
-    console.debug('[Schedule] applyCurrentFilters -> currentEmployeeId=', currentEmployeeId, 'filters=', this.filters, 'projects=', this.projects?.length, 'tasks=', this.allTasks?.length);
     this.filteredTasks = applyFilters(this.allTasks, this.filters, { projects: this.projects, myEmployeeId: currentEmployeeId, username: currentUsername });
+  }
 
-    // Force-refresh calendar component to ensure events update immediately
-    setTimeout(() => this.calendarComponent?.refreshEvents(), 0);
+  /**
+   * When primary calendar's visible range changes, move the previous calendar
+   * to show the week immediately before the primary's start date.
+   */
+  onPrimaryDateRangeChange(range: { start: Date; end: Date }): void {
+    try {
+      const prevStart = new Date(range.start);
+      prevStart.setDate(prevStart.getDate() - 7);
+      this.previousInitialDate = this.formatLocalDate(prevStart);
+      // attempt to navigate previous calendar and ensure it's in week view
+      try {
+        this.calendarPrevious?.goToDate(prevStart);
+        this.calendarPrevious?.changeView('dayGridWeek');
+      } catch (e) {
+        // retry shortly if API not ready
+        setTimeout(() => {
+          try { 
+            this.calendarPrevious?.goToDate(prevStart); this.calendarPrevious?.changeView('dayGridWeek'); 
+          } catch (e) {}
+        }, 200);
+      }
+    } catch (e) {}
   }
 
 
@@ -367,7 +416,6 @@ export class Schedule implements OnInit, OnDestroy {
    */
   // clearFilters handled by ScheduleFiltersComponent
   onFiltersChange(filters: ScheduleFilters): void {
-    console.debug('[Schedule] onFiltersChange received', filters, 'myEmployeeId=', this.myEmployeeId);
     this.filters = { ...filters };
     this.applyCurrentFilters();
   }

@@ -20,7 +20,7 @@
           <div class="field-error" *ngIf="form.get('subTaskCategoryId')?.touched && form.get('subTaskCategoryId')?.invalid">Category is required</div>
         </div>
 
-        <div class="form-group">
+        <div class="form-group full-row">
           <label for="edit-name">✏️ Description</label>
           <textarea id="edit-name" name="name" formControlName="name" class="form-input" rows="2" placeholder="Describe the task..." autocomplete="off"></textarea>
           <div class="field-error" *ngIf="form.get('name')?.touched && form.get('name')?.invalid">Description is required</div>

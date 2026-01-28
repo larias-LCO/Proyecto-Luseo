@@ -41,14 +41,28 @@
 
     <!-- Calendario -->
     <div class="calendar-section">
-      <app-schedule-calendar
+      <app-schedule-calendar #primaryCalendar
         [tasks]="filteredTasks"
         [holidays]="holidays"
         [showHolidays]="showHolidays"
         [calendarHeight]="800"
         (taskClick)="onTaskClick($event)"
         (dateSelect)="onDateSelect($event)"
+        (dateRangeChange)="onPrimaryDateRangeChange($event)"
       ></app-schedule-calendar>
+
+      <!-- Duplicate calendar showing the previous week (read: same data + filters) -->
+      <div class="calendar-previous mt-4">
+        <app-schedule-calendar #previousCalendar
+          [tasks]="filteredTasks"
+          [holidays]="holidays"
+          [showHolidays]="showHolidays"
+          [calendarHeight]="800"
+          [initialDate]="previousInitialDate"
+          (taskClick)="onTaskClick($event)"
+          (dateSelect)="onDateSelect($event)"
+        ></app-schedule-calendar>
+      </div>
     </div>
     
     <!-- Modal: create/edit task -->

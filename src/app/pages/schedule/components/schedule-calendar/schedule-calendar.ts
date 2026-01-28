@@ -9,10 +9,11 @@ import {
   OnInit,
   ApplicationRef,
   EnvironmentInjector,
-  inject
+  inject,
+  ViewChild
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FullCalendarModule } from '@fullcalendar/angular';
+import { FullCalendarModule, FullCalendarComponent } from '@fullcalendar/angular';
 import { CalendarOptions, EventInput, EventClickArg, EventContentArg } from '@fullcalendar/core';
 import { GeneralTask } from '../../models/general-task.model';
 import { Holiday } from '../../services/holiday.service';
@@ -37,6 +38,7 @@ export class ScheduleCalendar implements OnInit, OnChanges {
   @Input() holidays: Holiday[] = [];
   @Input() showHolidays: boolean = true;
   @Input() calendarHeight: number = 800;
+  @Input() initialDate?: string | Date | null = undefined;
 
   @Output() taskClick = new EventEmitter<GeneralTask>();
   @Output() dateSelect = new EventEmitter<{ start: Date; end: Date }>();
@@ -47,14 +49,24 @@ export class ScheduleCalendar implements OnInit, OnChanges {
 
   private appRef = inject(ApplicationRef);
   private envInjector = inject(EnvironmentInjector);
+  
+  @ViewChild('fc') private fullCalendar?: FullCalendarComponent;
 
   constructor(private cd: ChangeDetectorRef) {}
 
   ngOnInit(): void {
-    this.initializeCalendar();
+    this.initializeCalendar()
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    if (changes['initialDate']) {
+      try {
+        const newVal = changes['initialDate'].currentValue;
+        if (newVal) {
+          setTimeout(() => this.goToDate(new Date(newVal)), 50);
+        }
+      } catch (e) {}
+    }
     if (changes['tasks'] || changes['holidays'] || changes['showHolidays']) {
       this.updateEvents();
     }
@@ -69,6 +81,7 @@ export class ScheduleCalendar implements OnInit, OnChanges {
   private initializeCalendar(): void {
     this.calendarOptions = {
       ...getScheduleCalendarOptions(),
+      ...(this.initialDate ? { initialDate: this.initialDate } : {}),
       height: this.calendarHeight,
       events: this.calendarEvents, // Usar referencia a array de eventos
       eventClick: this.handleEventClick.bind(this),
@@ -154,7 +167,6 @@ export class ScheduleCalendar implements OnInit, OnChanges {
     try {
       const start = dateInfo?.start ? new Date(dateInfo.start) : new Date();
       const end = dateInfo?.end ? new Date(dateInfo.end) : new Date();
-      
       this.dateRangeChange.emit({ start, end });
     } catch (e) {
       // Ignorar errores
@@ -182,9 +194,9 @@ export class ScheduleCalendar implements OnInit, OnChanges {
       const eventsContainer = el.querySelector('.fc-daygrid-day-events') as HTMLElement | null;
       const viewType = arg?.view?.type || '';
       
-      // Solo enforcer scroll en vista mensual
-      if (eventsContainer && viewType === 'dayGridMonth') {
-        eventsContainer.style.maxHeight = '300px';
+      // Enforce scroll en vistas daygrid (month o week)
+      if (eventsContainer && viewType && viewType.toLowerCase().indexOf('daygrid') !== -1) {
+        eventsContainer.style.maxHeight = '400px';
         eventsContainer.style.overflowY = 'auto';
         eventsContainer.style.setProperty('-webkit-overflow-scrolling', 'touch');
       } else if (eventsContainer) {
@@ -218,7 +230,8 @@ export class ScheduleCalendar implements OnInit, OnChanges {
     try {
       const vt = (viewType || '').toString();
       const vtLower = vt.toLowerCase();
-      const isMonthView = vtLower.indexOf('daygridmonth') !== -1 || vtLower === 'daygridmonth';
+      // treat any 'daygrid' view (month or week) as requiring per-day event scrolling
+      const isDayGridView = vtLower.indexOf('daygrid') !== -1;
 
       const root = rootEl || document;
       const containers = (root as Document | HTMLElement).querySelectorAll('.fc-daygrid-day-events');
@@ -228,7 +241,7 @@ export class ScheduleCalendar implements OnInit, OnChanges {
           const eventsContainer = c as HTMLElement;
           if (!eventsContainer) return;
           
-          if (isMonthView) {
+          if (isDayGridView) {
             eventsContainer.style.maxHeight = '300px';
             eventsContainer.style.overflowY = 'auto';
             eventsContainer.style.setProperty('-webkit-overflow-scrolling', 'touch');
@@ -248,20 +261,32 @@ export class ScheduleCalendar implements OnInit, OnChanges {
    * Método público para navegar a una fecha específica
    */
   public goToDate(date: Date): void {
-    const calendarApi = (this.calendarOptions as any).calendarApi;
-    if (calendarApi) {
-      calendarApi.gotoDate(date);
+    try {
+      const api = this.fullCalendar && this.fullCalendar.getApi ? this.fullCalendar.getApi() : undefined;
+      if (api) {
+        api.gotoDate(date);
+        this._goToDateRetries = 0;
+        return;
+      }
+    } catch (e) {}
+
+    // Retry a few times in case FullCalendar API isn't attached yet
+    this._goToDateRetries = (this._goToDateRetries || 0) + 1;
+    if (this._goToDateRetries <= 6) {
+      setTimeout(() => this.goToDate(date), 150);
     }
   }
+
+  private _goToDateRetries = 0;
 
   /**
    * Método público para cambiar la vista
    */
   public changeView(viewName: string): void {
-    const calendarApi = (this.calendarOptions as any).calendarApi;
-    if (calendarApi) {
-      calendarApi.changeView(viewName);
-    }
+    try {
+      const api = this.fullCalendar && this.fullCalendar.getApi ? this.fullCalendar.getApi() : undefined;
+      if (api) api.changeView(viewName);
+    } catch (e) {}
   }
 
   /**
