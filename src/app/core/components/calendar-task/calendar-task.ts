@@ -21,7 +21,7 @@ export class CalendarTask {
   public calendarTitle: string = '';
   @Input() tasks: any[] = [];
 
- @ViewChild('calendar') calendar!: FullCalendarComponent;
+  @ViewChild('calendar') calendar!: FullCalendarComponent;
   @ViewChild('eventContent', { static: true }) eventContentTemplate!: TemplateRef<any>;
   @ViewChild('sectionContainer', { static: true }) sectionContainer!: ElementRef;
   @ViewChild('calendarWrapper', { static: true }) calendarWrapper!: ElementRef;

@@ -4,6 +4,7 @@ import { environment } from '../../../../../environment';
 import { GeneralTask } from '../models/general-task.model';
 import { Observable, of, tap, map } from 'rxjs';
 import { mapGeneralTasksFromBackend } from '../utils/mappers/general-task.mapper';
+import { AuthStateService } from '../../report-hours/auth/services/auth-state.service';
 
 interface GeneralTaskCache {
   data: GeneralTask[];
@@ -16,7 +17,7 @@ export class GeneralTaskService {
   private readonly CACHE_TTL = 5 * 60 * 1000; // 5 minutos
   private cache: GeneralTaskCache | null = null;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private authState: AuthStateService) {}
 
   /**
    * Obtener todas las general tasks
@@ -143,61 +144,168 @@ export class GeneralTaskService {
   saveTask(payload: any): Observable<GeneralTask> {
     const body: any = {};
     if (!payload) payload = {};
-    if (payload.id !== undefined) body.id = payload.id;
-    if (payload.name !== undefined) body.name = payload.name;
-    // issued date (fallback to startDate if provided by form)
-    body.issued_date = payload.issuedDate ?? payload.issued_date ?? payload.startDate ?? payload.start_date ?? null;
-    // Ensure issued_date is in a full ISO datetime when only a date is provided
-    if (body.issued_date) {
-      try {
-        const ds = String(body.issued_date).trim();
-        // if it's like YYYY-MM-DD, append time to make it an ISO datetime
-        if (/^\d{4}-\d{2}-\d{2}$/.test(ds)) {
-          body.issued_date = `${ds}T00:00:00Z`;
-        } else {
-          body.issued_date = ds;
-        }
-      } catch (e) {
-        // fallback: leave as-is
-      }
+    const isPresent = (a: any) => a !== undefined;
+
+    if (isPresent(payload.id)) body.id = payload.id; // Keep id for update
+    if (isPresent(payload.name)) body.name = payload.name;
+
+    // helper to normalize various date inputs to SQL date string YYYY-MM-DD
+    const formatLocalDate = (d: Date) => {
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${y}-${m}-${day}`;
+    };
+
+    const normalizeToDateOnly = (d: any) => {
+      if (d === null || d === undefined) return d;
+      if (d instanceof Date) return formatLocalDate(d);
+      const s = String(d).trim();
+      if (s === '') return null;
+      if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+      if (s.includes('T')) return s.split('T')[0];
+      // fallback: try parse as date
+      const dt = new Date(s);
+      if (!isNaN(dt.getTime())) return formatLocalDate(dt);
+      return s;
+    };
+
+    // issued date (fallback to startDate if provided by form) -> send YYYY-MM-DD (snake_case)
+    const issuedRaw = payload.issuedDate ?? payload.issued_date ?? payload.startDate ?? payload.start_date;
+    if (isPresent(issuedRaw)) {
+      const normalized = normalizeToDateOnly(issuedRaw);
+      body.issuedDate = normalized;
+      body.issued_date = body.issued_date ?? normalized;
     }
-    // category
-    body.task_category_id = payload.taskCategoryId ?? payload.task_category_id ?? payload.categoryId ?? payload.category_id ?? null;
+
+    // category (ids coerced to numbers)
+    if (isPresent(payload.taskCategoryId) || isPresent(payload.task_category_id) || isPresent(payload.categoryId) || isPresent(payload.category_id)) {
+      const raw = payload.taskCategoryId ?? payload.task_category_id ?? payload.categoryId ?? payload.category_id;
+      const n = Number(raw);
+      const normalized = Number.isNaN(n) ? raw : n;
+      body.taskCategoryId = normalized;
+      body.task_category_id = body.task_category_id ?? normalized;
+    }
     // project / phase
-    body.project_id = payload.projectId ?? payload.project_id ?? null;
-    body.project_phase_id = payload.projectPhaseId ?? payload.project_phase_id ?? null;
+    if (isPresent(payload.projectId) || isPresent(payload.project_id)) {
+      const raw = payload.projectId ?? payload.project_id;
+      const n = Number(raw);
+      const normalized = Number.isNaN(n) ? raw : n;
+      body.projectId = normalized;
+      body.project_id = body.project_id ?? normalized;
+    }
+    if (isPresent(payload.projectPhaseId) || isPresent(payload.project_phase_id)) {
+      const raw = payload.projectPhaseId ?? payload.project_phase_id;
+      const n = Number(raw);
+      const normalized = Number.isNaN(n) ? raw : n;
+      body.projectPhaseId = normalized;
+      body.project_phase_id = body.project_phase_id ?? normalized;
+    }
     // creator
-    body.created_by_employee_id = payload.createByEmployeeId ?? payload.createdByEmployeeId ?? payload.created_by_employee_id ?? null;
+    if (isPresent(payload.createByEmployeeId) || isPresent(payload.createdByEmployeeId) || isPresent(payload.created_by_employee_id)) {
+      const raw = payload.createByEmployeeId ?? payload.createdByEmployeeId ?? payload.created_by_employee_id;
+      const n = Number(raw);
+      const normalized = Number.isNaN(n) ? raw : n;
+      body.createdByEmployeeId = normalized;
+      body.created_by_employee_id = body.created_by_employee_id ?? normalized;
+    }
     // status
-    body.status = payload.status ?? null;
-    // end date
-    body.end_date = payload.endDate ?? payload.end_date ?? null;
-    // bim
-    body.bim_date = payload.bimDate ?? payload.bim_date ?? null;
-    // descriptions
-    body.description_bim = payload.description_bim ?? payload.descriptionBim ?? payload.description_bim ?? null;
-    body.description_electrical = payload.description_electrical ?? payload.descriptionElectrical ?? null;
-    body.description_mechanical = payload.description_mechanical ?? payload.descriptionMechanical ?? null;
-    body.description_plumbing = payload.description_plumbing ?? payload.descriptionPlumbing ?? null;
-    body.description_structural = payload.description_structural ?? payload.descriptionStructural ?? null;
+    if (isPresent(payload.status)) body.status = payload.status;
+    // end date -> send YYYY-MM-DD (snake_case)
+    if (isPresent(payload.endDate) || isPresent(payload.end_date)) {
+      const normalized = normalizeToDateOnly(payload.endDate ?? payload.end_date);
+      body.endDate = normalized;
+      body.end_date = body.end_date ?? normalized;
+    }
+    // bim -> send YYYY-MM-DD (snake_case)
+    if (isPresent(payload.bimDate) || isPresent(payload.bim_date)) {
+      const normalized = normalizeToDateOnly(payload.bimDate ?? payload.bim_date);
+      body.bimDate = normalized;
+      body.bim_date = body.bim_date ?? normalized;
+    }
+    // descriptions (snake_case)
 
-    // ensure nulls for missing optional fields to keep API payload shape predictable
-    const keys = [
-      'name','issued_date','task_category_id','project_id','project_phase_id','created_by_employee_id','status','end_date','bim_date',
-      'description_bim','description_electrical','description_mechanical','description_plumbing','description_structural'
-    ];
-    keys.forEach(k => { if (!(k in body)) body[k] = null; });
+    if (isPresent(payload.description) || isPresent(payload.description_text)) {
+      const rawDesc = payload.description ?? payload.description_text;
+      body.description = rawDesc;
+      body.description = body.description ?? rawDesc;
+    }
+    if (isPresent(payload.description_bim) || isPresent(payload.descriptionBim)) {
+      body.descriptionBim = payload.descriptionBim ?? payload.description_bim;
+      body.description_bim = body.description_bim ?? (payload.descriptionBim ?? payload.description_bim);
+    }
+    if (isPresent(payload.description_electrical) || isPresent(payload.descriptionElectrical)) {
+      body.descriptionElectrical = payload.descriptionElectrical ?? payload.description_electrical;
+      body.description_electrical = body.description_electrical ?? (payload.descriptionElectrical ?? payload.description_electrical);
+    }
+    if (isPresent(payload.description_mechanical) || isPresent(payload.descriptionMechanical)) {
+      body.descriptionMechanical = payload.descriptionMechanical ?? payload.description_mechanical;
+      body.description_mechanical = body.description_mechanical ?? (payload.descriptionMechanical ?? payload.description_mechanical);
+    }
+    if (isPresent(payload.description_plumbing) || isPresent(payload.descriptionPlumbing)) {
+      body.descriptionPlumbing = payload.descriptionPlumbing ?? payload.description_plumbing;
+      body.description_plumbing = body.description_plumbing ?? (payload.descriptionPlumbing ?? payload.description_plumbing);
+    }
+    if (isPresent(payload.description_structural) || isPresent(payload.descriptionStructural)) {
+      body.descriptionStructural = payload.descriptionStructural ?? payload.description_structural;
+      body.description_structural = body.description_structural ?? (payload.descriptionStructural ?? payload.description_structural);
+    }
 
-    // debug: log normalized body before sending
-    try { console.log('GeneralTaskService.normalizedBody', body); } catch (e) {}
+    // debug: log normalized body before sending (moved later for create/update clarity)
 
-    if (body.id) {
+    const isUpdate = body.id !== undefined && body.id !== null;
+
+    if (isUpdate) {
       const idNum = Number(body.id);
-      // remove id from body when sending update (id in URL)
-      delete body.id;
+      delete body.id; // id is in URL for update
+      try {
+        // remove undefined/null keys before update to avoid sending explicit undefined values
+        Object.keys(body).forEach((k) => {
+          if (body[k] === null || body[k] === undefined) {
+            delete body[k];
+          }
+        });
+      } catch (e) {}
+      try { console.log('GeneralTaskService.normalizedBody (update)', body); } catch (e) {}
       return this.update(idNum, body as Partial<GeneralTask>);
     }
 
+    // For create: prefer createdByEmployeeId from report-hours auth state
+    try {
+      if (!isUpdate) {
+        const authEmp = this.authState?.employeeId;
+        if (authEmp !== undefined && authEmp !== null) {
+          // Set both camelCase and snake_case aliases
+          body.createdByEmployeeId = body.createdByEmployeeId ?? authEmp;
+          body.created_by_employee_id = body.created_by_employee_id ?? authEmp;
+          body.create_by_employee_id = body.create_by_employee_id ?? authEmp;
+        }
+      }
+    } catch (e) {}
+
+    // For create: remove optional keys with null/undefined to avoid strict backend validation
+    // Keep required keys even if null so backend can return explicit validation errors
+    // Note: projectId may be optional for some categories (e.g., OutOfOffice), so do not force it here
+    const required = ['name', 'issuedDate', 'issued_date', 'taskCategoryId', 'task_category_id'];
+    try {
+      Object.keys(body).forEach((k) => {
+        if ((body[k] === null || body[k] === undefined) && required.indexOf(k) === -1) {
+          delete body[k];
+        }
+      });
+    } catch (e) {}
+
+    // Add common alias keys some backends expect (safe to include)
+    try {
+      if (body.created_by_employee_id !== undefined && body.create_by_employee_id === undefined) {
+        body.create_by_employee_id = body.created_by_employee_id;
+      }
+      if (body.task_category_id !== undefined && body.category_id === undefined) {
+        body.category_id = body.task_category_id;
+      }
+    } catch (e) {}
+
+    try { console.log('GeneralTaskService.normalizedBody (create)', body); } catch (e) {}
     return this.create(body as Partial<GeneralTask>);
   }
 

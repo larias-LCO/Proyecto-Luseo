@@ -4,8 +4,9 @@ export interface GeneralTask {
     id: number;
     name: string;
     description: string | null;
-    issuedDate: Date;
-    endDate: Date | null;
+    // Representar fechas como strings (YYYY-MM-DD o ISO) para evitar conversiones implícitas
+    issuedDate: string;
+    endDate: string | null;
 
     taskCategoryName: string;
     taskCategoryId: number;
@@ -24,7 +25,7 @@ export interface GeneralTask {
     createByEmployeeId: number;
     
     // New BIM / discipline-specific description fields (nullable)
-    bim_date?: Date | null;
+    bim_date?: string | null;
     description_bim?: string | null;
     description_electrical?: string | null;
     description_mechanical?: string | null;

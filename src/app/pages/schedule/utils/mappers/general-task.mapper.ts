@@ -11,7 +11,7 @@ export interface CreateGeneralTaskPayload {
   issuedDate: string; // ISO format YYYY-MM-DD
   endDate: string | null; // ISO format YYYY-MM-DD
   taskCategoryId: number;
-  projectId: number;
+  projectId: number | null;
   projectPhaseId: number;
   // Optional discipline fields
   bim_date?: string | null;
@@ -37,13 +37,44 @@ export function mapGeneralTaskFromBackend(task: any): GeneralTask {
   // Intentar múltiples nombres de campo para la fecha (issuedDate es el campo principal)
   const issuedDateValue = task.issuedDate || task.issued_date || task.issueDate || task.issue_date || task.startDate || task.start_date || task.date;
   const endDateValue = task.endDate || task.end_date || task.dueDate || task.due_date;
+  const toDateString = (val: any): string | null => {
+    if (val === null || val === undefined || val === '') return null;
+    try {
+      if (typeof val === 'string') {
+        const s = val.trim();
+        if (s.indexOf('T') > 0) return s.split('T')[0];
+        if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+        if (/^\d+$/.test(s)) {
+          let n = Number(s);
+          if (s.length === 10) n = n * 1000;
+          const d = new Date(n);
+          if (!isNaN(d.getTime())) return d.toISOString().split('T')[0];
+          return s;
+        }
+        return s;
+      }
+      if (typeof val === 'number') {
+        let n = val;
+        if (String(val).length === 10) n = n * 1000;
+        const d = new Date(n);
+        if (!isNaN(d.getTime())) return d.toISOString().split('T')[0];
+        return null;
+      }
+      if (val instanceof Date) {
+        return val.toISOString().split('T')[0];
+      }
+    } catch (e) {
+      // fallthrough
+    }
+    return null;
+  };
 
   return {
     id: task.id,
     name: task.name,
     description: task.description,
-    issuedDate: issuedDateValue ? new Date(issuedDateValue) : null as any,
-    endDate: endDateValue ? new Date(endDateValue) : null,
+    issuedDate: toDateString(issuedDateValue) || '',
+    endDate: toDateString(endDateValue),
     
     taskCategoryName: task.taskCategoryName || task.task_category_name || '',
     taskCategoryId: task.taskCategoryId || task.task_category_id,
@@ -62,7 +93,10 @@ export function mapGeneralTaskFromBackend(task: any): GeneralTask {
     createByEmployeeId: task.createdByEmployeeId || task.createByEmployeeId || task.create_by_employee_id || task.created_by_employee_id,
     
     // New discipline / BIM fields
-    bim_date: task.bim_date || task.bimDate ? (task.bim_date ? new Date(task.bim_date) : new Date(task.bimDate)) : null,
+    bim_date: (() => {
+      const v = task.bim_date || task.bimDate || null;
+      return toDateString(v);
+    })(),
     description_bim: task.description_bim || task.descriptionBim || null,
     description_electrical: task.description_electrical || task.descriptionElectrical || null,
     description_mechanical: task.description_mechanical || task.descriptionMechanical || null,
@@ -88,22 +122,45 @@ export function mapGeneralTaskToBackend(task: Partial<GeneralTask>): CreateGener
   
   if (task.name !== undefined) payload.name = task.name;
   if (task.description !== undefined) payload.description = task.description;
+  const formatLocalDate = (d: Date) => {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  };
+
   if (task.issuedDate !== undefined) {
-    payload.issuedDate = task.issuedDate instanceof Date 
-      ? task.issuedDate.toISOString().split('T')[0]
-      : task.issuedDate;
+    const v: any = task.issuedDate;
+    if (v instanceof Date) payload.issuedDate = formatLocalDate(v);
+    else if (typeof v === 'number') {
+      let n = v;
+      if (String(v).length === 10) n = n * 1000;
+      payload.issuedDate = formatLocalDate(new Date(n));
+    } else payload.issuedDate = v;
   }
   if (task.endDate !== undefined) {
-    payload.endDate = task.endDate 
-      ? (task.endDate instanceof Date 
-          ? task.endDate.toISOString().split('T')[0]
-          : task.endDate)
-      : null;
+    const v: any = task.endDate;
+    if (!v) payload.endDate = null;
+    else if (v instanceof Date) payload.endDate = formatLocalDate(v);
+    else if (typeof v === 'number') {
+      let n = v;
+      if (String(v).length === 10) n = n * 1000;
+      payload.endDate = formatLocalDate(new Date(n));
+    } else payload.endDate = v;
   }
   if (task.taskCategoryId !== undefined) payload.taskCategoryId = task.taskCategoryId;
   if (task.projectId !== undefined) payload.projectId = task.projectId;
   if (task.projectPhaseId !== undefined) payload.projectPhaseId = task.projectPhaseId;
-  if (task.bim_date !== undefined) payload.bim_date = task.bim_date instanceof Date ? task.bim_date.toISOString().split('T')[0] : task.bim_date;
+  if (task.bim_date !== undefined) {
+    const v: any = task.bim_date;
+    if (!v) payload.bim_date = null;
+    else if (v instanceof Date) payload.bim_date = formatLocalDate(v);
+    else if (typeof v === 'number') {
+      let n = v;
+      if (String(v).length === 10) n = n * 1000;
+      payload.bim_date = formatLocalDate(new Date(n));
+    } else payload.bim_date = v;
+  }
   if (task.description_bim !== undefined) payload.description_bim = task.description_bim;
   if (task.description_electrical !== undefined) payload.description_electrical = task.description_electrical;
   if (task.description_mechanical !== undefined) payload.description_mechanical = task.description_mechanical;
@@ -147,12 +204,6 @@ export function validateGeneralTaskPayload(payload: Partial<CreateGeneralTaskPay
   }
   if (!payload.taskCategoryId) {
     errors.push('La categoría es requerida');
-  }
-  if (!payload.projectId) {
-    errors.push('El proyecto es requerido');
-  }
-  if (!payload.projectPhaseId) {
-    errors.push('La fase del proyecto es requerida');
   }
   
   // Validar que la fecha de fin sea posterior a la fecha de inicio
@@ -205,8 +256,17 @@ export function filterTasksByDateRange(
   endDate: Date
 ): GeneralTask[] {
   return tasks.filter(task => {
-    const taskStart = task.issuedDate instanceof Date ? task.issuedDate : new Date(task.issuedDate);
-    const taskEnd = task.endDate ? (task.endDate instanceof Date ? task.endDate : new Date(task.endDate)) : taskStart;
+    const parseDate = (v: any): Date => {
+      if (v instanceof Date) return v;
+      if (typeof v === 'string') return new Date(v.split('T')[0]);
+      if (typeof v === 'number') {
+        let n = v; if (String(v).length === 10) n = n * 1000; return new Date(n);
+      }
+      return new Date(v);
+    };
+
+    const taskStart = parseDate((task as any).issuedDate);
+    const taskEnd = task.endDate ? parseDate((task as any).endDate) : taskStart;
     
     // La tarea está en el rango si:
     // - Empieza dentro del rango

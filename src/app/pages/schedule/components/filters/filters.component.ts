@@ -68,6 +68,7 @@ export class ScheduleFiltersComponent implements OnInit {
 
   toggleMyProjectsOnly(): void {
     this.filters.myProjectsOnly = !this.filters.myProjectsOnly;
+    console.log('[ScheduleFilters] toggleMyProjectsOnly ->', this.filters.myProjectsOnly, 'myEmployeeId=', this.myEmployeeId);
     this.updateAndEmit();
   }
 

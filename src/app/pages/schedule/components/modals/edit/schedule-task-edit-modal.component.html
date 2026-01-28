@@ -1,0 +1,77 @@
+<div class="modal-backdrop">
+  <div class="modal-card">
+    <header class="modal-header">
+      <h3>Edit Task</h3>
+      <button class="close-btn" (click)="onClose()"><app-x-icon></app-x-icon></button>
+    </header>
+
+    <form [formGroup]="form" class="modal-body">
+      <label>Name</label>
+      <input formControlName="name" />
+
+      <label>Issued Date</label>
+      <input type="date" formControlName="issuedDate" />
+
+      <ng-container *ngIf="showEndDate()">
+        <label>End Date</label>
+        <input type="date" formControlName="endDate" />
+      </ng-container>
+
+      <label>Project</label>
+      <select formControlName="projectId">
+        <option value="">--</option>
+        <option *ngFor="let p of projects" [value]="p.id">{{ p.projectCode || p.code || '' }}{{ (p.projectCode || p.code) ? ' - ' : '' }}{{ p.name }}</option>
+      </select>
+
+      <ng-container *ngIf="phases.length">
+        <label>Project Phase</label>
+        <select formControlName="projectPhaseId">
+          <option value="">--</option>
+          <option *ngFor="let ph of phases" [value]="ph.id">{{ ph.name }}</option>
+        </select>
+      </ng-container>
+
+      <label>Category</label>
+      <select formControlName="taskCategoryId">
+        <option value="">--</option>
+        <option *ngFor="let c of categories" [value]="c.id">{{ c.name }}</option>
+      </select>
+
+      <label>Created By</label>
+      <input [value]="createdByName" disabled />
+
+      <label>Status</label>
+      <select formControlName="status">
+        <option *ngFor="let s of (statusList || [])" [value]="s">{{ s }}</option>
+      </select>
+
+      <label>Description</label>
+      <textarea formControlName="description"></textarea>
+
+      <label>BIM Date</label>
+      <input type="date" formControlName="bimDate" />
+
+      <label>Description BIM</label>
+      <textarea formControlName="descriptionBim"></textarea>
+
+      <label>Description Electrical</label>
+      <textarea formControlName="descriptionElectrical"></textarea>
+
+      <label>Description Mechanical</label>
+      <textarea formControlName="descriptionMechanical"></textarea>
+
+      <label>Description Plumbing</label>
+      <textarea formControlName="descriptionPlumbing"></textarea>
+
+      <label>Description Structural</label>
+      <textarea formControlName="descriptionStructural"></textarea>
+
+    </form>
+
+    <footer class="modal-footer">
+      <button (click)="onClose()">Cancel</button>
+      <button [disabled]="isSaving" (click)="onSave()">Save</button>
+      <button *ngIf="task && task.id" [disabled]="isDeleting" (click)="onDelete()">Delete</button>
+    </footer>
+  </div>
+</div>

@@ -23,6 +23,7 @@
           </h2>
         </div>
         <div class="col-md-6 text-end">
+          <button class="btn btn-success" (click)="openCreateModal()">+ Create Task</button>
         </div>
       </div>
     </div>
@@ -51,16 +52,25 @@
     </div>
     
     <!-- Modal: create/edit task -->
-    <app-schedule-task-modal *ngIf="showTaskModal"
-      [task]="modalTask"
-      [myEmployeeId]="myEmployeeId"
-      [myRole]="getPrimaryRole()"
-      [projects]="projects"
-      [employees]="employees"
-      [categories]="categories"
-      (save)="onModalSave($event)"
-      (delete)="onModalDelete($event)"
-      (close)="onModalClose()"
-    ></app-schedule-task-modal>
+      <ng-container *ngIf="showTaskModal">
+        <app-schedule-task-create-modal *ngIf="!modalTask"
+                        [projects]="projects"
+                        [categories]="categories"
+                        [employees]="employees"
+                        [myEmployeeId]="myEmployeeId"
+                        [preset]="createPreset"
+                        (created)="onModalSaved($event)"
+                        (close)="onModalClose()"></app-schedule-task-create-modal>
+
+        <app-schedule-task-edit-modal *ngIf="modalTask"
+                                      [task]="modalTask"
+                                      [projects]="projects"
+                                      [categories]="categories"
+                                      [employees]="employees"
+                                      [myEmployeeId]="myEmployeeId"
+                                      (saved)="onModalSaved($event)"
+                                      (close)="onModalClose()"></app-schedule-task-edit-modal>
+      </ng-container>
+    
   </div>
 </div>

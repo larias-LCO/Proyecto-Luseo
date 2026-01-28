@@ -26,6 +26,10 @@ export class AuthStateService {
     return this.state$.value?.role ?? null;
   }
 
+  get username(): string | null {
+    return this.state$.value?.username ?? null;
+  }
+
   get authorities() {
     return this.state$.value?.authorities ?? [];
   }

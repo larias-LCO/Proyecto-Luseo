@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subject, takeUntil, forkJoin } from 'rxjs';
@@ -8,11 +8,13 @@ import { HeaderComponent } from '../../core/components/header/header';
 import { SubmenuComponent } from '../../core/components/submenu/submenu';
 import { ScheduleCalendar } from './components/schedule-calendar/schedule-calendar';
 import { ScheduleFiltersComponent } from './components/filters/filters.component';
-import { ScheduleTaskModal } from './components/modals/schedule-task-modal';
+import { ScheduleTaskEditModalComponent } from './components/modals/edit/schedule-task-edit-modal.component';
+import { ScheduleTaskCreateModal } from './components/modals/create/schedule-task-create-modal.component';
 
 // Servicios
 import { GeneralTaskService } from './services/general-task.service';
-import { AuthService } from '../../core/services/auth.service';
+import { AuthStateService } from '../report-hours/auth/services/auth-state.service';
+import { AuthService } from '../report-hours/auth/services/auth-api.service';
 import { HolidayService, Holiday } from './services/holiday.service';
 import { ProjectService, Project } from './services/project.service';
 import { TaskCategoryService } from './services/task-category.service';
@@ -36,7 +38,8 @@ import { createDefaultFilters, ScheduleFilters } from './utils/filters/schedule-
     // SubmenuComponent,
     ScheduleCalendar,
     ScheduleFiltersComponent,
-    ScheduleTaskModal
+    ScheduleTaskEditModalComponent,
+    ScheduleTaskCreateModal
   ],
   templateUrl: './schedule.html',
   styleUrl: './schedule.scss'
@@ -69,39 +72,73 @@ export class Schedule implements OnInit, OnDestroy {
     private generalTaskService: GeneralTaskService,
     private holidayService: HolidayService,
     private projectService: ProjectService,
-    private categoryService: TaskCategoryService
-    ,private employeeService: EmployeeService
-    ,public authService: AuthService
+    private categoryService: TaskCategoryService,
+    private employeeService: EmployeeService,
+    private authState: AuthStateService,
+    private authApi: AuthService
   ) {}
 
   // Return primary role as string or null (safe for template binding)
   getPrimaryRole(): string | null {
-    try {
-      const r: any = this.authService.getState().role;
-      if (!r) return null;
-      if (Array.isArray(r)) return r[0] || null;
-      if (typeof r === 'string') return r;
-      return null;
-    } catch (e) {
-      return null;
-    }
+    const r: any = this.authState.role;
+    if (!r) return null;
+    if (Array.isArray(r)) return r[0] || null;
+    if (typeof r === 'string') return r;
+    return null;
   }
 
   // Modal state
   showTaskModal = false;
   modalTask: any | null = null; // task being edited or null for create
+  // Preset values for create modal (when selecting a date range)
+  createPreset: any | null = null;
 
   ngOnInit(): void {
     this.loadInitialData();
+
     // Prefer state from AuthService; fallback to cookie if available
-    try {
-      this.myEmployeeId = this.authService.getState().employeeId;
-    } catch (e) {
-      // Fallback: try reading cookie set by backend (employeeId)
-      const match = document.cookie.match(new RegExp('(^|; )' + 'employeeId'.replace(/([.$?*|{}()\[\]\\/+^])/g, '\\$1') + '=([^;]*)'));
-      if (match) this.myEmployeeId = Number(match[2]);
-    }
+    this.myEmployeeId = this.authState.employeeId ?? this.parseCookieNumber('employeeId');
+
+    // Keep `myEmployeeId` in sync with AuthStateService.session$ so filters
+    // (My Projects / Created By Me) update when login state changes.
+    this.authState.session$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          const newId = this.authState.employeeId ?? undefined;
+          if (newId !== this.myEmployeeId) {
+            this.myEmployeeId = newId;
+            this.applyCurrentFilters();
+          }
+        }
+      });
+
+    // Ensure auth state is populated if a session cookie exists
+    this.ensureAuthState();
   }
+
+  private ensureAuthState(): void {
+    if (this.authState.employeeId != null) return;
+    try {
+      this.authApi.me().pipe(takeUntil(this.destroy$)).subscribe({
+        next: (me) => {
+          try { this.authState.setSession(me); } catch (e) {}
+        },
+        error: () => {}
+      });
+    } catch (e) {}
+  }
+
+  private parseCookieNumber(name: string): number | undefined {
+    try {
+      const re = new RegExp('(^|; )' + name.replace(/([.$?*|{}()\[\]\\/+^])/g, '\\$1') + '=([^;]*)');
+      const match = document.cookie.match(re);
+      if (match) return Number(match[2]);
+    } catch (e) {}
+    return undefined;
+  }
+
+  @ViewChild(ScheduleCalendar) private calendarComponent?: ScheduleCalendar;
 
   ngOnDestroy(): void {
     this.destroy$.next();
@@ -186,22 +223,14 @@ export class Schedule implements OnInit, OnDestroy {
    * Aplica los filtros actuales a las tareas
    */
   applyCurrentFilters(): void {
-    // Resolve employee id: prefer live auth state, then stored fallback
-    let currentEmployeeId: number | undefined = undefined;
-    try {
-      currentEmployeeId = this.authService.getState().employeeId;
-    } catch (e) {
-      currentEmployeeId = undefined;
-    }
-    if (!currentEmployeeId && this.myEmployeeId) currentEmployeeId = this.myEmployeeId;
-    // Final fallback: read cookie
-    if (!currentEmployeeId) {
-      const match = document.cookie.match(new RegExp('(^|; )' + 'employeeId'.replace(/([.$?*|{}()\[\]\\/+^])/g, '\\$1') + '=([^;]*)'));
-      if (match) currentEmployeeId = Number(match[2]);
-    }
+    const currentEmployeeId = this.resolveCurrentEmployeeId();
+    const currentUsername = this.authState.username || undefined;
 
-    const currentUsername = this.authService.getState().username || undefined;
+    console.debug('[Schedule] applyCurrentFilters -> currentEmployeeId=', currentEmployeeId, 'filters=', this.filters, 'projects=', this.projects?.length, 'tasks=', this.allTasks?.length);
     this.filteredTasks = applyFilters(this.allTasks, this.filters, { projects: this.projects, myEmployeeId: currentEmployeeId, username: currentUsername });
+
+    // Force-refresh calendar component to ensure events update immediately
+    setTimeout(() => this.calendarComponent?.refreshEvents(), 0);
   }
 
 
@@ -219,17 +248,25 @@ export class Schedule implements OnInit, OnDestroy {
    */
   onDateSelect(dateRange: { start: Date; end: Date }): void {
     // Pre-fill create modal with start date
-    const preset: any = {
-      startDate: dateRange.start.toISOString().split('T')[0],
-      endDate: dateRange.end ? new Date(dateRange.end.getTime() - 1).toISOString().split('T')[0] : ''
+    const formatLocalDate = (d: Date) => {
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${y}-${m}-${day}`;
     };
-    this.modalTask = preset as any;
+    const preset: any = {
+      issuedDate: formatLocalDate(dateRange.start),
+      endDate: dateRange.end ? formatLocalDate(new Date(dateRange.end.getTime() - 1)) : ''
+    };
+    this.createPreset = preset;
+    this.modalTask = null; // ensure create modal is shown
     this.showTaskModal = true;
   }
 
   // Open create modal helper used by template button
   openCreateModal(): void {
     this.modalTask = null;
+    this.createPreset = null;
     this.showTaskModal = true;
   }
 
@@ -289,8 +326,8 @@ export class Schedule implements OnInit, OnDestroy {
     this.modalTask = null;
   }
 
-  onModalDelete(id: number): void {
-    // Modal already performed delete; refresh list and close
+  // New unified handler used by create/edit modals when they emit saved/created
+  onModalSaved(_: any): void {
     this.reloadTasks();
     this.showTaskModal = false;
     this.modalTask = null;
@@ -330,7 +367,31 @@ export class Schedule implements OnInit, OnDestroy {
    */
   // clearFilters handled by ScheduleFiltersComponent
   onFiltersChange(filters: ScheduleFilters): void {
+    console.debug('[Schedule] onFiltersChange received', filters, 'myEmployeeId=', this.myEmployeeId);
     this.filters = { ...filters };
     this.applyCurrentFilters();
+  }
+
+  private resolveCurrentEmployeeId(): number | undefined {
+    // Prefer explicit auth state
+    const id = this.authState.employeeId;
+    if (id != null) return Number(id);
+
+    // Use cached myEmployeeId if present
+    if (this.myEmployeeId != null) return Number(this.myEmployeeId);
+
+    // Cookie fallback
+    const cookieId = this.parseCookieNumber('employeeId');
+    if (cookieId != null) return cookieId;
+
+    // Try to resolve from loaded employees using username/email
+    const currentUsername = this.authState.username;
+    if (currentUsername && Array.isArray(this.employees) && this.employees.length > 0) {
+      const uname = String(currentUsername).toLowerCase();
+      const found = this.employees.find((e: any) => String(e.accountUsername || e.username || e.email || '').toLowerCase() === uname);
+      if (found && found.id) return Number(found.id);
+    }
+
+    return undefined;
   }
 }

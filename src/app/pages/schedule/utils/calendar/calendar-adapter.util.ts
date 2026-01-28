@@ -42,17 +42,6 @@ export function mapGeneralTasksToEvents(tasks: GeneralTask[] = []): EventInput[]
     const categoryName = (task.taskCategoryName || '').toLowerCase();
     const isOutOfOffice = categoryName.includes('out of office');
 
-    // DEBUG: Log task details to verify endDate is being read
-    if (isOutOfOffice) {
-      console.log('🏖️ OutOfOffice task detected:', {
-        id: task.id,
-        name: task.name,
-        startDate,
-        endDate: task.endDate,
-        categoryName: task.taskCategoryName
-      });
-    }
-
     // For ordering
     const projectTypePriority = task.projectType === 'COMMERCIAL' ? 1 : 
                                 task.projectType === 'RESIDENTIAL' ? 2 : 3;
@@ -131,13 +120,6 @@ export function mapGeneralTasksToEvents(tasks: GeneralTask[] = []): EventInput[]
           const currentDay = new Date(startObj);
           let dayCount = 0;
           
-          console.log('🔄 Expanding OutOfOffice into daily events:', {
-            taskId: task.id,
-            taskName: task.name,
-            startDate: startDate,
-            endDate: endDateObj.toISOString().split('T')[0]
-          });
-          
           while (currentDay <= endDateObj && dayCount < 365) {
             const dayStr = currentDay.toISOString().split('T')[0];
             events.push(makeEvent(dayStr, undefined, `-day${dayCount}`));
@@ -145,7 +127,6 @@ export function mapGeneralTasksToEvents(tasks: GeneralTask[] = []): EventInput[]
             dayCount++;
           }
           
-          console.log(`✅ Created ${dayCount} daily OutOfOffice events for task ${task.id}`);
           continue; // next task
         }
       } catch (error) {
@@ -153,19 +134,9 @@ export function mapGeneralTasksToEvents(tasks: GeneralTask[] = []): EventInput[]
         // fallthrough to single-day fallback below
       }
     }
-
-    // Default: single-day event at startDate (for tasks without endDate or non-OutOfOffice)
-    if (isOutOfOffice) {
-      console.log('📍 Single-day OutOfOffice event created:', {
-        taskId: task.id,
-        taskName: task.name,
-        start: startDate
-      });
-    }
     events.push(makeEvent(startDate));
   }
 
-  console.log('📊 Total events generated from tasks:', events.length);
   return events;
 }
 
