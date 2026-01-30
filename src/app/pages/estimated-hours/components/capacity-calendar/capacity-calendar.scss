@@ -1,0 +1,576 @@
+
+
+
+/* Styles for inline Add Role button and popup */
+.add-role-inline-btn {
+	cursor: pointer;
+	// padding: 6px 8px;
+	border-radius: 6px;
+	border: 1px solid rgba(0,0,0,0.08);
+	background:  #f3f7ff;
+	font-size: 18px;
+    font-weight: 700;
+    width: 30px;
+    height: 30px;
+    // margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    position: relative; /* necesario para posicionar el botón a la derecha absoluta */
+    align-items: center;
+    margin-left: 0;
+    margin-right: 8px;
+}
+
+.add-role-inline-btn:hover {
+	box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    background: rgb(232, 255, 243);
+}
+
+.add-role-popup {
+	position: absolute;
+	z-index: 9999;
+	background: #fff;
+	border: 1px solid rgba(0,0,0,0.08);
+	padding: 8px;
+	border-radius: 6px;
+	box-shadow: 0 6px 12px rgba(0,0,0,0.08);
+	display: flex;
+    cursor: pointer;
+}
+.add-role-inline-btn {
+    cursor: pointer;
+    border-radius: 6px;
+    border: 1px solid rgba(0,0,0,0.08);
+    background:  #f3f7ff;
+    font-size: 18px;
+    font-weight: 700;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* posicion absoluta para asegurar botón al borde derecho */
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.add-role-select {
+	margin-right: 8px;
+	padding: 6px 8px;
+
+	border-radius: 4px;
+	border: 1px solid rgba(0,0,0,0.08);
+	background: #fff;
+    cursor: pointer;
+}
+
+.add-role-create{
+	margin-left: 6px;
+	padding: 6px 8px;
+	border-radius: 4px;
+	border: 1px solid rgba(0,0,0,0.08);
+	background: rgb(232, 255, 243);
+	cursor: pointer;
+}
+
+.add-role-cancel{
+    margin-left: 6px;
+    padding: 6px 8px;
+    border-radius: 4px;
+    border: 1px solid rgba(0,0,0,0.08);
+    background: #ffdad7;
+    cursor: pointer;
+}
+
+.add-role-create:hover{
+	background: #baffe2;
+}
+
+.add-role-cancel:hover{
+    background: #ffb3ae;
+}
+
+.role-name {
+	padding-right: 8px;
+       font-size: 15.5px;
+    font-family: var(--font-primary);
+}
+
+
+.month-nav{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    margin-top: 20px;
+    font-size: 27px;
+    color: #001cb9;
+    font-weight: 600;
+}
+
+.role-column {
+    // background-color: #f5f5f5;
+    font-weight: 700;
+    font-size: 18px;
+     font-family: var(--font-primary);
+    background: #001b9a;
+}
+
+/* Quitar borde derecho de la columna ROLES */
+
+
+
+
+
+/* CELDAS */
+.ag-cell[col-id="userName"] {
+  position: relative;
+  border-right: none !important;
+}
+
+.ag-cell[col-id="userName"]::after {
+  content: '';
+  position: absolute;
+  top: 20%;
+  right: 0;
+  height: 65%;
+  width: 1px;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    #cbd5e1,
+    #cbd5e1 2px,
+    transparent 2px,
+    transparent 6px
+  );
+}
+
+
+
+
+.calendar-header{
+    font-family: var(--font-primary);
+}
+
+/* Position Save button at the far right, vertically centered with the month title */
+.calendar-header {
+    position: relative;
+}
+.calendar-header .save {
+    position: absolute;
+    right: 24px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* Estilo moderno de tablas y celdas */
+.ag-root-wrapper, .ag-root-wrapper-body {
+    font-family: var(--font-primary);
+}
+
+.ag-header-cell.week-column{
+    font-weight: 600;
+    font-size: 15px;
+    color: #001b9a;
+ 
+}
+
+/* Header styling */
+.ag-header-cell {
+   /* Color de fondo del encabezado: cambie estos valores para ajustar los colores del encabezado */
+    background:  #fdfeff;
+    border-bottom: none !important;
+    color: #001b9a;
+    font-weight: 700;
+    padding: 8px 12px;
+    box-sizing: border-box;
+    /* vertical separator between header cells */
+    border-right: none !important;
+}
+
+
+
+//Crea el separador punteado con ::after
+.ag-header-cell::after {
+  content: '';
+  position: absolute;
+  top: 20%;
+  right: 0;
+  height: 65%;
+  width: 1px;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    #cbd5e1,
+    #cbd5e1 2px,
+    transparent 2px,
+    transparent 6px
+  );
+}
+
+
+.ag-header-cell.week-column .ag-header-cell-label {
+width: 100%;
+display: flex;
+align-items: center;
+justify-content: center;
+padding: 0 12px; /* conserva padding horizontal */
+}
+.ag-header-cell.week-column .ag-header-cell-text {
+margin: 0;
+text-align: center;
+}
+
+
+
+/* Eliminar el borde derecho de la última celda del encabezado para que el borde de la tabla se vea limpio */
+// .ag-header-row .ag-header-cell:last-child {
+//     border-right: 1px solid #f6faff;
+// }
+
+/* Si desea aplicar un estilo diferente al encabezado fijado/de rol, seleccione su headerClass (usamos 'role-column' como headerClass para la primera columna) */
+// .ag-header-cell.role-column {
+//     text-align: left!important;
+//     padding-left: 16px !important;
+//     // border-right: none !important;
+    
+// }
+
+/* Encabezado de rol específico (primera columna) */
+// .ag-header-cell.role-column, .role-column {
+//     text-align: left;
+//     padding-left: 16px;
+   
+// }
+
+/* Centrado de filas y celdas */
+.ag-row, .ag-cell {
+    display: flex;
+    align-items: center;
+}
+
+.role-cell-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+  
+}
+
+.week-cell-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    gap: 6px;
+
+}
+
+/* Asegurar que los inputs queden perfectamente centrados dentro del contenedor */
+/* Make input centering stronger to override AG Grid rules */
+.week-cell-container .ag-cell-input,
+.week-cell-container input {
+    display: block !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    align-self: center !important;
+    width: 80px !important;
+    box-sizing: border-box;
+    color: var(--text) !important;
+    caret-color: var(--text) !important;
+    -webkit-text-fill-color: var(--text) !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    font-size: 14px !important;
+    line-height: 1.2 !important;
+    z-index: 3; /* asegurar que no quede debajo de overlays */
+}
+
+/* También centrar cualquier input dentro del contenedor de rol cuando corresponda */
+.role-cell-container input {
+    display: block !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    align-self: center !important;
+}
+
+/* Bordes verticales visibles alineados con header  */
+/* Aplicar al header y a las celdas de las columnas que tengan la clase `week-column` */
+// .ag-header-row .ag-header-cell.week-column {
+//     border-left: 1px solid rgba(0,0,0,0.12) !important;
+//     box-sizing: border-box;
+// }
+
+.ag-center-cols-viewport .ag-row .ag-cell.week-column {
+    border-left: none !important;
+    box-sizing: border-box;
+}
+
+.ag-center-cols-viewport .ag-row .ag-cell.week-column::after {
+  content: '';
+  position: absolute;
+  top: 22%;
+  right: 0;
+  height: 56%;
+  width: 1px;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    #d1d5db,
+    #d1d5db 2px,
+    transparent 2px,
+    transparent 6px
+  );
+}
+
+
+/* Evitar que la primera columna central tenga borde izquierdo (alineación con Roles) */
+.ag-center-cols-viewport .ag-row .ag-cell.week-column:first-child,
+.ag-header-row .ag-header-cell.week-column:first-child {
+    border-left: none !important;
+}
+
+/* Asegurar separación clara entre filas (borde inferior) */
+.ag-center-cols-viewport .ag-row {
+    border-bottom: 1px solid rgba(0,0,0,0.06) !important;
+}
+
+/* Línea horizontal punteada entre filas */
+.ag-theme-alpine .ag-row {
+  border-top: 1px dotted rgba(0, 0, 0, 0.25) !important;
+}
+
+
+// .ag-row {
+//   border-top: none !important;
+// }
+
+// .ag-theme-alpine .ag-row:first-child {
+//   border-top: none !important;
+// }
+
+
+
+/* Entradas dentro de las celdas */
+.ag-cell-input.capacity-input {
+    width: 80px;
+    margin-top: 0;
+    text-align: center;
+    padding: 6px 8px;
+    border-radius: 8px;
+    border: 1px solid rgba(0,0,0,0.06);
+    box-shadow: 0 2px 6px rgba(11, 36, 77, 0.04);
+    background: #E6F4EA; /* default low load */
+    transition: background .15s ease, transform .08s ease;
+    /* Asegurar que el texto del input sea visible en todos los temas */
+    color: var(--text) !important;
+    caret-color: var(--text) !important;
+    -webkit-text-fill-color: var(--text) !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    font-size: 14px !important;
+    line-height: 1.2 !important;
+    z-index: 3;
+}
+
+.ag-cell-input.capacity-input:focus {
+    outline: none;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(0,27,154,0.08);
+}
+
+/* Estados de carga */
+.ag-cell-input.load-low { background: #E6F4EA; }
+.ag-cell-input.load-medium { background: #FFF4E5; }
+.ag-cell-input.load-high { background: #FDECEA; }
+
+
+
+/* Centrar el botón para agregar roles verticalmente */
+// .add-role-inline-btn { display: inline-flex; align-items: center; justify-content: center; }
+
+/* Hacer que toda la tabla se sienta moderna */
+.ag-root-wrapper { border-radius: 10px; overflow: hidden; border: 1px solid rgba(0,0,0,0.04); }
+
+/* Forzar a la cuadrícula a utilizar todo el ancho disponible y ocultar el scroll horizontal */
+.ag-theme-alpine {
+    width: 100% !important;
+}
+
+.ag-root-wrapper, .ag-body-viewport, .ag-center-cols-viewport {
+    overflow-x: hidden !important;
+}
+
+/* Pequeños ajustes responsivos */
+@media (max-width: 800px) {
+    .ag-header-cell { font-size: 13px; }
+    .ag-cell-input.capacity-input { width: 60px; }
+}
+
+.save {
+  // font-family: inherit;
+  font-size: 18px;
+  background: #0066ff;
+  color: white;
+  fill: rgb(155, 153, 153);
+  padding: 10px;
+  padding-left: 18px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  border: none;
+  border-radius: 10px;
+  width: 110px;
+  font-weight: 700;
+  
+}
+
+.save span {
+  display: block;
+  margin-left: 0.3em;
+  transition: all 0.3s ease-in-out;
+}
+
+.save svg {
+  display: block;
+  transform-origin: center center;
+  transition: transform 0.3s ease-in-out;
+}
+
+.save:hover {
+  background: #0f5132;
+}
+
+.save:hover .svg-wrapper {
+  transform: scale(1.25);
+  transition: 0.5s linear;
+}
+
+.save:hover svg {
+  transform: translateX(1.2em) scale(1.1);
+  fill: #fff;
+}
+
+.save:hover span {
+  opacity: 0;
+  transition: 0.5s linear;
+}
+
+.save:active {
+  transform: scale(0.95);
+}
+
+
+/* Resaltar animación para filas recién creadas =====================================*/ 
+.ag-row.new-row-highlight {
+    animation: newRowBg 2.8s ease forwards;
+}
+
+.ag-row.new-row-highlight .ag-cell {
+    position: relative;
+    overflow: hidden;
+}
+
+.ag-row.new-row-highlight {
+    animation: newRowGlow 2.4s ease forwards;
+}
+
+.ag-row.new-row-highlight .ag-cell {
+    position: relative;
+    overflow: hidden;
+    transition: background-color 0.45s ease, box-shadow 0.45s ease, transform 0.2s ease;
+}
+
+.ag-row.new-row-highlight .ag-cell-input {
+    box-shadow: 0 6px 18px rgba(34, 197, 94, 0.06);
+    transform: translateY(-2px);
+}
+
+@keyframes newRowGlow {
+    0% {
+        background-color: rgba(235, 255, 240, 0.95);
+        box-shadow: 0 0 0 rgba(34,197,94,0);
+    }
+    30% {
+        background-color: rgba(235, 255, 240, 0.8);
+        box-shadow: 0 10px 30px rgba(34,197,94,0.12);
+    }
+    70% {
+        background-color: rgba(235, 255, 240, 0.36);
+        box-shadow: 0 6px 18px rgba(34,197,94,0.06);
+    }
+    100% {
+        background-color: transparent;
+        box-shadow: none;
+    }
+}
+
+// .error-text {
+//     color: #d32f2f;
+//     font-size: 12px;
+//     margin-top: 4px;
+//     opacity: 0;
+//     max-height: 0;
+//     transform: translateY(-6px);
+//     overflow: hidden;
+//     transition: opacity .22s ease, transform .22s ease, max-height .25s ease;
+// }
+// .error-text.show {
+//     opacity: 1;
+//     max-height: 40px;
+//     transform: translateY(0);
+// }
+
+.month-nav span{
+    font-family: var(--font-primary);
+    color: rgb(0, 101, 216);
+      text-transform: capitalize;
+      margin-top: 5px;
+
+}
+
+.total-column {
+  font-weight: 600;
+  background: #f2fff571 !important;
+  text-align: center;
+  justify-content: center;
+  display: flex;
+  font-size: 16px;
+  cursor: pointer;
+   color: #00684a;
+   border-left: none !important;
+
+}
+
+.total-column:hover {
+  background-color: #e1eaff;
+}
+
+.total-column:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0,101,216,0.4);
+  border: #001b9a 2px solid;
+}
+
+.total-ok {
+  background-color: #f0fff4;
+}
+
+.total-exceeded {
+  background-color: #ffeaea;
+  color: #c62828;
+  font-weight: 600;
+}
+.ag-header-cell.total-column {
+  text-align: center !important;
+
+}
+
+
+.ag-header-cell.total-column .ag-header-cell-label {
+  justify-content: center !important;
+  
+}
+

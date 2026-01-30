@@ -1,172 +1,185 @@
 <app-header></app-header>
 <app-submenu class="menu" [class.open]="isMenuOpen$ | async"></app-submenu>
 
-<div class="estimated-layout">
+<div class="estimated-layout" >
     <div class="estimated-container">
-        <h2>Estimated Hours</h2>
-        <p class="texto-descriptivo">This is the Estimated Hours page content.</p>
+        <h2><svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-calculator"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 5a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2l0 -14" /><path d="M8 8a1 1 0 0 1 1 -1h6a1 1 0 0 1 1 1v1a1 1 0 0 1 -1 1h-6a1 1 0 0 1 -1 -1l0 -1" /><path d="M8 14l0 .01" /><path d="M12 14l0 .01" /><path d="M16 14l0 .01" /><path d="M8 17l0 .01" /><path d="M12 17l0 .01" /><path d="M16 17l0 .01" /></svg> Estimated Hours</h2>
+        <p class="texto-descriptivo">Create and edit estimated hours for each Project phase.</p>
 
-<div class="filters-combo">
-  <!-- IZQUIERDA -->
-  <div class="filter-left">
-    <div class="filter-list">
-      <label>Projects</label>
-      <select id="project-filter" class="project-select">
-        <option value="">All</option>
-      </select>
+<div class="filters-row">
+  <div class="filters-combo">
+    <!-- IZQUIERDA -->
+    <div class="filter-left">
+      <div class="filter-list">
+        <label> Projects</label>
+        <select id="project-filter" class="project-select">
+          <option value="">🏢 All Projects</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- DERECHA: inputs ingresables -->
+    <div class="filter-right">
+      <div class="filter-number">
+        <label>SD [%]</label>
+        <input type="number" class="number-input" placeholder="0" />
+      </div>
+
+      <div class="filter-number">
+        <label>DD [%]</label>
+        <input type="number" class="number-input" placeholder="0" />
+      </div>
+
+      <div class="filter-number">
+        <label>CD [%]</label>
+        <input type="number" class="number-input" placeholder="0" />
+      </div>
+    </div>
+
+
+<button>
+  <div class="svg-wrapper-1">
+    <div class="svg-wrapper">
+    
+      <svg xmlns="http://www.w3.org/2000/svg" width="27" height="27" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-file-check"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2" /><path d="M9 15l2 2l4 -4" /></svg>
     </div>
   </div>
+  <span>Save</span>
+</button>
 
-  <!-- DERECHA -->
-  <div class="filter-right">
-    <div class="filter-number">
-      <label>SD [%]</label>
-      <input type="number" class="number-input" placeholder="0" />
-    </div>
 
-    <div class="filter-number">
-      <label>DD [%]</label>
-      <input type="number" class="number-input" placeholder="0" />
-    </div>
-
-    <div class="filter-number">
-      <label>CD [%]</label>
-      <input type="number" class="number-input" placeholder="0" />
-    </div>
   </div>
-</div>
+
+  
+
 
 
      <div class="table-container">
   <table class="time-table">
     <thead>
       <tr>
-        <th>Departments</th>
-        <th>Calculate Percentage</th>
-        <th>Fase 1</th>
-        <th>Fase 2</th>
-        <th>Fase 3</th>
+        <th class="dpt"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-clear-all"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 6h12" /><path d="M6 12h12" /><path d="M4 18h12" /></svg> Departments</th>
+        <th class="cal">Calculate Percentage</th>
+        <th class="header-table2">Calculate 20%</th>
+        <th class="header-table3">Calculate 30%</th>
+        <th class="header-table4">Calculate 50%</th>
       </tr>
     </thead>
 
     <tbody>
       <tr><td>Management · Manager</td>
-    <td> <input type="number" class="hours-input" min="0" placeholder="0"/> </td>
-    <td><input type="number" class="hours-input" value="2"/></td>
-    <td><input type="number" class="hours-input" value="30" /></td>
-    <td><input type="number" class="hours-input" value="100" /></td>
+    <td> <input type="number" class="hours-input" min="0" placeholder="0" /> </td>
+    <td><input type="number" class="hours-input2" value="0" disabled/></td>
+    <td><input type="number" class="hours-input3" value="0" disabled/></td>
+    <td><input type="number" class="hours-input4" value="0" disabled/></td>
     </tr>
 
 
 
       <tr><td>Management · Project Manager</td>
     <td>
-        <input type="number" class="hours-input" min="0" placeholder="0"/> </td>
-         <td><input type="number" class="hours-input" value="40"/></td>
-    <td><input type="number" class="hours-input" value="50" /></td>
-    <td><input type="number" class="hours-input" value="140" /></td>
+        <input type="number" class="hours-input" min="0" placeholder="0" /> </td>
+         <td><input type="number" class="hours-input2" value="0" disabled/></td>
+    <td><input type="number" class="hours-input3" value="0" disabled/></td>
+    <td><input type="number" class="hours-input4" value="0" disabled/></td>
 </tr>
       <tr><td>Mechanical · Sr. Engineer</td>
     <td>
         <input type="number" class="hours-input" min="0" placeholder="0"/> </td>
-         <td><input type="number" class="hours-input" value="200"/></td>
-    <td><input type="number" class="hours-input" value="300" /></td>
-    <td><input type="number" class="hours-input" value="100" /></td>
+         <td><input type="number" class="hours-input2" value="0" disabled/></td>
+    <td><input type="number" class="hours-input3" value="0" disabled/></td>
+    <td><input type="number" class="hours-input4" value="0" disabled/></td>
 </tr>
       <tr><td>Electrical · Sr. Engineer</td>
     <td>
          <input type="number" class="hours-input" min="0" placeholder="0"/> </td>
-          <td><input type="number" class="hours-input" value="120"/></td>
-    <td><input type="number" class="hours-input" value="348" /></td>
-    <td><input type="number" class="hours-input" value="562" /></td>
+          <td><input type="number" class="hours-input2" value="0" disabled/></td>
+    <td><input type="number" class="hours-input3" value="0" disabled/></td>
+    <td><input type="number" class="hours-input4" value="0" disabled/></td>
 </tr>
       <tr><td>Plumbing · Sr. Engineer</td>
     <td>
        <input type="number" class="hours-input" min="0" placeholder="0"/>  </td>
-        <td><input type="number" class="hours-input" value="455"/></td>
-    <td><input type="number" class="hours-input" value="523" /></td>
-    <td><input type="number" class="hours-input" value="654" /></td>
+        <td><input type="number" class="hours-input2" value="0" disabled/></td>
+    <td><input type="number" class="hours-input3" value="0" disabled/></td>
+    <td><input type="number" class="hours-input4" value="0" disabled/></td>
 </tr>
       <tr><td>Structural · Sr. Engineer</td>
     <td>
       <input type="number" class="hours-input" min="0" placeholder="0"/> </td>
-       <td><input type="number" class="hours-input" value="641"/></td>
-    <td><input type="number" class="hours-input" value="652" /></td>
-    <td><input type="number" class="hours-input" value="985" /></td>
+       <td><input type="number" class="hours-input2" value="0" disabled/></td>
+    <td><input type="number" class="hours-input3" value="0" disabled/></td>
+    <td><input type="number" class="hours-input4" value="0" disabled/></td>
 </tr>
-      <tr><td>Mechanical · Coordinator</td>
-    <td>
-     <input type="number" class="hours-input" min="0" placeholder="0"/> </td>
-      <td><input type="number" class="hours-input" value="562"/></td>
-    <td><input type="number" class="hours-input" value="562" /></td>
-    <td><input type="number" class="hours-input" value="614" /></td>
-</tr>
+
       <tr><td>Mechanical · Engineer</td>
     <td>
       <input type="number" class="hours-input" min="0" placeholder="0"/>  </td>
-       <td><input type="number" class="hours-input" value="651"/></td>
-    <td><input type="number" class="hours-input" value="620" /></td>
-    <td><input type="number" class="hours-input" value="652" /></td>
+       <td><input type="number" class="hours-input2" value="0" disabled/></td>
+    <td><input type="number" class="hours-input3" value="0" disabled/></td>
+    <td><input type="number" class="hours-input4" value="0" disabled/></td>
 </tr>
       <tr><td>Mechanical · Modeler</td>
     <td>
       <input type="number" class="hours-input" min="0" placeholder="0"/>  </td>
-       <td><input type="number" class="hours-input" value="652"/></td>
-    <td><input type="number" class="hours-input" value="612" /></td>
-    <td><input type="number" class="hours-input" value="697" /></td>
+       <td><input type="number" class="hours-input2" value="0" disabled/></td>
+    <td><input type="number" class="hours-input3" value="0" disabled/></td>
+    <td><input type="number" class="hours-input4" value="0" disabled/></td>
 </tr>
-      <tr><td>Electrical · Coordinator</td><td>
-         <input type="number" class="hours-input" min="0" placeholder="0"/> </td>
-          <td><input type="number" class="hours-input" value="854"/></td>
-    <td><input type="number" class="hours-input" value="685" /></td>
-    <td><input type="number" class="hours-input" value="551" /></td>
-</tr>
+
       <tr><td>Electrical · Engineer</td><td>
        <input type="number" class="hours-input" min="0" placeholder="0"/> </td>
-        <td><input type="number" class="hours-input" value="855"/></td>
-    <td><input type="number" class="hours-input" value="696" /></td>
-    <td><input type="number" class="hours-input" value="953" /></td>
+        <td><input type="number" class="hours-input2" value="0" disabled/></td>
+    <td><input type="number" class="hours-input3" value="0" disabled/></td>
+    <td><input type="number" class="hours-input4" value="0" disabled/></td>
 </tr>
       <tr><td>Electrical · Modeler</td><td>
        <input type="number" class="hours-input" min="0" placeholder="0"/> </td>
-        <td><input type="number" class="hours-input" value="894"/></td>
-    <td><input type="number" class="hours-input" value="951" /></td>
-    <td><input type="number" class="hours-input" value="622" /></td>
+        <td><input type="number" class="hours-input2" value="0" disabled/></td>
+    <td><input type="number" class="hours-input3" value="0" disabled/></td>
+    <td><input type="number" class="hours-input4" value="0" disabled/></td>
 </tr>
-      <tr><td>Plumbing · Coordinator</td><td>
-        <input type="number" class="hours-input" min="0" placeholder="0"/> </td>
-          <td><input type="number" class="hours-input" value="654"/></td>
-    <td><input type="number" class="hours-input" value="612" /></td>
-    <td><input type="number" class="hours-input" value="952" /></td>
-        
-</tr>
+
       <tr><td>Plumbing · Engineer</td><td>
        <input type="number" class="hours-input" min="0" placeholder="0"/>  </td>
-         <td><input type="number" class="hours-input" value="956"/></td>
-    <td><input type="number" class="hours-input" value="611" /></td>
-    <td><input type="number" class="hours-input" value="522" /></td>
+         <td><input type="number" class="hours-input2" value="0" disabled/></td>
+    <td><input type="number" class="hours-input3" value="0" disabled/></td>
+    <td><input type="number" class="hours-input4" value="0" disabled/></td>
 </tr>
       <tr><td>Plumbing · Modeler</td><td>
        <input type="number" class="hours-input" min="0" placeholder="0"/> </td>
-         <td><input type="number" class="hours-input" value="652"/></td>
-    <td><input type="number" class="hours-input" value="698" /></td>
-    <td><input type="number" class="hours-input" value="456" /></td>
+         <td><input type="number" class="hours-input2" value="0" disabled/></td>
+    <td><input type="number" class="hours-input3" value="0" disabled/></td>
+    <td><input type="number" class="hours-input4" value="0" disabled/></td>
 </tr>
-      <tr><td>Structural · Coordinator</td><td>
-      <input type="number" class="hours-input" min="0" placeholder="0"/>  </td>
-        <td><input type="number" class="hours-input" value="6942"/></td>
-    <td><input type="number" class="hours-input" value="64116" /></td>
-    <td><input type="number" class="hours-input" value="64162" /></td>
-</tr>
+
       <tr><td>Structural · Engineer</td> <td>
       <input type="number" class="hours-input" min="0" placeholder="0"/>  </td>
-        <td><input type="number" class="hours-input" value="641"/></td>
-    <td><input type="number" class="hours-input" value="661" /></td>
-    <td><input type="number" class="hours-input" value="622" /></td>
+        <td><input type="number" class="hours-input2" value="0" disabled/></td>
+    <td><input type="number" class="hours-input3" value="0" disabled/></td>
+    <td><input type="number" class="hours-input4" value="0" disabled/></td>
     </tr>
     </tbody>
   </table>
+      </div>
+    </div>
+
+
+    <div class="next-button-container">
+        <button class="next-button" *ngIf="paso === 1" (click)="siguiente()">
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75"></path>
+  </svg>
+  <div class="text2">
+    Next
+  </div>
+</button>
 </div>
 
-        </div>
+<!-- main grid moved to paso 2 component -->
     </div>
+      </div>
+
+  <!-- Paso 2: ahora es una página separada en la ruta /estimated-hours/step2 -->
+ 
+

@@ -1385,7 +1385,7 @@ async init(): Promise<void> {
     this.allProjects.forEach((p: any) => {
       const opt = document.createElement('option');
       opt.value = p.id;
-      opt.textContent = `${p.name}${p.projectCode ? ' (' + p.projectCode + ')' : ''}`;
+  opt.textContent =  (p.projectCode ? ' (' + p.projectCode + ')' : '') + (p.name || '');  
       select.appendChild(opt);
     });
   }

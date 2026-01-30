@@ -175,7 +175,11 @@ export class HeaderComponent {
   }
 
   toggleSubmenu() {
-    try { this.submenu.toggle(); } catch (e) { /* ignore */ }
+    try {
+      this.submenu.toggle();
+    } catch (e) {
+      // ignore
+    }
   }
 
   applySavedTheme() {

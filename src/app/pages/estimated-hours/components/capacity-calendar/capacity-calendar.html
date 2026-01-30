@@ -1,0 +1,55 @@
+
+<div class="calendar-header">
+
+
+
+
+<button class="save">
+  <div class="svg-wrapper-1">
+    <div class="svg-wrapper">
+    
+      <svg xmlns="http://www.w3.org/2000/svg" width="27" height="27" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-file-check"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2" /><path d="M9 15l2 2l4 -4" /></svg>
+    </div>
+  </div>
+  <span>Save</span>
+</button>
+
+
+	<div class="month-nav">
+		<button (click)="prevMonth()"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-caret-left"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 6l-6 6l6 6v-12" /></svg></button>
+
+		<span>{{ currentMonth.toLocaleString(undefined, { month: 'long', year: 'numeric' }) }}</span>
+
+		<button class="next" (click)="nextMonth()"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-caret-right"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 18l6 -6l-6 -6v12" /></svg></button>
+	</div>
+
+	<div class="role-controls">
+		<!-- <button class="add-role-button" (click)="toggleAddRole()">+ Add Role</button> -->
+
+		<div *ngIf="showAddRoleForm" class="add-role-form">
+			<!-- <label>Role</label> -->
+			<select [(ngModel)]="selectedRoleId">
+				<option [value]="null">Select role...</option>
+				<option *ngFor="let r of roles" [value]="r.id">{{ r.name }}</option>
+			</select>
+			<button (click)="confirmAddRole()">Create</button>
+			<button (click)="toggleAddRole()">Cancel</button>
+		</div>
+	</div>
+</div>
+
+<ag-grid-angular
+		class="ag-theme-alpine"
+		[rowData]="rowData"
+		[columnDefs]="columnDefs"
+		[getRowClass]="getRowClass"
+		[getRowStyle]="getRowStyle"
+	[rowHeight]="rowHeight"
+	[getRowHeight]="getRowHeight"
+	(gridReady)="onGridReady($event)"
+	[headerHeight]="headerHeight"
+	[groupHeaderHeight]="groupHeaderHeight"
+	[floatingFiltersHeight]="floatingFiltersHeight"
+		[domLayout]="'autoHeight'">
+</ag-grid-angular>
+

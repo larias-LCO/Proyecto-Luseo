@@ -1,5 +1,7 @@
 @use 'assets/fonts/fonts.scss';
 
+/* AG Grid styles are included via angular.json styles array */
+
 .btn-open[data-tooltip]::after {
 	content: attr(data-tooltip);
 	position: absolute;
