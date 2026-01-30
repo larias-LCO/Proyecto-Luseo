@@ -4,12 +4,7 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators, Abs
 import { InternalTaskService } from '../../../../../pages/report-hours/services/internal-task-category.service';
 import { InternalTaskLogService } from '../../../../../pages/report-hours/services/internal-tasks.service';
 import { NotificationService } from '../../../../../core/services/notification.service';
-import { IconButtonComponent } from '../../../../../core/components/animated-icons/icon-button.component';
-import { PlusIconComponent } from '../../../../../core/components/animated-icons/plus-icon.component';
-import { ArchiveIconComponent } from '../../../../../core/components/animated-icons/archive-icon.component';
-import { FileCheckIconComponent } from '../../../../../core/components/animated-icons/file-check-icon.component';
 import { XIconComponent } from '../../../../../core/components/animated-icons/x-icon.component';
-import { AlarmClockIconComponent } from '../../../../../core/components/animated-icons/alarm-clock.component';
 import { timeToDecimal, decimalToTime } from '../../../utils/time-conversion.utils';
 import { hoursMinutesToDecimal, decimalToHoursMinutes } from '../../../utils/time-conversion.utils';
 import { MasIconComponent } from "../../../../../core/components/animated-icons/mas-icon.component";
@@ -18,7 +13,7 @@ import { ClockIconComponent } from "../../../../../core/components/animated-icon
 @Component({
   selector: 'app-internal-task-modal',
   standalone: true,
-  imports: [PlusIconComponent,CommonModule, ReactiveFormsModule, XIconComponent,  MasIconComponent, ClockIconComponent, MasIconComponent,IconButtonComponent, ArchiveIconComponent],
+  imports: [CommonModule, ReactiveFormsModule, XIconComponent,  MasIconComponent, ClockIconComponent, MasIconComponent],
   templateUrl: './internal-task-modal.html',
   styleUrls: ['./internal-task-modal.scss']
 })

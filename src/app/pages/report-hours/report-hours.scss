@@ -5,12 +5,14 @@
 	flex-direction: column;
 	gap: 14px;
 
+
 	margin-top: 10px;
 	width: 100%;
 	max-width: 100%;
 	margin-left: 0;
 	box-sizing: border-box;
 	padding-right: 12px;
+
 
 	margin: 0; /* no outer margin */
 	/* Rely on global `body` for header/sidebar spacing. Do not add local padding. */
@@ -21,6 +23,12 @@
 	box-sizing: border-box;
 	overflow-x: hidden; /* avoid accidental horizontal scroll */
 
+	margin-top: 10px;
+	width: 100%;
+	max-width: 100%;
+	margin-left: 0;
+	box-sizing: border-box;
+	padding-right: 12px;
 }
 
 .report-hours h1{
@@ -29,9 +37,6 @@
 	margin: 20px 0 20px 0; /* remove left margin so heading is full-bleed */
 	color: #1e3a8a;
 }
-
-
-
 
 .report-section {
 	/* lightweight card wrapper for each section/component */

@@ -1,1 +1,66 @@
-<p>schedule works!</p>
+<!-- Header y Submenú -->
+<app-header></app-header>
+<!-- <app-submenu></app-submenu> -->
+
+<div class="schedule-page">
+  <!-- Loading spinner -->
+  <div class="loading-container" *ngIf="isLoadingInitialData">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="mt-3">Loading calendar data...</p>
+  </div>
+
+  <!-- Contenido principal -->
+  <div *ngIf="!isLoadingInitialData">
+    <!-- Header con título y acciones -->
+    <div class="page-header mb-4">
+      <div class="row align-items-center">
+        <div class="col-md-6">
+          <h2 class="page-title">
+            <i class="bi bi-calendar3"></i>
+            Schedule
+          </h2>
+        </div>
+        <div class="col-md-6 text-end">
+        </div>
+      </div>
+    </div>
+
+    <!-- Filtros rápidos -->
+    <div class="filters-section mb-4">
+      <schedule-filters
+        [projects]="projects"
+        [categories]="categories"
+        [initialFilters]="filters"
+        [myEmployeeId]="myEmployeeId"
+        (filtersChange)="onFiltersChange($event)"
+      ></schedule-filters>
+    </div>
+
+    <!-- Calendario -->
+    <div class="calendar-section">
+      <app-schedule-calendar
+        [tasks]="filteredTasks"
+        [holidays]="holidays"
+        [showHolidays]="showHolidays"
+        [calendarHeight]="800"
+        (taskClick)="onTaskClick($event)"
+        (dateSelect)="onDateSelect($event)"
+      ></app-schedule-calendar>
+    </div>
+    
+    <!-- Modal: create/edit task -->
+    <app-schedule-task-modal *ngIf="showTaskModal"
+      [task]="modalTask"
+      [myEmployeeId]="myEmployeeId"
+      [myRole]="getPrimaryRole()"
+      [projects]="projects"
+      [employees]="employees"
+      [categories]="categories"
+      (save)="onModalSave($event)"
+      (delete)="onModalDelete($event)"
+      (close)="onModalClose()"
+    ></app-schedule-task-modal>
+  </div>
+</div>

@@ -265,7 +265,7 @@ export function createTaskCard(task: any, options: any = {}): HTMLElement {
             ${creatorName ? `<span style="padding:2px 5px; border-radius:4px; font-weight:600; color: ${textColor}; text-shadow: 1px 1px 2px ${textColor === '#ffffff' ? 'rgba(0,0,0,0.3)' : 'rgba(255,255,255,0.3)'};">✍️ Created by: ${escapeHtml(creatorName)}</span>` : ''}
           </div>
           <div style="display:flex; flex-wrap:wrap; gap:3px; align-items:center; margin-top:1px;">
-            ${task.personalTask ? `<span style="font-size:10px; padding:2px 5px; border-radius:6px; font-weight:600; color: ${textColor}; text-shadow: 1px 1px 2px ${textColor === '#ffffff' ? 'rgba(0,0,0,0.3)' : 'rgba(255,255,255,0.3)'};">👤 Personal</span>` : ''}
+            
             <span style="display:inline-flex; align-items:center; gap:3px; padding:2px 6px; background:${statusInfo.bg}; color:${statusInfo.color}; border-radius:999px; font-size:10px; font-weight:700; border: 1px solid ${statusInfo.color};">${statusInfo.icon} ${statusInfo.text}</span>
           </div>
         </div>

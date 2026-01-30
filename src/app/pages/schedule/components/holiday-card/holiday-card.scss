@@ -1,0 +1,79 @@
+.holiday-card {
+  padding: 8px 10px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  font-weight: 600;
+  color: #111827;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  background: none !important;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  // Specific styles by country
+  &--colombia {
+    background: linear-gradient(135deg, #edc600 10%, #0008ed, #e30707) !important;
+    border-left: 4px solid #f59e0b;
+    color: #000;
+  }
+
+  &--usa {
+    background: linear-gradient(135deg, #e30707, #ffffff, #0008ed) !important;
+    border-left: 4px solid #3b82f6;
+    color: #1e3a8a;
+  }
+
+  // Default (other countries)
+  &:not(.holiday-card--colombia):not(.holiday-card--usa) {
+    background: #ffc107 !important;
+    border-left: 4px solid #e0a800;
+    color: #000;
+  }
+}
+
+.holiday-card__header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.holiday-card__flag {
+  font-size: 20px;
+}
+
+.holiday-card__country {
+  font-size: 9px;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.95) !important;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  backdrop-filter: blur(4px);
+}
+
+.holiday-card__title {
+  font-weight: 700;
+  font-size: 13px;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+}
+
+.holiday-card__note {
+  margin-top: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  opacity: 0.9;
+}

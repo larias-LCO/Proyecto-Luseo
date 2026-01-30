@@ -104,8 +104,13 @@ export class CreateTaskCard implements OnInit {
       projectId: values.projectId && !isNaN(+values.projectId) ? +values.projectId : null,
       projectPhaseId: values.projectPhaseId && values.projectId ? +values.projectPhaseId : null,
       taskCategoryId: +values.taskCategoryId,
-      personalTask: false,
-      personal_task: false,
+      // New optional discipline fields (kept null until UI fields added)
+      bim_date: null,
+      description_bim: null,
+      description_electrical: null,
+      description_mechanical: null,
+      description_plumbing: null,
+      description_structural: null,
       status: values.status
     };
     try {

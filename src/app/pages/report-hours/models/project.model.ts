@@ -1,4 +1,3 @@
-import { from } from 'rxjs';
 import { AreaUnit} from '../models/enums/area-unit.enum';
 import {ProjectType} from '../models/enums/project-type.enum';
 import {ProjectScope} from '../models/enums/project-scope.enum';

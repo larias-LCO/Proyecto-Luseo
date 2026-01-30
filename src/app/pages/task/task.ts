@@ -283,7 +283,7 @@ export async function renderTasksView() {
 
 // Lógica para crear una tarea general y refrescar la vista
 async function createGeneralTaskLogic(payload: any) {
-  // payload debe tener: name, description, projectId, projectPhaseId, taskCategoryId, personalTask, status, issuedDate, endDate (opcional)
+  // payload debe tener: name, description, projectId, projectPhaseId, taskCategoryId, status, issuedDate, endDate (opcional)
   // Si no se especifica issuedDate, usar la fecha local de hoy
   if (!payload.issuedDate) {
     const today = new Date();

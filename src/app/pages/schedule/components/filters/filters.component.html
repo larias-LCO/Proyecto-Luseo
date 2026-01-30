@@ -1,0 +1,76 @@
+<div class="schedule-filters">
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title mb-3">
+        <i class="bi bi-funnel"></i>
+        Filters
+      </h5>
+      <div class="row">
+        <!-- Filtro por proyecto (dropdown para controlar dirección) -->
+        <div class="col-md-4 mb-3">
+          <label class="form-label">Projects</label>
+          <div class="dropdown" [class.show]="projectDropdownOpen">
+            <button class="form-select dropdown-toggle text-start" type="button" (click)="toggleProjectDropdown($event)" [attr.aria-expanded]="projectDropdownOpen">
+              <span *ngIf="filters.projectIds.length === 0">Select project...</span>
+              <span *ngIf="filters.projectIds.length === 1">
+                {{ getProjectLabel(filters.projectIds[0]) }}
+              </span>
+              <span *ngIf="filters.projectIds.length > 1">{{ filters.projectIds.length }} selected</span>
+            </button>
+            <ul class="dropdown-menu" [class.show]="projectDropdownOpen">
+              <li *ngFor="let project of projects">
+                <a class="dropdown-item" (click)="toggleProject(project.id); $event.preventDefault(); $event.stopPropagation();">
+                  {{ project.projectCode }} - {{ project.name }}
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="selected-filters mt-2" *ngIf="filters.projectIds.length > 0">
+            <span class="badge bg-primary me-1" *ngFor="let projectId of filters.projectIds">
+              {{ getProjectLabel(projectId) }}
+              <i class="bi bi-x-circle ms-1" (click)="toggleProject(projectId)" style="cursor: pointer;"></i>
+            </span>
+          </div>
+        </div>
+
+        <!-- Filtro por categoría -->
+        <div class="col-md-4 mb-3">
+          <label class="form-label">Categories</label>
+          <select class="form-select" [(ngModel)]="selectedCategory" (change)="onCategoryChange(selectedCategory)">
+            <option value="">Select category...</option>
+            <option *ngFor="let category of categories" [value]="category.id">
+              {{ category.name }}
+            </option>
+          </select>
+          <div class="selected-filters mt-2" *ngIf="filters.categoryIds.length > 0">
+            <span class="badge bg-info me-1" *ngFor="let categoryId of filters.categoryIds">
+              Category {{ categoryId }}
+              <i class="bi bi-x-circle ms-1" (click)="toggleCategory(categoryId)" style="cursor: pointer;"></i>
+            </span>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="col-md-4 mb-3">
+          <label class="form-label">Actions</label>
+          <div class="mt-2">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="myProjectsOnly" [checked]="filters.myProjectsOnly" (change)="toggleMyProjectsOnly()">
+              <label class="form-check-label" for="myProjectsOnly">Only my projects</label>
+            </div>
+            <div class="form-check mt-2">
+              <input class="form-check-input" type="checkbox" id="createdByMe" [checked]="filters.createdByMe" (change)="toggleCreatedByMe()">
+              <label class="form-check-label" for="createdByMe">Created by me</label>
+            </div>
+            <div class="mt-2">
+              <button class="btn btn-outline-primary me-2" (click)="clearFilters()">
+                <i class="bi bi-x-circle"></i>
+                Clear Filters
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,478 @@
+.schedule-calendar-container {
+  width: 100%;
+  padding: 1rem;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+// Estadísticas
+.calendar-stats {
+  .stat-card {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 8px;
+    color: white;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+    transition: transform 0.2s;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    i {
+      font-size: 2rem;
+      margin-right: 1rem;
+      opacity: 0.9;
+    }
+
+    .stat-content {
+      display: flex;
+      flex-direction: column;
+
+      .stat-value {
+        font-size: 1.5rem;
+        font-weight: bold;
+        line-height: 1.2;
+      }
+
+      .stat-label {
+        font-size: 0.85rem;
+        opacity: 0.9;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+    }
+  }
+}
+
+// Wrapper del calendario
+.calendar-wrapper {
+  min-height: 600px;
+  
+  ::ng-deep {
+    // Ensure calendar expands to show all events without internal scrolling
+    .fc {
+      height: auto !important;
+    }
+    
+    // CRITICAL: Proper flexbox ordering for events within day containers
+    .fc-daygrid-day-events {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 2px !important;
+      overflow-y: visible !important;
+      overflow-x: hidden;
+      max-height: none !important;
+    }
+    
+    // Force events to stack vertically in order
+    .fc-daygrid-event-harness {
+      margin-bottom: 2px !important;
+    }
+    
+    // Estilos para las celdas del calendario
+    .schedule-day-cell {
+      cursor: pointer;
+      transition: background-color 0.2s;
+
+      &:hover {
+        background-color: rgba(102, 126, 234, 0.05);
+      }
+    }
+
+    // Styles for general task events
+    .general-task-event {
+      cursor: pointer;
+      border-radius: 4px;
+      padding: 0 !important;
+      font-size: 0.875rem;
+      transition: all 0.2s;
+      font-weight: 500;
+      overflow: visible !important;
+      order: 3 !important; // General tasks show last
+
+      &:hover {
+        transform: scale(1.02);
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        z-index: 100 !important;
+      }
+
+      .fc-event-main {
+        padding: 0 !important;
+      }
+
+      .fc-event-title {
+        font-weight: 500;
+        font-size: 0.875rem;
+      }
+    }
+
+    // Styles for Out of Office events
+    .out-of-office-event {
+      cursor: pointer;
+      border-radius: 4px;
+      padding: 0 !important;
+      font-size: 0.875rem;
+      transition: all 0.2s;
+      font-weight: 700;
+      overflow: visible !important;
+      order: 2 !important; // Out of Office show second
+
+      &:hover {
+        transform: scale(1.02);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+        z-index: 100 !important;
+      }
+
+      .fc-event-main {
+        padding: 0 !important;
+      }
+
+      .fc-event-title {
+        font-weight: 700;
+        font-size: 0.9rem;
+      }
+    }
+
+    // Styles for personal tasks
+    .personal-task-event {
+      border-left: 4px solid #dc3545 !important;
+      padding-left: 4px;
+    }
+
+    // Styles for holiday events
+    .holiday-event {
+      background: none !important;
+      border: none !important;
+      color: #000000 !important;
+      font-weight: 600;
+      font-size: 0.875rem;
+      padding: 0 !important;
+      border-radius: 4px;
+      overflow: visible !important;
+      order: 1 !important; // Holidays show first
+
+      .fc-event-main {
+        padding: 0 !important;
+        background: none !important;
+      }
+
+      .fc-event-title {
+        font-weight: 600;
+      }
+
+      &:hover {
+        transform: scale(1.02);
+        box-shadow: 0 3px 10px rgba(146, 146, 146, 0.637);
+      }
+    }
+
+    // Estilos para eventos antiguos (ya usados en report-hours)
+    .schedule-task-event {
+      @extend .general-task-event;
+      order: 3 !important; // Ensure inherited order
+    }
+
+    .schedule-holiday-event {
+      @extend .holiday-event;
+      order: 1 !important; // Ensure inherited order
+    }
+
+    // Estilos para el botón "more"
+    .fc-more-link {
+      color: #667eea;
+      font-weight: 600;
+      
+      &:hover {
+        color: #4b54a2;
+        text-decoration: underline;
+      }
+    }
+
+    // Estilos para el popover
+    .fc-popover {
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      border: none;
+
+      .fc-popover-header {
+        background: linear-gradient(135deg, #667eea 0%, #4b58a2 100%);
+        color: white;
+        border-radius: 8px 8px 0 0;
+        padding: 0.75rem 1rem;
+      }
+
+      .fc-popover-body {
+        padding: 0.5rem;
+      }
+    }
+
+    // Estilos para el header del calendario
+    .fc-header-toolbar {
+      margin-bottom: 1.5rem;
+      padding: 0.5rem;
+      background-color: #f8f9fa;
+      border-radius: 8px;
+
+      .fc-toolbar-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #333;
+      }
+
+      .fc-button {
+        background-color: #6694ea;
+        border-color: #667eea;
+        color: white;
+        border-radius: 6px;
+        padding: 0.5rem 1rem;
+        font-weight: 500;
+        transition: all 0.2s;
+
+        &:hover {
+          background-color: #4b5ba2;
+          border-color: #4b5ba2;
+          transform: translateY(-1px);
+        }
+
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+
+        &.fc-button-active {
+          background-color: #4b5ba2;
+          border-color: #4b5ba2;
+        }
+      }
+    }
+
+    // Estilos para las celdas de día
+    .fc-daygrid-day-number {
+      padding: 4px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .fc-day-today {
+      background-color: rgba(102, 126, 234, 0.1) !important;
+
+      .fc-daygrid-day-number {
+        background-color: #667eea;
+        color: white;
+        border-radius: 50%;
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+
+    // Estilos para fines de semana
+    .fc-day-sat,
+    .fc-day-sun {
+      background-color: rgba(0, 0, 0, 0.02);
+    }
+  }
+}
+
+// Leyenda
+.calendar-legend {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+
+  .legend-title {
+    font-weight: 600;
+    margin-right: 1rem;
+    color: #495057;
+  }
+
+  .legend-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      .legend-color {
+        width: 20px;
+        height: 20px;
+        border-radius: 4px;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+      }
+
+      .legend-label {
+        font-size: 0.9rem;
+        color: #6c757d;
+      }
+    }
+  }
+}
+
+// Estilos para las tarjetas de General Task personalizadas
+:host ::ng-deep {
+  .gt-card-calendar {
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    
+    // Asegurar que el texto sea legible
+    .gt-body {
+      user-select: none;
+    }
+    
+    // Smooth transitions
+    * {
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+  }
+  
+  // Improve FullCalendar event container
+  .fc-daygrid-event {
+    padding: 0 !important;
+    margin-bottom: 2px !important;
+    min-height: 28px !important;
+  }
+  
+  // Multi-day events (block events)
+  .fc-daygrid-block-event {
+    padding: 0 !important;
+    margin-bottom: 2px !important;
+    min-height: 28px !important;
+    border-radius: 4px !important;
+    
+    .fc-event-main {
+      padding: 0 !important;
+      height: 100% !important;
+      min-height: 28px !important;
+    }
+  }
+  
+  // Horizontal events that span multiple days
+  .fc-h-event {
+    min-height: 28px !important;
+    border-radius: 4px !important;
+    
+    .fc-event-main {
+      height: 100% !important;
+      min-height: 28px !important;
+    }
+  }
+  
+  .fc-daygrid-event-harness {
+    margin-bottom: 2px !important;
+    min-height: 28px !important;
+  }
+  
+  // Hide FullCalendar dot
+  .fc-daygrid-event-dot {
+    display: none !important;
+  }
+  
+  // Adjust day container for multiple events
+  .fc-daygrid-day-events {
+    min-height: 60px;
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .schedule-calendar-container {
+    padding: 0.5rem;
+  }
+
+  .calendar-stats {
+    .stat-card {
+      margin-bottom: 0.5rem;
+
+      i {
+        font-size: 1.5rem;
+      }
+
+      .stat-content {
+        .stat-value {
+          font-size: 1.25rem;
+        }
+
+        .stat-label {
+          font-size: 0.75rem;
+        }
+      }
+    }
+  }
+
+  .calendar-legend {
+    .legend-items {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+  }
+}
+
+// Estilos para tarjetas de festivos personalizadas (report-hours style)
+:host ::ng-deep {
+  .rh-event {
+    padding: 8px;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    line-height: 1.4;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+    cursor: pointer;
+    overflow: hidden;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    &--holiday {
+      font-weight: 600;
+      color: #fff;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+
+      .rh-event__title {
+        font-size: 0.95rem;
+        margin-bottom: 4px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .rh-event__country {
+        display: inline-block;
+        font-size: 0.75rem;
+        padding: 2px 6px;
+        background-color: rgba(255, 255, 255, 0.3);
+        border-radius: 3px;
+        margin-top: 4px;
+        backdrop-filter: blur(4px);
+      }
+
+      .rh-event__message {
+        font-size: 0.8rem;
+        opacity: 0.95;
+        margin-top: 4px;
+        font-weight: 500;
+      }
+
+      &.rh-event--colombia {
+        border-left-color: #f59e0b !important;
+      }
+
+      &.rh-event--usa {
+        border-left-color: #3b82f6 !important;
+      }
+    }
+  }
+}

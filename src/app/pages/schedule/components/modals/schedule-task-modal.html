@@ -1,0 +1,125 @@
+<div class="modal-overlay schedule-task-modal-overlay" (click)="$event.target === $event.currentTarget && onClose()">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3>{{ isEditMode ? 'Edit Task' : 'Create Task' }}</h3>
+      <button class="btn-icon" (click)="onClose()"><app-x-icon></app-x-icon></button>
+    </div>
+
+    <form [formGroup]="form" class="modal-body" (ngSubmit)="onSave()">
+      <div class="row">
+        <!-- Visual-only metadata (only visible in edit mode) -->
+        <div class="col-12" *ngIf="isEditMode">
+          <div class="meta-panel p-2" *ngIf="(form.get('projectName')?.value) || (form.get('taskCategoryName')?.value) || (form.get('projectPhaseName')?.value) || (form.get('projectManagerName')?.value) || (form.get('createByEmployeeName')?.value)">
+            <div class="meta-title">🔒 Metadata (read-only)</div>
+            <div class="row g-2 align-items-center">
+              <div class="col-6" *ngIf="form.get('projectName')?.value">
+                <label class="form-label"><span class="meta-emoji">📁</span> Project</label>
+                <div class="meta-value">{{ form.get('projectName')?.value }}</div>
+              </div>
+
+              <div class="col-12" *ngIf="assignedEmployees.length">
+                <label class="form-label"><span class="meta-emoji">👥</span> Assigned</label>
+                <div class="assigned-list">
+                  <span class="assigned-badge" *ngFor="let a of assignedEmployees">
+                    {{ a.name }}<span *ngIf="a.jobPositionName"> · {{ a.jobPositionName }}</span><span *ngIf="a.departmentName"> · {{ a.departmentName }}</span>
+                  </span>
+                </div>
+              </div>
+
+              <div class="col-6" *ngIf="form.get('projectPhaseName')?.value">
+                <label class="form-label"><span class="meta-emoji">📅</span> Phase</label>
+                <div class="meta-value">{{ form.get('projectPhaseName')?.value }}</div>
+              </div>
+              <div class="col-6" *ngIf="form.get('projectManagerName')?.value">
+                <label class="form-label"><span class="meta-emoji">👤</span> Project Manager</label>
+                <div class="meta-value">{{ form.get('projectManagerName')?.value }}</div>
+              </div>
+
+              <div class="col-12" *ngIf="form.get('createByEmployeeName')?.value">
+                <label class="form-label"><span class="meta-emoji">🧑‍💼</span> Created by</label>
+                <div class="meta-value">{{ form.get('createByEmployeeName')?.value }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Editable fields -->
+        <div class="col-12">
+          <label class="form-label">Title</label>
+          <input class="form-control" formControlName="name" />
+        </div>
+        <div class="col-6">
+          <label class="form-label">Issued</label>
+          <input type="date" class="form-control" formControlName="issuedDate" />
+        </div>
+        <div class="col-6" *ngIf="isOutOfOfficeSelected">
+          <label class="form-label">End</label>
+          <input type="date" class="form-control" formControlName="endDate" />
+        </div>
+        <div class="col-6">
+          <label class="form-label">Project</label>
+          <select class="form-select" formControlName="projectId">
+            <option value="">- Select a project -</option>
+            <option *ngFor="let p of projects" [value]="p.id">{{ p.projectCode }} - {{ p.name }}</option>
+          </select>
+        </div>
+        <div class="col-6">
+          <label class="form-label">Category</label>
+          <select class="form-select" formControlName="categoryId">
+            <option value="">- Select a category -</option>
+            <option *ngFor="let c of categories" [value]="c.id">{{ c.name }}</option>
+          </select>
+        </div>
+        <div class="col-6 mt-2">
+          <label class="form-label">Status</label>
+          <select class="form-select" formControlName="status">
+            <option value="IN_PROGRESS">En Progreso</option>
+            <option value="COMPLETED">Completada</option>
+            <option value="PAUSED">Pausada</option>
+          </select>
+        </div>
+        <div class="col-12">
+          <label class="form-label">Description</label>
+          <textarea class="form-control" rows="3" formControlName="description"></textarea>
+        </div>
+
+        <div class="col-6 mt-2">
+          <label class="form-label">BIM Date (optional)</label>
+          <input type="date" class="form-control" formControlName="bimDate" />
+        </div>
+        <div class="col-12 mt-2">
+          <label class="form-label">BIM description</label>
+          <textarea class="form-control" rows="2" formControlName="description_bim" placeholder="BIM-related notes"></textarea>
+        </div>
+        <div class="col-12 mt-2">
+          <label class="form-label">Electrical description</label>
+          <textarea class="form-control" rows="2" formControlName="description_electrical"></textarea>
+        </div>
+        <div class="col-12 mt-2">
+          <label class="form-label">Mechanical description</label>
+          <textarea class="form-control" rows="2" formControlName="description_mechanical"></textarea>
+        </div>
+        <div class="col-12 mt-2">
+          <label class="form-label">Plumbing description</label>
+          <textarea class="form-control" rows="2" formControlName="description_plumbing"></textarea>
+        </div>
+        <div class="col-12 mt-2">
+          <label class="form-label">Structural description</label>
+          <textarea class="form-control" rows="2" formControlName="description_structural"></textarea>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <div class="spacer"></div>
+        <ng-container *ngIf="isEditMode && canEdit">
+          <button type="button" class="btn btn-danger" (click)="onDelete()" [disabled]="isSaving">Delete</button>
+          <button type="button" class="btn btn-primary" (click)="onSave()" [disabled]="isSaving">Save Changes<span *ngIf="isSaving">…</span></button>
+        </ng-container>
+
+        <ng-container *ngIf="!isEditMode">
+          <button type="button" class="btn btn-success" (click)="onSave()" [disabled]="isSaving">Create Task<span *ngIf="isSaving">…</span></button>
+        </ng-container>
+      </div>
+    </form>
+  </div>
+</div>
