@@ -169,23 +169,24 @@ export class ScheduleCalendar implements OnInit, OnChanges {
       const end = dateInfo?.end ? new Date(dateInfo.end) : new Date();
       this.dateRangeChange.emit({ start, end });
     } catch (e) {
-      // Ignorar errores
+      // Ignore errors
     }
   }
 
+  //Tooltip and styling handlers for tasks and holidays
   private handleEventDidMount(arg: any): void {
     try {
       const eventProps = arg.event.extendedProps;
       
-      // Agregar tooltip con información adicional
+      // Add tooltip with additional information
       if (eventProps?.type === 'GENERAL_TASK') {
         const task = eventProps.fullTask as GeneralTask;
-        arg.el.title = `${task.name}\nProyecto: ${task.projectName}\nCategoría: ${task.taskCategoryName}`;
+        arg.el.title = `Name: ${task.name}\nProject: ${task.projectName}\nCategory: ${task.taskCategoryName}`;
       } else if (eventProps?.type === 'HOLIDAY') {
-        arg.el.title = `Festivo: ${eventProps.localName || eventProps.holidayName}`;
+        arg.el.title = `Holiday: ${eventProps.localName || eventProps.holidayName}`;
       }
     } catch (e) {
-      // Ignorar errores
+      // Ignore errors
     }
   }
   private handleDayCellDidMount(arg: any): void {
@@ -246,8 +247,8 @@ export class ScheduleCalendar implements OnInit, OnChanges {
             eventsContainer.style.overflowY = 'auto';
             eventsContainer.style.setProperty('-webkit-overflow-scrolling', 'touch');
           } else {
-            eventsContainer.style.maxHeight = '';
-            eventsContainer.style.overflowY = '';
+            eventsContainer.style.maxHeight = '500px';
+            eventsContainer.style.overflowY = 'auto';
             try { eventsContainer.style.removeProperty('-webkit-overflow-scrolling'); } catch {}
           }
         } catch (e) {}

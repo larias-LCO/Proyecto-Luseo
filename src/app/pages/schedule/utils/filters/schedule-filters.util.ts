@@ -73,5 +73,22 @@ export function applyFilters(tasks: GeneralTask[], filters: ScheduleFilters, con
     });
   }
   
+  // Filtrar por creadores seleccionados (si se seleccionaron employee ids)
+  if (filters.createdByEmployeeIds && filters.createdByEmployeeIds.length > 0) {
+    const targets = (filters.createdByEmployeeIds || []).map((v: any) => Number(v)).filter((v: number) => !isNaN(v));
+    if (targets.length > 0) {
+      filtered = filtered.filter((task: any) => {
+        const creatorId = Number(
+          task.createdByEmployeeId ??
+          task.createByEmployeeId ??
+          task.created_by_employee_id ??
+          task.create_by_employee_id ??
+          NaN
+        );
+        return !isNaN(creatorId) && targets.includes(creatorId);
+      });
+    }
+  }
+  
   return filtered;
 }

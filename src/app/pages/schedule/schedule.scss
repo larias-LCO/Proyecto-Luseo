@@ -1,5 +1,5 @@
 .schedule-page {
-  padding: 2rem;
+  padding: 1rem;
   background-color: #f8f9fa;
   min-height: 100vh;
 
@@ -9,7 +9,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 400px;
+    min-height: 180px;
     
     p {
       color: #6c757d;
@@ -38,63 +38,6 @@
       &:hover {
         transform: translateY(-2px);
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-      }
-    }
-  }
-
-  // Statistics section
-  .statistics-section {
-    .stat-card {
-      display: flex;
-      align-items: center;
-      padding: 1.5rem;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      border-radius: 12px;
-      color: white;
-      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-      transition: all 0.3s;
-      height: 100%;
-
-      &:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
-      }
-
-      i {
-        font-size: 2.5rem;
-        margin-right: 1.25rem;
-        opacity: 0.95;
-      }
-
-      .stat-content {
-        display: flex;
-        flex-direction: column;
-
-        .stat-value {
-          font-size: 2rem;
-          font-weight: bold;
-          line-height: 1.2;
-          margin-bottom: 0.25rem;
-        }
-
-        .stat-label {
-          font-size: 0.9rem;
-          opacity: 0.95;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-        }
-      }
-
-      &.stat-card-success {
-        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-      }
-
-      &.stat-card-info {
-        background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
-      }
-
-      &.stat-card-warning {
-        background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
       }
     }
   }
@@ -184,12 +127,24 @@
 
   // Calendar section
   .calendar-section {
-    margin-top: 2rem;
+    margin-top: 1rem;
     position: relative;
-    /* leave space at top so the floating create button sits above the calendar area */
-    padding-top: 56px;
-
     /* floating-create removed per UX request */
+  }
+}
+
+/* Reduce vertical gaps between major sections when Bootstrap spacing classes are used */
+.schedule-page {
+  .page-header {
+    margin-bottom: 0.5rem !important;
+  }
+
+  .filters-section {
+    margin-bottom: 0.5rem !important;
+  }
+
+  .calendar-previous {
+    margin-top: 0.5rem !important;
   }
 }
 

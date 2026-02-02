@@ -15,7 +15,7 @@
   <span *ngIf="isOutOfOffice" class="gt-card__out-of-office-badge">
   </span>
 
-  <div class="gt-card__body">
+  <div class="gt-card__body" [style.background]="categoryColor" [style.color]="textColor">
     <!-- Info del proyecto -->
     <div *ngIf="task.projectCode || task.projectName" class="gt-card__project">
       <span class="gt-card__project-icon">📦</span>

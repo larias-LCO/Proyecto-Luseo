@@ -3,6 +3,7 @@ export interface ScheduleFilters {
   categoryIds: number[];
   myProjectsOnly?: boolean;
   createdByMe?: boolean;
+  createdByEmployeeIds?: number[];
 }
 
 export function createDefaultFilters(): ScheduleFilters {
@@ -11,6 +12,7 @@ export function createDefaultFilters(): ScheduleFilters {
     categoryIds: [],
     myProjectsOnly: false,
     createdByMe: false
+    ,createdByEmployeeIds: []
   };
 }
 

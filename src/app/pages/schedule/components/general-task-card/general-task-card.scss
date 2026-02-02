@@ -78,7 +78,7 @@
   padding: 2px 6px;
   border-radius: 6px;
   background: transparent !important;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+  // box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
   z-index: 1;
   line-height: 1;
 
@@ -94,11 +94,6 @@
 // Estilo especial para tarjetas Out of Office
 .gt-card--out-of-office {
   border-left: 5px solid #99d3dd !important;
-  
-  /* Remove any background for Out of Office cards — keep only the border/color design */
-  .gt-card__body {
-    background: transparent !important;
-  }
 }
 
 // Body
